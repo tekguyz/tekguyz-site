@@ -1,0 +1,39 @@
+# dependencies
+node_modules
+.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# production
+/build
+dist
+*.tgz
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# dotenv environment variable files — never commit secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# caches
+.eslintcache
+.cache
+
+# vercel
+.vercel
+
+# editors / OS
+.idea
+.vscode
+.DS_Store

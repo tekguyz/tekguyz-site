@@ -1,0 +1,492 @@
+@import 'tailwindcss';
+
+/* next-themes writes `class="dark"` on <html> (attribute="class", enableSystem={false}). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   DESIGN.md §1 — colors. Every value here is from the locked, measured table.
+   Do not substitute a "close enough" shade; the ratios were audited.
+--------------------------------------------------------------------------- */
+:root {
+  --tg-ink: #111111;
+  --tg-canvas: #ffffff;
+  --tg-surface-card: #f5f5f5;
+  --tg-hairline: #e5e7eb;
+  --tg-muted: #6a717e;
+  --tg-muted-soft: #9ca3af; /* NON-TEXT ONLY: dots, thinking indicator */
+  --tg-muted-dark: #747c8b;
+  --tg-bg-dark: #101010;
+  --tg-text-primary-dark: #f5f5f5;
+  --tg-border-dark: #2a2a2c;
+
+  /* Wayfinding accents — dots, tags, badges, pull-quote borders. Never a button fill. */
+  --tg-accent-blue: #3b6fe0;
+  --tg-accent-violet: #7c6fe0;
+  --tg-accent-amber: #f2a93c;
+  --tg-accent-teal: #2fa679;
+
+  /* -text variants: an accent rendered as small/bold text on ANY light background. */
+  --tg-accent-blue-text: #1e3f94;
+  --tg-accent-violet-text: #4433a8;
+  --tg-accent-amber-text: #8a5a0a;
+  --tg-accent-teal-text: #1d6b4d;
+
+  --tg-success: #10b981;
+  --tg-warning: #f59e0b;
+  --tg-error: #ef4444;
+
+  /* Theme-aware semantics. Light mode values. */
+  --tg-bg: var(--tg-canvas);
+  --tg-fg: var(--tg-ink);
+  --tg-surface: var(--tg-surface-card);
+  --tg-border: var(--tg-hairline);
+  --tg-border-strong: #d1d5db;
+  --tg-secondary: var(--tg-muted);
+
+  /* Primary CTA inverts wholesale between themes — see DESIGN.md §4 / §7. */
+  --tg-cta-bg: var(--tg-ink);
+  --tg-cta-fg: #ffffff;
+  --tg-cta-hover: #242424;
+
+  /* Accent-as-text resolves per theme so components never branch on useTheme(). */
+  --tg-accent-blue-on-bg: var(--tg-accent-blue-text);
+  --tg-accent-violet-on-bg: var(--tg-accent-violet-text);
+  --tg-accent-amber-on-bg: var(--tg-accent-amber-text);
+  --tg-accent-teal-on-bg: var(--tg-accent-teal-text);
+
+  /* Nav is transparent at scroll 0 and fills in past 24px — driven by data-scrolled. */
+  --tg-nav-bg: rgb(255 255 255 / 0);
+  --tg-nav-border: rgb(229 231 235 / 0);
+  --tg-nav-blur: 0px;
+}
+
+.dark {
+  --tg-bg: var(--tg-bg-dark);
+  --tg-fg: var(--tg-text-primary-dark);
+  --tg-surface: #1a1a1c;
+  --tg-border: var(--tg-border-dark);
+  --tg-border-strong: #3a3a3e;
+  --tg-secondary: var(--tg-muted-dark);
+
+  --tg-cta-bg: var(--tg-text-primary-dark);
+  --tg-cta-fg: var(--tg-bg-dark);
+  --tg-cta-hover: #e2e2e2;
+
+  /* Blue and violet need dedicated dark variants; amber and teal pass as-is. */
+  --tg-accent-blue-on-bg: #5380e4;
+  --tg-accent-violet-on-bg: #8377e2;
+  --tg-accent-amber-on-bg: var(--tg-accent-amber);
+  --tg-accent-teal-on-bg: var(--tg-accent-teal);
+
+  --tg-nav-bg: rgb(16 16 16 / 0);
+  --tg-nav-border: rgb(42 42 44 / 0);
+}
+
+[data-scrolled='true'] {
+  --tg-nav-bg: rgb(255 255 255 / 0.8);
+  --tg-nav-border: rgb(229 231 235 / 1);
+  --tg-nav-blur: 12px;
+}
+
+.dark [data-scrolled='true'] {
+  --tg-nav-bg: rgb(16 16 16 / 0.8);
+  --tg-nav-border: rgb(42 42 44 / 1);
+}
+
+/* The ink band is dark in BOTH themes, so tokens inside it must not theme-swap.
+   DESIGN.md §1 documents this as the one deliberate literal-value exception. */
+.ink-band {
+  --tg-bg: #111111;
+  --tg-fg: #f5f5f5;
+  --tg-surface: #1a1a1c;
+  --tg-border: #2a2a2c;
+  --tg-border-strong: #3a3a3e;
+  --tg-secondary: #9ca3af;
+  --tg-accent-blue-on-bg: #5380e4;
+  --tg-accent-violet-on-bg: #8377e2;
+  --tg-accent-amber-on-bg: #f2a93c;
+  --tg-accent-teal-on-bg: #2fa679;
+  --tg-cta-bg: #f5f5f5;
+  --tg-cta-fg: #101010;
+  --tg-cta-hover: #e2e2e2;
+  background-color: #111111;
+  color: #f5f5f5;
+}
+
+/* The footer is permanently dark regardless of the toggle. */
+.footer-dark {
+  --tg-bg: #101010;
+  --tg-fg: #f5f5f5;
+  --tg-border: #2a2a2c;
+  --tg-secondary: #747c8b;
+  background-color: #101010;
+  color: #f5f5f5;
+}
+
+@theme inline {
+  --color-bg: var(--tg-bg);
+  --color-fg: var(--tg-fg);
+  --color-surface: var(--tg-surface);
+  --color-border: var(--tg-border);
+  --color-border-strong: var(--tg-border-strong);
+  --color-secondary: var(--tg-secondary);
+
+  --color-ink: var(--tg-ink);
+  --color-canvas: var(--tg-canvas);
+  --color-surface-card: var(--tg-surface-card);
+  --color-hairline: var(--tg-hairline);
+  --color-muted: var(--tg-muted);
+  --color-muted-soft: var(--tg-muted-soft);
+  --color-muted-dark: var(--tg-muted-dark);
+  --color-bg-dark: var(--tg-bg-dark);
+  --color-text-primary-dark: var(--tg-text-primary-dark);
+  --color-border-dark: var(--tg-border-dark);
+
+  --color-accent-blue: var(--tg-accent-blue);
+  --color-accent-violet: var(--tg-accent-violet);
+  --color-accent-amber: var(--tg-accent-amber);
+  --color-accent-teal: var(--tg-accent-teal);
+
+  --color-cta-bg: var(--tg-cta-bg);
+  --color-cta-fg: var(--tg-cta-fg);
+  --color-cta-hover: var(--tg-cta-hover);
+
+  --color-success: var(--tg-success);
+  --color-warning: var(--tg-warning);
+  --color-error: var(--tg-error);
+
+  /* DESIGN.md §2 — type scale. */
+  --text-hero: clamp(2.5rem, 6vw, 4.5rem);
+  --text-display: clamp(2rem, 4.5vw, 3.5rem);
+  --text-title: clamp(1.375rem, 2vw, 1.75rem);
+  --text-body: 1.0625rem;
+  --text-sm: 0.875rem;
+  --text-caption: 0.75rem;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* DESIGN.md §3 — 4px base scale. */
+  --spacing-section: 128px;
+  --spacing-section-mobile: 80px;
+
+  /* DESIGN.md §3 — radius scale. */
+  --radius-input: 4px;
+  --radius-tag: 6px;
+  --radius-button: 8px;
+  --radius-card: 12px;
+  --radius-container: 16px;
+
+  /* DESIGN.md §6 — motion. */
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
+  --animate-duration-fast: 120ms;
+}
+
+:root {
+  --dur-fast: 120ms;
+  --dur-base: 240ms;
+  --dur-entrance: 500ms;
+  --dur-page: 320ms;
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
+  --container-max: 1280px;
+  --container-pad: 32px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --container-pad: 24px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Anchor jumps only — no smooth-scroll library anywhere on this site. */
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Visible focus everywhere — DESIGN.md §8 accessibility floor. */
+  :focus-visible {
+    outline: 2px solid var(--tg-fg);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--tg-fg);
+    color: var(--tg-bg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Layout primitives
+--------------------------------------------------------------------------- */
+.tg-container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.tg-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.tg-section {
+  padding-block: 128px;
+}
+
+@media (max-width: 767px) {
+  .tg-section {
+    padding-block: 80px;
+  }
+}
+
+/* DESIGN.md §8 — 768–1024px collapses the asymmetric grid to 8 columns. */
+@media (max-width: 1023px) {
+  .tg-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .tg-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .tg-grid > * {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   DESIGN.md §6 — scroll reveals via native CSS scroll-driven animation.
+
+   The @supports guard is load-bearing, not defensive politeness: the reveal
+   sets opacity:0 as its resting state. In a browser without animation-timeline
+   the animation never runs, so without this guard every revealed section would
+   stay permanently invisible. Inside the guard, unsupported browsers simply
+   never see the opacity:0 rule and render everything statically.
+--------------------------------------------------------------------------- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      opacity: 0;
+      animation: tg-reveal linear both;
+      animation-timeline: view();
+      /* Entry 15% into the viewport, resolved by the end of that range. */
+      animation-range: entry 15% cover 32%;
+    }
+
+    .reveal-stagger > * {
+      opacity: 0;
+      animation: tg-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 32%;
+    }
+  }
+}
+
+@keyframes tg-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   status-line pulse — verified state only.
+--------------------------------------------------------------------------- */
+@keyframes tg-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.status-dot-live {
+  animation: tg-pulse 1600ms var(--ease-hover) infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Concierge "thinking" — the ONLY moving use of the four-color system.
+   Four discrete segments, never a blended gradient.
+--------------------------------------------------------------------------- */
+@keyframes tg-shimmer {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.shimmer-seg {
+  animation: tg-shimmer 1200ms var(--ease-hover) infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Hover contract — DESIGN.md §6
+--------------------------------------------------------------------------- */
+.hover-row {
+  transition: border-color var(--dur-base) var(--ease-hover);
+}
+.hover-row:hover {
+  border-color: var(--tg-border-strong);
+}
+.hover-shift {
+  transition: transform var(--dur-base) var(--ease-hover);
+}
+.hover-row:hover .hover-shift {
+  transform: translateX(4px);
+}
+
+.hover-card {
+  transition:
+    transform var(--dur-base) var(--ease-hover),
+    border-color var(--dur-base) var(--ease-hover);
+}
+.hover-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--tg-border-strong);
+}
+
+/* Text CTAs draw an underline left-to-right via background-size. */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 180ms var(--ease-hover);
+}
+.link-underline:hover,
+.link-underline:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* ---------------------------------------------------------------------------
+   View Transitions — DESIGN.md §6, shared-element build-card -> detail morph.
+--------------------------------------------------------------------------- */
+::view-transition {
+  /* Keep the page clickable while a transition runs. */
+  pointer-events: none;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: var(--dur-page);
+  animation-timing-function: var(--ease-entrance);
+}
+
+/* The nav must not slide with the content — it's the spatial anchor. */
+::view-transition-group(site-nav) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-nav) {
+  display: none;
+}
+::view-transition-new(site-nav) {
+  animation: none;
+}
+
+/* ---------------------------------------------------------------------------
+   prefers-reduced-motion kills every entrance, the status pulse, the
+   closing-CTA echo, the /process pin, and the concierge shimmer.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* The hero load sequence and the closing-CTA echo. !important is required
+     here specifically because Motion writes opacity/transform as inline styles,
+     which a plain rule cannot override. This also pins the elements visible
+     before hydration, so a reduced-motion visitor never sees the hidden state
+     even for a frame. */
+  .tg-seq {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .status-dot-live {
+    animation: none !important;
+    opacity: 0.85;
+  }
+
+  .shimmer-seg {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
