@@ -12,10 +12,14 @@ export const metadata = buildMetadata({
 });
 
 /**
- * The light overview. Feature bullets live only on the detail pages now —
- * CANONICAL §4 reversed the single anchored page because a #fragment is not a
- * separate URL to a search engine, so all four solution keywords were competing
- * for relevance on one page instead of ranking independently.
+ * The light overview. Feature bullets live on the detail pages.
+ *
+ * The design export renders /solutions as one long page with all four sections
+ * inline — it predates CANONICAL §4's reversal to index + four routes, which
+ * exists because a #fragment is not a separate URL to a search engine, so all
+ * four solution keywords were competing for relevance on a single page. The
+ * routing follows CANONICAL; the export's section treatment is applied to the
+ * four detail pages instead.
  */
 export default function SolutionsPage() {
   return (
@@ -36,10 +40,9 @@ export default function SolutionsPage() {
 
       <section className="pb-32">
         <div className="tg-container">
-          {solutions.map((s) => (
-            <SolutionRow key={s.slug} solution={s} />
+          {solutions.map((s, i) => (
+            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} />
           ))}
-          <div className="border-t border-border" />
         </div>
       </section>
 

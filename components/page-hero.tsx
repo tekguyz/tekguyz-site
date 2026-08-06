@@ -1,45 +1,53 @@
-import { cn } from '@/lib/utils';
+import { FlourishMark } from '@/components/flourish-mark';
 import { SignatureStripe } from '@/components/signature-stripe';
 
 /**
- * DESIGN.md §4 — top-of-page treatment for every inner route: /solutions (the
- * index), each /solutions/[slug] detail page, /work, /process, /contact, and
- * /privacy.
+ * Top-of-page treatment for every inner route.
  *
- * Eyebrow -> headline at --text-display (NOT hero scale) -> one-line
- * description at --text-body, muted, capped around 60ch.
+ * Export layout: signature stripe, then a 96px/104px section with the flourish
+ * dots, eyebrow and headline on cols 1-8 and the one-line description on cols
+ * 9-13, both bottom-aligned (`align-items:end`).
  *
- * No media, no flourish-mark — that stays home-only. Left-anchored, like
- * everything on the site except the closing CTA.
+ * The headline is at HERO scale — clamp(2.5rem, 6vw, 4.5rem) — not the display
+ * scale DESIGN.md's prose describes. The export is ground truth here.
  */
 export function PageHero({
   eyebrow,
   headline,
   description,
-  className,
+  paddingBottom = 104,
 }: {
   eyebrow: string;
   headline: string;
   description?: string;
-  className?: string;
+  paddingBottom?: number;
 }) {
   return (
     <>
-      {/* Stripe 1 of the three every page carries. The home hero renders its own;
-          every inner route gets it here, so the count can't drift per page. */}
       <SignatureStripe />
-      <section className={cn('pt-32 pb-16 md:pt-32', className)}>
-        <div className="tg-container">
-          <p className="reveal mb-5 font-mono text-[0.75rem] font-bold tracking-[0.1em] text-secondary uppercase">
-            {eyebrow}
-          </p>
-          <h1 className="reveal max-w-[18ch] text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
-            {headline}
-          </h1>
-          {description && (
-            <p className="reveal mt-6 max-w-[60ch] text-[length:var(--text-body)] text-secondary">
-              {description}
+      <section style={{ paddingTop: 96, paddingBottom }}>
+        <div className="tg-container tg-grid items-end">
+          <div style={{ gridColumn: '1 / 8' }}>
+            <FlourishMark className="mb-9" />
+            <p className="mb-6 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+              {eyebrow}
             </p>
+            <h1
+              className="text-[length:var(--text-hero)] leading-[0.95] font-bold tracking-[-0.045em]"
+              style={{ textWrap: 'pretty' }}
+            >
+              {headline}
+            </h1>
+          </div>
+          {description && (
+            <div style={{ gridColumn: '9 / 13' }}>
+              <p
+                className="text-[length:var(--text-body)] text-secondary"
+                style={{ textWrap: 'pretty' }}
+              >
+                {description}
+              </p>
+            </div>
           )}
         </div>
       </section>
@@ -48,33 +56,40 @@ export function PageHero({
 }
 
 /**
- * The section head used inside pages: eyebrow + display headline on the left
- * (cols 1-7), description bottom-aligned on the right (cols 8-13). The
- * asymmetry and the baseline alignment are compositional choices confirmed
- * against the Claude Design reference, which DESIGN.md leaves open.
+ * The in-page section head: eyebrow + display headline on cols 1-7, description
+ * bottom-aligned on cols 8-13.
  */
 export function SectionHead({
   eyebrow,
   headline,
   description,
+  onInk = false,
 }: {
   eyebrow: string;
   headline: string;
   description?: string;
+  onInk?: boolean;
 }) {
+  const dim = onInk ? '#9CA3AF' : 'var(--tg-secondary)';
   return (
     <div className="tg-container tg-grid">
-      <div className="reveal" style={{ gridColumn: '1 / 7' }}>
-        <p className="mb-5 font-mono text-[0.75rem] font-bold tracking-[0.1em] text-secondary uppercase">
+      <div style={{ gridColumn: '1 / 7' }}>
+        <p
+          className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
+          style={{ color: dim }}
+        >
           {eyebrow}
         </p>
-        <h2 className="text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
+        <h2
+          className="text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]"
+          style={{ color: onInk ? '#F5F5F5' : 'var(--tg-fg)' }}
+        >
           {headline}
         </h2>
       </div>
       {description && (
-        <div className="reveal flex items-end" style={{ gridColumn: '8 / 13' }}>
-          <p className="max-w-[46ch] text-[length:var(--text-body)] text-secondary">
+        <div className="flex items-end" style={{ gridColumn: '8 / 13' }}>
+          <p className="text-[length:var(--text-body)]" style={{ color: dim }}>
             {description}
           </p>
         </div>

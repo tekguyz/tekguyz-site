@@ -2,35 +2,32 @@
 
 import { SignatureStripe } from '@/components/signature-stripe';
 import { ButtonLink } from '@/components/button';
-import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
 import { openConcierge } from '@/components/concierge/concierge-bus';
+import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
 
 /**
- * DESIGN.md §4 — centered, the ONE section permitted to be.
+ * Centered — the one section permitted to be.
  *
- * Deliberately more compact than a standard section, not equal to one:
- * ~64px / 48px mobile. NOT the 128px section rhythm — that leak has happened
- * twice already.
+ * Export values: max-width 760px, padding 64px 32px 48px. Deliberately more
+ * compact than a standard 128px section; that spacing leak has happened twice.
  *
- * button-primary--large (18x32, ~16px text) is the site's one documented size
- * exception. The earlier "still doesn't work" complaint was the button being
- * underweighted against the headline, not the padding, which was already right.
+ * The subhead and the trust line are TWO SEPARATE ELEMENTS. The trust row is
+ * its own flex-wrap row with 3px muted-soft dot separators, so it reflows to
+ * multiple lines on narrow viewports instead of becoming an unreadable run-on.
+ * Merging them into one paragraph was a mistake in an earlier pass.
  *
+ * The button is the site's ONE documented size exception: 18px 32px, 16px text.
  * Beneath it, one quiet text link to the concierge — a lower-commitment path,
- * not a competing CTA. This is the only second entry point the concierge gets.
+ * not a competing CTA, and the concierge's only second entry point.
  *
- * On scroll into view this replays the hero's load sequence once. Per DESIGN.md's
- * "one flourish-mark per page, home only" rule, it replays the sequence's timing
- * without adding a second set of dots.
- *
- * No proof line — it duplicated the homepage proof strip and read as filler.
+ * On scroll into view this replays the hero's load sequence once.
  */
 export function ClosingCta() {
   return (
-    <>
+    <section>
       <SignatureStripe />
-      <section className="px-[var(--container-pad)] py-12 md:py-16">
-        <SequenceRoot trigger="inView" className="mx-auto max-w-[760px] text-center">
+      <SequenceRoot trigger="inView">
+        <div className="mx-auto max-w-[760px] px-8 pt-16 pb-12 text-center">
           <SequenceItem role="headline">
             <h2 className="text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
               Let&rsquo;s talk about your business.
@@ -38,32 +35,52 @@ export function ClosingCta() {
           </SequenceItem>
 
           <SequenceItem role="subhead">
-            <p className="mx-auto mt-5 max-w-[52ch] text-[length:var(--text-body)] text-secondary">
+            <p
+              className="mx-auto mt-6 max-w-[48ch] text-[length:var(--text-body)] text-secondary"
+              style={{ textWrap: 'pretty' }}
+            >
               Tell us what you&rsquo;re working with and what you&rsquo;re trying to fix.
               We&rsquo;ll take it from there.
             </p>
-            <p className="mt-4 text-[0.875rem] text-secondary">
-              Free first conversation · A flat quote before anything starts · We reply within one
-              business day
-            </p>
+          </SequenceItem>
+
+          {/* Its own element, not merged into the subhead. */}
+          <SequenceItem role="trust">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary">
+              <span>Free first conversation</span>
+              <Dot />
+              <span>A flat quote before anything starts</span>
+              <Dot />
+              <span>We reply within one business day</span>
+            </div>
           </SequenceItem>
 
           <SequenceItem role="cta">
-            <div className="mt-9 flex flex-col items-center gap-4">
+            <div className="mt-9 flex flex-col items-center gap-[18px]">
               <ButtonLink href="/contact" size="large">
                 Let&rsquo;s Talk
               </ButtonLink>
               <button
                 type="button"
                 onClick={openConcierge}
-                className="link-underline text-[0.875rem] text-secondary hover:text-fg"
+                className="link-underline cursor-pointer text-[0.875rem] leading-[1.55] text-secondary"
               >
                 Or ask our AI what we&rsquo;d build for you
               </button>
             </div>
           </SequenceItem>
-        </SequenceRoot>
-      </section>
-    </>
+        </div>
+      </SequenceRoot>
+    </section>
+  );
+}
+
+function Dot() {
+  return (
+    <span
+      aria-hidden
+      className="h-[3px] w-[3px] flex-none rounded-full"
+      style={{ background: 'var(--tg-muted-soft)' }}
+    />
   );
 }

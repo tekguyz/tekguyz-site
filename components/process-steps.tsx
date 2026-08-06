@@ -1,24 +1,30 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { NumeralDevice } from '@/components/numeral-device';
-import { STRIPE_ORDER } from '@/config/solutions';
+import { STRIPE_ORDER, accent } from '@/config/solutions';
 import { processSteps } from '@/content/process';
 
 /**
- * DESIGN.md §6 — the ONE pinned moment on the site, /process only.
+ * The ONE pinned moment on the site, /process only.
  *
- * Steps pin while a progress rail advances. It's used exactly once, which is
- * what makes it register; the same logic is why /process is the only page that
- * gets numerals — it's the only genuinely ordered sequence on the site.
+ * Export layout: a sticky rail on cols 1-3 (top 140px) holding a 2px, 300px-tall
+ * hairline track with an ink fill whose height tracks scroll progress, and four
+ * labels distributed across that same 300px. The active label goes ink and 600
+ * weight; the rest stay muted at 400. A "Step 0N of 04" readout sits below.
  *
- * Under prefers-reduced-motion the pin is removed entirely and this degrades to
- * a plain stacked list, which is the accessibility floor CANONICAL §6 requires.
+ * Steps occupy cols 4-13 with 72px/96px padding and hairline separators. Each
+ * carries its numeral absolutely positioned behind the title at 8% opacity in
+ * that step's accent — the only numerals on the site, because /process is the
+ * only genuinely ordered sequence.
+ *
+ * Under prefers-reduced-motion the pin is removed and this degrades to a plain
+ * stacked list, which is the accessibility floor CANONICAL §6 requires.
  */
 export function ProcessSteps() {
+  const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
   const [reduced, setReduced] = useState(false);
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -30,69 +36,94 @@ export function ProcessSteps() {
 
   useEffect(() => {
     if (reduced) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            const i = stepRefs.current.findIndex((el) => el === e.target);
-            if (i >= 0) setActive(i);
-          }
-        }
-      },
-      { rootMargin: '-45% 0px -45% 0px', threshold: 0 },
-    );
-    for (const el of stepRefs.current) if (el) observer.observe(el);
-    return () => observer.disconnect();
+    const onScroll = () => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const p = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
+      setProgress(p);
+      setActive(Math.max(0, Math.min(3, Math.floor(p * 3.999))));
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, [reduced]);
 
   return (
-    <div className="tg-container tg-grid items-start">
-      {/* Progress rail — pinned while the steps scroll past it. */}
+    <div ref={wrapRef} className="tg-container tg-grid items-start pb-32">
       <div
-        className="hidden lg:block lg:sticky lg:top-32 motion-reduce:lg:static"
-        style={{ gridColumn: '1 / 4' }}
+        className="hidden lg:block lg:sticky lg:top-[140px] motion-reduce:lg:static"
+        style={{ gridColumn: '1 / 3' }}
       >
-        <ol className="m-0 flex list-none flex-col gap-4 p-0">
-          {processSteps.map((step, i) => {
-            const on = !reduced && i === active;
-            return (
-              <li key={step.numeral} className="flex items-center gap-4">
+        <div className="flex gap-5">
+          <div
+            className="relative w-[2px] flex-none"
+            style={{ height: 300, background: 'var(--tg-border)' }}
+          >
+            <div
+              className="absolute top-0 left-0 w-[2px]"
+              style={{
+                height: `${Math.round(progress * 100)}%`,
+                background: 'var(--tg-fg)',
+                transition: 'height 120ms linear',
+              }}
+            />
+          </div>
+          <div
+            className="flex flex-col justify-between tabular-nums"
+            style={{ height: 300 }}
+          >
+            {processSteps.map((step, i) => {
+              const on = !reduced && i === active;
+              return (
                 <span
-                  aria-hidden
-                  className="h-[2px] transition-all duration-[var(--dur-base)]"
+                  key={step.numeral}
+                  className="text-[0.875rem] leading-[1.55] tracking-[0.04em] transition-colors duration-[120ms]"
                   style={{
-                    width: on ? 32 : 16,
-                    background: on ? 'var(--tg-fg)' : 'var(--tg-border-strong)',
+                    fontWeight: on ? 600 : 400,
+                    color: on ? 'var(--tg-fg)' : 'var(--tg-secondary)',
                   }}
-                />
-                <span
-                  className="font-mono text-[0.875rem] tabular-nums transition-colors duration-[var(--dur-base)]"
-                  style={{ color: on ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
                 >
                   {step.numeral} {step.title}
                 </span>
-              </li>
-            );
-          })}
-        </ol>
+              );
+            })}
+          </div>
+        </div>
+        <p className="mt-9 text-[0.875rem] leading-[1.55] tabular-nums text-secondary">
+          Step {String(active + 1).padStart(2, '0')} of 04
+        </p>
       </div>
 
-      <div className="flex flex-col gap-24 lg:gap-40" style={{ gridColumn: '5 / 13' }}>
+      <div style={{ gridColumn: '4 / 13' }}>
         {processSteps.map((step, i) => (
           <div
             key={step.numeral}
-            ref={(el) => {
-              stepRefs.current[i] = el;
-            }}
-            className="reveal relative"
+            className={`relative border-t border-border pt-18 pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
           >
-            <NumeralDevice numeral={step.numeral} accentKey={STRIPE_ORDER[i]!} />
-            <h2 className="relative text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
-              {step.title}
-            </h2>
-            <p className="relative mt-6 max-w-[62ch] text-[length:var(--text-body)]">
-              {step.body}
-            </p>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -left-4 top-9 text-[length:var(--text-hero)] leading-none font-bold tracking-[-0.045em] tabular-nums select-none"
+              style={{ color: accent(STRIPE_ORDER[i]!).dot, opacity: 0.08 }}
+            >
+              {step.numeral}
+            </span>
+            <div className="relative">
+              <h2 className="text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]">
+                {step.title}
+              </h2>
+              <p
+                className="mt-7 max-w-[58ch] text-[length:var(--text-body)] text-secondary"
+                style={{ textWrap: 'pretty' }}
+              >
+                {step.body}
+              </p>
+            </div>
           </div>
         ))}
       </div>

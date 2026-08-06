@@ -39,8 +39,16 @@ const contactSchema = z.object({
   projectType: z.string().min(1, 'Please select a project type'),
   budget: z.string().optional(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
-  /** Honeypot. Must stay blank. Deliberately not a real CRM field name. */
-  hp_confirm: z.string().max(0).optional(),
+  /**
+   * Honeypot. Deliberately not a real CRM field name.
+   *
+   * NOT `.max(0)`. The ported code declared it that way, which meant a filled
+   * honeypot failed schema parsing and returned "Invalid fields" — so the
+   * silent-accept branch below was unreachable dead code, and a bot got a clear
+   * signal that it had been caught. Parsing accepts any value; the explicit
+   * check underneath is what does the work.
+   */
+  hp_confirm: z.string().optional(),
   /** Paired with a minimum-fill-time check. */
   timestamp: z.number().optional(),
 });
@@ -63,8 +71,11 @@ export async function sendContactEmail(
   const { name, email, company, phone, website, projectType, budget, message, hp_confirm, timestamp } =
     validatedFields.data;
 
-  // Silently accept bots — don't tip them off that they were caught.
-  if (hp_confirm && hp_confirm.length > 0) return { success: true };
+  // Silently accept bots — report success, dispatch nothing. Anything that
+  // looked like an error here would tell a bot exactly which field caught it.
+  if (hp_confirm && hp_confirm.trim().length > 0) {
+    return { success: true };
+  }
 
   if (timestamp && Date.now() - timestamp < 2000) {
     return { success: false, error: GENERIC_ERROR };
@@ -151,13 +162,14 @@ export async function sendContactEmail(
 
     if (crmResult.status === 'rejected') {
       console.error('CRM Webhook error:', crmResult.reason);
-    } else if (
-      crmResult.status === 'fulfilled' &&
-      crmResult.value &&
-      'ok' in crmResult.value &&
-      !crmResult.value.ok
-    ) {
-      console.error('CRM Webhook non-ok response:', crmResult.value.status);
+    } else if (crmResult.status === 'fulfilled' && crmResult.value && 'ok' in crmResult.value) {
+      // Log the outcome either way — a silent CRM is how a lead goes missing
+      // without anyone noticing, and this is the only server-side trace of it.
+      if (!crmResult.value.ok) {
+        console.error('CRM Webhook non-ok response:', crmResult.value.status);
+      } else {
+        console.info(`[contact] CRM accepted (${crmResult.value.status}) source="${source}"`);
+      }
     }
 
     // A failed confirmation must never fail the submission — the lead is
@@ -166,6 +178,8 @@ export async function sendContactEmail(
       console.error('Confirmation email dispatch failed:', confirmResult.reason);
     } else if (confirmResult.status === 'fulfilled' && confirmResult.value.error) {
       console.error('Confirmation email error:', confirmResult.value.error);
+    } else if (confirmResult.status === 'fulfilled') {
+      console.info(`[contact] confirmation sent id=${confirmResult.value.data?.id}`);
     }
 
     // The internal notification is the one that decides success: if nobody at
@@ -176,6 +190,7 @@ export async function sendContactEmail(
         console.error('Resend API error:', error);
         return { success: false, error: GENERIC_ERROR };
       }
+      console.info(`[contact] notification sent id=${notifyResult.value.data?.id}`);
       return { success: true };
     }
 

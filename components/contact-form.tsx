@@ -16,17 +16,19 @@ import {
 import { site } from '@/lib/site';
 
 /**
- * COPY.md — two steps.
+ * Two steps, inside a bordered card: 1px hairline, 16px radius, 40px padding,
+ * with a header row carrying the step title and an "01 / 02" counter over a
+ * 24px-padded rule.
  *
  * Step 1 qualifies (interest, name, email); step 2 collects the detail. The
  * split exists so the first ask is three short fields rather than a wall.
  *
- * The Area of Interest arrives pre-selected from a solution CTA's
- * ?interest= param, and is SHOWN selected rather than hidden — the visitor
- * should be able to see and change what the link assumed about them.
+ * Area of Interest arrives pre-selected from a solution CTA's ?interest= param
+ * and is SHOWN selected rather than hidden — the visitor should be able to see
+ * and change what the link assumed about them.
  *
- * Both anti-bot measures are invisible: the honeypot (named hp_confirm, NEVER
- * `website`, which is a real CRM column) and a minimum fill time.
+ * Both anti-bot measures are invisible: the honeypot — named hp_confirm, NEVER
+ * `website`, which is a real CRM column — and a minimum fill time.
  */
 
 const schema = z.object({
@@ -38,16 +40,20 @@ const schema = z.object({
   website: z.string().optional(),
   message: z.string().min(10, 'Tell us a little more — at least 10 characters'),
   budget: z.string().optional(),
-  hp_confirm: z.string().max(0).optional(),
+  // Not `.max(0)` on the client either: a client-side rule on a hidden field
+  // makes handleSubmit fail silently and the request never reaches the server,
+  // so the server's silent-accept path would never actually run.
+  hp_confirm: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-const inputClass =
-  'h-11 w-full rounded-[4px] border border-border bg-transparent px-3 text-[0.9375rem] ' +
-  'outline-none transition-colors duration-[var(--dur-base)] focus-visible:border-border-strong';
+const field =
+  'w-full h-11 px-3 rounded-[4px] border border-border bg-transparent text-[1rem] ' +
+  'outline-none transition-colors duration-[240ms] focus-visible:border-border-strong';
 
-const labelClass = 'mb-2 block text-[0.875rem] text-secondary';
+const label =
+  'block mb-[10px] text-[0.75rem] font-bold tracking-[0.1em] uppercase leading-[1.4] text-secondary';
 
 export function ContactForm() {
   const searchParams = useSearchParams();
@@ -55,9 +61,8 @@ export function ContactForm() {
   const [sent, setSent] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const mountedAt = useRef(Date.now());
-  const step2Ref = useRef<HTMLFieldSetElement>(null);
+  const step2Ref = useRef<HTMLDivElement>(null);
 
-  // Map ?interest=custom-web-apps -> the matching option value.
   const presetInterest = useMemo(() => {
     const slug = searchParams.get('interest');
     if (!slug) return '';
@@ -89,9 +94,8 @@ export function ContactForm() {
     if (ok) setStep(2);
   }
 
-  // Move focus into step 2 once it has actually rendered, so a keyboard user
-  // isn't dropped back to <body> and forced to tab from the top of the page.
-  // A rAF after setStep fires before React commits, which left focus on body.
+  // Focus into step 2 once it has actually rendered, so a keyboard user isn't
+  // dropped back to <body>. A rAF after setStep fires before React commits.
   useEffect(() => {
     if (step === 2) step2Ref.current?.querySelector('input')?.focus();
   }, [step]);
@@ -99,197 +103,197 @@ export function ContactForm() {
   async function onSubmit(values: FormValues) {
     setServerError(null);
     const result = await sendContactEmail({ ...values, timestamp: mountedAt.current });
-    if (result.success) {
-      setSent(true);
-    } else {
-      setServerError(result.error ?? 'Something went wrong.');
-    }
-  }
-
-  if (sent) {
-    return (
-      <div
-        role="status"
-        className="rounded-[12px] border border-border bg-surface p-8"
-      >
-        <p className="flex items-center gap-3 text-[length:var(--text-title)] font-semibold">
-          <span
-            aria-hidden
-            className="h-[8px] w-[8px] flex-none rounded-full"
-            style={{ background: 'var(--tg-success)' }}
-          />
-          Message sent.
-        </p>
-        <p className="mt-3 text-[length:var(--text-body)] text-secondary">
-          We&rsquo;ll reply within one business day.
-        </p>
-      </div>
-    );
+    if (result.success) setSent(true);
+    else setServerError(result.error ?? 'Something went wrong.');
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      {/* Honeypot. Deliberately NOT named `website` — that is a real CRM column,
-          and the collision silently dropped legitimate leads as suspected bots. */}
-      <div aria-hidden className="absolute h-px w-px overflow-hidden opacity-0">
-        <label htmlFor="hp_confirm">Leave this field empty</label>
-        <input id="hp_confirm" type="text" tabIndex={-1} autoComplete="off" {...register('hp_confirm')} />
-      </div>
-
-      <ol className="m-0 mb-8 flex list-none items-center gap-3 p-0 font-mono text-[0.75rem] tracking-[0.1em] text-secondary uppercase">
-        <li style={{ color: step === 1 ? 'var(--tg-fg)' : undefined }}>01 What you need</li>
-        <li aria-hidden>—</li>
-        <li style={{ color: step === 2 ? 'var(--tg-fg)' : undefined }}>02 Tell us more</li>
-      </ol>
-
-      {step === 1 ? (
-        <fieldset className="m-0 border-0 p-0">
-          <legend className="sr-only">What do you need?</legend>
-
-          <div className="mb-6">
-            <label htmlFor="projectType" className={labelClass}>
-              Area of Interest
-            </label>
-            <select id="projectType" className={inputClass} {...register('projectType')}>
-              <option value="">Select one</option>
-              {interestOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.value}
-                </option>
-              ))}
-            </select>
-            {errors.projectType && <FieldError>{errors.projectType.message}</FieldError>}
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="name" className={labelClass}>
-              Name
-            </label>
-            <input id="name" className={inputClass} placeholder="Your name" {...register('name')} />
-            {errors.name && <FieldError>{errors.name.message}</FieldError>}
-          </div>
-
-          <div className="mb-8">
-            <label htmlFor="email" className={labelClass}>
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className={inputClass}
-              placeholder="you@company.com"
-              {...register('email')}
+    <div className="rounded-[16px] border border-border p-10">
+      {sent ? (
+        <div role="status">
+          <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
+            <span
+              aria-hidden
+              className="h-[6px] w-[6px] flex-none rounded-full"
+              style={{ background: 'var(--tg-success)' }}
             />
-            {errors.email && <FieldError>{errors.email.message}</FieldError>}
+            <span className="font-semibold">Message sent</span>
+          </div>
+          <p className="mt-[14px] text-[length:var(--text-body)] text-secondary">
+            We&rsquo;ll reply within one business day.
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {/* Honeypot. Deliberately NOT named `website` — that is a real CRM
+              column, and the collision silently dropped legitimate leads. */}
+          <div aria-hidden className="absolute h-px w-px overflow-hidden opacity-0">
+            <label htmlFor="hp_confirm">Leave this field empty</label>
+            <input
+              id="hp_confirm"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              {...register('hp_confirm')}
+            />
           </div>
 
-          <Button type="button" onClick={goToStep2}>
-            Continue
-          </Button>
-        </fieldset>
-      ) : (
-        <fieldset ref={step2Ref} className="m-0 border-0 p-0">
-          <legend className="sr-only">Tell us more</legend>
+          <div className="flex items-center justify-between gap-4 border-b border-border pb-6">
+            <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
+              {step === 1 ? 'What do you need?' : 'Tell us more.'}
+            </p>
+            <span className="text-[0.875rem] tracking-[0.04em] tabular-nums text-secondary">
+              0{step} / 02
+            </span>
+          </div>
 
-          <div className="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <label htmlFor="company" className={labelClass}>
-                Company <span className="text-secondary">(optional)</span>
-              </label>
-              <input
-                id="company"
-                className={inputClass}
-                placeholder="Company name"
-                {...register('company')}
-              />
+          {step === 1 ? (
+            <div className="mt-8 flex flex-col gap-6">
+              <div>
+                <label htmlFor="projectType" className={label}>
+                  Area of Interest
+                </label>
+                <select id="projectType" className={field} {...register('projectType')}>
+                  <option value="">Select one</option>
+                  {interestOptions.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.value}
+                    </option>
+                  ))}
+                </select>
+                {errors.projectType && <FieldError>{errors.projectType.message}</FieldError>}
+              </div>
+
+              <div>
+                <label htmlFor="name" className={label}>
+                  Name
+                </label>
+                <input id="name" className={field} placeholder="Your name" {...register('name')} />
+                {errors.name && <FieldError>{errors.name.message}</FieldError>}
+              </div>
+
+              <div>
+                <label htmlFor="email" className={label}>
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className={field}
+                  placeholder="you@company.com"
+                  {...register('email')}
+                />
+                {errors.email && <FieldError>{errors.email.message}</FieldError>}
+              </div>
+
+              <Button type="button" size="form" onClick={goToStep2} className="mt-2 self-start">
+                Continue
+              </Button>
             </div>
-            <div>
-              <label htmlFor="phone" className={labelClass}>
-                Phone <span className="text-secondary">(optional)</span>
-              </label>
-              <input
-                id="phone"
-                type="tel"
-                className={inputClass}
-                placeholder="(xxx) xxx-xxxx"
-                aria-describedby="phone-hint"
-                {...register('phone')}
-              />
-              <p id="phone-hint" className="mt-2 text-[0.75rem] text-secondary">
-                A second way to reach you, in case email&rsquo;s slow on your end.
+          ) : (
+            <div ref={step2Ref} className="mt-8 flex flex-col gap-6">
+              <div>
+                <label htmlFor="company" className={label}>
+                  Company <Optional />
+                </label>
+                <input
+                  id="company"
+                  className={field}
+                  placeholder="Company name"
+                  {...register('company')}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className={label}>
+                  Phone <Optional />
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  className={field}
+                  placeholder="(xxx) xxx-xxxx"
+                  aria-describedby="phone-hint"
+                  {...register('phone')}
+                />
+                <p id="phone-hint" className="mt-2 text-[0.75rem] text-secondary">
+                  A second way to reach you, in case email&rsquo;s slow on your end.
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="website" className={label}>
+                  Website <Optional />
+                </label>
+                <input
+                  id="website"
+                  className={field}
+                  placeholder="yoursite.com"
+                  {...register('website')}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="message" className={label}>
+                  Project details
+                </label>
+                <textarea
+                  id="message"
+                  rows={5}
+                  className={`${field} h-auto resize-y py-3 leading-[1.6]`}
+                  placeholder={placeholder}
+                  {...register('message')}
+                />
+                {errors.message && <FieldError>{errors.message.message}</FieldError>}
+              </div>
+
+              <div>
+                <label htmlFor="budget" className={label}>
+                  Estimated budget <Optional />
+                </label>
+                <select id="budget" className={`${field} tabular-nums`} {...register('budget')}>
+                  <option value="">Select one</option>
+                  {budgetOptions.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {serverError && (
+                <p role="alert" className="text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>
+                  {serverError} Or email us directly at{' '}
+                  <a href={`mailto:${site.publicEmail}`} className="link-underline">
+                    {site.publicEmail}
+                  </a>
+                  .
+                </p>
+              )}
+
+              <div className="mt-2 flex items-center gap-6">
+                <Button type="button" variant="secondary" size="nav" onClick={() => setStep(1)}>
+                  Back
+                </Button>
+                <Button type="submit" size="form" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending…' : 'Send Inquiry'}
+                </Button>
+              </div>
+
+              <p className="text-[0.875rem] leading-[1.55] text-secondary">
+                We reply within one business day.
               </p>
             </div>
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="website" className={labelClass}>
-              Website <span className="text-secondary">(optional)</span>
-            </label>
-            <input
-              id="website"
-              className={inputClass}
-              placeholder="yoursite.com"
-              {...register('website')}
-            />
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="message" className={labelClass}>
-              Project details
-            </label>
-            <textarea
-              id="message"
-              rows={5}
-              className={`${inputClass} h-auto resize-y py-3`}
-              placeholder={placeholder}
-              {...register('message')}
-            />
-            {errors.message && <FieldError>{errors.message.message}</FieldError>}
-          </div>
-
-          <div className="mb-8">
-            <label htmlFor="budget" className={labelClass}>
-              Estimated budget <span className="text-secondary">(optional)</span>
-            </label>
-            <select id="budget" className={inputClass} {...register('budget')}>
-              <option value="">Select one</option>
-              {budgetOptions.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {serverError && (
-            <p role="alert" className="mb-6 text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>
-              {serverError} Or email us directly at{' '}
-              <a href={`mailto:${site.publicEmail}`} className="link-underline">
-                {site.publicEmail}
-              </a>
-              .
-            </p>
           )}
-
-          <div className="flex flex-wrap items-center gap-4">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Sending…' : 'Send Inquiry'}
-            </Button>
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="link-underline text-[0.875rem] text-secondary hover:text-fg"
-            >
-              Back
-            </button>
-          </div>
-
-          <p className="mt-4 text-[0.875rem] text-secondary">
-            We reply within one business day.
-          </p>
-        </fieldset>
+        </form>
       )}
-    </form>
+    </div>
+  );
+}
+
+function Optional() {
+  return (
+    <span className="font-normal tracking-normal normal-case text-secondary">(optional)</span>
   );
 }
 

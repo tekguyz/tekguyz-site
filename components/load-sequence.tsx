@@ -4,41 +4,41 @@ import { motion, type Variants } from 'motion/react';
 import { useEffect, useState, type ReactNode } from 'react';
 
 /**
- * DESIGN.md §6 — the hero load sequence, and its closing-CTA echo.
+ * The hero load sequence and its closing-CTA echo.
  *
- *   flourish dots stagger 60ms apart
- *     -> headline fades up (32px -> 0)
- *     -> subhead
- *     -> CTA row
- *     -> hero media scales 0.97 -> 1 CONCURRENTLY with the CTA row, not after.
+ * Timings are the export's literal animation-delays, which resolve the
+ * choreography DESIGN.md describes in prose:
  *
- * Resolves under ~900ms. The hero runs it on mount and never re-triggers; the
- * closing CTA replays the identical sequence on scroll-into-view, once.
+ *   dots      0 / 60 / 120 / 180ms   (60ms stagger, fade)
+ *   headline  360ms                  (+180ms after the last dot)
+ *   subhead   440ms
+ *   trust     480ms
+ *   cta       600ms
+ *   media     600ms                  (concurrent with the CTA row, not chained)
  *
- * This is the one place Motion earns its inclusion — CSS scroll-driven
- * animations handle every other entrance on the site.
+ * Every element uses the same 500ms cubic-bezier(.16,1,.3,1) and a 32px rise,
+ * matching the export's `tgUp` keyframe. Resolves at ~1.1s.
  *
- * REDUCED MOTION, and why it's done this way: the variants below are constant,
- * never branched on a media query during render. Motion's useReducedMotion()
- * reads the query synchronously, which resolves false on the server and true on
- * a client that has the preference set — a guaranteed hydration mismatch, and
- * one that actually fired here. Instead the preference is read after mount and
- * only collapses the transition DURATION to zero, while the `tg-seq` CSS rule
- * in globals.css pins these elements visible before JS ever runs. That covers
- * both the pre-hydration paint and Motion's inline styles.
+ * REDUCED MOTION: the variants below are constant and never branched on a media
+ * query during render. Motion's useReducedMotion() reads the query
+ * synchronously, resolving false on the server and true on a client that has
+ * the preference set — a guaranteed hydration mismatch, and one that actually
+ * fired here. The preference is read after mount and only collapses the
+ * transition duration to zero, while the `tg-seq` rule in globals.css pins
+ * these elements visible before JS runs at all.
  */
 
-const STEP = {
-  dot: (i: number) => i * 0.06,
+const DELAY = {
   headline: 0.36,
   subhead: 0.44,
-  cta: 0.52,
-  media: 0.52,
+  trust: 0.48,
+  cta: 0.6,
+  media: 0.6,
 } as const;
 
-export type SequenceRole = 'headline' | 'subhead' | 'cta' | 'media';
+export type SequenceRole = keyof typeof DELAY;
 
-const DURATION = 0.36;
+const DURATION = 0.5;
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /** Mount-gated so the first client render always matches the server's. */
@@ -57,7 +57,7 @@ function useReducedAfterMount(): boolean {
 function variantsFor(role: SequenceRole, instant: boolean): Variants {
   const transition = instant
     ? { duration: 0 }
-    : { duration: DURATION, ease: EASE, delay: STEP[role] };
+    : { duration: DURATION, ease: EASE, delay: DELAY[role] };
 
   if (role === 'media') {
     return {
@@ -66,7 +66,7 @@ function variantsFor(role: SequenceRole, instant: boolean): Variants {
     };
   }
   return {
-    hidden: { opacity: 0, y: role === 'headline' ? 32 : 16 },
+    hidden: { opacity: 0, y: 32 },
     shown: { opacity: 1, y: 0, transition },
   };
 }
@@ -125,22 +125,23 @@ export function SequenceDots({ className }: { className?: string }) {
   const instant = useReducedAfterMount();
 
   return (
-    <div aria-hidden className={className} style={{ display: 'flex', gap: '10px' }}>
+    <div aria-hidden className={className} style={{ display: 'flex', gap: '9px' }}>
       {DOTS.map((color, i) => (
         <motion.span
           key={color}
           className="tg-seq"
           variants={{
-            hidden: { opacity: 0, scale: 0.4 },
+            hidden: { opacity: 0 },
             shown: {
               opacity: 1,
-              scale: 1,
-              transition: instant ? { duration: 0 } : { duration: 0.24, ease: EASE, delay: STEP.dot(i) },
+              transition: instant
+                ? { duration: 0 }
+                : { duration: DURATION, ease: EASE, delay: i * 0.06 },
             },
           }}
           style={{
-            width: '10px',
-            height: '10px',
+            width: '9px',
+            height: '9px',
             borderRadius: '999px',
             background: color,
             display: 'block',

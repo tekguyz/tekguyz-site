@@ -1,41 +1,38 @@
 import { STRIPE_ORDER, accent } from '@/config/solutions';
 
 /**
- * DESIGN.md §4 — the "thinking" indicator.
+ * The "thinking" indicator — the ONLY moving use of the four-colour system on
+ * the entire site.
  *
- * A 3px bar of the same four equal segments as the signature stripe, in the same
- * fixed blue -> violet -> amber -> teal order, with a slow shimmer sweeping left
- * to right across them on a 1200ms loop. Resolves to nothing once the reply
- * arrives. prefers-reduced-motion falls back to a static four-segment bar.
+ * Export values: a 72px x 3px four-column grid sitting INLINE beside the word
+ * "Thinking" with a 10px gap. It is small and typographic, not a full-width
+ * progress bar. Segments hold at 0.2 opacity and flash to 1 briefly, staggered
+ * 120ms apart, on a 1200ms loop — that stagger is what reads as a sweep without
+ * any gradient being involved.
  *
- * THIS IS THE ONLY MOVING USE OF THE FOUR-COLOR SYSTEM ON THE ENTIRE SITE.
- * It's earned here because the AI is genuinely doing work in that moment, so the
- * signal means something. Do not extend it anywhere else — not around a button,
- * not as a page-load flourish, not as ambient decoration. A four-color moment
- * that appears in more than one place stops being a signature and becomes
- * wallpaper.
+ * Do not extend this pattern anywhere else. A four-colour moment that shows up
+ * in more than one place stops being a signature and becomes wallpaper, which
+ * is the failure mode the rest of the system exists to avoid.
  *
- * Four discrete segments, never a blended gradient.
+ * prefers-reduced-motion falls back to a static four-segment bar (handled in
+ * globals.css), never a spinner.
  */
 export function ThinkingStripe() {
   return (
     <div
       role="status"
-      aria-label="Thinking"
-      className="flex h-[3px] w-full max-w-[180px] overflow-hidden rounded-full"
+      className="flex items-center gap-[10px] text-[0.875rem] leading-[1.55] tracking-[0.04em] text-secondary"
     >
-      {STRIPE_ORDER.map((key, i) => (
-        <span
-          key={key}
-          className="shimmer-seg h-full flex-1"
-          style={{
-            background: accent(key).dot,
-            // Staggering the same 1200ms loop across four segments is what
-            // reads as a sweep, without a gradient.
-            animationDelay: `${i * 180}ms`,
-          }}
-        />
-      ))}
+      <span aria-hidden className="grid h-[3px] w-[72px] flex-none grid-cols-4">
+        {STRIPE_ORDER.map((key, i) => (
+          <span
+            key={key}
+            className="shimmer-seg"
+            style={{ background: accent(key).dot, animationDelay: `${i * 120}ms` }}
+          />
+        ))}
+      </span>
+      <span>Thinking</span>
     </div>
   );
 }

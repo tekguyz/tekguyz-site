@@ -3,25 +3,27 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LogoLockup } from '@/components/logo-lockup';
+import { ConnectedNodes } from '@/components/logo-lockup';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ButtonLink } from '@/components/button';
 import { AccentDot } from '@/components/solution-tag';
 import { solutions } from '@/content/solutions';
+import { site } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 /**
- * DESIGN.md §4 — sticky. Transparent with no fill and no border at scroll 0.
- * Past 24px: bg at 80% opacity, backdrop-blur(12px), hairline border-bottom
- * fading in over 200ms. Those values live on --tg-nav-* in globals.css and are
- * switched by the data-scrolled attribute, so there is no inline style churn.
+ * Sticky, 76px tall. Transparent with no fill and no border at scroll 0; past
+ * 24px it fills to 82% opacity with a 14px backdrop blur and the hairline
+ * border fades in. Those values live on --tg-nav-* and switch on data-scrolled.
  *
- * Active-page indicator: 2px ink underline under the current link, width
- * matching the link, no accent color.
+ * The active-page indicator is an animated ::after rule (scaleX from the left,
+ * 240ms) sitting 10px below the link — not a static bar. 2px, ink, never accent.
  *
- * Mobile: hamburger, full-screen drawer, Solutions expands inline to the four
- * accent-dot entries — which are now four ROUTES, not anchors (CANONICAL §4
- * reversed the single anchored page).
+ * The "Let's Talk" CTA is 14px 24px — the only button size in the nav.
+ *
+ * Mobile: hamburger, full-screen drawer, Solutions expanding inline to the four
+ * accent-dot entries, which are four ROUTES (CANONICAL reversed the single
+ * anchored page).
  */
 
 const LINKS = [
@@ -44,13 +46,11 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close the drawer on navigation.
   useEffect(() => {
     setOpen(false);
     setSolutionsOpen(false);
   }, [pathname]);
 
-  // Lock body scroll while the full-screen drawer is open.
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
     return () => {
@@ -65,110 +65,100 @@ export function Nav() {
     <header
       data-scrolled={scrolled ? 'true' : 'false'}
       style={{ viewTransitionName: 'site-nav' }}
-      className="sticky top-0 z-50 w-full"
+      className="sticky top-0 z-[60] w-full border-b transition-[background-color,border-color,backdrop-filter] duration-[240ms] [transition-timing-function:var(--ease-hover)]"
     >
       <div
-        className="w-full border-b transition-[background-color,border-color,backdrop-filter] duration-200"
+        className="absolute inset-0 -z-10 border-b"
         style={{
           backgroundColor: 'var(--tg-nav-bg)',
           borderBottomColor: 'var(--tg-nav-border)',
           backdropFilter: 'blur(var(--tg-nav-blur))',
           WebkitBackdropFilter: 'blur(var(--tg-nav-blur))',
+          transition: 'background-color 240ms, border-color 240ms, backdrop-filter 240ms',
         }}
-      >
-        <div className="tg-container flex h-[72px] items-center justify-between gap-6">
-          <Link href="/" aria-label="TEKGUYZ home" className="flex-none">
-            <LogoLockup size={26} />
-          </Link>
+      />
 
-          <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
-            {LINKS.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={isActive(l.href) ? 'page' : undefined}
-                className="relative py-2 text-[0.875rem] font-medium text-secondary transition-colors duration-[var(--dur-base)] hover:text-fg"
-                style={isActive(l.href) ? { color: 'var(--tg-fg)' } : undefined}
-              >
-                {l.label}
-                {isActive(l.href) && (
-                  <span
-                    aria-hidden
-                    className="absolute right-0 -bottom-[2px] left-0 h-[2px]"
-                    style={{ background: 'var(--tg-fg)' }}
-                  />
-                )}
-              </Link>
-            ))}
-          </nav>
+      <div className="tg-container flex h-[76px] items-center gap-10">
+        <Link href="/" aria-label="TEKGUYZ home" className="flex flex-none items-center gap-[11px]">
+          <ConnectedNodes size={26} />
+          <span className="text-[19px] font-extrabold tracking-[-0.025em]">TEKGUYZ</span>
+        </Link>
 
-          <div className="flex flex-none items-center gap-1 md:gap-2">
-            <ThemeToggle />
-            <ButtonLink href="/contact" className="hidden md:inline-flex">
-              Let&rsquo;s Talk
-            </ButtonLink>
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-controls="mobile-drawer"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-[8px] text-secondary hover:text-fg md:hidden"
+        <nav aria-label="Main" className="ml-auto hidden items-center gap-[34px] md:flex">
+          {LINKS.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              aria-current={isActive(l.href) ? 'page' : undefined}
+              data-navlink
+              data-on={isActive(l.href) ? 'true' : 'false'}
+              className="text-[14.5px] font-medium transition-colors duration-[120ms]"
+              style={{ color: isActive(l.href) ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                aria-hidden
-              >
-                {open ? (
-                  <path d="M18 6 6 18M6 6l12 12" />
-                ) : (
-                  <path d="M3 6h18M3 12h18M3 18h18" />
-                )}
-              </svg>
-            </button>
-          </div>
+              {l.label}
+            </Link>
+          ))}
+          <ThemeToggle />
+          <ButtonLink href="/contact" size="nav">
+            Let&rsquo;s Talk
+          </ButtonLink>
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-drawer"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            className="flex h-11 w-11 cursor-pointer flex-col items-end justify-center gap-[5px] p-0"
+          >
+            {open ? (
+              <span className="text-[17px] leading-none">✕</span>
+            ) : (
+              <>
+                <span className="block h-[1.5px] w-[22px]" style={{ background: 'var(--tg-fg)' }} />
+                <span className="block h-[1.5px] w-[22px]" style={{ background: 'var(--tg-fg)' }} />
+              </>
+            )}
+          </button>
         </div>
       </div>
 
       {open && (
         <div
           id="mobile-drawer"
-          className="fixed inset-0 top-[72px] z-40 overflow-y-auto bg-bg md:hidden"
+          className="fixed inset-0 top-[76px] z-40 flex flex-col bg-bg md:hidden"
         >
-          <nav aria-label="Mobile" className="tg-container flex flex-col py-8">
-            <button
-              type="button"
-              onClick={() => setSolutionsOpen((v) => !v)}
-              aria-expanded={solutionsOpen}
-              className="flex items-center justify-between border-b border-border py-5 text-left text-[length:var(--text-title)] font-semibold"
-            >
-              Solutions
-              <span aria-hidden className="text-secondary">
-                {solutionsOpen ? '−' : '+'}
-              </span>
-            </button>
-
-            {solutionsOpen && (
-              <ul className="m-0 list-none border-b border-border py-2 pl-1">
-                {solutions.map((s) => (
-                  <li key={s.slug}>
+          <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-[var(--container-pad)] pt-2">
+            <div className="border-b border-border py-5">
+              <button
+                type="button"
+                onClick={() => setSolutionsOpen((v) => !v)}
+                aria-expanded={solutionsOpen}
+                className="flex w-full items-center justify-between text-left text-[2rem] leading-[1.1] font-semibold tracking-[-0.025em]"
+              >
+                Solutions
+                <span aria-hidden className="text-[1.125rem] leading-none text-secondary">
+                  {solutionsOpen ? '−' : '+'}
+                </span>
+              </button>
+              {solutionsOpen && (
+                <div className="mt-3 flex flex-col">
+                  {solutions.map((s) => (
                     <Link
+                      key={s.slug}
                       href={`/solutions/${s.slug}`}
-                      className="flex items-center gap-3 py-3 text-[1.0625rem] text-secondary"
+                      className="flex h-12 items-center gap-[14px] text-[1.0625rem] text-secondary"
                     >
                       <AccentDot solution={s.slug} size={8} />
                       {s.name}
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
 
             {LINKS.filter((l) => l.href !== '/solutions').map((l) => (
               <Link
@@ -176,18 +166,26 @@ export function Nav() {
                 href={l.href}
                 aria-current={isActive(l.href) ? 'page' : undefined}
                 className={cn(
-                  'border-b border-border py-5 text-[length:var(--text-title)] font-semibold',
-                  isActive(l.href) ? 'text-fg' : 'text-secondary',
+                  'flex h-[72px] items-center border-b border-border text-[2rem] leading-[1.1] font-semibold tracking-[-0.025em]',
+                  isActive(l.href) ? 'text-fg' : 'text-fg',
                 )}
               >
                 {l.label}
               </Link>
             ))}
+          </nav>
 
-            <ButtonLink href="/contact" className="mt-8 w-full">
+          <div className="flex flex-none flex-col gap-4 border-t border-border p-6">
+            <ButtonLink href="/contact" className="h-[52px] w-full">
               Let&rsquo;s Talk
             </ButtonLink>
-          </nav>
+            <a
+              href={`mailto:${site.publicEmail}`}
+              className="link-underline self-start text-[0.875rem] text-secondary"
+            >
+              {site.publicEmail}
+            </a>
+          </div>
         </div>
       )}
     </header>

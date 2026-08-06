@@ -1,15 +1,19 @@
 import Link from 'next/link';
+import { ViewTransition } from 'react';
 import { SignatureStripe } from '@/components/signature-stripe';
 import { HomeHero } from '@/components/home-hero';
 import { SectionHead } from '@/components/page-hero';
 import { SolutionRow } from '@/components/solution-row';
-import { CaseStudyRow } from '@/components/case-study-row';
+import { Frame } from '@/components/live-frame';
+import { StatusLine } from '@/components/status-line';
+import { PullQuote } from '@/components/pull-quote';
+import { SolutionTag } from '@/components/solution-tag';
+import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
 import { solutions } from '@/content/solutions';
-import { featured, getWork } from '@/content/work';
-import { processSteps, testimonial } from '@/content/process';
-import { getAllStatuses } from '@/lib/status';
-import { site } from '@/lib/site';
+import { featured, getWork, type CaseStudy } from '@/content/work';
+import { testimonial } from '@/content/process';
+import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/seo';
 
 export const metadata = buildMetadata({
@@ -22,7 +26,6 @@ export const metadata = buildMetadata({
 export default async function HomePage() {
   const statuses = await getAllStatuses();
   const hero = getWork('ai-voice-receptionist')!;
-  const contextBuild = getWork(testimonial.contextSlug)!;
 
   return (
     <>
@@ -35,17 +38,16 @@ export default async function HomePage() {
       <SignatureStripe />
 
       <HomeHero
-        // The hero's own 16:9 asset, distinct from the compact-context still.
         poster={hero.heroPoster ?? hero.poster}
         url={hero.url}
         alt={hero.alt}
         status={statuses[hero.slug]!}
       />
 
-      {/* Proof line — one sentence, no card. */}
-      <section className="pb-24 md:pb-32">
-        <div className="tg-container">
-          <p className="reveal max-w-[30ch] text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
+      {/* Proof line — a bordered band, one sentence, no card. */}
+      <section className="border-y border-border">
+        <div className="tg-container py-9">
+          <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
             Eight live builds.{' '}
             <Link href="/work" className="link-underline text-secondary">
               Open any of them right now.
@@ -55,108 +57,109 @@ export default async function HomePage() {
       </section>
 
       {/* Solutions — four full-width rows, never a four-card grid. */}
-      <section className="tg-section pt-0">
+      <section className="py-32">
         <SectionHead
           eyebrow="What We Do"
           headline="What We Do"
           description="Four ways we help operational businesses run smarter."
         />
         <div className="tg-container mt-16">
-          {solutions.map((s) => (
-            <SolutionRow key={s.slug} solution={s} />
+          {solutions.map((s, i) => (
+            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} />
           ))}
-          <div className="border-t border-border" />
         </div>
       </section>
 
       {/* Featured Work — the full-bleed ink band. Ink in BOTH themes; in dark
           mode it's separated from the page by a hairline, not a fill change. */}
-      <section className="ink-band border-y border-[#2A2A2C]">
-        <div className="tg-section">
-          <SectionHead
-            eyebrow="Our Work"
-            headline="Two we're proud of."
-            description="Both are running right now. Open either one and use it yourself."
-          />
-          <div className="mt-20 flex flex-col gap-28">
-            {featured.map((entry, i) => (
-              <CaseStudyRow
-                key={entry.slug}
-                entry={entry}
-                status={statuses[entry.slug]!}
-                index={i}
-              />
-            ))}
-          </div>
-        </div>
+      <section className="ink-band border-y border-border py-32">
+        <SectionHead
+          eyebrow="Our Work"
+          headline="Two we're proud of."
+          description="Both are running right now. Open either one and use it yourself."
+          onInk
+        />
+        {featured.map((entry, i) => (
+          <BandRow key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
+        ))}
       </section>
 
       {/* Testimonial — Review schema, no numeric rating (none exists). */}
-      <section className="tg-section">
-        <div className="tg-container tg-grid">
-          <div className="reveal" style={{ gridColumn: '1 / 6' }}>
-            <p className="font-mono text-[0.75rem] font-bold tracking-[0.1em] text-secondary uppercase">
-              What Clients Say
-            </p>
+      <section className="py-32">
+        <div className="tg-container">
+          <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+            What Clients Say
+          </p>
+          <div>
+            <Testimonial contextSlug={testimonial.contextSlug} />
           </div>
-          <figure className="reveal m-0" style={{ gridColumn: '6 / 13' }}>
-            <blockquote className="m-0 max-w-[46ch] text-[length:var(--text-title)] leading-[1.4] font-medium">
-              {testimonial.body}
-            </blockquote>
-            <figcaption className="mt-8 flex flex-col gap-2 text-[0.875rem]">
-              <span>
-                <strong className="font-semibold">{testimonial.author}</strong>
-                <span className="text-secondary"> · {testimonial.source}</span>
-              </span>
-              <a
-                href={site.gbp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-underline self-start text-secondary hover:text-fg"
-              >
-                Read it on Google ↗
-              </a>
-              <Link
-                href={`/work/${contextBuild.slug}`}
-                className="link-underline self-start text-secondary hover:text-fg"
-              >
-                This is the work he&rsquo;s describing →
-              </Link>
-            </figcaption>
-          </figure>
         </div>
       </section>
 
-      {/* Process teaser — no numerals here; /process is the only page that
-          earns them, because it's the only genuinely ordered sequence. */}
-      <section className="tg-section pt-0">
-        <SectionHead
-          eyebrow="How We Work"
-          headline="How We Work"
-          description="Four steps. No surprises. No disappearing acts."
-        />
-        <div className="tg-container reveal-stagger mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-[12px] border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-          {processSteps.map((step) => (
-            <div key={step.numeral} className="bg-bg p-6">
-              <h3 className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-[0.875rem] text-secondary">{step.teaser}</p>
-            </div>
-          ))}
-        </div>
-        <div className="tg-container mt-10">
-          <Link
-            href="/process"
-            className="link-underline inline-flex text-[0.875rem] font-semibold"
-          >
-            See our full process →
-          </Link>
-        </div>
-      </section>
-
-      {/* Stripe 2 of 3 lives inside ClosingCta; stripe 3 is in the footer. */}
       <ClosingCta />
     </>
+  );
+}
+
+/** A featured-work row on the ink band: tag, title, pull-quote, status, link. */
+function BandRow({
+  entry,
+  status,
+  index,
+}: {
+  entry: CaseStudy;
+  status: StatusResult;
+  index: number;
+}) {
+  const mediaFirst = index % 2 === 1;
+
+  const text = (
+    <div style={{ gridColumn: mediaFirst ? '8 / 13' : '1 / 6' }}>
+      <SolutionTag solution={entry.solution} label={entry.tag} onInk />
+      <h3
+        className="mt-6 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em] text-[#F5F5F5]"
+        style={{ textWrap: 'pretty' }}
+      >
+        {entry.headline}
+      </h3>
+      <PullQuote solution={entry.solution} size="band" onInk className="mt-10">
+        {entry.pullQuote}
+      </PullQuote>
+      <StatusLine result={status} onInk className="mt-10" />
+      <Link
+        href={`/work/${entry.slug}`}
+        className="link-underline mt-[22px] inline-block text-[14.5px] font-semibold text-[#F5F5F5]"
+      >
+        Read the full story →
+      </Link>
+    </div>
+  );
+
+  const media = (
+    <div style={{ gridColumn: mediaFirst ? '1 / 7' : '7 / 13' }}>
+      <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
+        <div>
+          <Frame poster={entry.poster} alt={entry.alt} onInk />
+        </div>
+      </ViewTransition>
+    </div>
+  );
+
+  return (
+    <article
+      className={`tg-container tg-grid items-center gap-y-12 ${index === 0 ? 'mt-24 border-b border-[#2A2A2C] pb-24' : 'pt-24'}`}
+    >
+      {mediaFirst ? (
+        <>
+          {media}
+          {text}
+        </>
+      ) : (
+        <>
+          {text}
+          {media}
+        </>
+      )}
+    </article>
   );
 }

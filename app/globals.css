@@ -83,9 +83,9 @@
 }
 
 [data-scrolled='true'] {
-  --tg-nav-bg: rgb(255 255 255 / 0.8);
+  --tg-nav-bg: rgb(255 255 255 / 0.82);
   --tg-nav-border: rgb(229 231 235 / 1);
-  --tg-nav-blur: 12px;
+  --tg-nav-blur: 14px;
 }
 
 .dark [data-scrolled='true'] {
@@ -301,43 +301,69 @@
 }
 
 /* ---------------------------------------------------------------------------
-   DESIGN.md §6 — scroll reveals via native CSS scroll-driven animation.
-
-   The @supports guard is load-bearing, not defensive politeness: the reveal
-   sets opacity:0 as its resting state. In a browser without animation-timeline
-   the animation never runs, so without this guard every revealed section would
-   stay permanently invisible. Inside the guard, unsupported browsers simply
-   never see the opacity:0 rule and render everything statically.
+   Home hero media panel — a surface-filled frame that bleeds off the right
+   viewport edge. Values are the design export's, literally.
 --------------------------------------------------------------------------- */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal {
-      opacity: 0;
-      animation: tg-reveal linear both;
-      animation-timeline: view();
-      /* Entry 15% into the viewport, resolved by the end of that range. */
-      animation-range: entry 15% cover 32%;
-    }
+.tg-hero-frame {
+  /* 1216px is the container's inner width (1280 - 2 x 32 padding). The panel
+     runs to the viewport edge and then a further 10vw past it. */
+  margin-right: calc(-1 * max(0px, (100vw - 1216px) / 2) - 10vw);
+  background: var(--tg-surface);
+  border: 1px solid var(--tg-border);
+  border-right: none;
+  border-radius: 16px 0 0 16px;
+  padding: 32px 0 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 
-    .reveal-stagger > * {
-      opacity: 0;
-      animation: tg-reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 15% cover 32%;
-    }
+.tg-hero-poster,
+.tg-hero-poster .tg-hero-img {
+  border-radius: 12px 0 0 12px;
+}
+.tg-hero-poster .tg-hero-img {
+  border-right: none;
+}
+
+/* Under 1024px the bleed is abandoned rather than squeezed — the panel gets its
+   right edge and full radius back and the media stacks below the text. */
+@media (max-width: 1023px) {
+  .tg-hero-frame {
+    margin-right: 0;
+    margin-top: 56px;
+    padding: 24px;
+    border-right: 1px solid var(--tg-border);
+    border-radius: 16px;
+  }
+  .tg-hero-poster,
+  .tg-hero-poster .tg-hero-img {
+    border-radius: 12px;
+  }
+  .tg-hero-poster .tg-hero-img {
+    border-right: 1px solid var(--tg-border);
   }
 }
 
-@keyframes tg-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ---------------------------------------------------------------------------
+   Scroll reveals: deliberately NOT implemented.
+
+   DESIGN.md §6 and CANONICAL §6 describe a native `animation-timeline: view()`
+   reveal on every section, firing once. Two things killed it, and both were
+   found by actually testing rather than reading:
+
+   1. `view()` is a SCRUBBED timeline, not a one-shot. Scrolling back up runs it
+      in reverse, so content that had appeared vanished again. The specified
+      "once" semantics are not expressible with it at all.
+   2. With `opacity: 0` as the resting state, anything that renders without
+      scrolling — a full-page screenshot, print, a crawler that doesn't scroll —
+      gets blank sections. Half of the homepage captured empty.
+
+   The approved design export settles it: it carries no section reveals, only
+   the closing-CTA echo, which Motion drives with a real `once` viewport flag.
+   That is what ships. `.reveal` is kept as an inert hook so the markup doesn't
+   need churning if a genuine IntersectionObserver version is wanted later.
+--------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------
    status-line pulse — verified state only.
@@ -360,18 +386,21 @@
    Concierge "thinking" — the ONLY moving use of the four-color system.
    Four discrete segments, never a blended gradient.
 --------------------------------------------------------------------------- */
+/* Keyframes taken literally from the design export, which sweeps by holding
+   each segment dim and flashing it briefly — not a symmetric ease in/out. */
 @keyframes tg-shimmer {
   0%,
+  55%,
   100% {
-    opacity: 0.28;
+    opacity: 0.2;
   }
-  50% {
+  18% {
     opacity: 1;
   }
 }
 
 .shimmer-seg {
-  animation: tg-shimmer 1200ms var(--ease-hover) infinite;
+  animation: tg-shimmer 1200ms ease-in-out infinite;
 }
 
 /* ---------------------------------------------------------------------------
@@ -398,6 +427,27 @@
 .hover-card:hover {
   transform: translateY(-3px);
   border-color: var(--tg-border-strong);
+}
+
+/* Active-page indicator: a 2px ink bar 10px under the link, wiping in from the
+   left over 240ms rather than appearing instantly. Ink, never accent. */
+[data-navlink] {
+  position: relative;
+}
+[data-navlink]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 2px;
+  background: var(--tg-fg);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 240ms var(--ease-entrance);
+}
+[data-navlink][data-on='true']::after {
+  transform: scaleX(1);
 }
 
 /* Text CTAs draw an underline left-to-right via background-size. */

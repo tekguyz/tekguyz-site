@@ -1,7 +1,6 @@
 import { PageHero } from '@/components/page-hero';
 import { ProcessSteps } from '@/components/process-steps';
 import { ClosingCta } from '@/components/closing-cta';
-import { ButtonLink } from '@/components/button';
 import { buildMetadata, breadcrumbs, jsonLd } from '@/lib/seo';
 
 export const metadata = buildMetadata({
@@ -23,17 +22,10 @@ export default function ProcessPage() {
         eyebrow="How We Work"
         headline="How We Work"
         description="Four steps. No surprises. No disappearing acts."
+        paddingBottom={96}
       />
 
-      <section className="pb-32">
-        <ProcessSteps />
-      </section>
-
-      <section className="pb-32">
-        <div className="tg-container">
-          <ButtonLink href="/contact">Ready to start?</ButtonLink>
-        </div>
-      </section>
+      <ProcessSteps />
 
       <ClosingCta />
     </>

@@ -2,35 +2,34 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import Link from 'next/link';
+import { AnimatePresence, motion } from 'motion/react';
 import { ConnectedNodes } from '@/components/logo-lockup';
 import { ThinkingStripe } from '@/components/concierge/thinking-stripe';
+import { Markdown } from '@/components/concierge/markdown';
 import { CONCIERGE_OPEN_EVENT } from '@/components/concierge/concierge-bus';
 import { getWork } from '@/content/work';
 import { site } from '@/lib/site';
 
 /**
- * DESIGN.md §4 — the AI concierge.
+ * A persistent launcher, never a modal — nothing dims, nothing traps focus, the
+ * page stays usable behind it.
  *
- * Launcher visibility is LOCKED, not optional: hidden on initial load, fades in
- * only once the visitor has scrolled past the hero. It must never overlap the
- * hero, where it competes with the hero's own CTAs and reads as a bug. This
- * shipped wrong in a reference render precisely because it had only ever been
- * agreed in conversation.
+ * Export values:
+ *   launcher  fixed right/bottom 24px · padding 16px 24px · radius 8px (the
+ *             same radius as every other button on the site, NOT a pill) ·
+ *             18px mark with currentColor connectors at 40%
+ *   panel     380px · radius 16px · one hairline · no shadow ·
+ *             header 56px · body padding 20px 16px, gap 20px, min-height 300px
+ *             footer padding 16px, disclaimer above a 44px input + Send button
  *
- * Conversation UI:
- *  - No avatars, either side. Visitor messages get a surface fill; assistant
- *    replies are plain text on the panel background, so the exchange reads as a
- *    document rather than a chat-bubble stack.
- *  - Three suggestion chips on the empty state, gone permanently after the first
- *    message — an opener, not a persistent menu.
- *  - Route-aware opener: on a /work/[slug] page it references that build.
- *  - Captured state keeps the input ENABLED — a converted lead may still have
- *    questions, and disabling input at the moment someone converts is exactly
- *    the wrong signal. Cap-reached is the one exception: there the handoff IS
- *    the action, so the input goes away.
+ * Replies are plain text on the canvas; only the visitor's own words get a
+ * surface fill, so the panel reads as a document rather than a chat toy. The
+ * disclaimer never scrolls away.
  *
- * It is a persistent panel, never a modal — the site has no modals or popups.
+ * Launcher visibility is locked: hidden on initial load, fading in only once
+ * the visitor has scrolled past the hero. It must never overlap the hero, where
+ * it competes with the hero's own CTAs.
  */
 
 const DEFAULT_OPENER =
@@ -49,7 +48,6 @@ interface Msg {
 
 export function Concierge() {
   const pathname = usePathname();
-  const reduced = useReducedMotion() ?? false;
 
   const [pastHero, setPastHero] = useState(false);
   const [open, setOpen] = useState(false);
@@ -61,17 +59,13 @@ export function Concierge() {
   const [error, setError] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  /** Route-aware opener. */
   const build = pathname.startsWith('/work/') ? getWork(pathname.split('/')[2] ?? '') : undefined;
   const opener = build
     ? `That's ${build.name} you're looking at. Tell me what you're dealing with and I'll tell you what we'd build for it — or whether something like this fits.`
     : DEFAULT_OPENER;
 
-  // Gate the launcher on having scrolled past the hero. One viewport height is
-  // the practical proxy: the hero is the first screen on every route.
   useEffect(() => {
     const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.85);
     onScroll();
@@ -79,7 +73,6 @@ export function Concierge() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // The closing CTA's quiet text link is the concierge's one other entry point.
   useEffect(() => {
     const onOpen = () => setOpen(true);
     window.addEventListener(CONCIERGE_OPEN_EVENT, onOpen);
@@ -94,7 +87,6 @@ export function Concierge() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, busy]);
 
-  // Esc closes the panel; focus returns to the launcher.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -127,9 +119,7 @@ export function Concierge() {
           setError(data.error ?? 'Something broke on our end — not yours.');
           return;
         }
-        if (data.reply) {
-          setMessages([...next, { role: 'assistant', content: data.reply }]);
-        }
+        if (data.reply) setMessages([...next, { role: 'assistant', content: data.reply }]);
         if (data.leadCaptured) setCaptured(true);
         if (data.capReached) setCapReached(true);
       } catch {
@@ -143,192 +133,185 @@ export function Concierge() {
     [busy, capReached, messages, pathname],
   );
 
-  const showChips = messages.length === 0;
+  const showChips = messages.length === 0 && !busy;
 
   return (
     <>
-      {/* Launcher — never rendered over the hero. */}
       <AnimatePresence>
         {pastHero && !open && (
           <motion.button
             type="button"
             onClick={() => setOpen(true)}
-            initial={reduced ? false : { opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: 8 }}
+            exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed right-6 bottom-6 z-40 inline-flex items-center gap-3 rounded-[12px] border border-border bg-bg py-3 pr-5 pl-4 text-[0.875rem] font-semibold shadow-none"
+            className="fixed right-6 bottom-6 z-[80] flex cursor-pointer items-center gap-[10px] rounded-[8px] bg-cta-bg px-6 py-4 text-[14.5px] leading-none font-semibold text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover active:scale-[0.98]"
           >
-            <ConnectedNodes size={22} />
+            <ConnectedNodes size={18} stroke="currentColor" strokeOpacity={0.4} />
             Ask about your project
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* Panel — persistent, not a modal. No backdrop, no page takeover. */}
       <AnimatePresence>
         {open && (
           <motion.div
-            ref={panelRef}
             role="dialog"
-            aria-label="TEKGUYZ project concierge"
-            initial={reduced ? false : { opacity: 0, y: 12 }}
+            aria-label="Ask about your project"
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: 12 }}
+            exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed right-0 bottom-0 z-50 flex h-[min(620px,100dvh)] w-full flex-col border border-border bg-bg sm:right-6 sm:bottom-6 sm:h-[620px] sm:w-[420px] sm:rounded-[16px]"
+            className="fixed right-6 bottom-6 z-[80] flex w-[380px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[16px] border border-border bg-bg"
           >
-            <header className="flex flex-none items-center justify-between gap-3 border-b border-border px-5 py-4">
-              <span className="inline-flex items-center gap-[10px]">
-                <ConnectedNodes size={22} />
-                <span className="text-[0.875rem] font-semibold">Project concierge</span>
-              </span>
+            <div className="flex h-14 flex-none items-center gap-[10px] border-b border-border px-4">
+              <ConnectedNodes size={18} />
+              <span className="text-[14.5px] font-semibold">Ask about your project</span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="Close concierge"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-[8px] text-secondary hover:text-fg"
+                aria-label="Close"
+                className="ml-auto h-8 w-8 cursor-pointer rounded-[6px] text-[16px] leading-none text-secondary hover:text-fg"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  aria-hidden
-                >
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
+                ✕
               </button>
-            </header>
+            </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5">
-              <p className="text-[0.9375rem] leading-[1.6]">{opener}</p>
+            <div
+              ref={scrollRef}
+              className="flex max-h-[420px] min-h-[300px] flex-1 flex-col gap-5 overflow-y-auto px-4 py-5"
+            >
+              <p className="text-[0.875rem] leading-[1.55]" style={{ textWrap: 'pretty' }}>
+                {opener}
+              </p>
 
               {showChips && (
-                <ul className="m-0 mt-5 flex list-none flex-col gap-2 p-0">
+                <div className="flex flex-col items-start gap-2">
                   {CHIPS.map((chip) => (
-                    <li key={chip}>
-                      <button
-                        type="button"
-                        onClick={() => send(chip)}
-                        className="w-full rounded-[8px] border border-border px-3 py-2 text-left text-[0.875rem] text-secondary transition-colors duration-[var(--dur-base)] hover:border-border-strong hover:text-fg"
-                      >
-                        {chip}
-                      </button>
-                    </li>
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => send(chip)}
+                      className="cursor-pointer rounded-[8px] border border-border px-3 py-2 text-left text-[0.875rem] text-secondary transition-colors duration-[240ms] hover:border-border-strong hover:text-fg"
+                    >
+                      {chip}
+                    </button>
                   ))}
-                </ul>
+                </div>
               )}
 
-              <div className="mt-6 flex flex-col gap-5" aria-live="polite">
+              <div className="flex flex-col gap-5" aria-live="polite">
                 {messages.map((m, i) =>
                   m.role === 'user' ? (
                     <p
                       key={i}
-                      className="self-end rounded-[10px] bg-surface px-3 py-2 text-[0.9375rem] leading-[1.55] whitespace-pre-wrap"
+                      className="max-w-[85%] self-end rounded-[12px] bg-surface px-[14px] py-3 text-[0.875rem] leading-[1.55]"
+                      style={{ textWrap: 'pretty' }}
                     >
                       {m.content}
                     </p>
                   ) : (
-                    // Assistant replies are plain text on the panel background —
-                    // the exchange reads as a document, not a bubble stack.
-                    <p key={i} className="text-[0.9375rem] leading-[1.6] whitespace-pre-wrap">
-                      {m.content}
-                    </p>
+                    <Markdown key={i} text={m.content} />
                   ),
                 )}
 
                 {busy && <ThinkingStripe />}
 
                 {captured && (
-                  <p className="flex items-center gap-[10px] text-[0.875rem] text-secondary">
-                    <span
-                      aria-hidden
-                      className="h-[6px] w-[6px] flex-none rounded-full"
-                      style={{ background: 'var(--tg-success)' }}
-                    />
-                    Done — your details are in. Expect a reply within one business day.
-                  </p>
+                  <div className="border-t border-border pt-5">
+                    <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
+                      <span
+                        aria-hidden
+                        className="h-[6px] w-[6px] flex-none rounded-full"
+                        style={{ background: 'var(--tg-success)' }}
+                      />
+                      <span className="font-semibold">Details received</span>
+                    </div>
+                    <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary">
+                      Done — your details are in. Expect a reply within one business day.
+                    </p>
+                  </div>
                 )}
 
-                {error && <p className="text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>{error}</p>}
+                {error && (
+                  <div className="border-t border-border pt-5">
+                    <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
+                      <span
+                        aria-hidden
+                        className="h-[6px] w-[6px] flex-none rounded-full"
+                        style={{ background: 'var(--tg-error)' }}
+                      />
+                      <span className="font-semibold">Didn&rsquo;t send</span>
+                    </div>
+                    <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary">
+                      {error}
+                    </p>
+                  </div>
+                )}
 
                 {capReached && (
-                  <p className="text-[0.875rem] text-secondary">
-                    We&rsquo;ve covered a lot — the fastest next step is the{' '}
-                    <a href="/contact" className="link-underline text-fg">
-                      contact form
-                    </a>
-                    , or email{' '}
-                    <a href={`mailto:${site.publicEmail}`} className="link-underline text-fg">
+                  <div className="mt-auto flex flex-col items-start gap-3 border-t border-border pt-5">
+                    <Link
+                      href="/contact"
+                      className="rounded-[8px] bg-cta-bg px-6 py-[15px] text-[14.5px] leading-none font-semibold text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover"
+                    >
+                      Open the contact form
+                    </Link>
+                    <a
+                      href={`mailto:${site.publicEmail}`}
+                      className="link-underline text-[0.875rem] text-secondary"
+                    >
                       {site.publicEmail}
                     </a>
-                    . Either way you&rsquo;ll hear back within one business day.
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Cap-reached is the one state that removes the input: there, the
-                handoff IS the action. Captured deliberately keeps it enabled. */}
-            {!capReached && (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  send(input);
-                }}
-                className="flex-none border-t border-border px-5 py-4"
+            {/* The disclaimer never scrolls away. Cap-reached is the one state
+                that removes the input: there, the handoff IS the action. */}
+            <div className="flex-none border-t border-border p-4">
+              <p
+                className={capReached ? 'text-[0.75rem] leading-[1.5] text-secondary' : 'mb-[14px] text-[0.75rem] leading-[1.5] text-secondary'}
+                style={{ textWrap: 'pretty' }}
               >
-                <label htmlFor="concierge-input" className="sr-only">
-                  Describe what you&rsquo;re dealing with
-                </label>
-                <div className="flex items-end gap-2">
-                  <textarea
+                This is a starting sketch, not a quote — pricing always comes from a real
+                conversation.
+              </p>
+              {!capReached && (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    send(input);
+                  }}
+                  className="flex gap-2"
+                >
+                  <label htmlFor="concierge-input" className="sr-only">
+                    Describe what you&rsquo;re dealing with
+                  </label>
+                  <input
                     id="concierge-input"
                     ref={inputRef}
-                    rows={2}
+                    type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        send(input);
-                      }
-                    }}
                     maxLength={2000}
-                    placeholder="Describe what you're dealing with…"
-                    className="max-h-32 min-h-[44px] flex-1 resize-none rounded-[4px] border border-border bg-transparent px-3 py-2 text-[0.9375rem] outline-none focus-visible:border-border-strong"
+                    placeholder={
+                      captured ? "Keep going if you'd like…" : "Describe what you're dealing with…"
+                    }
+                    className="h-11 min-w-0 flex-1 rounded-[4px] border border-border bg-bg px-3 text-[0.875rem] outline-none focus-visible:border-border-strong"
                   />
                   <button
                     type="submit"
                     disabled={busy || !input.trim()}
-                    className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-[8px] bg-cta-bg text-cta-fg disabled:cursor-not-allowed disabled:opacity-40"
-                    aria-label="Send message"
+                    className="h-11 flex-none cursor-pointer rounded-[8px] bg-cta-bg px-[18px] text-[14.5px] font-semibold text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden
-                    >
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
+                    Send
                   </button>
-                </div>
-                <p className="mt-2 text-[0.75rem] text-secondary">
-                  This is a starting sketch, not a quote — pricing always comes from a real
-                  conversation.
-                </p>
-              </form>
-            )}
+                </form>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

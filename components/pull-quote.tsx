@@ -2,31 +2,47 @@ import { accentForSolution, type SolutionSlug } from '@/config/solutions';
 import { cn } from '@/lib/utils';
 
 /**
- * DESIGN.md §4 — --text-display in Geist 600, max-width 22ch, NO quotation marks
- * (the copy is a stated outcome, not dialogue), 2px left border in that build's
- * accent, 24px left padding.
+ * Geist 600, 2px left border in that build's accent, 24px left padding,
+ * max-width 22ch, no quotation marks — the copy is a stated outcome, not
+ * dialogue. (The testimonial is the opposite case: someone else's words, so
+ * that one DOES carry real quotation marks.)
  *
- * The only place an accent touches anything larger than a dot or a tag.
+ * The export runs two sizes: `display` on canvas contexts (work index, detail
+ * pages) and a slightly tighter `band` size on the home ink band, where the
+ * quote sits in a narrower column.
+ *
+ * The only place accent touches anything larger than a dot or tag.
  */
 export function PullQuote({
   children,
   solution,
+  size = 'display',
+  onInk = false,
   className,
 }: {
   children: React.ReactNode;
   solution: SolutionSlug;
+  size?: 'display' | 'band';
+  onInk?: boolean;
   className?: string;
 }) {
   const a = accentForSolution(solution);
   return (
-    <p
+    <blockquote
       className={cn(
-        'max-w-[22ch] pl-6 text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]',
+        'max-w-[22ch] pl-6 font-semibold tracking-[-0.03em]',
+        size === 'display'
+          ? 'text-[length:var(--text-display)] leading-[1.05]'
+          : 'text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08]',
         className,
       )}
-      style={{ borderLeft: `2px solid ${a.dot}` }}
+      style={{
+        borderLeft: `2px solid ${a.dot}`,
+        color: onInk ? '#F5F5F5' : 'var(--tg-fg)',
+        textWrap: 'pretty',
+      }}
     >
       {children}
-    </p>
+    </blockquote>
   );
 }

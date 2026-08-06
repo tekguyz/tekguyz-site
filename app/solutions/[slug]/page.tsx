@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { PageHero } from '@/components/page-hero';
+import { SignatureStripe } from '@/components/signature-stripe';
+import { FlourishMark } from '@/components/flourish-mark';
 import { ClosingCta } from '@/components/closing-cta';
-import { PullQuote } from '@/components/pull-quote';
+import { AccentDot } from '@/components/solution-tag';
 import { StatusLine } from '@/components/status-line';
-import { SolutionTag } from '@/components/solution-tag';
-import { ButtonLink } from '@/components/button';
+import { accentForSolution } from '@/config/solutions';
 import { solutions, getSolution } from '@/content/solutions';
 import { workByName } from '@/content/work';
 import { getAllStatuses } from '@/lib/status';
@@ -27,8 +27,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 /**
+ * The export's solution-section treatment, given its own route.
+ *
+ * Layout: dot + display title + a colored eyebrow in that line's `-text`
+ * variant on cols 1-6; body, hairline feature list and the related-work/CTA row
+ * on cols 7-13.
+ *
  * One Service node per page — cleaner schema practice than four nodes crammed
- * onto a single URL, and each now sits on the page it actually describes.
+ * onto a single URL, and each now sits on the page it describes.
  */
 export default async function SolutionDetailPage({
   params,
@@ -39,6 +45,7 @@ export default async function SolutionDetailPage({
   const solution = getSolution(slug);
   if (!solution) notFound();
 
+  const a = accentForSolution(solution.slug);
   const statuses = await getAllStatuses();
   const related = solution.relatedWork
     .map((name) => workByName(name))
@@ -57,77 +64,111 @@ export default async function SolutionDetailPage({
         )}
       />
 
-      {/* The headline is drawn from this solution's own copy, not the generic
-          page-hero pattern used on top-level routes. */}
-      <PageHero eyebrow={solution.tag} headline={solution.headline} />
+      <SignatureStripe />
 
-      <section className="pb-24">
-        <div className="tg-container tg-grid">
-          <div className="reveal" style={{ gridColumn: '1 / 8' }}>
-            {solution.body.map((para) => (
-              <p key={para} className="mb-6 max-w-[62ch] text-[length:var(--text-body)]">
-                {para}
-              </p>
-            ))}
+      <div className="tg-container pt-10 pb-32">
+        <Link
+          href="/solutions"
+          className="link-underline text-[0.875rem] font-semibold text-secondary"
+        >
+          ← Solutions
+        </Link>
+
+        <FlourishMark className="mt-10 mb-8" />
+
+        <div className="tg-grid pt-4">
+          <div style={{ gridColumn: '1 / 6' }}>
+            <div className="flex items-start gap-[22px]">
+              <AccentDot solution={solution.slug} style={{ marginTop: 22 }} />
+              <div>
+                <h1 className="text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]">
+                  {solution.name}
+                </h1>
+                <p
+                  className="mt-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
+                  style={{ color: a.text }}
+                >
+                  {solution.tag}
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="reveal" style={{ gridColumn: '9 / 13' }}>
-            <h2 className="mb-5 font-mono text-[0.75rem] font-bold tracking-[0.1em] text-secondary uppercase">
-              What that includes
-            </h2>
-            <ul className="m-0 flex list-none flex-col gap-3 p-0">
-              {solution.features.map((f) => (
+          <div style={{ gridColumn: '7 / 13' }}>
+            <p
+              className="text-[length:var(--text-body)]"
+              style={{ textWrap: 'pretty' }}
+            >
+              {solution.body[0]}
+            </p>
+            <p
+              className="mt-5 text-[length:var(--text-body)] text-secondary"
+              style={{ textWrap: 'pretty' }}
+            >
+              {solution.body[1]}
+            </p>
+
+            <ul className="m-0 mt-9 list-none p-0">
+              {solution.features.map((f, i) => (
                 <li
                   key={f}
-                  className="border-b border-border pb-3 text-[0.9375rem] last:border-0"
+                  className={`flex items-baseline gap-[14px] border-t border-border py-[14px] text-[length:var(--text-body)] ${
+                    i === solution.features.length - 1 ? 'border-b' : ''
+                  }`}
                 >
+                  <span
+                    aria-hidden
+                    className="h-[5px] w-[5px] flex-none rounded-full"
+                    style={{ background: a.dot, transform: 'translateY(-3px)' }}
+                  />
                   {f}
                 </li>
               ))}
             </ul>
+
+            <div className="mt-8 flex flex-wrap items-baseline justify-between gap-8">
+              <p className="text-[0.875rem] leading-[1.55] text-secondary">
+                <span className="text-[0.75rem] font-bold tracking-[0.1em] uppercase">
+                  Related work
+                </span>{' '}
+                &nbsp;{solution.relatedWork.join(', ')}
+              </p>
+              <Link
+                href={solution.cta.href}
+                className="link-underline flex-none text-[14.5px] font-semibold"
+              >
+                {solution.cta.label} →
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
 
-      {related.length > 0 && (
-        <section className="tg-section pt-0">
-          <div className="tg-container">
-            <h2 className="reveal font-mono text-[0.75rem] font-bold tracking-[0.1em] text-secondary uppercase">
-              Related work
-            </h2>
-
-            <div className="reveal-stagger mt-10 flex flex-col gap-12">
+        {related.length > 0 && (
+          <div className="mt-24">
+            <p className="mb-8 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+              The builds
+            </p>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {related.map((entry) => (
-                <article
+                <Link
                   key={entry.slug}
-                  className="hover-row tg-grid items-start border-t border-border pt-10"
+                  href={`/work/${entry.slug}`}
+                  data-card
+                  className="hover-card flex flex-col rounded-[12px] border border-border bg-surface p-6"
                 >
-                  <div style={{ gridColumn: '1 / 7' }}>
-                    <SolutionTag solution={entry.solution} label={entry.tag} />
-                    <h3 className="mt-5 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
-                      <Link href={`/work/${entry.slug}`} className="link-underline">
-                        {entry.name}
-                      </Link>
-                    </h3>
-                    <StatusLine result={statuses[entry.slug]!} className="mt-4" />
-                  </div>
-                  <div style={{ gridColumn: '8 / 13' }}>
-                    <PullQuote solution={entry.solution}>
-                      {entry.kind === 'case-study' ? entry.pullQuote : entry.headline}
-                    </PullQuote>
-                  </div>
-                </article>
+                  <h2
+                    className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+                    style={{ textWrap: 'pretty' }}
+                  >
+                    {entry.name}
+                  </h2>
+                  <StatusLine result={statuses[entry.slug]!} className="mt-5" />
+                </Link>
               ))}
             </div>
           </div>
-        </section>
-      )}
-
-      <section className="pb-32">
-        <div className="tg-container">
-          <ButtonLink href={solution.cta.href}>{solution.cta.label}</ButtonLink>
-        </div>
-      </section>
+        )}
+      </div>
 
       <ClosingCta />
     </>

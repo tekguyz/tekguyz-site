@@ -33,6 +33,12 @@ export interface Accent {
    * white against this variant's 5.92:1).
    */
   textHex: string;
+  /**
+   * Raw dark-mode `-text` hex, for surfaces that are dark in BOTH themes (the
+   * home ink band, the footer) where a theme-aware token would resolve to the
+   * light-mode value whenever the site itself is in light mode.
+   */
+  darkTextHex: string;
 }
 
 const ACCENTS: Record<AccentKey, Accent> = {
@@ -43,6 +49,7 @@ const ACCENTS: Record<AccentKey, Accent> = {
     tint: 'color-mix(in srgb, var(--tg-accent-blue) 12%, transparent)',
     hex: '#3B6FE0',
     textHex: '#1E3F94',
+    darkTextHex: '#5380E4',
   },
   violet: {
     key: 'violet',
@@ -51,6 +58,7 @@ const ACCENTS: Record<AccentKey, Accent> = {
     tint: 'color-mix(in srgb, var(--tg-accent-violet) 12%, transparent)',
     hex: '#7C6FE0',
     textHex: '#4433A8',
+    darkTextHex: '#8377E2',
   },
   amber: {
     key: 'amber',
@@ -59,6 +67,7 @@ const ACCENTS: Record<AccentKey, Accent> = {
     tint: 'color-mix(in srgb, var(--tg-accent-amber) 12%, transparent)',
     hex: '#F2A93C',
     textHex: '#8A5A0A',
+    darkTextHex: '#F2A93C',
   },
   teal: {
     key: 'teal',
@@ -67,6 +76,7 @@ const ACCENTS: Record<AccentKey, Accent> = {
     tint: 'color-mix(in srgb, var(--tg-accent-teal) 12%, transparent)',
     hex: '#2FA679',
     textHex: '#1D6B4D',
+    darkTextHex: '#2FA679',
   },
 };
 
