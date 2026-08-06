@@ -59,6 +59,13 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Gemini 3.6 Flash**: real blueprint-shaped replies, no price, no timeline.
 - **Upstash limiter is genuinely in use** — no fallback warning, limit trips at exactly the 12th request, and Upstash holds the limiter's own keys (`tg:concierge:*`).
 
+### Deploy
+
+- Repo pushed to `https://github.com/tekguyz/tekguyz-site.git` (branch `master`). The repo is **public**; verified before pushing that `.env.local` is untracked and no secret-shaped strings exist anywhere in the tree.
+- **Preview** deployed to a NEW Vercel project `tekguyz-site` — deliberately not `tekguyz-website`, which is the project actually serving tekguyz.com. The preview carries no domain alias, so it cannot affect the live site. Confirmed tekguyz.com still returns 200 afterwards.
+- The preview has **no environment variables set**, so the contact form and concierge will fail at runtime there. Everything else renders. Add the env set to the `tekguyz-site` project before using the preview to test those paths.
+- **Third bug, found only by deploying:** `new Resend(process.env.RESEND_API_KEY)` ran at module scope, and `new Resend(undefined)` throws on construction. Merely importing the action exploded during Next's page-data collection, so the Vercel build failed while passing locally purely because `.env.local` existed here. The client is now constructed lazily, and a full build with every secret removed is verified green (45/45 pages).
+
 ### Deliberate deviations from the export, for the record
 
 1. **Typography.** The export loads Geist + Inter. CANONICAL §2 dropped Inter in favour of Geist-only plus Geist Mono, a decision made *after* the export, and Mono-on-tags was explicitly confirmed. Geist + Geist Mono ships. **Overrule this if the export's pairing is what you actually want.**

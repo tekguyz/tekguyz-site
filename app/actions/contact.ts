@@ -27,7 +27,27 @@ import { checkContactLimit } from '@/lib/rate-limit';
  * accept, and parallel dispatch via Promise.allSettled.
  */
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+/**
+ * Constructed lazily, NOT at module scope.
+ *
+ * `new Resend(undefined)` throws "Missing API key" on construction. At module
+ * scope that means merely importing this file explodes when the key is absent —
+ * which is exactly what happens during a build, since Next collects page data
+ * for every route that imports the action. The build broke on Vercel for this
+ * reason while passing locally, purely because .env.local existed here.
+ *
+ * A build must never require runtime secrets. Deferring construction to the
+ * first send keeps the failure at the point where it is genuinely actionable.
+ */
+let resendClient: Resend | null = null;
+function resend(): Resend {
+  if (!resendClient) {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) throw new Error('RESEND_API_KEY is not set');
+    resendClient = new Resend(key);
+  }
+  return resendClient;
+}
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -115,7 +135,7 @@ export async function sendContactEmail(
         })
       : Promise.resolve(null);
 
-    const notifyPromise = resend.emails.send({
+    const notifyPromise = resend().emails.send({
       from: `TEKGUYZ <${site.publicEmail}>`,
       to: site.formDeliveryEmail,
       subject: `New ${source} Submission from ${name}`,
@@ -136,7 +156,7 @@ export async function sendContactEmail(
 
     // Confirmation to the submitter. Transactional reply to a message they just
     // sent — no marketing footer, no unsubscribe block.
-    const confirmPromise = resend.emails.send({
+    const confirmPromise = resend().emails.send({
       from: `TEKGUYZ <${site.publicEmail}>`,
       to: email,
       subject: 'We got your message — TEKGUYZ',
