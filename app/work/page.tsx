@@ -51,8 +51,8 @@ export default async function WorkPage() {
       <div className="tg-container mt-16 pb-32">
         <GroupHead title="Projects" note="Lighter builds, same standard" />
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {projects.map((entry) => (
-            <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} />
+          {projects.map((entry, i) => (
+            <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
           ))}
         </div>
       </div>

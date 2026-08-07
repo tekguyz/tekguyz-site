@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { site } from '@/lib/site';
 import { checkContactLimit } from '@/lib/rate-limit';
+import { optionalPhone, optionalWebsite } from '@/lib/validation';
 
 /**
  * THE shared lead-capture action. Called by the contact form AND the concierge
@@ -53,9 +54,14 @@ const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.email('Please enter a valid email address'),
   company: z.string().optional(),
-  phone: z.string().optional(),
+  /**
+   * Optional means "may be blank", not "unchecked when present". Both of these
+   * previously accepted any string, so garbage reached the CRM as a real value.
+   * Rules live in lib/validation.ts so this and the client schema can't drift.
+   */
+  phone: optionalPhone,
   /** The lead's own business site — a REAL CRM column, not the honeypot. */
-  website: z.string().optional(),
+  website: optionalWebsite,
   projectType: z.string().min(1, 'Please select a project type'),
   budget: z.string().optional(),
   message: z.string().min(10, 'Message must be at least 10 characters'),

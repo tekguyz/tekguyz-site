@@ -41,7 +41,7 @@ export default function SolutionsPage() {
       <section className="pb-32">
         <div className="tg-container">
           {solutions.map((s, i) => (
-            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} />
+            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} index={i} />
           ))}
         </div>
       </section>

@@ -13,12 +13,22 @@ import type { StatusResult } from '@/lib/status';
  *
  * Hover lifts 3px and darkens the hairline — position, never shadow.
  */
-export function ProjectCard({ entry, status }: { entry: Project; status: StatusResult }) {
+export function ProjectCard({
+  entry,
+  status,
+  index = 0,
+}: {
+  entry: Project;
+  status: StatusResult;
+  /** Position within its grid, for the 80ms reveal stagger. */
+  index?: number;
+}) {
   return (
     <Link
       href={`/work/${entry.slug}`}
       data-card
-      className="hover-card flex h-full flex-col rounded-[12px] border border-border bg-surface p-6"
+      data-reveal-index={index}
+      className="reveal hover-card flex h-full flex-col rounded-[12px] border border-border bg-surface p-6"
     >
       <SolutionTag solution={entry.solution} label={entry.tag} variant="card" className="self-start" />
 

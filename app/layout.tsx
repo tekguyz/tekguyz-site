@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Nav } from '@/components/nav';
 import { FooterDark } from '@/components/footer-dark';
 import { Concierge } from '@/components/concierge/concierge';
+import { RevealController } from '@/components/reveal';
 import { site } from '@/lib/site';
 
 /**
@@ -53,6 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main">{children}</main>
           <FooterDark />
           <Concierge />
+          {/* Adds the hidden state and observes; content is visible without it. */}
+          <RevealController />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

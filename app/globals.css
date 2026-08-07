@@ -346,24 +346,50 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Scroll reveals: deliberately NOT implemented.
+   Scroll reveals — IntersectionObserver + a plain CSS transition.
 
-   DESIGN.md §6 and CANONICAL §6 describe a native `animation-timeline: view()`
-   reveal on every section, firing once. Two things killed it, and both were
-   found by actually testing rather than reading:
+   `.reveal` on its own does NOTHING. That is the point, and it is what keeps
+   the blank-page bug from being possible: content is visible by default.
 
-   1. `view()` is a SCRUBBED timeline, not a one-shot. Scrolling back up runs it
-      in reverse, so content that had appeared vanished again. The specified
-      "once" semantics are not expressible with it at all.
-   2. With `opacity: 0` as the resting state, anything that renders without
-      scrolling — a full-page screenshot, print, a crawler that doesn't scroll —
-      gets blank sections. Half of the homepage captured empty.
+   The hidden state lives on `.reveal-armed`, which only components/reveal.tsx
+   adds, from an effect. So an element can only be hidden once JS is running and
+   an observer is already attached to un-hide it. No JS, no observer support, a
+   hydration failure, print, or a crawler that never scrolls — all render the
+   page fully visible.
 
-   The approved design export settles it: it carries no section reveals, only
-   the closing-CTA echo, which Motion drives with a real `once` viewport flag.
-   That is what ships. `.reveal` is kept as an inert hook so the markup doesn't
-   need churning if a genuine IntersectionObserver version is wanted later.
+   An earlier pass used `animation-timeline: view()`. That is a SCRUBBED
+   timeline: scrolling back up ran the reveal in reverse and content vanished
+   again, and "once" is not expressible with it. It also put `opacity: 0` in
+   static CSS with nothing guaranteed to remove it, which blanked half the
+   homepage in a full-page capture. Both failure modes are structurally
+   impossible with the arrangement below.
 --------------------------------------------------------------------------- */
+.reveal {
+  transition:
+    opacity var(--dur-entrance) var(--ease-entrance),
+    transform var(--dur-entrance) var(--ease-entrance);
+}
+
+.reveal-armed {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.reveal-armed.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The controller bails before arming anything, but belt and braces: if a
+     class ever lands, it must not hide content or animate. */
+  .reveal,
+  .reveal-armed {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
 
 /* ---------------------------------------------------------------------------
    status-line pulse — verified state only.

@@ -169,7 +169,7 @@ Hierarchy comes from weight and size, never from switching families. All numeral
 
 **`page-hero`** — top-of-page treatment for every inner route, including both `/solutions` (the index) and `/solutions/[slug]` (each detail page, headline drawn from that solution's own copy, not the generic page-hero pattern used elsewhere) — see COPY.md and CANONICAL.md for the index-plus-detail reversal. Also `/work`, `/process`, `/contact`. Eyebrow (`--text-caption`) above a headline at `--text-display` (not hero scale) above a one-line description at `--text-body`, `muted`, capped around 60ch. No media, no `flourish-mark` — that stays home-only. Top padding matches standard section rhythm.
 
-**`closing-cta`** — centered, the one section permitted to be. Deliberately more compact than a standard section, not equal to one: padding roughly 64px / 48px mobile. Headline at `--text-display`. Trust lines beneath the subhead in `--text-sm`, `muted`, one single line separated by mid-dots. No proof line. **`button-primary--large`, a documented one-off size exception**: 18×32px padding, ~16px text — the only button on the site that deviates from the standard size. Earned deliberately: this is the page's single most important remaining ask, and the standard button size was reading as underweighted against the headline stacked above it, which was the actual cause of the "still doesn't work" complaint — not the padding, which was already correct. **Beneath the button, one small secondary link**: "Or ask our AI what we'd build for you" — `--text-sm`, `muted`, no button styling, opens the concierge panel. A lower-commitment alternate path, not a competing CTA — this is the only place the concierge gets a second entry point beyond its own persistent launcher, and it stays deliberately quiet so it doesn't dilute the primary ask. On scroll into view, replays the hero's load sequence (flourish dots → headline → subhead → button, see §6) once. The signature stripe directly above it uses the same full-bleed treatment as every other instance.
+**`closing-cta`** — centered, the one section permitted to be. Deliberately more compact than a standard section, not equal to one: padding roughly 64px / 48px mobile. Headline at `--text-display`. Trust lines beneath the subhead in `--text-sm`, `muted`, one single line separated by mid-dots. No proof line. **`button-primary--large`, a documented one-off size exception**: 18×32px padding, ~16px text — the only button on the site that deviates from the standard size. Earned deliberately: this is the page's single most important remaining ask, and the standard button size was reading as underweighted against the headline stacked above it, which was the actual cause of the "still doesn't work" complaint — not the padding, which was already correct. **Beneath the button, one small secondary link**: "Or ask our AI what we'd build for you" — `--text-sm`, `muted`, no button styling, opens the concierge panel. A lower-commitment alternate path, not a competing CTA — this is the only place the concierge gets a second entry point beyond its own persistent launcher, and it stays deliberately quiet so it doesn't dilute the primary ask. On scroll into view, replays the hero's load sequence **timing** (headline → subhead → trust lines → button, see §6) once — **no second set of flourish dots**; the one-per-page rule is absolute and wins over the echo. The signature stripe directly above it uses the same full-bleed treatment as every other instance.
 
 **`solution-row`** *(replaces `solution-card`)* — full-width row, hairline top border, 48px vertical padding. Accent dot (10px) + display-size title on the left, one-line hook + arrow on the right. Hover: title shifts 4px right, arrow shifts 4px right, hairline darkens to `border-strong`. No icons — the dot is the icon. No card fill, no box.
 
@@ -242,7 +242,7 @@ Replaces the decorative "LIVE" badge everywhere.
 
 | Layer | Tool |
 | --- | --- |
-| Scroll reveals | Native CSS `animation-timeline: view()` |
+| Scroll reveals | IntersectionObserver toggling a class, plain CSS transition |
 | Route transitions + shared elements | View Transitions API (`<ViewTransition>`) |
 | Presence, gesture, layout animation only | Motion |
 
@@ -255,9 +255,9 @@ Replaces the decorative "LIVE" badge everywhere.
 
 **Hero load sequence** (initial load only, never re-triggers): flourish dots stagger 60ms apart → headline fades up (32px→0) at +180ms → subhead at +80ms → CTA row at +80ms → hero media scales 0.97→1 concurrently with the CTA row, not chained after. Resolves under ~900ms.
 
-**Closing CTA echo:** the exact sequence above replays for the closing CTA, `once: true`, triggered on scroll-into-view instead of page load.
+**Closing CTA echo:** the sequence above replays for the closing CTA **minus the flourish dots** (one-per-page rule wins) — same stagger timing on headline → subhead → trust lines → button, `once: true`, triggered on scroll-into-view instead of page load.
 
-**Scroll reveals:** trigger at 15% into viewport. `translateY(16px)→0` + opacity, `--dur-entrance`, `--ease-entrance`, once. Stagger 80ms, max 4 concurrent. Featured Work rows reveal text + media as one unit.
+**Scroll reveals:** trigger at 15% into viewport. `translateY(16px)→0` + opacity, `--dur-entrance`, `--ease-entrance`, once. Stagger 80ms, max 4 concurrent. Featured Work rows reveal text + media as one unit. **Correction:** earlier versions specified `animation-timeline: view()` for this — technically wrong, since that API scrubs with scroll position (reverses on scroll-up) and can't express "once." Use IntersectionObserver adding a class on first intersection, removed observation after. Content must never render at `opacity:0` with no observer attached (a real bug this caused) — default to visible, reveal is progressive enhancement.
 
 **Shared element:** build card poster + title carry a `view-transition-name` matching the detail page hero.
 

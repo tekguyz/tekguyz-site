@@ -26,14 +26,14 @@ export function buildGrounding(): string {
   const solutionLines = solutions
     .map(
       (s) =>
-        `- ${s.name}: ${s.serviceDescription}\n  Components: ${s.features.join('; ')}\n  Page: /solutions/${s.slug}`,
+        `- ${s.name}: ${s.serviceDescription}\n  Components: ${s.features.join('; ')}\n  Link target (use only inside a markdown link, never as visible text): /solutions/${s.slug}`,
     )
     .join('\n');
 
   const builds = work
     .map((w) => {
       const oneLiner = w.kind === 'case-study' ? w.headline : w.summary.split('.')[0] + '.';
-      return `- ${w.name} (${w.tag}) — ${oneLiner} Live demo: ${w.url} · Page: /work/${w.slug}`;
+      return `- ${w.name} (${w.tag}) — ${oneLiner} Live demo: ${w.url} · Link target (use only inside a markdown link, never as visible text): /work/${w.slug}`;
     })
     .join('\n');
 

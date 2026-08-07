@@ -73,13 +73,14 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
 ## 4. Information architecture
 
 ```
-/                  Home
-/solutions         All four lines, one page, deep-linkable anchors
-/work              Index — 4 case studies + 4 projects
-/work/[slug]       8 detail pages
-/process           How We Work
-/contact           Contact form + concierge
-/privacy           Existing
+/                    Home
+/solutions           Index — light overview, four rows
+/solutions/[slug]    4 detail pages, one per Solution line
+/work                Index — 4 case studies + 4 projects
+/work/[slug]         8 detail pages
+/process             How We Work
+/contact             Contact form + FAQ + concierge
+/privacy             Existing
 ```
 
 **Reversed: `/solutions/[slug]` × 4, plus a lightweight `/solutions` index.** Earlier reasoning ("one page, anchor-linked, thin content doesn't justify four pages") was wrong on the decisive technical point: a `#anchor` fragment is not a separate page to a search engine — `/solutions#ai-voice-agents` and `/solutions#business-systems` are the *same URL* to Google, so all four solution keywords compete for relevance on one page instead of each ranking independently. That's the exact mechanism that already justified `/work/[slug]`; there's no principled reason it shouldn't apply here too. Each solution page also isn't as thin as it looked in isolation, once its related case study and pull-quote sit alongside it — same index-plus-detail pattern as Work, same `content/solutions.ts` single-source-of-truth logic driving both the index and the four detail pages.
@@ -93,7 +94,7 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
 ### Homepage sequence
 
 1. Signature stripe
-2. **Hero** — headline at full scale, subhead, dual CTA, `sarah-demo.mp4` loop with poster fallback
+2. **Hero** — headline at full scale, subhead, dual CTA, static `sarah-poster.webp` (16:9). The `sarah-demo.mp4` loop is retired for launch — see §1; it still shows the withdrawn phone simulator.
 3. **Proof line** — one sentence, no card: *Eight live builds. Open any of them right now.*
 4. **Solutions** — four cards, accent dot, one-line hook, → `/solutions/[slug]`
 5. **Featured Work** — 2 case studies, alternating full-width rows, LiveFrame + pull-quote
@@ -167,7 +168,7 @@ Native CSS now covers the whole scroll-reveal category — the 30–50KB animati
   - Endpoint: `POST /api/v1/triage/[webhook_secret]` — unchanged, don't touch from the site side.
   - **CORS is hard-locked to exactly `https://tekguyz.com`** — no `www.` variant, no subdomain, checked exactly. If hosting, domain, or the serving subdomain changes at any point, this fails **closed and silent** — a browser-level CORS rejection with no server-side error visible to the visitor. Any domain/hosting change must be coordinated with the CRM side in lockstep, before launch, not discovered after.
   - Required fields: `client_name`, `email`. Everything else optional.
-  - **Fields that make sense for this form** (Motion A inbound intake) and should be added: `phone` (optional — a second contact channel, directly useful given the known follow-up-gap problem), `website` (optional — the lead's own business site, once the honeypot collision above is fixed). `company` and `service_category` (fed by the existing Area of Interest select) are already covered by the current build. `lead_source` stays server-set (`"Website Contact Form"` vs `"AI Concierge"`, per the existing `source` parameter) — not a user-facing field.
+  - **Fields that make sense for this form** (Motion A inbound intake) and should be added: `phone` (optional — a second contact channel, directly useful given the known follow-up-gap problem, validated as a plausible phone number — reasonable digit count, not just any string), `website` (optional — the lead's own business site, once the honeypot collision above is fixed, validated as a well-formed URL via Zod). **Optional does not mean unvalidated** — a blank field should be accepted, a filled one should be checked. This was a real gap: the original field addition specified these as `z.string().optional()` with no format constraint, which is why nonsense input currently passes silently. `company` and `service_category` (fed by the existing Area of Interest select) are already covered by the current build. `lead_source` stays server-set (`"Website Contact Form"` vs `"AI Concierge"`, per the existing `source` parameter) — not a user-facing field.
   - **Fields that exist in the CRM schema but do NOT belong on this form**: `physical_address`, `social_google_business`, `social_facebook`, `social_instagram`. These serve the outbound Motion B prospecting workflow (profiling a cold-outreach target business), not an inbound visitor filling out a contact form. Asking a warm inbound lead for their Google Business Profile URL is friction with no payoff here — leave these off.
   - **AI Spam Shield** silently skips the notification email for obviously synthetic test submissions (bot-pattern names/emails). Not a bug — expect it during your own testing, don't debug a "missing email" that's actually the spam shield doing its job correctly.
   - Rate limit: 30/min per org, 429 + `Retry-After` past that. Not a real constraint for a contact form; only relevant if load-testing.

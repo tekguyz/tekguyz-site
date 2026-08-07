@@ -65,7 +65,7 @@ export default async function HomePage() {
         />
         <div className="tg-container mt-16">
           {solutions.map((s, i) => (
-            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} />
+            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} index={i} />
           ))}
         </div>
       </section>

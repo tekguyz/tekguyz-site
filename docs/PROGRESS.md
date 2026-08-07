@@ -18,7 +18,88 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | # | Prompt | Status | Notes |
 | --- | --- | --- | --- |
 | 1 | Master build prompt | **Complete** (2026-08-05) | Full site built from an empty repo. All 18 routes, every component in DESIGN.md §4, `content/work.ts` + `content/solutions.ts` + `config/solutions.ts`, contact action (honeypot renamed, phone/website added, confirmation email), concierge ported to Gemini 3.6 Flash, shared durable rate limiter, full SEO + JSON-LD + per-route OG images, generated favicon set, dark mode. `bun run build` clean, 18/18 routes prerendered. |
+| 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Complete** (2026-08-06) | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
 | 2 | Design-export audit + live integration verification | **Complete** (2026-08-06) | Full route-by-route rebuild against the approved `TEKGUYZ Site.dc.html` / `TEKGUYZ Components.dc.html` export, which is now the visual ground truth. Every integration exercised for real against live credentials. Playwright added as the screenshot/verification driver. |
+
+## Prompt 3 — three scoped fixes
+
+### 1. Optional fields were unvalidated
+
+`phone` and `website` were `z.string().optional()`, which accepted anything once
+filled — `aedD@DWDD@#33uyz.com` reached the CRM as a website and a 19-digit run
+as a phone number. Optional means the field may be **blank**, not that a present
+value goes unchecked.
+
+Rules now live in `lib/validation.ts` and are imported by **both** the client
+schema (`components/contact-form.tsx`) and the server schema
+(`app/actions/contact.ts`), so the two cannot drift — if the client were looser
+the server would reject a submission the visitor was told was fine.
+
+- **Website:** accepts bare domains (`tekguyz.com`), `www.`, an explicit scheme,
+  and any path/query/hash. Rejects credentials in the authority (which is what
+  the garbage input actually was), non-http(s) schemes, whitespace, hyphen-edge
+  labels, and single-character TLDs.
+- **Phone:** plausibility, not format — a sane character set plus an E.164-shaped
+  digit count of 7–15. Deliberately not a US pattern, since delivery is
+  nationwide and enquiries are international.
+- Errors render inline under the field via the existing `FieldError`, on blur and
+  on submit, with `aria-invalid` set. The phone hint is swapped for the error
+  rather than stacking beneath it.
+
+25 unit cases pass, including both exact garbage inputs. Verified in the browser:
+errors appear on blur, submission is blocked with nothing dispatched, and valid
+values (`tekguyz.com`, `(954) 555-0123`) clear the error and restore the hint.
+
+**Known strictness, accepted:** `1 (954) 555-0123 ext 4` is rejected because of
+the letters. Allowing them would also admit `555-CALL-NOW`. The field is
+optional, so the cost is low — revisit if real leads hit it.
+
+### 2. Concierge replies read as a filled-in template
+
+Markdown rendering was already fixed; the *content* was the problem, and the
+cause was the system prompt itself — it literally instructed a numbered
+template ("**The line**", "**The components**", "**The closest existing
+build** — … give its page path"). The model was doing exactly as told.
+
+- The three things a good reply covers are now described as substance to get
+  across "without ever announcing that it is doing so", not as labelled fields.
+- Two hard rules added: never print a raw route path or slug as visible text
+  (name the build instead, and use a markdown link when a link is warranted —
+  `[Team Performance](/work/team-performance)`), and never surface internal
+  structural labels.
+- `lib/concierge/grounding.ts` relabelled its `Page:` fields to
+  "Link target (use only inside a markdown link, never as visible text)", since
+  labelling them `Page:` was itself an invitation to echo them.
+- Lists remain allowed — the components genuinely are a list. The banned thing is
+  visible field names, not list formatting.
+
+The renderer already supports `[label](/path)` with sanitized hrefs and renders
+internal links without `target="_blank"`, so instructing links was safe.
+
+### 3. Scroll reveals restored, correctly
+
+Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
+`animation-timeline: view()` attempt that was removed outright.
+
+- `components/reveal.tsx` adds `is-revealed` on first intersection and calls
+  `unobserve` immediately — genuinely once, which a scrubbed timeline cannot
+  express (it ran in reverse on scroll-up and content vanished again).
+- Plain CSS transition on the class change. Threshold 0.15, 80ms stagger via
+  `data-reveal-index`, capped at 4 steps.
+- **Content is visible by default.** `.reveal` alone does nothing; the hidden
+  state lives on `.reveal-armed`, which only the controller adds, from an
+  effect. An element can therefore only be hidden once JS is running and an
+  observer is already attached to un-hide it. No JS, no observer support, a
+  hydration failure, print, or a non-scrolling crawler all render the page
+  fully visible — the blank-homepage bug is structurally impossible now.
+- Anything already on screen at mount is revealed without animating, so
+  above-the-fold content doesn't fade in on first paint.
+- `prefers-reduced-motion` bails before arming anything, with a `!important`
+  backstop in CSS.
+- Hooks re-added to `case-study-row` (on the row, never the halves — text and
+  media enter as one unit), `project-card`, and `solution-row`.
+
+---
 
 ## Prompt 2 — what changed, and why
 

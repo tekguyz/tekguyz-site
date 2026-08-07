@@ -14,6 +14,7 @@ import {
   budgetOptions,
 } from '@/content/solutions';
 import { site } from '@/lib/site';
+import { optionalPhone, optionalWebsite } from '@/lib/validation';
 
 /**
  * Two steps, inside a bordered card: 1px hairline, 16px radius, 40px padding,
@@ -36,8 +37,10 @@ const schema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.email('Please enter a valid email address'),
   company: z.string().optional(),
-  phone: z.string().optional(),
-  website: z.string().optional(),
+  // Same rules the server enforces — see lib/validation.ts. Optional means the
+  // field may be blank, not that a filled value goes unchecked.
+  phone: optionalPhone,
+  website: optionalWebsite,
   message: z.string().min(10, 'Tell us a little more — at least 10 characters'),
   budget: z.string().optional(),
   // Not `.max(0)` on the client either: a client-side rule on a hidden field
@@ -214,11 +217,16 @@ export function ContactForm() {
                   className={field}
                   placeholder="(xxx) xxx-xxxx"
                   aria-describedby="phone-hint"
+                  aria-invalid={errors.phone ? true : undefined}
                   {...register('phone')}
                 />
-                <p id="phone-hint" className="mt-2 text-[0.75rem] text-secondary">
-                  A second way to reach you, in case email&rsquo;s slow on your end.
-                </p>
+                {errors.phone ? (
+                  <FieldError>{errors.phone.message}</FieldError>
+                ) : (
+                  <p id="phone-hint" className="mt-2 text-[0.75rem] text-secondary">
+                    A second way to reach you, in case email&rsquo;s slow on your end.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -229,8 +237,10 @@ export function ContactForm() {
                   id="website"
                   className={field}
                   placeholder="yoursite.com"
+                  aria-invalid={errors.website ? true : undefined}
                   {...register('website')}
                 />
+                {errors.website && <FieldError>{errors.website.message}</FieldError>}
               </div>
 
               <div>

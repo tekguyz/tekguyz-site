@@ -77,8 +77,10 @@ export function CaseStudyRow({
   );
 
   return (
+    // `reveal` on the row, never on the halves — text and media enter as one
+    // unit, because they are one idea.
     <article
-      className={`tg-container tg-grid items-start gap-y-12 py-20 ${index > 0 ? 'border-t border-border' : ''}`}
+      className={`reveal tg-container tg-grid items-start gap-y-12 py-20 ${index > 0 ? 'border-t border-border' : ''}`}
     >
       {mediaFirst ? (
         <>

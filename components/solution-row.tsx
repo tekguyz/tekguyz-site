@@ -15,15 +15,19 @@ import type { Solution } from '@/content/solutions';
 export function SolutionRow({
   solution,
   last = false,
+  index = 0,
 }: {
   solution: Solution;
   last?: boolean;
+  /** Position within the list, for the 80ms reveal stagger. */
+  index?: number;
 }) {
   return (
     <Link
       href={`/solutions/${solution.slug}`}
       data-row
-      className={`hover-row tg-grid items-center border-t border-border py-12 ${last ? 'border-b' : ''}`}
+      data-reveal-index={index}
+      className={`reveal hover-row tg-grid items-center border-t border-border py-12 ${last ? 'border-b' : ''}`}
     >
       <div className="flex items-center gap-[22px]" style={{ gridColumn: '1 / 6' }}>
         <AccentDot solution={solution.slug} />
