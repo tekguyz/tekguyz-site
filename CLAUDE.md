@@ -41,6 +41,12 @@ Authority: **CANONICAL > DESIGN > COPY > SEO.** If two conflict, the higher wins
 - The four-color moving treatment appears in exactly one place: the concierge's thinking state.
 - Banned motion: parallax, gradient blobs, spinning shapes, marquees, particles, glassmorphism, cursor-followers, magnetic buttons, skeleton shimmer, smooth-scroll libraries.
 - **Scroll reveals never ship `opacity:0` in static CSS.** Content is visible by default; `.reveal` alone does nothing, and only `components/reveal.tsx` adds the hidden state, from an effect. `animation-timeline: view()` is wrong here — it scrubs with scroll and cannot express "once".
+- **The reveal's rise is `translate`, never `transform`.** `.hover-card` owns `transform` for its hover lift; sharing one property meant two durations fighting over one value. Related and easy to miss: a `transition` **shorthand resets every transition property**, and `.hover-row`/`.hover-card` sit later in `globals.css` than `.reveal` — so anything carrying both classes needs its transitions declared together in one rule (`.reveal.hover-card`, etc.). This silently cancelled the entrance on `solution-row` and `project-card` while the classes looked correctly wired.
+- **`RevealController` stays keyed on `usePathname()`.** It mounts once in the root layout, and the root layout does not remount on a client-side navigation — with `[]` deps it ran once per hard load and every route reached by clicking a link got no observer at all.
+- **Every page component returns a single root element, never a bare fragment.** Next scrolls the new segment into view on each client-side transition; a multi-child fragment routes that through `FragmentInstance.scrollIntoView()`, which calls `scrollIntoView()` on *every* top-level child, so the page lands wherever the surviving call left it. `/contact` landed on its FAQ this way. Keep the JSON-LD `<script>` inside the wrapper — a zero-box element can't be scrolled to, which is what broke the intended fallback.
+- **Branches of a multi-step form need distinct `key`s.** Without them React reconciles the two steps in place and the same uncontrolled `<input>` nodes are reused — step 1's name and email literally became step 2's phone and website, values included. It looks exactly like browser autofill and isn't.
+- **The nav `<header>` carries no border of its own** — the one specified hairline lives on the absolutely-positioned fill layer so it can fade in with the scrolled state. In Tailwind v4 preflight an unqualified `border-b` resolves to `currentColor`, which painted a permanent ink/white line straight onto the signature stripe.
+- **`LiveFrame` posters: 16:10 in every compact context, 16:9 for the hero, real production UI only** — never a simulator, emulator, or demo-mode capture (PLAYBOOK §12's hard rule). `bun run check:media` guards the wiring and runs on `prebuild`; a missing file fails the build, an off-ratio one warns. An off-ratio source is not cosmetic: `cover` crops it to a fragment that reads as invented content.
 
 ## Content model
 `content/work.ts` drives the `/work` index, all 8 detail pages, `generateStaticParams`, JSON-LD, OG images, and live status checks. `content/solutions.ts` does the same for `/solutions`. Adding an entry must produce a page with no template work.
@@ -54,6 +60,14 @@ Acceptance criteria for a change to be considered complete — not a checklist t
 - `prefers-reduced-motion` leaves no entrance, pulse, pin, or shimmer running, and hides nothing.
 - No hydration warnings.
 - Report what you did **not** finish. Never describe unfinished work as complete.
+
+## Verifying visually — read this before claiming you did
+Two environmental facts on this machine, both confirmed, neither of them a bug in the site. Discovering them costs a lot of time; don't rediscover them.
+
+- **Windows animations are off** (`HKCU\Control Panel\Desktop\WindowMetrics\MinAnimate = 0`), so `prefers-reduced-motion: reduce` matches machine-wide. Every entrance is correctly inert and hover looks fine because a state change still applies, just instantly. That combination *is* the signature of the preference being on — it is not evidence the motion code is broken. **Don't change this setting; it's an accessibility preference.**
+- **The in-app Browser pane is usually hidden** (`document.hidden === true`), so the page never composites: `requestAnimationFrame` never fires, IntersectionObserver callbacks never deliver, and every screenshot times out. An observer that "never fires" in a hidden pane is an artifact, not a defect.
+
+What still works without compositing: computed styles, class mechanics, geometry, `fetch` of server-rendered HTML, console and network reads. Measure with those and **say which half you proved** — the reduced-motion path is fully verifiable here, the motion-enabled path is not.
 
 ## Working notes
 - A decision only exists once it's in `docs/PROGRESS.md` or committed code. Chat is one `/clear` from gone.

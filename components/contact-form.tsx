@@ -150,13 +150,27 @@ export function ContactForm() {
             </span>
           </div>
 
+          {/* The `key` on each step is load-bearing, not decoration. Without it
+              React reconciles the two branches of this ternary in place: both
+              render a <div> at the same position, so the <input> at index 1
+              becomes phone and the one at index 2 becomes website — the SAME DOM
+              nodes that were name and email, still holding their uncontrolled
+              values. That is what looked like browser autofill leaking across
+              steps. Distinct keys force a real unmount/mount, so step 2 gets
+              fresh, empty inputs. React Hook Form keeps the values it already
+              collected (shouldUnregister is false), so Back still restores them. */}
           {step === 1 ? (
-            <div className="mt-8 flex flex-col gap-6">
+            <div key="step-1" className="mt-8 flex flex-col gap-6">
               <div>
                 <label htmlFor="projectType" className={label}>
                   Area of Interest
                 </label>
-                <select id="projectType" className={field} {...register('projectType')}>
+                <select
+                  id="projectType"
+                  className={field}
+                  autoComplete="off"
+                  {...register('projectType')}
+                >
                   <option value="">Select one</option>
                   {interestOptions.map((o) => (
                     <option key={o.value} value={o.value}>
@@ -171,7 +185,13 @@ export function ContactForm() {
                 <label htmlFor="name" className={label}>
                   Name
                 </label>
-                <input id="name" className={field} placeholder="Your name" {...register('name')} />
+                <input
+                  id="name"
+                  className={field}
+                  placeholder="Your name"
+                  autoComplete="name"
+                  {...register('name')}
+                />
                 {errors.name && <FieldError>{errors.name.message}</FieldError>}
               </div>
 
@@ -184,6 +204,7 @@ export function ContactForm() {
                   type="email"
                   className={field}
                   placeholder="you@company.com"
+                  autoComplete="email"
                   {...register('email')}
                 />
                 {errors.email && <FieldError>{errors.email.message}</FieldError>}
@@ -194,7 +215,7 @@ export function ContactForm() {
               </Button>
             </div>
           ) : (
-            <div ref={step2Ref} className="mt-8 flex flex-col gap-6">
+            <div key="step-2" ref={step2Ref} className="mt-8 flex flex-col gap-6">
               <div>
                 <label htmlFor="company" className={label}>
                   Company <Optional />
@@ -203,6 +224,7 @@ export function ContactForm() {
                   id="company"
                   className={field}
                   placeholder="Company name"
+                  autoComplete="organization"
                   {...register('company')}
                 />
               </div>
@@ -216,6 +238,7 @@ export function ContactForm() {
                   type="tel"
                   className={field}
                   placeholder="(xxx) xxx-xxxx"
+                  autoComplete="tel"
                   aria-describedby="phone-hint"
                   aria-invalid={errors.phone ? true : undefined}
                   {...register('phone')}
@@ -233,10 +256,16 @@ export function ContactForm() {
                 <label htmlFor="website" className={label}>
                   Website <Optional />
                 </label>
+                {/* Stays type="text". lib/validation.ts deliberately accepts a
+                    bare `tekguyz.com`, which type="url" would reject as
+                    malformed — inputMode gives the same mobile keyboard without
+                    importing a second, stricter rule the schema doesn't share. */}
                 <input
                   id="website"
                   className={field}
                   placeholder="yoursite.com"
+                  autoComplete="url"
+                  inputMode="url"
                   aria-invalid={errors.website ? true : undefined}
                   {...register('website')}
                 />
@@ -252,6 +281,7 @@ export function ContactForm() {
                   rows={5}
                   className={`${field} h-auto resize-y py-3 leading-[1.6]`}
                   placeholder={placeholder}
+                  autoComplete="off"
                   {...register('message')}
                 />
                 {errors.message && <FieldError>{errors.message.message}</FieldError>}
@@ -261,7 +291,12 @@ export function ContactForm() {
                 <label htmlFor="budget" className={label}>
                   Estimated budget <Optional />
                 </label>
-                <select id="budget" className={`${field} tabular-nums`} {...register('budget')}>
+                <select
+                  id="budget"
+                  className={`${field} tabular-nums`}
+                  autoComplete="off"
+                  {...register('budget')}
+                >
                   <option value="">Select one</option>
                   {budgetOptions.map((b) => (
                     <option key={b} value={b}>

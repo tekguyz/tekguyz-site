@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "bun run scripts/check-media.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "icons": "bun run scripts/generate-icons.ts"
+    "icons": "bun run scripts/generate-icons.ts",
+    "check:media": "bun run scripts/check-media.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",

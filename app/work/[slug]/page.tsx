@@ -103,7 +103,8 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 ].map(([label, body], i) => (
                   <div
                     key={label}
-                    className={`grid gap-6 border-t border-border py-10 md:grid-cols-[180px_1fr] ${i === 2 ? 'border-b' : ''}`}
+                    data-reveal-index={i}
+                    className={`reveal grid gap-6 border-t border-border py-10 md:grid-cols-[180px_1fr] ${i === 2 ? 'border-b' : ''}`}
                   >
                     <p className="text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
                       {label}
@@ -118,11 +119,13 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 ))}
               </div>
 
-              <PullQuote solution={entry.solution} className="mt-18">
+              <PullQuote solution={entry.solution} className="reveal mt-18">
                 {entry.pullQuote}
               </PullQuote>
 
-              <div className="mt-20">
+              {/* Frame, status, "Try it" and the narrative enter as one unit —
+                  same rule as the Featured Work rows. */}
+              <div className="reveal mt-20">
                 <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
                   <div>
                     <Frame poster={entry.poster} alt={entry.alt} priority />
@@ -138,7 +141,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
             </>
           ) : (
             <>
-              <div className="mt-14 grid gap-6 border-y border-border py-7 md:grid-cols-[180px_1fr]">
+              <div className="reveal mt-14 grid gap-6 border-y border-border py-7 md:grid-cols-[180px_1fr]">
                 <p className="text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
                   Built for
                 </p>
@@ -152,7 +155,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 {entry.summary}
               </p>
 
-              <div className="mt-12 border-t border-border pt-8">
+              <div className="reveal mt-12 border-t border-border pt-8">
                 <p className="mb-[14px] text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
                   What made it interesting
                 </p>

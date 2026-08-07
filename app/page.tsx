@@ -90,7 +90,7 @@ export default async function HomePage() {
           <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
             What Clients Say
           </p>
-          <div>
+          <div className="reveal">
             <Testimonial contextSlug={testimonial.contextSlug} />
           </div>
         </div>
@@ -146,8 +146,13 @@ function BandRow({
   );
 
   return (
+    // `reveal` on the row, never on the halves — DESIGN.md §6 is explicit that
+    // Featured Work rows enter text and media as one unit. This is the home
+    // band's own row component, distinct from components/case-study-row.tsx,
+    // which is why the earlier pass's hook-up missed it entirely.
     <article
-      className={`tg-container tg-grid items-center gap-y-12 ${index === 0 ? 'mt-24 border-b border-[#2A2A2C] pb-24' : 'pt-24'}`}
+      data-reveal-index={index}
+      className={`reveal tg-container tg-grid items-center gap-y-12 ${index === 0 ? 'mt-24 border-b border-[#2A2A2C] pb-24' : 'pt-24'}`}
     >
       {mediaFirst ? (
         <>

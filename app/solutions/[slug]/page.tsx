@@ -149,12 +149,13 @@ export default async function SolutionDetailPage({
               The builds
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {related.map((entry) => (
+              {related.map((entry, i) => (
                 <Link
                   key={entry.slug}
                   href={`/work/${entry.slug}`}
                   data-card
-                  className="hover-card flex flex-col rounded-[12px] border border-border bg-surface p-6"
+                  data-reveal-index={i}
+                  className="reveal hover-card flex flex-col rounded-[12px] border border-border bg-surface p-6"
                 >
                   <h2
                     className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"

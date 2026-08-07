@@ -65,7 +65,14 @@ export function Nav() {
     <header
       data-scrolled={scrolled ? 'true' : 'false'}
       style={{ viewTransitionName: 'site-nav' }}
-      className="sticky top-0 z-[60] w-full border-b transition-[background-color,border-color,backdrop-filter] duration-[240ms] [transition-timing-function:var(--ease-hover)]"
+      // The <header> itself carries no border. An unqualified Tailwind v4
+      // `border-b` resolves to currentColor, which painted an opaque ink (light)
+      // / near-white (dark) hairline below the 76px bar at EVERY scroll
+      // position — doubling the real hairline once scrolled, and sitting
+      // directly on the signature stripe that starts flush at the nav's bottom
+      // edge. The one specified border lives on the fill layer below, colored
+      // by --tg-nav-border so it can fade in with the rest of the scrolled state.
+      className="sticky top-0 z-[60] w-full"
     >
       <div
         className="absolute inset-0 -z-10 border-b"

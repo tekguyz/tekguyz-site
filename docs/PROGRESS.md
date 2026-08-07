@@ -18,8 +18,240 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | # | Prompt | Status | Notes |
 | --- | --- | --- | --- |
 | 1 | Master build prompt | **Complete** (2026-08-05) | Full site built from an empty repo. All 18 routes, every component in DESIGN.md §4, `content/work.ts` + `content/solutions.ts` + `config/solutions.ts`, contact action (honeypot renamed, phone/website added, confirmation email), concierge ported to Gemini 3.6 Flash, shared durable rate limiter, full SEO + JSON-LD + per-route OG images, generated favicon set, dark mode. `bun run build` clean, 18/18 routes prerendered. |
-| 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Complete** (2026-08-06) | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
 | 2 | Design-export audit + live integration verification | **Complete** (2026-08-06) | Full route-by-route rebuild against the approved `TEKGUYZ Site.dc.html` / `TEKGUYZ Components.dc.html` export, which is now the visual ground truth. Every integration exercised for real against live credentials. Playwright added as the screenshot/verification driver. |
+| 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Complete** (2026-08-06) | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
+| 4 | Fix pass 1 of 3 — shared components: LiveFrame asset wiring, nav/stripe collision, `/contact` landing position, motion audit, contact-form field contamination | **Complete** (2026-08-07) | Four of five were misdiagnosed in the brief and turned out to be different bugs than described — see the section below for each actual cause. Item 1 needed no code fix (the "placeholder" is the asset file); it gained a `prebuild` wiring guard and a flagged naming decision. Motion had three separate causes, one of them the machine's own reduced-motion setting. |
+
+## Prompt 4 — shared-component fix pass (five items)
+
+### 1. The "invented placeholder content" is the asset file, not any code
+
+**There is no coded fallback, and no placeholder branch anywhere.** `components/live-frame.tsx`
+has exactly one render path — `<Image src={poster}>` — with no conditional, no
+error state, and no styled stand-in markup. A repo-wide search for fabricated
+strings (`SARAH`, `VOICE ASSISTANT`, `Audio Synthesis`, `placeholder`, `fallback`)
+returns nothing in any rendering component. `content/work.ts` is wired correctly:
+all 8 `poster` paths and the one `heroPoster` resolve to files that exist.
+
+What renders is the `.webp` itself. Opened directly:
+
+- `sarah-project-thumb.webp` (1080×1059) **is** the "SARAH (VOICE ASSISTANT)"
+  quote card — a crop of the phone-call **simulator widget**, which is the exact
+  asset PLAYBOOK §12 names as the hard-rule violation ("a widget *inside* the
+  real product, not the product"). It is also **not listed in §12's inventory at
+  all** — §12 documents `sarah-poster.webp` for the hero and nothing for the AI
+  Voice Receptionist's compact context.
+- `crunch-wrap-dashboard.webp` (1080×1038) is a genuine capture of the real
+  crunch-wrap app, but zoomed into one detail view — header, "Audio Synthesis
+  Report", a `Demo Mode` tag. It is documented in §12; it is just the wrong shot.
+
+Measured ratios — **every compact asset is off the locked 16:10, only the hero
+passes**:
+
+| Asset | Size | Ratio |
+| --- | --- | --- |
+| `sarah-poster.webp` (hero, 16:9) | 1600×900 | **1.78 ✓** |
+| `field-ops-thumb.webp` | 769×754 | 1.02 |
+| `sarah-project-thumb.webp` | 1080×1059 | 1.02 |
+| `shopify-configurator.webp` | 1080×1140 | 0.95 |
+| `crunch-wrap-dashboard.webp` | 1080×1038 | 1.04 |
+| `advantage-teams` / `meeting-organizer` / `dragonfly-nica` / `executive-detailer` | 600×450 | 1.33 |
+
+`object-fit: cover` on a 1.02 source in a 1.60 frame discards ~36% from the
+bottom, so what survives is the top strip of a zoomed-in sub-view — which is why
+it reads as a fabricated card. This is Known Gap #3, now quantified.
+
+**Added: `scripts/check-media.ts`, run automatically by `prebuild`.** A wrong or
+missing filename now fails `bun run build` instead of silently shipping a blank
+frame, and off-ratio assets warn with their measured numbers. This is what makes
+"drop the recaptured `.webp` in under the documented name and it renders, no code
+change" actually true rather than assumed. Run it alone with `bun run check:media`.
+
+**No image was fabricated, sourced, or generated.** No neutral fallback was
+built either — there is no code path to replace, and inventing one would add a
+branch that never fires once the real files land. If a *missing* file should
+degrade to a hairline empty frame rather than fail the build, say so and it's a
+small change.
+
+### 2. Nav hairline over the signature stripe — an uncolored Tailwind border
+
+`components/nav.tsx:68` carried an unqualified `border-b` on the `<header>`. In
+Tailwind v4's preflight, borders default to `0 solid` with **no color**, so
+`border-b` resolved to `currentColor` — `rgb(17,17,17)` in light,
+`rgb(245,245,245)` in dark. The header therefore painted an opaque 1px line at
+**every** scroll position, including scroll 0 where DESIGN.md §4 says the nav has
+no border at all.
+
+Geometry: the nav is `sticky`, so it sits in flow — 76px content + that 1px =
+77px, and `SignatureStripe` is the very next element, starting flush at 77. The
+line landed directly on the stripe. Once scrolled it also doubled the *real*
+hairline, which lives on the separate absolutely-positioned fill layer
+(`nav.tsx:71`, colored by `--tg-nav-border`). Not a z-index, stacking, or
+negative-margin problem — a second, uncolored border on the wrong element.
+
+Fix: removed `border-b` (and the now-dead transition) from the `<header>` only.
+The fill layer keeps the one specified hairline, so the scrolled state is
+unchanged everywhere.
+
+Measured, header `border-bottom`: light `1px rgb(17,17,17)` → `0px`; dark
+`1px rgb(245,245,245)` → `0px`. Header bottom edge 76.8 → 76.0, stripe
+`[76.0, 82.0]` flush beneath it. A full-DOM sweep for any painted horizontal
+border ≥200px wide in the y 70–90 band returns `[]` in dark mode, and in light
+mode only the fill layer's own border at `rgba(229,231,235,0)` — transparent, as
+specified at scroll 0. The collision was global (the nav is global) and so is the
+fix; verified on all 7 routes, 3 stripes each.
+
+### 3. `/contact` landing position — a route-transition scroll, not an autofocus
+
+**There is no `autoFocus` anywhere in the tree** — exhaustive grep across `app/`,
+`components/`, `lib/`, `config/`, `content/`, and `document.querySelectorAll('[autofocus]')`
+returning `[]` on the live page. Nothing in `faq-accordion.tsx` ran on mount
+either: no effect, no `scrollIntoView`, `open` starting at `null`. On a hard load
+an instrumented `scrollIntoView`/`focus` log was completely empty. It is a
+**client-side route-transition defect only**, which is why it never reproduced on
+a refresh.
+
+`app/contact/page.tsx:30` returned a **multi-child fragment**. Next.js scrolls the
+new segment into view on every transition; because the page was a fragment, React
+handed Next a `FragmentInstance`, whose `scrollIntoView()` calls
+`Element.scrollIntoView()` on *every* top-level child, relying on the last call to
+win. Instrumented stack, captured on a real transition into `/contact`:
+
+```
+scrollIntoView  SECTION.pb-32                  <- the FAQ, y=1422
+scrollIntoView  DIV.tg-container tg-grid…
+scrollIntoView  DIV.grid h-[6px] grid-cols-4   <- the 6px stripe
+scrollIntoView  SCRIPT                         <- zero box, no-op
+  at FragmentInstance.scrollIntoView (react-dom)
+  at disableSmoothScrollDuringRouteTransition (next/dist)
+```
+
+`main`'s children were `SCRIPT(0px) · stripe(6px) · grid · section.faq`, so the
+**first** call scrolled to the FAQ and the call meant to undo it landed on the
+JSON-LD `<script>` — and `scrollIntoView()` on a zero-box element does nothing
+(measured: `script.scrollIntoView()` with `scrollY` at 1500 left it at 1500). The
+resting position was decided by an accidental fallback rather than the top of the
+page.
+
+Fixed by giving the page a single root `<div>` (JSON-LD stays inside it): one
+child, a real layout box, its top the top of the page. Measured **5
+`scrollIntoView` calls → 1**, on the wrapper at y=76.
+
+**Honest limit:** on this Chromium the resting `scrollY` was **0 both before and
+after** — the stray FAQ scroll was real and measured, but the final landing
+position only went wrong on the user's device. What is proven is that the FAQ is
+no longer a scroll target at all. Independently re-verified after the fact: a real
+client-side navigation from `/` scrolled to 900 into `/contact` at 375×812 settles
+at `scrollY: 0` and holds it for 2s, `activeElement` `BODY`, no panel open.
+
+`faq-accordion.tsx` also had genuinely broken a11y, now fixed: panels used to
+unmount when closed, so **0 of 6** `aria-controls` resolved to an existing element
+on page load — the exact state a screen reader meets. Panels now always render and
+collapse with `hidden` (6 of 6 resolve), triggers carry `id`, panels carry
+`role="region"` + `aria-labelledby`, and WAI-ARIA arrow-key roving was added
+(Up/Down with wrap, Home/End) — the only `focus()` call in the file, reachable
+only from a real `keydown`. Focus deliberately stays on the trigger when a row
+opens.
+
+### 4. Motion — three separate causes, only one of them a code bug in the audited list
+
+The claim "almost none of this fires" is accurate. It has three independent
+causes and they need separating, because two of them are not what they look like.
+
+**(a) The machine has `prefers-reduced-motion: reduce`.** `HKCU\Control
+Panel\Desktop\WindowMetrics\MinAnimate = 0` — Windows "Show animations" is off,
+which Chrome maps straight to the reduce preference. `reveal.tsx` correctly bails
+on it, and `globals.css` force-disables every transition. **This alone explains
+the entire symptom, including the specific tell**: hover still "works" because a
+hover *state change* still applies, just instantly — so entrances look dead while
+hover looks alive. Verified in the running app: `matchMedia(...).matches === true`,
+`armedCount: 0`, `document.getAnimations()` running: `[]`, nothing hidden, status
+dot static at exactly 0.85. That is the spec's required behavior, not a defect.
+**This setting was not changed — it is an accessibility preference and the user's
+to set.**
+
+**(b) A `transition` shorthand was cancelling the reveal — the real code bug.**
+`.hover-row` and `.hover-card` (`globals.css:435`, `:448`) each declare a
+`transition` **shorthand**, which resets every transition property, and they sit
+*later* in the file than `.reveal` (`:367`). So on every element carrying both —
+`solution-row` (`reveal hover-row`) and `project-card` (`reveal hover-card`), i.e.
+exactly two of the three components Pass 3 reported as hooked up — the entrance
+transition was wiped out entirely. Measured before: `transition-duration: 0.24s`,
+`transition-property: border-color`. The classes were wired correctly; the CSS
+silently cancelled them, which is why the hook-up looked done and looked dead.
+
+Fixed by declaring the combined transitions once for `.reveal.hover-row` and
+`.reveal.hover-card`, and by moving the 16px rise from `transform` to the
+independent **`translate`** property so the entrance and the hover lift compose
+instead of fighting over one value with two durations. Measured after —
+`project-card`: `opacity, translate` @ `0.5s, 0.5s` + `transform, border-color` @
+`0.24s, 0.24s`. State machine, transitions suppressed to read targets:
+default `[1, none]` → armed `[0, 0px 16px]` → revealed `[1, none]`, on both a
+plain `.reveal` and a `.reveal.hover-card`. The visible-by-default safety
+property is intact.
+
+**(c) The controller never re-ran on a client-side navigation.**
+`RevealController` is mounted once in the root layout with `useEffect(..., [])`,
+and the root layout does not remount when a `<Link>` navigates. So every route
+reached by clicking — which is how a visitor actually moves through the site —
+got no observer at all. Now keyed on `usePathname()`, with the arming pass
+deferred one `requestAnimationFrame` so `<ViewTransition>` can't leave the new
+DOM unqueryable.
+
+**Coverage was also simply missing.** `.reveal` hooks per route, server-rendered,
+before → after:
+
+| Route | Before | After |
+| --- | --- | --- |
+| `/` | 4 (solution rows only) | **7** (+2 Featured Work rows, +testimonial) |
+| `/work` | 8 | 8 |
+| `/solutions` | 4 | 4 |
+| `/work/[slug]` case study | **0** | **5** |
+| `/work/[slug]` project | **0** | **2** |
+| `/solutions/[slug]` | **0** | **1** |
+| `/process`, `/contact` | 0 | 0 — see Known Gaps |
+
+The home Featured Work rows were missed because `BandRow` in `app/page.tsx` is a
+**separate local component** from `components/case-study-row.tsx`; Pass 3's
+"hooks re-added to case-study-row" was true and still left the home band's most
+prominent scroll content with nothing.
+
+**Not broken, checked:** the hero load sequence (`SequenceRoot trigger="load"`)
+and the closing-CTA echo (`whileInView`, `once: true`, `amount: 0.3`) are both
+implemented per §6 and correctly pinned visible under reduced motion by `.tg-seq`.
+They do not need `.reveal` and did not get it.
+
+### 5. Contact form cross-field contamination was not autofill at all
+
+`components/contact-form.tsx:153`, the `step === 1 ? … : …` ternary. Both steps
+live in the same `<form>` and only one renders at a time, but React reconciled
+the two branches **in place**: each renders a `<div>` at the same position, so the
+child `<input>` elements were patched, not replaced. The name input literally
+*became* the phone input and the email input *became* the website input. They are
+uncontrolled (RHF `register` + ref), so React never rewrote `value` — the typed
+text stayed in the node and RHF absorbed it back into form state.
+
+Proved live with autofill never invoked: `phoneIsOldNameNode: true`,
+`phone.value === "Dana Whitfield"`; `websiteIsOldEmailNode: true`,
+`website.value === "dana.whitfield@northgatelogistics.com"`. It also explains why
+**Company** was never contaminated and never in the bug report: step 1's first
+child is a `<select>` against step 2's `<input>`, different element types, so
+React did replace that one.
+
+Fixed with `key="step-1"` / `key="step-2"` on the branch wrappers, forcing a real
+unmount/mount. After: both fields `""`, old nodes gone from the document, Back
+still restores step 1, and a Step 2 → Back → Continue round trip preserves values
+with no cross-contamination.
+
+`autoComplete` was genuinely missing on every input and is now set
+(`name`, `email`, `organization`, `tel`, `url`, explicit `off` on both selects and
+the textarea) — but it was secondary, not the cause. `hp_confirm` is untouched:
+same name, still `autoComplete="off"` + `tabIndex={-1}`. **`website` keeps
+`type="text"` with `inputMode="url"`**, deliberately: `lib/validation.ts` accepts a
+bare `tekguyz.com`, which `type="url"` treats as malformed, and that would put a
+stricter rule in the markup than the shared schema. No two inputs share an `id`.
+
+---
 
 ## Prompt 3 — three scoped fixes
 
@@ -180,7 +412,13 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 | --- | --- | --- |
 | Hero video loop (`sarah-demo.mp4`) | Static image ships first; video is a post-launch enhancement | A new recording of the real dashboard exists |
 | Live iframe embeds (`embeddable` flags) | Needs `frame-ancestors` CSP added per demo app first | Ready to do the CSP work — one prompt per app, then flip flags |
-| Compact-context image ratios (4:3/near-square, cropping hard in 16:10 frames) | User's own call — will recapture before deploy | Before deploy, not before this build |
+| Compact-context image ratios — **measured 2026-08-07: all 8 are off 16:10** (1.02–1.33 against a required 1.60); only the 16:9 hero passes. Two of them (`sarah-project-thumb`, `crunch-wrap-dashboard`) crop to a fragment that reads as invented content, and `sarah-project-thumb` is a **simulator crop**, the PLAYBOOK §12 hard-rule violation | User's own call — recapture in progress. Wiring is confirmed correct and guarded by `bun run check:media`, so a fresh file under the same name renders with no code change | On drop-in. Re-run `bun run check:media` to confirm |
+| **AI Voice Receptionist has no documented compact-context filename.** PLAYBOOK §12 lists `sarah-poster.webp` for the hero and nothing for the 16:10 contexts; `sarah-project-thumb.webp` is in use but appears in no doc. **Needs a decision, not a guess** — pick the filename (`sarah-thumb.webp` would match the `-thumb` convention) and add it to §12 | Naming is a documentation decision; changing the wiring to a name with no file behind it would break the page | Before the recapture lands, so the new file goes in under the agreed name |
+| `/process` and `/contact` still ship **zero** scroll reveals | `/process`'s motion (the pinned scroll moment) is Prompt 2's scope, and a form page fading in is a deliberate question rather than an oversight | `/process` — with Prompt 2. `/contact` — only if wanted |
+| Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Pre-existing and deliberate-looking; doc corrections are Prompt 3's scope | Prompt 3, reconcile doc against code |
+| **Every other route still returns a multi-child fragment**, the same shape that made `/contact` scroll to its last section on a route transition (`/`, `/work`, `/work/[slug]`, `/solutions`, `/solutions/[slug]`, `/process`, `/privacy`). The mechanism is confirmed, and each one fires N `scrollIntoView` calls with its **last** content section going first | Only `/contact` was in scope and only `/contact` was reported broken. The visible landing position depends on the browser — this Chromium lands at 0 regardless — so the others may look fine and still be wrong on the user's device | Next pass. The fix is one root wrapper per page, same as `/contact`. Worth doing together rather than one report at a time |
+| Motion cannot be visually confirmed in this environment | Two independent blockers, neither of them the code: Windows animations are off (`MinAnimate=0`), so `prefers-reduced-motion: reduce` matches machine-wide; and the in-app Browser pane is hidden (`document.hidden === true`), so the page never composites — `requestAnimationFrame` and IntersectionObserver callbacks never fire and screenshots time out | To see the entrances: turn Windows animations on (Settings → Accessibility → Visual effects → Animation effects) and keep the Browser pane displayed. **Not changed here — it is an accessibility preference** |
+| `bun run lint` is broken — ESLint 9 finds no `eslint.config.js` and there is no `.eslintrc.*` | Repo-level, unrelated to any item in this pass | Anytime |
 | Cal.com scheduling | Current funnel problem is lead follow-up, not booking friction — adding a second conversion path before measuring the first risks splitting the data | A few weeks of real inbound data suggests booking friction is real |
 | Privacy policy — concierge data flow, CRM forwarding, phone field not yet disclosed | Legal document, needs real review, not invented text | Legal review happens |
 | Terms of Service | No checkout/account system to need one; the one place it'd matter (concierge liability) needs a lawyer's line, not mine | If launch reveals an actual need |

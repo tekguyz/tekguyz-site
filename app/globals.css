@@ -363,21 +363,48 @@
    static CSS with nothing guaranteed to remove it, which blanked half the
    homepage in a full-page capture. Both failure modes are structurally
    impossible with the arrangement below.
+
+   THE RISE USES `translate`, NOT `transform`, deliberately. `.hover-card`
+   animates `transform: translateY(-3px)` on hover; if the reveal used the same
+   property the two would fight over one value with two different durations.
+   `translate` is an independent property, so the entrance and the hover lift
+   compose instead of overwriting each other.
 --------------------------------------------------------------------------- */
 .reveal {
   transition:
     opacity var(--dur-entrance) var(--ease-entrance),
-    transform var(--dur-entrance) var(--ease-entrance);
+    translate var(--dur-entrance) var(--ease-entrance);
+}
+
+/* A `transition` SHORTHAND resets every transition property, and the hover
+   rules below sit later in this file — so `reveal hover-row` (solution-row) and
+   `reveal hover-card` (project-card, the solutions-page build cards) silently
+   lost their entrance transition entirely and snapped in with no animation.
+   The classes were wired up correctly; the CSS cancelled them. Anything
+   carrying both needs its transitions declared together, once. */
+.reveal.hover-row {
+  transition:
+    opacity var(--dur-entrance) var(--ease-entrance),
+    translate var(--dur-entrance) var(--ease-entrance),
+    border-color var(--dur-base) var(--ease-hover);
+}
+
+.reveal.hover-card {
+  transition:
+    opacity var(--dur-entrance) var(--ease-entrance),
+    translate var(--dur-entrance) var(--ease-entrance),
+    transform var(--dur-base) var(--ease-hover),
+    border-color var(--dur-base) var(--ease-hover);
 }
 
 .reveal-armed {
   opacity: 0;
-  transform: translateY(16px);
+  translate: 0 16px;
 }
 
 .reveal-armed.is-revealed {
   opacity: 1;
-  transform: none;
+  translate: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -386,6 +413,7 @@
   .reveal,
   .reveal-armed {
     opacity: 1 !important;
+    translate: none !important;
     transform: none !important;
     transition: none !important;
   }
@@ -533,8 +561,9 @@
   }
 
   .reveal,
-  .reveal-stagger > * {
+  .reveal-armed {
     opacity: 1 !important;
+    translate: none !important;
     transform: none !important;
     animation: none !important;
   }

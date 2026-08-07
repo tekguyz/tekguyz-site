@@ -27,9 +27,32 @@ const TRUST = [
   'We reply within one business day',
 ];
 
+/**
+ * THIS PAGE MUST RETURN EXACTLY ONE ELEMENT — see the wrapper below.
+ *
+ * On every client-side transition into a route, Next.js asks React to scroll
+ * the new segment into view. When a page returns a multi-child fragment, React
+ * hands Next a FragmentInstance, and `FragmentInstance.scrollIntoView()` calls
+ * `Element.scrollIntoView()` on EVERY top-level child in reverse document
+ * order, relying on the last call — the page's first child — to win.
+ *
+ * That contract broke here. The four children were the JSON-LD `<script>`, the
+ * 6px SignatureStripe, the hero/form grid, and the FAQ `<section>` — so the
+ * loop's FIRST call scrolled to the FAQ, ~1400px down the mobile page, and the
+ * LAST call, the one meant to undo it, landed on the `<script>`. A zero-box
+ * element cannot be scrolled to: measured, `script.scrollIntoView()` left
+ * scrollY at 1500 unchanged. The page's resting position was therefore decided
+ * by whichever leftover child in the chain happened to have a layout box — a
+ * 6px stripe — rather than by the top of the page. Where that fallback also
+ * fails to move the viewport, the FAQ's scroll is the one that sticks.
+ *
+ * One root element removes the loop entirely: there is a single child, it has a
+ * real box, and its top is the top of the page. Do not flatten this back into a
+ * fragment, and do not hoist the JSON-LD script out of the wrapper.
+ */
 export default function ContactPage() {
   return (
-    <>
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(
@@ -99,6 +122,6 @@ export default function ContactPage() {
           <FaqAccordion />
         </div>
       </section>
-    </>
+    </div>
   );
 }
