@@ -12,7 +12,12 @@ export const metadata = buildMetadata({
 
 export default function ProcessPage() {
   return (
-    <>
+    <div>
+    {/* One root element, never a multi-child fragment — Next scrolls the new
+        segment into view on every client-side transition, and a fragment routes
+        that through FragmentInstance.scrollIntoView(), which calls
+        scrollIntoView() on EVERY top-level child. Mechanism in full:
+        app/contact/page.tsx. Keep the JSON-LD script inside the wrapper. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(breadcrumbs([{ name: 'Process', path: '/process' }]))}
@@ -28,6 +33,6 @@ export default function ProcessPage() {
       <ProcessSteps />
 
       <ClosingCta />
-    </>
+    </div>
   );
 }

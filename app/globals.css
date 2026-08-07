@@ -517,6 +517,16 @@
   background-size: 100% 1px;
 }
 
+/* `project-card`'s "Read the full story →" is a span, not a nested anchor — the
+   whole card is the link, and an anchor inside an anchor would split one card
+   into two tab stops. So the underline has to be driven by the card's hover and
+   focus, not the span's own, or it would only ever draw when the pointer
+   happened to land on those five words. */
+[data-card]:hover .link-underline,
+[data-card]:focus-visible .link-underline {
+  background-size: 100% 1px;
+}
+
 /* ---------------------------------------------------------------------------
    View Transitions — DESIGN.md §6, shared-element build-card -> detail morph.
 --------------------------------------------------------------------------- */
@@ -540,6 +550,25 @@
 }
 ::view-transition-new(site-nav) {
   animation: none;
+}
+
+/* ---------------------------------------------------------------------------
+   The /process progress rail — the site's ONE pinned moment.
+
+   This is a real rule, not the `lg:sticky lg:top-[140px] motion-reduce:lg:static`
+   utility stack it replaces. Both of those utilities set `position` and both
+   have specificity (0,1,0), so which one won was decided purely by their order
+   in the generated stylesheet — nothing about `motion-reduce:` makes it beat
+   `lg:`. The accessibility floor CANONICAL §6 requires (reduced motion degrades
+   the pin to a stacked list) cannot rest on a utility-sort coin flip, so the
+   override lives in the reduced-motion block below, after this rule, where the
+   cascade decides it deterministically.
+--------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .tg-pin {
+    position: sticky;
+    top: 140px;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -586,6 +615,12 @@
   .shimmer-seg {
     animation: none !important;
     opacity: 1 !important;
+  }
+
+  /* The one pinned moment, unpinned. See .tg-pin below for why this is a real
+     rule rather than a `motion-reduce:lg:static` utility. */
+  .tg-pin {
+    position: static !important;
   }
 
   ::view-transition-old(*),

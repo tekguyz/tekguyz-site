@@ -171,7 +171,8 @@ Every case study and project has a real screenshot of the running production app
 
 Current set, all `.webp`:
 
-- `sarah-poster.webp` — AI Voice Receptionist, real desktop dashboard: customer profile, live conversation feed, confirmation email. 1600×900, hero.
+- `sarah-poster.webp` — AI Voice Receptionist, **hero (16:9) only.** Real desktop dashboard: customer profile, live conversation feed, confirmation email. 1600×900. Also the poster for the future video loop, which is why it keeps the `-poster` name rather than being folded into the `-thumb` convention.
+- `sarah-thumb.webp` — AI Voice Receptionist, **compact 16:10 contexts** (case-study row, detail page). **Decided 2026-08-07 and wired; the file itself is pending the recapture.** It replaces `sarah-project-thumb.webp`, which was never documented here and was a crop of the retired phone-call simulator — a violation of this section's own hard rule, not merely a naming gap. `bun run check:media` fails the build until the file lands, which is the guard working as intended.
 - `field-ops-thumb.webp` — Field Photo Reports. The one app with both an admin and installer/mobile view; the desktop admin view is the primary capture.
 - `shopify-configurator.webp` — Bundle Builder
 - `crunch-wrap-dashboard.webp` — AI Audio & File Insights
@@ -179,6 +180,8 @@ Current set, all `.webp`:
 - `meeting-organizer-thumb.webp` — Automated Meeting & Research Organizer
 - `dragonfly-nica-thumb.webp` — Bilingual Restaurant Menu
 - `executive-detailer-thumb.webp` — Auto Detailer
+
+**All four project thumbs are now rendered**, not just wired: `/work/[slug]` project pages carry a `LiveFrame` as of 2026-08-07. They were previously referenced in `content/work.ts` and displayed nowhere, since `project-card` has no image by design and the project detail page had none either. Measured at capture time they are 600×450 (4:3), so `object-fit: cover` currently drops the bottom ~17% of each — the recapture at 1440×900 resolves it with no code change.
 
 **Capture method** (this took several failed attempts to get right — use it): OS screenshot tool, not DevTools. Mac `Cmd+Shift+4`, Windows `Win+Shift+S`. ShareX's "Fixed size region mode" with width/height set is ideal if you have it. Arrange multiple cards in the browser first (resize the window, use real browser zoom) so they sit together cleanly, *then* capture — you compose the shot visually rather than asking software to do it. Edit in PNG (lossless), convert to `.webp` at ~quality 90 as the final step only.
 

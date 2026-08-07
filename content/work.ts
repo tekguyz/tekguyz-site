@@ -107,7 +107,13 @@ export const work: WorkEntry[] = [
     solution: 'ai-voice-agents',
     headline: 'Answer every after-hours call like your best employee would, live, in real time.',
     url: 'https://tekguyz-sarah.vercel.app',
-    poster: '/media/sarah-project-thumb.webp',
+    // Decided, and now documented in PLAYBOOK §12: the compact 16:10 asset is
+    // `sarah-thumb.webp`, matching the `-thumb` convention every other build
+    // uses. It replaces `sarah-project-thumb.webp`, which appeared in no doc and
+    // was a crop of the retired phone-call simulator — a PLAYBOOK §12 hard-rule
+    // violation, not just a naming problem. `bun run check:media` fails the
+    // build until the recaptured file lands; that is the guard working.
+    poster: '/media/sarah-thumb.webp',
     // 1600x900 native — the hero's own 16:9 context, per DESIGN.md LiveFrame.
     heroPoster: '/media/sarah-poster.webp',
     alt: 'AI Voice Receptionist dashboard showing a customer profile, live conversation feed, and the confirmation email',

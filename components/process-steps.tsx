@@ -18,13 +18,27 @@ import { processSteps } from '@/content/process';
  * only genuinely ordered sequence.
  *
  * Under prefers-reduced-motion the pin is removed and this degrades to a plain
- * stacked list, which is the accessibility floor CANONICAL §6 requires.
+ * stacked list, which is the accessibility floor CANONICAL §6 requires. The pin
+ * itself is `.tg-pin` in globals.css rather than a `lg:sticky ...
+ * motion-reduce:lg:static` utility stack — see the comment there for why that
+ * stack could not be relied on.
+ *
+ * THE RAIL READS THE STEPS' OWN POSITIONS, not a fraction of the section's
+ * scrollable range. It used to compute `p = -rect.top / (sectionHeight -
+ * innerHeight)` and derive the active step as `floor(p * 3.999)`. Those two
+ * measurements are unrelated: measured at 1280x720, the scrollable range was
+ * 714px while the four steps spanned 1434px, so the readout hit "Step 04 of 04"
+ * at 536px into the section when step 04 did not begin until 993px — the rail
+ * ran a step and a half ahead of the content the whole way down. A progress
+ * indicator that disagrees with the page is worse than none, and this one is
+ * only on the site because /process is a genuine sequence where scroll position
+ * encodes real information (CANONICAL §6).
  */
 export function ProcessSteps() {
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
   const [reduced, setReduced] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -37,13 +51,23 @@ export function ProcessSteps() {
   useEffect(() => {
     if (reduced) return;
     const onScroll = () => {
-      const el = wrapRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
-      const p = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
-      setProgress(p);
-      setActive(Math.max(0, Math.min(3, Math.floor(p * 3.999))));
+      const steps = stepRefs.current.filter(Boolean) as HTMLDivElement[];
+      if (steps.length === 0) return;
+
+      // The reference line the rail reads against: a little above the middle of
+      // the viewport, which is where a reader's eye actually is.
+      const line = window.innerHeight * 0.45;
+
+      const first = steps[0]!.getBoundingClientRect();
+      const last = steps[steps.length - 1]!.getBoundingClientRect();
+      const span = last.bottom - first.top;
+      setProgress(span > 0 ? Math.min(1, Math.max(0, (line - first.top) / span)) : 0);
+
+      let current = 0;
+      for (let i = 0; i < steps.length; i++) {
+        if (steps[i]!.getBoundingClientRect().top <= line) current = i;
+      }
+      setActive(current);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -55,11 +79,8 @@ export function ProcessSteps() {
   }, [reduced]);
 
   return (
-    <div ref={wrapRef} className="tg-container tg-grid items-start pb-32">
-      <div
-        className="hidden lg:block lg:sticky lg:top-[140px] motion-reduce:lg:static"
-        style={{ gridColumn: '1 / 3' }}
-      >
+    <div className="tg-container tg-grid items-start pb-32">
+      <div className="tg-pin hidden lg:block" style={{ gridColumn: '1 / 3' }}>
         <div className="flex gap-5">
           <div
             className="relative w-[2px] flex-none"
@@ -104,7 +125,13 @@ export function ProcessSteps() {
         {processSteps.map((step, i) => (
           <div
             key={step.numeral}
-            className={`relative border-t border-border pt-18 pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
+            ref={(el) => {
+              stepRefs.current[i] = el;
+            }}
+            // No data-reveal-index: the stagger is for grids that enter
+            // together. These four are a screen apart, so an index would just
+            // add up to 240ms of dead time before a step that arrives alone.
+            className={`reveal relative border-t border-border pt-18 pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
           >
             <span
               aria-hidden

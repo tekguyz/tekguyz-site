@@ -52,7 +52,12 @@ export default async function SolutionDetailPage({
     .filter((w): w is NonNullable<typeof w> => Boolean(w));
 
   return (
-    <>
+    <div>
+    {/* One root element, never a multi-child fragment — Next scrolls the new
+        segment into view on every client-side transition, and a fragment routes
+        that through FragmentInstance.scrollIntoView(), which calls
+        scrollIntoView() on EVERY top-level child. Mechanism in full:
+        app/contact/page.tsx. Keep the JSON-LD script inside the wrapper. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(
@@ -172,6 +177,6 @@ export default async function SolutionDetailPage({
       </div>
 
       <ClosingCta />
-    </>
+    </div>
   );
 }

@@ -28,7 +28,12 @@ export default async function HomePage() {
   const hero = getWork('ai-voice-receptionist')!;
 
   return (
-    <>
+    <div>
+    {/* One root element, never a multi-child fragment — Next scrolls the new
+        segment into view on every client-side transition, and a fragment routes
+        that through FragmentInstance.scrollIntoView(), which calls
+        scrollIntoView() on EVERY top-level child. Mechanism in full:
+        app/contact/page.tsx. Keep the JSON-LD script inside the wrapper. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(professionalService(), reviewNode())}
@@ -97,7 +102,7 @@ export default async function HomePage() {
       </section>
 
       <ClosingCta />
-    </>
+    </div>
   );
 }
 

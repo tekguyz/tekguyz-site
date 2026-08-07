@@ -83,7 +83,7 @@ export default function ContactPage() {
             take it from there.
           </p>
 
-          <div className="mt-12 flex flex-col">
+          <div className="reveal mt-12 flex flex-col">
             {TRUST.map((line, i) => (
               <div
                 key={line}
@@ -113,8 +113,14 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* FAQ — emits FAQPage schema from these exact strings, never a paraphrase. */}
-      <section className="pb-32">
+      {/* FAQ — emits FAQPage schema from these exact strings, never a paraphrase.
+          Revealed, along with the trust lines above. The form itself deliberately
+          is NOT: it sits in the first viewport, and a form fading in on first
+          paint reads as the page loading slowly — the opposite of what this
+          route needs to convey. (The controller reveals anything already on
+          screen at mount without animating, so a reveal here is only ever an
+          entrance for a visitor who scrolls to it.) */}
+      <section className="reveal pb-32">
         <div className="tg-container">
           <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
             Common Questions

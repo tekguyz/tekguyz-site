@@ -49,6 +49,22 @@ export function ProjectCard({
       </p>
 
       <StatusLine result={status} className="mt-[22px]" />
+
+      {/* Matches `case-study-row`'s affordance so both tiers say what a click
+          does. Not a <Link> — the whole card is already one, and nesting an
+          anchor inside an anchor is invalid HTML that browsers recover from by
+          un-nesting, which splits one card into two tab stops.
+
+          Deliberately NOT a second "open the live demo" link: the demo is one
+          click further in, on the detail page, which now carries the frame,
+          the status line and the demo link together. Two competing actions on a
+          compact card is the exact ambiguity this tier is meant to avoid. */}
+      <span
+        aria-hidden
+        className="link-underline mt-6 self-start text-[14.5px] font-semibold"
+      >
+        Read the full story →
+      </span>
     </Link>
   );
 }

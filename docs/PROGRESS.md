@@ -21,6 +21,204 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 2 | Design-export audit + live integration verification | **Complete** (2026-08-06) | Full route-by-route rebuild against the approved `TEKGUYZ Site.dc.html` / `TEKGUYZ Components.dc.html` export, which is now the visual ground truth. Every integration exercised for real against live credentials. Playwright added as the screenshot/verification driver. |
 | 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Complete** (2026-08-06) | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
 | 4 | Fix pass 1 of 3 — shared components: LiveFrame asset wiring, nav/stripe collision, `/contact` landing position, motion audit, contact-form field contamination | **Complete** (2026-08-07) | Four of five were misdiagnosed in the brief and turned out to be different bugs than described — see the section below for each actual cause. Item 1 needed no code fix (the "placeholder" is the asset file); it gained a `prebuild` wiring guard and a flagged naming decision. Motion had three separate causes, one of them the machine's own reduced-motion setting. |
+| 5 | Fix pass 2 of 3 — project detail-page layout, `/process` pin, duplicate CTA, single root elements, lint, reveal coverage, Sarah filename | **Complete** (2026-08-07), pending commit approval | Six of eight as briefed. The `/process` pin was **already built**, not missing — but its progress readout ran a step and a half ahead of the content, and its reduced-motion degradation depended on Tailwind's utility sort order. Lint had no config file at all. See the section below. |
+
+## Prompt 5 — project detail pages, the /process pin, and repo hygiene (eight items)
+
+*2026-08-07. Awaiting approval to commit at time of writing.*
+
+### What the brief got right, and the two places it didn't
+
+Six of eight items were as described. Two were not:
+
+**The `/process` pinned moment was not "never built."** `components/process-steps.tsx`
+has existed since the master build, wired into `/process`, with the sticky rail,
+the progress fill, the `Step 0N of 04` readout and the `numeral-device` at 8%
+opacity behind each title. What it had instead was **a progress indicator that
+disagreed with the page.** It derived the active step from a fraction of the
+section's *scrollable range* rather than from where the steps actually are:
+
+```
+p = -sectionRect.top / (sectionHeight - innerHeight)
+active = floor(p * 3.999)
+```
+
+Measured at 1280×720: the scrollable range is 714px, the four steps span 1434px.
+So the rail read **"Step 04 of 04" at 536px into the section, where step 04 does
+not begin until 993px** — running a step and a half ahead of the content the
+whole way down. The two measurements only coincide if the section happens to be
+exactly twice the viewport height. Rewritten to read the step elements' own
+positions against a reference line at 45% of the viewport; the readout and the
+fill now agree with the content at every scroll position, measured.
+
+**The pin's reduced-motion degradation rested on a coin flip.** It was
+`lg:sticky lg:top-[140px] motion-reduce:lg:static`. Both utilities set
+`position`, both have specificity (0,1,0), and nothing about the `motion-reduce:`
+variant makes it beat `lg:` — which of them won was decided purely by their order
+in the generated stylesheet. CANONICAL §6's accessibility floor cannot rest on a
+utility sort order, so the pin is now `.tg-pin` in `globals.css`: a real rule
+inside `@media (min-width: 1024px)`, overridden by `position: static !important`
+inside the existing reduced-motion block, which is later in the file. Verified in
+the built stylesheet by byte offset — sticky rule at 29519, static override at
+30035.
+
+### The eight items
+
+| # | Item | Outcome |
+| --- | --- | --- |
+| 1 | Project detail pages: meta rail + `LiveFrame` | Shipped. Rail extracted to one `MetaRail` used by both tiers. |
+| 2 | `Read the full story →` on `project-card` | Shipped. |
+| 3 | Remove the rail's duplicate `Let's Talk` | Shipped, all 8 pages. |
+| 4 | `/process` pinned moment | Already built; two real defects found and fixed (above). |
+| 5 | Single root element on every route | Shipped, 7 routes. Measured: 1 `scrollIntoView` call per route across all 18. |
+| 6 | `bun run lint` | Fixed. Runs, 0 errors, 1 reported warning. |
+| 7 | Reveal coverage on `/process` and `/contact` | Shipped. `/process` 0 → 4, `/contact` 0 → 2. |
+| 8 | `sarah-thumb.webp` rewire + documentation | Shipped. Build now fails at `check:media` until the file lands — expected. |
+
+### Item 1 — the layout gap, and what the "weight distinction" actually protects
+
+Project pages reused the case-study grid with a fraction of the content and no
+rail at all: a narrow left column against a large empty right side, with the
+Solution line, live status and demo link appearing nowhere on the page. The four
+project thumbs in `content/work.ts` were rendered nowhere in the codebase.
+
+Both tiers now carry the rail on cols 10–12. Content stays left-anchored — case
+studies on 1–9, projects on 1–8, so thin copy is not stretched to fill. Measured
+on `/work/restaurant-menu`: content right edge 722px, rail left edge 951px, the
+col-9 gap intact; frame ratio exactly 1.600.
+
+`project-card` still has no image, and that rule is unchanged — the weight
+distinction it protects is between the two *card* treatments on the index and in
+the amount of narrative content, not a rule that a project may never show its own
+screenshot on its own page.
+
+The project branch's standalone status-line-plus-demo-link row was removed:
+`FrameMeta` beneath the new frame carries exactly that pair, and the rail carries
+it again, so keeping it would have made three copies on one page.
+
+### Item 6 — lint was not misconfigured, it was absent
+
+There was no `eslint.config.*` and no `.eslintrc.*` of any kind. ESLint 9
+defaults to flat config, found nothing, and exited before linting a file —
+`eslint-config-next` had been installed the whole time and had never run once.
+
+`eslint-config-next@16` ships a **native flat config** as its default export. It
+is not loadable through `FlatCompat`; that path throws `Converting circular
+structure to JSON` inside the eslintrc validator. Import it directly. No new
+dependency was added.
+
+Four problems found, three fixed:
+
+- **`components/nav.tsx`** — `setState` in an effect to close the mobile drawer
+  on route change. Moved to the adjust-state-during-render pattern, which React
+  discards before paint instead of committing a render with the drawer still
+  open over the new page.
+- **`components/theme-toggle.tsx`** — the `mounted` flag set from an effect,
+  purely to pick a glyph. Replaced with CSS: both glyphs ship, a `dark:` variant
+  hides one, and the accessible name is two `sr-only` spans with the inactive one
+  at `display:none`. This is what DESIGN.md §7 already required ("never gate on
+  `useTheme()` or mount state when a CSS `dark:` variant solves it"). Verified in
+  both themes: light shows the moon and announces "Switch to dark mode", dark
+  shows the sun and announces "Switch to light mode", exactly one label exposed.
+- **`eslint.config.mjs`** — anonymous default export. Named.
+
+**Left as a warning, deliberately** — `components/contact-form.tsx:92`,
+`react-hooks/incompatible-library` on React Hook Form's `watch()`. The React
+Compiler skips memoizing the component rather than risking stale UI. The
+mechanical fix is RHF's `useWatch`, but this is the file whose step-branch
+reconciliation bug caused the field-contamination defect in Prompt 4, and
+swapping its subscription API is a behavioural change, not a lint fix. Flagged
+rather than done. Warnings do not fail `bun run lint`.
+
+**What lint does not buy us, stated plainly:** of the three defect classes that
+motivated turning it on, it catches one. Missing React `key`s: caught. A
+`transition` shorthand resetting a longhand, and an unqualified Tailwind
+`border-b` resolving to `currentColor`: **not caught, and not catchable by any
+ESLint rule** — both are CSS cascade semantics and invisible to a JS/JSX linter.
+CLAUDE.md's standing rules remain the only mechanism that applies to those.
+
+### Verification — which half was actually proved
+
+Per CLAUDE.md, this machine has OS-level reduced motion on and the Browser pane
+runs hidden. Both held. What that permitted and what it didn't:
+
+**Measured, not eyeballed:**
+- `scrollIntoView` fires exactly **1** time per route, target a `DIV`, across all
+  18 routes — instrumented `Element.prototype.scrollIntoView` and walked the site
+  by clicking real in-page anchors. Client-side navigation works fine in a hidden
+  pane; only compositing doesn't. (A synthesized `<a>` triggers a full page load
+  and throws the instrumentation away — use existing anchors.)
+- Reduced-motion path on `/process`: `.tg-pin` computes to `position: static` at
+  1280px, all four steps at `opacity: 1` / `translate: none`, numeral at 0.08.
+  The pin correctly degrades to a stacked list.
+- Pin geometry under motion: forced the sticky declaration back on **with
+  `!important`** and sampled `getBoundingClientRect()` across scroll positions —
+  holds at `top: 140px` through the section and releases at its end. A plain
+  inline style is not enough here and silently measures a still-static element,
+  because the reduced-motion override is `!important`.
+- The corrected rail math, replayed against the live DOM at eight scroll offsets:
+  readout and fill agree with the step under the reference line at every one.
+- Both themes on a project detail page by computed style: page `#101010`, text
+  `#F5F5F5`, primary CTA inverting to a `#F5F5F5` fill with `#101010` text.
+- All 4 project cards: no nested anchor, no extra focusable child, still one tab
+  stop each.
+
+**Confirmed by eye, at 1440×900**, once the Browser pane was displayed: all four
+project detail pages (rail populated, real `LiveFrame` rendering actual product
+UI, `Live · checked just now` + demo link beneath it, no `Let's Talk` in any
+rail, no testimonial on the three that shouldn't have one), and
+`/work/field-photo-reports` as a case-study spot-check — frame, meta row, Try it,
+How it's built, prev/next all intact, rail sticky at `top: 116px` with zero
+buttons. Screenshots time out whenever the pane is hidden; nothing else does.
+
+**Confirmed by the user on a motion-enabled device (Pixel 9A, 2026-08-07) — the
+motion layer works.** Two independent confirmations, which together close the
+question that had been open since Prompt 4:
+
+- **The concierge's four-segment thinking stripe shimmers.** It had rendered
+  static on the dev machine, which looked like a defect and is not one: DESIGN.md
+  §4 specifies a static four-segment bar as the `prefers-reduced-motion`
+  fallback, and `globals.css` implements exactly that
+  (`.shimmer-seg { animation: none !important }`). The static bar was the spec
+  working, not the animation failing.
+- **The hero's entrance sequence (flourish dots → headline → subhead → CTA) is
+  visible**, so the load-sequence and reveal layers both run correctly on a real
+  device.
+
+This is the first direct evidence that the entrance system runs end to end. Every
+prior pass could only verify its wiring.
+
+**Still not verified on this machine, and deliberately not attempted:** anything
+requiring motion. Windows animations are disabled here as a standing preference,
+so `prefers-reduced-motion: reduce` matches everywhere. The *wiring* is verified
+by server-rendered class counts, computed styles, and the corrected rail formula
+replayed against live DOM geometry — **the motion-enabled path is the user's to
+verify, and emulating around it here is not worth the time it costs.**
+
+### A trap that cost real time this session — read before verifying anything
+
+**A stale `next start` can hold port 3210 and serve a previous build.** Several
+servers were started across the session; `pkill`/`Stop-Process` did not clear
+them all, and the survivor kept serving HTML referencing chunk filenames that no
+longer existed on disk. Those chunks 404'd as **500s**, so a fresh browser got
+the page with **zero CSS rules and no hydration** — which looks exactly like
+catastrophic breakage: pin static, progress fill stuck at 0%, no reveals armed,
+step padding 0. All of it was the stale server.
+
+Kill by port, not by process name, and verify before trusting any result:
+
+```
+(Get-NetTCPConnection -LocalPort 3210 -State Listen).OwningProcess | % { taskkill /PID $_ /T /F }
+```
+
+Then confirm the stylesheet the served HTML references actually returns 200
+before drawing a single conclusion from that page.
+
+**Also, for anyone reaching for Playwright here:** it is a devDependency and it
+works, but **only under `node --experimental-strip-types`, not under Bun** —
+Bun's stdio handling breaks Playwright's `--remote-debugging-pipe` on Windows and
+`launch()` times out after 180s with the browser process visibly spawned. The
+script must live inside the project directory to resolve `playwright` at all.
 
 ## Prompt 4 — shared-component fix pass (five items)
 
@@ -413,12 +611,18 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 | Hero video loop (`sarah-demo.mp4`) | Static image ships first; video is a post-launch enhancement | A new recording of the real dashboard exists |
 | Live iframe embeds (`embeddable` flags) | Needs `frame-ancestors` CSP added per demo app first | Ready to do the CSP work — one prompt per app, then flip flags |
 | Compact-context image ratios — **measured 2026-08-07: all 8 are off 16:10** (1.02–1.33 against a required 1.60); only the 16:9 hero passes. Two of them (`sarah-project-thumb`, `crunch-wrap-dashboard`) crop to a fragment that reads as invented content, and `sarah-project-thumb` is a **simulator crop**, the PLAYBOOK §12 hard-rule violation | User's own call — recapture in progress. Wiring is confirmed correct and guarded by `bun run check:media`, so a fresh file under the same name renders with no code change | On drop-in. Re-run `bun run check:media` to confirm |
-| **AI Voice Receptionist has no documented compact-context filename.** PLAYBOOK §12 lists `sarah-poster.webp` for the hero and nothing for the 16:10 contexts; `sarah-project-thumb.webp` is in use but appears in no doc. **Needs a decision, not a guess** — pick the filename (`sarah-thumb.webp` would match the `-thumb` convention) and add it to §12 | Naming is a documentation decision; changing the wiring to a name with no file behind it would break the page | Before the recapture lands, so the new file goes in under the agreed name |
-| `/process` and `/contact` still ship **zero** scroll reveals | `/process`'s motion (the pinned scroll moment) is Prompt 2's scope, and a form page fading in is a deliberate question rather than an oversight | `/process` — with Prompt 2. `/contact` — only if wanted |
+| ~~**AI Voice Receptionist has no documented compact-context filename**~~ | **Resolved 2026-08-07.** Decided `sarah-thumb.webp` for the 16:10 compact contexts, `sarah-poster.webp` stays the 16:9 hero and future video poster. Both are now in PLAYBOOK §12 and `content/work.ts` is rewired. `bun run check:media` fails the build until the recaptured file lands — expected, not a regression | On drop-in |
+| ~~`/process` and `/contact` ship zero scroll reveals~~ | **Resolved 2026-08-07.** `/process` 0 → 4 (one per step, no stagger index — the steps are a screen apart, so an index would only add dead time), `/contact` 0 → 2 (trust lines and the FAQ section). The form itself deliberately gets none: it is in the first viewport and a form fading in on first paint reads as a slow page | — |
+| **`bun run build` currently fails at `prebuild`** — `check:media` reports `sarah-thumb.webp` missing. `next build` itself is clean: 45 routes prerendered, zero type errors, verified by running it directly | Expected and correct: the wiring was changed to the agreed filename ahead of the recapture, and the guard exists precisely to fail loudly rather than ship a blank frame. Working around it would defeat the guard | The recaptured file lands in `public/media/` |
+| **The four project thumbs are now rendered at 16:10 and are 600×450 (4:3)** — `object-fit: cover` drops the bottom ~17% of each. Newly visible because project detail pages did not show an image before this pass | Same recapture already in flight; no code change needed when it lands | On drop-in, with the rest of the 1440×900 set |
+| `components/contact-form.tsx:92` — `react-hooks/incompatible-library` warning on React Hook Form's `watch()`. The React Compiler skips memoizing the component rather than risk stale UI | The mechanical fix is RHF's `useWatch`, but this is the file whose step-branch reconciliation caused the Prompt 4 field-contamination bug. Swapping its subscription API is a behavioural change, not a lint fix, and wants its own verification pass | Anytime it is worth a focused change plus a re-test of both form steps |
+| `bun.lock` lost a stale `vercel@^58.7.1` devDependency during this pass | Not intentional and not a removal: the committed lockfile listed it while `package.json` never has, so any `bun install` would have re-synced it the same way. Net dependency change from this pass is zero — `eslint-config-next` was already installed | Confirm the Vercel CLI is not expected as a local devDependency; if it is, add it to `package.json` properly |
+| ~~Motion-enabled behavior is unverified~~ | **Partly resolved 2026-08-07**, by the user on a Pixel 9A: the concierge thinking-stripe shimmer runs, and the hero's entrance sequence is visible on load — so the reveal layer and the four-colour treatment both work. The static stripe seen on the dev machine was the spec'd reduced-motion fallback, not a defect | Still unconfirmed with motion on: the `/process` progress fill advancing with scroll, and the closing-CTA echo. Check those two next time a motion-enabled device is in front of the site |
+| `/privacy` ships zero scroll reveals | Out of scope this pass and arguably correct — it is a legal text page, and entrance animation on policy copy is decoration | Only if wanted |
 | Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Pre-existing and deliberate-looking; doc corrections are Prompt 3's scope | Prompt 3, reconcile doc against code |
-| **Every other route still returns a multi-child fragment**, the same shape that made `/contact` scroll to its last section on a route transition (`/`, `/work`, `/work/[slug]`, `/solutions`, `/solutions/[slug]`, `/process`, `/privacy`). The mechanism is confirmed, and each one fires N `scrollIntoView` calls with its **last** content section going first | Only `/contact` was in scope and only `/contact` was reported broken. The visible landing position depends on the browser — this Chromium lands at 0 regardless — so the others may look fine and still be wrong on the user's device | Next pass. The fix is one root wrapper per page, same as `/contact`. Worth doing together rather than one report at a time |
+| ~~**Every other route still returns a multi-child fragment**~~ | **Resolved 2026-08-07.** All 7 remaining page components wrapped in a single root element. Measured across all 18 routes with `Element.prototype.scrollIntoView` instrumented: exactly **1** call per route, target a `DIV` | — |
 | Motion cannot be visually confirmed in this environment | Two independent blockers, neither of them the code: Windows animations are off (`MinAnimate=0`), so `prefers-reduced-motion: reduce` matches machine-wide; and the in-app Browser pane is hidden (`document.hidden === true`), so the page never composites — `requestAnimationFrame` and IntersectionObserver callbacks never fire and screenshots time out | To see the entrances: turn Windows animations on (Settings → Accessibility → Visual effects → Animation effects) and keep the Browser pane displayed. **Not changed here — it is an accessibility preference** |
-| `bun run lint` is broken — ESLint 9 finds no `eslint.config.js` and there is no `.eslintrc.*` | Repo-level, unrelated to any item in this pass | Anytime |
+| ~~`bun run lint` is broken~~ | **Resolved 2026-08-07.** There was no config file of any kind, so ESLint 9 exited before linting anything. `eslint.config.mjs` added, importing `eslint-config-next`'s native flat config directly (it is **not** FlatCompat-loadable). 0 errors. One warning left deliberately — see the Prompt 5 section | — |
 | Cal.com scheduling | Current funnel problem is lead follow-up, not booking friction — adding a second conversion path before measuring the first risks splitting the data | A few weeks of real inbound data suggests booking friction is real |
 | Privacy policy — concierge data flow, CRM forwarding, phone field not yet disclosed | Legal document, needs real review, not invented text | Legal review happens |
 | Terms of Service | No checkout/account system to need one; the one place it'd matter (concierge liability) needs a lawyer's line, not mine | If launch reveals an actual need |

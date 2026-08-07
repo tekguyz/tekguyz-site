@@ -7,12 +7,11 @@ import { Frame, FrameMeta, BuildNarrative } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag, AccentDot } from '@/components/solution-tag';
-import { ButtonLink } from '@/components/button';
 import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
-import { work, getWork, adjacentWork } from '@/content/work';
-import { getSolution } from '@/content/solutions';
-import { getStatus } from '@/lib/status';
+import { work, getWork, adjacentWork, type WorkEntry } from '@/content/work';
+import { getSolution, type Solution } from '@/content/solutions';
+import { getStatus, type StatusResult } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, softwareApplicationNode } from '@/lib/seo';
 
 export function generateStaticParams() {
@@ -32,9 +31,74 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 /**
- * Case studies get content on cols 1-9 with a sticky meta rail on 10-13.
- * Projects are lighter by design: a single 1-8 column, no rail, no image — the
- * same weight distinction project-card carries on the index.
+ * The sticky meta rail, cols 10-13 (DESIGN.md §3). BOTH tiers get it.
+ *
+ * Its job is Solution line / Status / Live demo — nothing else. It used to end
+ * with its own `Let's Talk` button, which put two asks on one page: the rail's
+ * and the `closing-cta` band's. The band is the documented size exception
+ * *because* it is meant to be the page's single strongest ask, so a second
+ * button above it was competing with the thing it was supposed to lead into.
+ * Don't reintroduce it.
+ */
+function MetaRail({
+  entry,
+  solution,
+  status,
+}: {
+  entry: WorkEntry;
+  solution: Solution;
+  status: StatusResult;
+}) {
+  return (
+    <aside className="lg:sticky lg:top-[116px]" style={{ gridColumn: '10 / 13' }}>
+      <div className="border-t border-border pt-5">
+        <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+          Solution line
+        </p>
+        <Link href={`/solutions/${solution.slug}`} className="flex items-center gap-3">
+          <AccentDot solution={entry.solution} />
+          <span className="link-underline text-[14.5px] font-semibold">{solution.name}</span>
+        </Link>
+      </div>
+
+      <div className="mt-7 border-t border-border pt-5">
+        <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+          Status
+        </p>
+        <StatusLine result={status} />
+        <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary italic">
+          We check every demo hourly. This is the real status, not a badge.
+        </p>
+      </div>
+
+      <div className="mt-7 border-t border-border pt-5">
+        <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+          Live demo
+        </p>
+        <a
+          href={entry.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link-underline text-[14.5px] font-semibold"
+        >
+          Open it in a new tab
+        </a>
+      </div>
+    </aside>
+  );
+}
+
+/**
+ * Case studies get content on cols 1-9, projects on 1-8 — thin copy is not
+ * stretched wider than it needs, per DESIGN.md §3's left-anchor rule. Both tiers
+ * carry the sticky meta rail on 10-13.
+ *
+ * Projects previously had NO rail and NO image, so the page was a narrow text
+ * column against a large empty right side, with the Solution line, status, and
+ * demo link appearing nowhere. That was a documentation gap, not a deliberate
+ * weight distinction — the distinction DESIGN.md actually protects is on
+ * `project-card` (which still never carries an image) and in the amount of
+ * narrative content, which is unchanged here.
  *
  * Challenge / Approach / Outcome render as `180px 1fr` label-and-body rows
  * separated by hairlines, not as stacked headings.
@@ -42,8 +106,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
  * These eight pages are the site's strongest long-tail SEO surface, so their
  * content is deliberately NOT compressed back to card length.
  *
- * The poster carries a view-transition-name matching the card that linked here,
- * so the visitor watches what they clicked become the page.
+ * The case-study poster carries a view-transition-name matching the card that
+ * linked here, so the visitor watches what they clicked become the page. A
+ * project's frame has no counterpart to morph from — `project-card` has no
+ * image — so it deliberately carries no transition name.
  */
 export default async function WorkDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -55,8 +121,10 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
   const { prev, next } = adjacentWork(entry.slug);
   const isCase = entry.kind === 'case-study';
 
+  // One root element, never a multi-child fragment — see app/contact/page.tsx
+  // for the full mechanism. Keep the JSON-LD script inside the wrapper.
   return (
-    <>
+    <div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(
@@ -167,27 +235,23 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 </p>
               </div>
 
+              {/* Frame and its meta row enter as one unit, same rule as the
+                  Featured Work rows. 16:10 — every compact context is, and a
+                  detail page is a compact context. The poster file already
+                  existed in content/work.ts and was rendered nowhere: this page
+                  had no image and `project-card` deliberately never has one, so
+                  four captured assets were wired to nothing. */}
+              <div className="reveal mt-14">
+                <Frame poster={entry.poster} alt={entry.alt} priority />
+                <FrameMeta status={status} url={entry.url} />
+              </div>
+
               {entry.tryIt && (
-                <p className="mt-8 max-w-[62ch] text-[0.875rem] leading-[1.55] text-secondary">
+                <p className="mt-6 max-w-[62ch] text-[0.875rem] leading-[1.55] text-secondary">
                   <span className="text-[0.75rem] font-bold tracking-[0.1em] uppercase">Try it</span>{' '}
                   &nbsp;{entry.tryIt}
                 </p>
               )}
-
-              {/* The export shows only the status line here. The demo link is
-                  kept because "open it yourself" is the entire brand thesis and
-                  this is the only place a project's demo is reachable. */}
-              <div className="mt-12 flex flex-wrap items-center gap-6">
-                <StatusLine result={status} />
-                <a
-                  href={entry.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-underline text-[14.5px] font-semibold"
-                >
-                  Open it in a new tab
-                </a>
-              </div>
 
               {entry.hasClientReview && (
                 <div className="mt-16">
@@ -225,50 +289,10 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
           )}
         </div>
 
-        {isCase && (
-          <aside className="lg:sticky lg:top-[116px]" style={{ gridColumn: '10 / 13' }}>
-            <div className="border-t border-border pt-5">
-              <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
-                Solution line
-              </p>
-              <Link href={`/solutions/${solution.slug}`} className="flex items-center gap-3">
-                <AccentDot solution={entry.solution} />
-                <span className="link-underline text-[14.5px] font-semibold">{solution.name}</span>
-              </Link>
-            </div>
-
-            <div className="mt-7 border-t border-border pt-5">
-              <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
-                Status
-              </p>
-              <StatusLine result={status} />
-              <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary italic">
-                We check every demo hourly. This is the real status, not a badge.
-              </p>
-            </div>
-
-            <div className="mt-7 border-t border-border pt-5">
-              <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
-                Live demo
-              </p>
-              <a
-                href={entry.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-underline text-[14.5px] font-semibold"
-              >
-                Open it in a new tab
-              </a>
-            </div>
-
-            <ButtonLink href="/contact" className="mt-9 w-full">
-              Let&rsquo;s Talk
-            </ButtonLink>
-          </aside>
-        )}
+        <MetaRail entry={entry} solution={solution} status={status} />
       </div>
 
       <ClosingCta />
-    </>
+    </div>
   );
 }

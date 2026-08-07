@@ -46,10 +46,20 @@ export function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
+  // Close the mobile drawer when the route changes — including on a back/forward
+  // navigation, which is why it can't just live in the links' onClick.
+  //
+  // Adjusting state during render, not from an effect. An effect would commit
+  // one render with the drawer still open over the new page and then a second
+  // render closing it; React discards this one before it ever paints. This is
+  // React's documented "derive state from props" pattern, and it's what
+  // react-hooks/set-state-in-effect points at.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
     setOpen(false);
     setSolutionsOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
