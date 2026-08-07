@@ -21,8 +21,8 @@ Source of truth hierarchy: **Brand Playbook v2 > this brief > Design System v2.0
 | Brand asset set | **Done**, generated from the two masters. |
 | Case-study imagery | **Done**, with one open item. `field-ops-thumb.webp` recaptured. `sarah-poster.webp` recaptured as the real AI Voice Receptionist dashboard (transcript, CRM sync, follow-up email) — replacing an earlier version that showed a sandboxed phone-call simulator, which was never the actual product. |
 | Hero media | **Resolved — static image, video deferred.** New `sarah-poster.webp` captured at 1600×900 (16:9) showing the real dashboard: customer profile, live conversation feed, and confirmation email. Launching with the static image; the looped `.mp4` is a later enhancement, not a launch blocker. (The old `sarah-demo.mp4` still shows the retired phone-call simulator — do not ship it as-is; recapture when the video version happens.) Hero uses its own 16:9 ratio, distinct from the 16:10 used in compact card contexts — see DESIGN.md `LiveFrame`. |
-| Lead capture | **Built — in the OLD repo, not this one.** `app/actions/contact.ts` exists on the currently-live site and must be supplied as an attachment when building; it is not present in the new repo. Zod validation, honeypot, min-fill-time, parallel Resend + CRM dispatch via `Promise.allSettled`. |
-| AI concierge | **Built — in the OLD repo, not this one.** `app/api/concierge/route.ts`, same caveat as above: supply as an attachment. Tool-calling lead capture, session cap, rate limit, shared action reuse. |
+| Lead capture | **Built and live in this repo.** `app/actions/contact.ts` — Zod validation (including format checks on the optional `phone` and `website`), honeypot named `hp_confirm`, min-fill-time, parallel Resend notification + submitter confirmation + CRM dispatch via `Promise.allSettled`. Exercised end to end against real credentials. |
+| AI concierge | **Built and live in this repo.** `app/api/concierge/route.ts` — tool-calling lead capture through the same shared action, session cap, shared durable rate limit, Gemini 3.6 Flash behind `lib/concierge/llm.ts`. |
 | Core SEO | **Live.** Canonicals, robots.ts, sitemap.ts, ProfessionalService JSON-LD, dynamic OG route, full favicon/manifest set. |
 
 **One open production issue:** `lockup-master.svg` uses a `<text>` element for the wordmark, so it renders incorrectly wherever Geist isn't installed. Convert to outlined paths for the true master.
@@ -119,7 +119,7 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
 
 | Layer | Tool | Scope |
 | --- | --- | --- |
-| Scroll reveals | Native CSS `animation-timeline: view()` | All entrances. Zero JS, compositor thread. |
+| Scroll reveals | IntersectionObserver + a CSS class toggle | All entrances. **Corrected** — this originally specified native `animation-timeline: view()`, which is wrong: that API scrubs with scroll position, so it reverses on scroll-up and cannot express "once". It also required `opacity:0` in static CSS, which blanked sections wherever nothing scrolled. See DESIGN.md §6. Content defaults to visible; the reveal is progressive enhancement. |
 | Route transitions | View Transitions API via React `<ViewTransition>` | Page changes + shared-element morphs. |
 | Everything else | Motion (formerly Framer Motion) | Only presence, gesture, layout animation. |
 
@@ -219,11 +219,22 @@ Building on what's already live (canonicals, robots, sitemap, ProfessionalServic
 
 ## 9. Build sequence
 
-**Steps 1–4 are complete.** Resend key rotated, Copy Deck v2 written, Design System finalized at v2.4, Claude Design passes run and closed out. Remaining:
+**Steps 1–6 are complete.** The site is built, audited against the approved
+Claude Design export, verified against live integrations, committed, and
+deployed as a Vercel preview. `docs/PROGRESS.md` is the running record of what
+each prompt covered — read that, not this list, for current status.
 
-5. **Master prompt → Opus 5 in Claude Code**, effort High, plan mode first. One prompt, full build. ← *you are here*
-6. **Follow-up prompts:** anything the master build leaves unfinished, plus polish.
-7. **Later, when you're ready:** one CSP prompt per demo app (`frame-ancestors https://tekguyz.com`), then flip `embeddable` flags to `true` to activate live embeds.
+7. **Remaining before launch:** point a domain at it, add the privacy
+   disclosures (see Known Gaps), recapture the compact-context images.
+8. **Later:** one CSP prompt per demo app (`frame-ancestors https://tekguyz.com`),
+   then flip `embeddable` flags to `true` to activate live embeds.
+
+**The approved Claude Design export is the visual ground truth.** `TEKGUYZ
+Site.dc.html` and `TEKGUYZ Components.dc.html` carry the literal values; this
+document and DESIGN.md are translations of it. Where a translation disagrees
+with the export, the export wins and the doc gets fixed — except on decisions
+made deliberately *after* the export (Geist-only typography, the
+`/solutions/[slug]` routing reversal), which this document governs.
 
 **Deferred, deliberately, not forgotten:**
 - Hero video loop (static image ships first).

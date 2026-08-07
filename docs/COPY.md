@@ -15,7 +15,7 @@
 Solutions · Work · Process · Contact
 Primary CTA, right-aligned: **Let's Talk**
 
-Mobile: same order, full-screen drawer. Solutions expands to four anchor links.
+Mobile: same order, full-screen drawer. Solutions expands to the four `/solutions/[slug]` routes.
 
 ## Section eyebrows
 
@@ -60,7 +60,7 @@ HEADLINE: We build tech that actually works for your business.
 SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
 CTA PRIMARY: See Our Work → /work
 CTA SECONDARY: Let's Talk → /contact
-MEDIA: `sarah-demo.mp4` loop, `sarah-poster.webp` fallback. Live-status chip attached.
+MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. The `sarah-demo.mp4` loop is retired for launch — it still shows the withdrawn phone simulator (CANONICAL §1).
 
 ## Proof line
 
@@ -72,10 +72,10 @@ EYEBROW: WHAT WE DO
 HEADLINE: What We Do
 DESCRIPTION: Four ways we help operational businesses run smarter.
 
-- **Smart Operations** (blue) — Your business makes data and tasks every hour. We build systems that handle them automatically. → /solutions#smart-operations
-- **AI Voice Agents** (violet) — Your phones don't stop ringing because your doors are closed. We answer them. → /solutions#ai-voice-agents
-- **Business Systems** (amber) — Everything your clients and team need, in one private place instead of five. → /solutions#business-systems
-- **Custom Web Apps** (teal) — If you can describe the workflow, we can build the tool that runs it. → /solutions#custom-web-apps
+- **Smart Operations** (blue) — Your business makes data and tasks every hour. We build systems that handle them automatically. → /solutions/smart-operations
+- **AI Voice Agents** (violet) — Your phones don't stop ringing because your doors are closed. We answer them. → /solutions/ai-voice-agents
+- **Business Systems** (amber) — Everything your clients and team need, in one private place instead of five. → /solutions/business-systems
+- **Custom Web Apps** (teal) — If you can describe the workflow, we can build the tool that runs it. → /solutions/custom-web-apps
 
 ## Featured Work
 
