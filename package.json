@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "bun run scripts/check-media.ts",
+    "prebuild": "bun run scripts/generate-icons.ts && bun run scripts/check-media.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
     "icons": "bun run scripts/generate-icons.ts",
     "check:media": "bun run scripts/check-media.ts"
   },
@@ -40,7 +41,8 @@
     "png-to-ico": "^3.0.2",
     "sharp": "^0.35.3",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
   },
   "trustedDependencies": [
     "unrs-resolver"

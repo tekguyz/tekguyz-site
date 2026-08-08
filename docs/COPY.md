@@ -481,7 +481,9 @@ DIRECT: hello@tekguyz.com · Mon–Fri, 9:00 AM–5:00 PM · South Florida, remo
 - Button: **Send Inquiry** · Back link: **Back**
 - Reassurance under button: We reply within one business day.
 
-SUCCESS: Message sent. We'll reply within one business day.
+SUCCESS: Message sent — thank you for taking the time to walk us through this. A real person reads every submission; expect a reply within one business day.
+
+*(Rendered as the existing two-part success state: "Message sent" as the bolded status line beside the success dot, the remainder as the body paragraph beneath it. The em dash is that split.)*
 ERROR: Something didn't go through. Try again, or email us directly at hello@tekguyz.com.
 
 *(Honeypot + minimum-fill-time retained, both invisible. Delivers to contact@tekguyz.com and the CRM triage endpoint via the shared action.)*

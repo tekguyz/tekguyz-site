@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEventHandler } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,7 @@ import {
   budgetOptions,
 } from '@/content/solutions';
 import { site } from '@/lib/site';
-import { optionalPhone, optionalWebsite } from '@/lib/validation';
+import { capPhoneDigits, optionalPhone, optionalWebsite } from '@/lib/validation';
 
 /**
  * Two steps, inside a bordered card: 1px hairline, 16px radius, 40px padding,
@@ -92,6 +92,16 @@ export function ContactForm() {
   const interest = watch('projectType');
   const placeholder = detailsPlaceholder[interest] ?? DEFAULT_DETAILS_PLACEHOLDER;
 
+  // Real-time cap on the phone field. The input is uncontrolled (RHF), so the
+  // guard rewrites the event's own value before handing it to RHF's onChange —
+  // no second source of truth, and no controlled-input caret jump.
+  const phoneField = register('phone');
+  const onPhoneChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const capped = capPhoneDigits(e.target.value);
+    if (capped !== e.target.value) e.target.value = capped;
+    return phoneField.onChange(e);
+  };
+
   async function goToStep2() {
     const ok = await trigger(['projectType', 'name', 'email']);
     if (ok) setStep(2);
@@ -123,7 +133,8 @@ export function ContactForm() {
             <span className="font-semibold">Message sent</span>
           </div>
           <p className="mt-[14px] text-[length:var(--text-body)] text-secondary">
-            We&rsquo;ll reply within one business day.
+            Thank you for taking the time to walk us through this. A real person reads every
+            submission; expect a reply within one business day.
           </p>
         </div>
       ) : (
@@ -233,15 +244,22 @@ export function ContactForm() {
                 <label htmlFor="phone" className={label}>
                   Phone <Optional />
                 </label>
+                {/* aria-describedby is conditional because the hint element it
+                    points at is REPLACED by the error, not stacked above it —
+                    an unconditional value dangles at exactly the moment a
+                    screen-reader user most needs the description to resolve.
+                    When the error is showing, FieldError's role="alert" is what
+                    announces, so there is nothing to re-point this at. */}
                 <input
                   id="phone"
                   type="tel"
                   className={field}
                   placeholder="(xxx) xxx-xxxx"
                   autoComplete="tel"
-                  aria-describedby="phone-hint"
+                  aria-describedby={errors.phone ? undefined : 'phone-hint'}
                   aria-invalid={errors.phone ? true : undefined}
-                  {...register('phone')}
+                  {...phoneField}
+                  onChange={onPhoneChange}
                 />
                 {errors.phone ? (
                   <FieldError>{errors.phone.message}</FieldError>

@@ -12,7 +12,7 @@ import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
 import { solutions } from '@/content/solutions';
 import { featured, getWork, type CaseStudy } from '@/content/work';
-import { testimonial } from '@/content/process';
+import { processSteps, testimonial } from '@/content/process';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/seo';
 
@@ -98,6 +98,43 @@ export default async function HomePage() {
           <div className="reveal">
             <Testimonial contextSlug={testimonial.contextSlug} />
           </div>
+        </div>
+      </section>
+
+      {/* Process teaser — CANONICAL §4 item 7, between Testimonial and the
+          closing CTA. Copy is COPY.md's "Process teaser" block verbatim; the
+          four condensed lines are the `teaser` field that content/process.ts has
+          always carried for exactly this section. No numerals: DESIGN.md §4
+          scopes `numeral-device` to /process and nothing else on the site. */}
+      <section className="border-t border-border py-32">
+        <SectionHead
+          eyebrow="How We Work"
+          headline="How We Work"
+          description="Four steps. No surprises. No disappearing acts."
+        />
+        {/* Not tg-grid: at the 8-column tablet breakpoint a 12-column `span 3`
+            leaves a ragged 2 + 2 with a stray gap. Plain responsive columns. */}
+        <div className="tg-container mt-16 grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
+          {processSteps.map((s, i) => (
+            <div
+              key={s.numeral}
+              data-reveal-index={i}
+              className="reveal border-t border-border pt-6"
+            >
+              <h3 className="text-[1.125rem] leading-[1.3] font-semibold tracking-[-0.02em]">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-[0.875rem] leading-[1.55] text-secondary">{s.teaser}</p>
+            </div>
+          ))}
+        </div>
+        <div className="tg-container mt-14">
+          <Link
+            href="/process"
+            className="link-underline text-[14.5px] font-semibold text-fg"
+          >
+            See our full process →
+          </Link>
         </div>
       </section>
 

@@ -22,6 +22,86 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Complete** (2026-08-06) | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
 | 4 | Fix pass 1 of 3 — shared components: LiveFrame asset wiring, nav/stripe collision, `/contact` landing position, motion audit, contact-form field contamination | **Complete** (2026-08-07) | Four of five were misdiagnosed in the brief and turned out to be different bugs than described — see the section below for each actual cause. Item 1 needed no code fix (the "placeholder" is the asset file); it gained a `prebuild` wiring guard and a flagged naming decision. Motion had three separate causes, one of them the machine's own reduced-motion setting. |
 | 5 | Fix pass 2 of 3 — project detail-page layout, `/process` pin, duplicate CTA, single root elements, lint, reveal coverage, Sarah filename | **Complete** (2026-08-07), pending commit approval | Six of eight as briefed. The `/process` pin was **already built**, not missing — but its progress readout ran a step and a half ahead of the content, and its reduced-motion degradation depended on Tailwind's utility sort order. Lint had no config file at all. See the section below. |
+| 6 | Fix pass 3 of 3 — nav CTA size, home Process teaser, `/contact` trust dots, `flourish-mark` doc, validation tests, phone typing cap, `aria-describedby`, dark favicon, success copy | **Complete** (2026-08-07), pending commit approval | Eight of nine were real. **Item 1 was not**: the nav CTA already rendered at the standard size — measured 14/24px, 14.5px — so nothing was changed. Item 6's stated fix ("cap at 15 characters") would have reproduced the very bug it was written to avoid; implemented as a 15-**digit** cap instead. Item 5's "25 unit cases pass" claim had no test file behind it at all. See the section below. |
+
+## Prompt 6 — nine scoped fixes
+
+*2026-08-07. Awaiting approval to commit at time of writing.*
+
+### The two places the brief and the repo disagreed
+
+**Item 1 — the nav CTA was already correct.** The brief states `Let's Talk` in the
+nav renders at `button-primary--large` (18×32px, ~16px text). It does not, and
+nothing was changed. `components/nav.tsx:119` passes `size="nav"`, and
+`components/button.tsx` maps that to `px-6 py-[14px]` at the base `text-[14.5px]`
+— the standard size DESIGN.md §4 specifies. Measured live at 1280×900 via
+`getComputedStyle`, all three `Let's Talk` instances on Home:
+
+| Instance | Padding | Font size | Variant |
+| --- | --- | --- | --- |
+| Nav | 14px / 24px | 14.5px | standard `button-primary` ✓ |
+| Closing CTA | 18px / 32px | 16px | `button-primary--large` — the one documented exception ✓ |
+
+No CSS overrides either: `app/globals.css` carries no `button` rule, only the
+`--tg-cta-*` colour tokens. The size exception is correctly confined to one place.
+
+**Item 6 — a 15-*character* cap would have broken exactly what the brief was
+protecting.** The brief is right that a hard 10-digit cap breaks international
+support, and right that the validated range is 7–15 digits. But "capping entry at
+15 characters" is the same mistake one breakpoint over: `+44 20 7123 4567` is a
+valid 13-digit UK number and **16 characters**, so a `maxLength={15}` would cut it
+mid-entry. `capPhoneDigits` in `lib/validation.ts` counts **digits** and leaves
+formatting (`+`, spaces, parens, dots, dashes) unlimited — which is precisely what
+`isPlausiblePhone` already measures, so the guard and the schema cannot disagree.
+Verified with real typed input: 23 characters typed into the field truncate to 15
+digits, and `+44 20 7123 4567` survives intact and validates.
+
+### The other seven
+
+- **Home Process teaser restored** (`app/page.tsx`) between Testimonial and the
+  closing CTA, per CANONICAL §4 item 7. Copy is COPY.md's "Process teaser" block
+  verbatim; the four condensed lines are the `teaser` field `content/process.ts`
+  has carried since the master build *for exactly this section* — it was authored
+  and then never rendered. No numerals: DESIGN.md §4 scopes `numeral-device` to
+  `/process`. Not `tg-grid` — a 12-column `span 3` goes ragged at the 8-column
+  tablet breakpoint; plain responsive columns give 4 / 2 / 1 with no overflow at
+  375px. Verified in both themes (`#111` → `#F5F5F5`, borders `#E5E7EB` → `#2A2A2C`).
+- **`/contact` trust-line dots removed** (`app/contact/page.tsx`). They used three
+  of the four wayfinding accents as decorative bullets; those accents mean
+  *solution line* everywhere else. Now identical to `closing-cta`'s treatment of
+  the same three facts: one muted flex-wrap row, 3px `muted-soft` mid-dots,
+  no colour. Measured: `rgb(106,113,126)` text, two `rgb(156,163,175)` 3px dots,
+  zero accent backgrounds left in that column beyond the `flourish-mark` itself.
+- **`flourish-mark` doc corrected** (DESIGN.md §4). Was "once per page, home
+  only"; the dots ship on every route's first section, matching the export.
+  Rendering untouched — the doc was the stale half. The `page-hero` entry carried
+  the same stale claim ("no `flourish-mark` — that stays home-only") and was
+  corrected with it. The *once per page* half stands and is unchanged.
+- **`aria-describedby` no longer dangles** (`components/contact-form.tsx`). The
+  hint is *replaced* by the error, not stacked, so the reference pointed at a
+  removed node at the exact moment it mattered. Now `errors.phone ? undefined :
+  'phone-hint'`. Measured through a real invalid-then-valid cycle: attribute goes
+  `"phone-hint"` → `null` → `"phone-hint"`, tracking the element's presence.
+- **Favicon set is now dark** (`scripts/generate-icons.ts`). Plate is
+  `--tg-bg-dark` `#101010`, connectors lifted to `#4B5563` so they stay a
+  hairline rather than glowing off the plate. `icon-master.svg` is **unchanged**
+  and nothing else reads it — the nav lockup and footer render the mark as JSX
+  (`components/logo-lockup.tsx`) and the OG images build their own, so no other
+  surface moved. `app/icon.svg` took the plate too: it previously shipped
+  transparent "so it adapts", which meant a tab could show a dark `.ico` in one
+  browser and a bare mark in another.
+- **Success copy replaced** in `components/contact-form.tsx` and `docs/COPY.md`.
+  The em dash is the existing two-part split: "Message sent" stays the bolded
+  status line beside the success dot, the remainder is the body paragraph.
+- **Real test suite added** — see the Prompt 3 correction above.
+
+### Also found, and fixed
+
+**PLAYBOOK §13 says favicons are "generated from `icon-master.svg` at build
+time". They were not.** `bun run icons` was manual and its outputs committed, so
+the doc described an intent the pipeline never had — and a master edit could
+silently ship stale icons. `prebuild` now runs `generate-icons.ts` ahead of
+`check-media.ts`, which makes §13 true. Outputs stay committed and deterministic.
 
 ## Prompt 5 — project detail pages, the /process pin, and repo hygiene (eight items)
 
@@ -476,9 +556,19 @@ the server would reject a submission the visitor was told was fine.
   on submit, with `aria-invalid` set. The phone hint is swapped for the error
   rather than stacking beneath it.
 
-25 unit cases pass, including both exact garbage inputs. Verified in the browser:
-errors appear on blur, submission is blocked with nothing dispatched, and valid
-values (`tekguyz.com`, `(954) 555-0123`) clear the error and restore the hint.
+~~25 unit cases pass, including both exact garbage inputs.~~ **Corrected
+2026-08-07 (Prompt 3): that claim was unbacked.** No test file, script, or test
+framework existed anywhere in the repo — the rules had only ever been exercised
+by hand in the browser. A real suite now exists at **`lib/validation.test.ts`**
+(Vitest, `bun run test`): **46 cases pass**, covering both documented garbage
+inputs, the credentials-in-authority rejection, the 7- and 15-digit phone
+boundaries with real international numbers, bare-domain / `www.` / explicit-scheme
+website variants, the `capPhoneDigits` typing cap, and the blank-vs-filled
+behaviour of both optional schemas. Vitest is the only dependency added.
+
+Browser verification (unchanged, and re-confirmed this pass with real typed
+input): errors appear on blur, submission is blocked with nothing dispatched, and
+valid values (`tekguyz.com`, `(954) 555-0123`) clear the error and restore the hint.
 
 **Known strictness, accepted:** `1 (954) 555-0123 ext 4` is rejected because of
 the letters. Allowing them would also admit `555-CALL-NOW`. The field is
@@ -613,13 +703,16 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 | Compact-context image ratios — **measured 2026-08-07: all 8 are off 16:10** (1.02–1.33 against a required 1.60); only the 16:9 hero passes. Two of them (`sarah-project-thumb`, `crunch-wrap-dashboard`) crop to a fragment that reads as invented content, and `sarah-project-thumb` is a **simulator crop**, the PLAYBOOK §12 hard-rule violation | User's own call — recapture in progress. Wiring is confirmed correct and guarded by `bun run check:media`, so a fresh file under the same name renders with no code change | On drop-in. Re-run `bun run check:media` to confirm |
 | ~~**AI Voice Receptionist has no documented compact-context filename**~~ | **Resolved 2026-08-07.** Decided `sarah-thumb.webp` for the 16:10 compact contexts, `sarah-poster.webp` stays the 16:9 hero and future video poster. Both are now in PLAYBOOK §12 and `content/work.ts` is rewired. `bun run check:media` fails the build until the recaptured file lands — expected, not a regression | On drop-in |
 | ~~`/process` and `/contact` ship zero scroll reveals~~ | **Resolved 2026-08-07.** `/process` 0 → 4 (one per step, no stagger index — the steps are a screen apart, so an index would only add dead time), `/contact` 0 → 2 (trust lines and the FAQ section). The form itself deliberately gets none: it is in the first viewport and a form fading in on first paint reads as a slow page | — |
-| **`bun run build` currently fails at `prebuild`** — `check:media` reports `sarah-thumb.webp` missing. `next build` itself is clean: 45 routes prerendered, zero type errors, verified by running it directly | Expected and correct: the wiring was changed to the agreed filename ahead of the recapture, and the guard exists precisely to fail loudly rather than ship a blank frame. Working around it would defeat the guard | The recaptured file lands in `public/media/` |
+| ~~**`bun run build` currently fails at `prebuild`**~~ | **Resolved 2026-08-07.** `sarah-thumb.webp` has landed in `public/media/`. Full `bun run build` now passes end to end, 45 routes prerendered, zero type errors. The file is still **off-ratio** (1080×1059, 1.02 against the required 1.60) — that is the row above, not this one | — |
 | **The four project thumbs are now rendered at 16:10 and are 600×450 (4:3)** — `object-fit: cover` drops the bottom ~17% of each. Newly visible because project detail pages did not show an image before this pass | Same recapture already in flight; no code change needed when it lands | On drop-in, with the rest of the 1440×900 set |
 | `components/contact-form.tsx:92` — `react-hooks/incompatible-library` warning on React Hook Form's `watch()`. The React Compiler skips memoizing the component rather than risk stale UI | The mechanical fix is RHF's `useWatch`, but this is the file whose step-branch reconciliation caused the Prompt 4 field-contamination bug. Swapping its subscription API is a behavioural change, not a lint fix, and wants its own verification pass | Anytime it is worth a focused change plus a re-test of both form steps |
 | `bun.lock` lost a stale `vercel@^58.7.1` devDependency during this pass | Not intentional and not a removal: the committed lockfile listed it while `package.json` never has, so any `bun install` would have re-synced it the same way. Net dependency change from this pass is zero — `eslint-config-next` was already installed | Confirm the Vercel CLI is not expected as a local devDependency; if it is, add it to `package.json` properly |
 | ~~Motion-enabled behavior is unverified~~ | **Partly resolved 2026-08-07**, by the user on a Pixel 9A: the concierge thinking-stripe shimmer runs, and the hero's entrance sequence is visible on load — so the reveal layer and the four-colour treatment both work. The static stripe seen on the dev machine was the spec'd reduced-motion fallback, not a defect | Still unconfirmed with motion on: the `/process` progress fill advancing with scroll, and the closing-CTA echo. Check those two next time a motion-enabled device is in front of the site |
 | `/privacy` ships zero scroll reveals | Out of scope this pass and arguably correct — it is a legal text page, and entrance animation on policy copy is decoration | Only if wanted |
-| Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Pre-existing and deliberate-looking; doc corrections are Prompt 3's scope | Prompt 3, reconcile doc against code |
+| Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Still open. Prompt 6 was the doc-correction pass but scoped its DESIGN.md edit to `flourish-mark` only, and this is a value judgement (which number is right), not a stale-claim fix | Someone decides whether 200 or 240 is correct, then the other one changes |
+| `app/icon.svg` is no longer transparent | Deliberate, 2026-08-07 (Prompt 6). It took the same `#101010` plate as the rest of the set so the favicon reads identically across browsers. The trade is that it no longer adapts to a light tab strip — it is now a dark tile there rather than a bare mark | Only if the dark tile reads badly on a light-chrome browser in practice |
+| Favicon generation now runs on `prebuild` | Not a gap, a note: PLAYBOOK §13 always claimed build-time generation and it was manual until now. `sharp` + `png-to-ico` are devDependencies, which Vercel installs for builds — if a future deploy ever runs with `NODE_ENV=production` install pruning, this step is what breaks first | A deploy fails at `prebuild` on a missing `sharp` |
+| `bun run test` is not wired into CI or `prebuild` | The suite is pure-function and fast (~0.7s), but nothing yet forces it to run. Adding it to `prebuild` would couple the build to test state, which is a call worth making deliberately rather than in a fix pass | CI exists, or someone wants the build to gate on it |
 | ~~**Every other route still returns a multi-child fragment**~~ | **Resolved 2026-08-07.** All 7 remaining page components wrapped in a single root element. Measured across all 18 routes with `Element.prototype.scrollIntoView` instrumented: exactly **1** call per route, target a `DIV` | — |
 | Motion cannot be visually confirmed in this environment | Two independent blockers, neither of them the code: Windows animations are off (`MinAnimate=0`), so `prefers-reduced-motion: reduce` matches machine-wide; and the in-app Browser pane is hidden (`document.hidden === true`), so the page never composites — `requestAnimationFrame` and IntersectionObserver callbacks never fire and screenshots time out | To see the entrances: turn Windows animations on (Settings → Accessibility → Visual effects → Animation effects) and keep the Browser pane displayed. **Not changed here — it is an accessibility preference** |
 | ~~`bun run lint` is broken~~ | **Resolved 2026-08-07.** There was no config file of any kind, so ESLint 9 exited before linting anything. `eslint.config.mjs` added, importing `eslint-config-next`'s native flat config directly (it is **not** FlatCompat-loadable). 0 errors. One warning left deliberately — see the Prompt 5 section | — |

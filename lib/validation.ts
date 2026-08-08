@@ -57,6 +57,10 @@ export function isPlausibleWebsite(raw: string): boolean {
   return HOSTNAME.test(url.hostname);
 }
 
+/** E.164's own bounds. The schema and the typing cap both read these. */
+export const PHONE_MIN_DIGITS = 7;
+export const PHONE_MAX_DIGITS = 15;
+
 /**
  * Plausibility, not format. TEKGUYZ delivers nationwide and takes international
  * enquiries, so forcing a US pattern would reject valid input — the rule is a
@@ -68,10 +72,34 @@ export function isPlausiblePhone(raw: string): boolean {
   // of the unicode dash variants a paste from a contacts app can carry.
   if (!/^[+()\d\s.\-‐-―]+$/.test(value)) return false;
   const digits = value.replace(/\D/g, '');
-  if (digits.length < 7 || digits.length > 15) return false;
+  if (digits.length < PHONE_MIN_DIGITS || digits.length > PHONE_MAX_DIGITS) return false;
   // A leading + is only meaningful at the very start.
   if (value.includes('+') && !value.startsWith('+')) return false;
   return true;
+}
+
+/**
+ * Real-time typing guard for the phone input: truncate once the value carries
+ * more than PHONE_MAX_DIGITS digits, so the field cannot accept input the
+ * schema will reject on blur.
+ *
+ * The cap counts DIGITS, not characters. A plain 15-character `maxLength` would
+ * be the same mistake as the 10-digit cap this replaces, one breakpoint over:
+ * `+44 20 7123 4567` is 13 digits and 16 characters, and a character cap would
+ * cut a valid international number mid-entry. Formatting (`+`, spaces,
+ * parentheses, dots, dashes) is unlimited and free; only digits are counted,
+ * which is exactly what isPlausiblePhone measures.
+ */
+export function capPhoneDigits(value: string, max = PHONE_MAX_DIGITS): string {
+  let seen = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    if (value[i]! >= '0' && value[i]! <= '9') {
+      seen += 1;
+      // Cut before the offending digit, keeping any formatting typed ahead of it.
+      if (seen > max) return value.slice(0, i);
+    }
+  }
+  return value;
 }
 
 export const WEBSITE_ERROR = 'Enter a valid website, like tekguyz.com';

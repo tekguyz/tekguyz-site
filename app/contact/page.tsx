@@ -1,9 +1,8 @@
-import { Suspense } from 'react';
+import { Fragment, Suspense } from 'react';
 import { SignatureStripe } from '@/components/signature-stripe';
 import { FlourishMark } from '@/components/flourish-mark';
 import { ContactForm } from '@/components/contact-form';
 import { FaqAccordion } from '@/components/faq-accordion';
-import { STRIPE_ORDER, accent } from '@/config/solutions';
 import { site } from '@/lib/site';
 import { buildMetadata, breadcrumbs, faqNode, jsonLd } from '@/lib/seo';
 
@@ -18,8 +17,11 @@ export const metadata = buildMetadata({
  * Contact is the one route without a closing CTA — the whole page IS the ask,
  * and repeating it below the form would be a second, competing conversion path.
  *
- * The trust lines render as hairline-separated rows with accent dots, not the
- * mid-dot run used in the closing CTA.
+ * The trust lines render exactly as `closing-cta` renders the same three facts:
+ * one `muted` line, mid-dot separated, no color. They previously carried leading
+ * dots in three of the four wayfinding accents, which is a misuse of the color
+ * system — those accents mean *solution line* everywhere else on the site, and
+ * these three facts have nothing to do with a solution line.
  */
 const TRUST = [
   'Free first conversation',
@@ -83,20 +85,18 @@ export default function ContactPage() {
             take it from there.
           </p>
 
-          <div className="reveal mt-12 flex flex-col">
+          <div className="reveal mt-12 flex flex-wrap items-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary">
             {TRUST.map((line, i) => (
-              <div
-                key={line}
-                className={`flex items-center gap-3 border-t border-border py-[14px] text-[0.875rem] leading-[1.55] ${i === TRUST.length - 1 ? 'border-b' : ''}`}
-              >
-                {/* Blue, amber, teal — the export skips violet here. */}
-                <span
-                  aria-hidden
-                  className="h-[6px] w-[6px] flex-none rounded-full"
-                  style={{ background: accent(STRIPE_ORDER[i === 0 ? 0 : i + 1]!).dot }}
-                />
-                {line}
-              </div>
+              <Fragment key={line}>
+                {i > 0 && (
+                  <span
+                    aria-hidden
+                    className="h-[3px] w-[3px] flex-none rounded-full"
+                    style={{ background: 'var(--tg-muted-soft)' }}
+                  />
+                )}
+                <span>{line}</span>
+              </Fragment>
             ))}
           </div>
 
