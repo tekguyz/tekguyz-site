@@ -30,6 +30,10 @@ npm-debug.log*
 .eslintcache
 .cache
 
+# audit output — screenshots and raw measurement JSON. The repo is public and
+# no binary belongs in it; `docs/MOBILE-AUDIT.md` is the committed deliverable.
+.audit/
+
 # vercel
 .vercel
 
