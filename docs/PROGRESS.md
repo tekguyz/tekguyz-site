@@ -9,9 +9,18 @@
 Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 
 - **Phase 1 (Discovery) & Phase 2 (Blueprint):** complete. `CANONICAL.md` is the PRD and technical roadmap — unusually thorough, which is why Phase 3 looks different from the framework's default.
-- **Phase 3 (Prompt execution):** in progress.
+- **Phase 3 (Prompt execution):** **code complete as of 2026-08-07.** Six prompts ran — the master build, the design-export audit, and four fix passes (3, 4, 5, 6), the last three of which were the planned three-prompt fix pack. Everything remaining is content or operations, not code: see Known Gaps.
 
-**Why this isn't a 6–12 prompt pack:** the default range assumes a Phase-2 blueprint that leaves real gaps for each prompt to resolve. This one doesn't — five documents (CANONICAL, DESIGN, COPY, SEO, PLAYBOOK) resolved hundreds of decisions before any prompt ran. That let the master prompt absorb work (Gemini swap, rate limiter, full SEO, confirmation email) that would normally be separate steps. Realistic remaining count: **3–4 follow-ups**, not the full range — the framework adapting to unusually complete blueprinting, not a deviation from it.
+**What actually blocks launch** (none of it a code task):
+
+| Blocker | Owner |
+| --- | --- |
+| **Privacy policy** — concierge data flow, CRM forwarding, phone field all undisclosed | Legal review. Flagged twice; this is the last content blocker |
+| **Compact-context image recapture** — all 8 posters are off 16:10, one is a simulator crop (PLAYBOOK §12 violation) | User, in flight. Drop-in, no code change; re-run `bun run check:media` |
+| **Domain cutover** — still a Vercel preview, and CRM CORS is hard-locked to `https://tekguyz.com` | Flag before changing either; it fails closed and silent |
+| GBP Services section | Not a website task; highest-leverage open SEO item |
+
+**Why this wasn't a 6–12 prompt pack:** the default range assumes a Phase-2 blueprint that leaves real gaps for each prompt to resolve. This one didn't — five documents (CANONICAL, DESIGN, COPY, SEO, PLAYBOOK) resolved hundreds of decisions before any prompt ran, which let the master prompt absorb work (Gemini swap, rate limiter, full SEO, confirmation email) that would normally be separate steps. Six total, against a predicted 4–5. The overshoot was the fix passes, and the recurring cause is worth naming: **four of five items in Prompt 4, two of eight in Prompt 5, and one of nine in Prompt 6 were misdiagnosed in their brief** — the symptom was real, the stated cause wasn't. Budget for diagnosis, not just repair.
 
 ## Prompt history
 
@@ -19,14 +28,14 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | --- | --- | --- | --- |
 | 1 | Master build prompt | **Complete** (2026-08-05) | Full site built from an empty repo. All 18 routes, every component in DESIGN.md §4, `content/work.ts` + `content/solutions.ts` + `config/solutions.ts`, contact action (honeypot renamed, phone/website added, confirmation email), concierge ported to Gemini 3.6 Flash, shared durable rate limiter, full SEO + JSON-LD + per-route OG images, generated favicon set, dark mode. `bun run build` clean, 18/18 routes prerendered. |
 | 2 | Design-export audit + live integration verification | **Complete** (2026-08-06) | Full route-by-route rebuild against the approved `TEKGUYZ Site.dc.html` / `TEKGUYZ Components.dc.html` export, which is now the visual ground truth. Every integration exercised for real against live credentials. Playwright added as the screenshot/verification driver. |
-| 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Complete** (2026-08-06) | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
-| 4 | Fix pass 1 of 3 — shared components: LiveFrame asset wiring, nav/stripe collision, `/contact` landing position, motion audit, contact-form field contamination | **Complete** (2026-08-07) | Four of five were misdiagnosed in the brief and turned out to be different bugs than described — see the section below for each actual cause. Item 1 needed no code fix (the "placeholder" is the asset file); it gained a `prebuild` wiring guard and a flagged naming decision. Motion had three separate causes, one of them the machine's own reduced-motion setting. |
-| 5 | Fix pass 2 of 3 — project detail-page layout, `/process` pin, duplicate CTA, single root elements, lint, reveal coverage, Sarah filename | **Complete** (2026-08-07), pending commit approval | Six of eight as briefed. The `/process` pin was **already built**, not missing — but its progress readout ran a step and a half ahead of the content, and its reduced-motion degradation depended on Tailwind's utility sort order. Lint had no config file at all. See the section below. |
-| 6 | Fix pass 3 of 3 — nav CTA size, home Process teaser, `/contact` trust dots, `flourish-mark` doc, validation tests, phone typing cap, `aria-describedby`, dark favicon, success copy | **Complete** (2026-08-07), pending commit approval | Eight of nine were real. **Item 1 was not**: the nav CTA already rendered at the standard size — measured 14/24px, 14.5px — so nothing was changed. Item 6's stated fix ("cap at 15 characters") would have reproduced the very bug it was written to avoid; implemented as a 15-**digit** cap instead. Item 5's "25 unit cases pass" claim had no test file behind it at all. See the section below. |
+| 3 | Three scoped fixes: optional-field validation, concierge tone, scroll reveals | **Shipped** (2026-08-06) — `f9ba587` | `lib/validation.ts` shared by client and server schemas; concierge system prompt rewritten to drop the template labels and raw paths; reveals reinstated on IntersectionObserver, visible-by-default. |
+| 4 | Fix pass 1 of 3 — shared components: LiveFrame asset wiring, nav/stripe collision, `/contact` landing position, motion audit, contact-form field contamination | **Shipped** (2026-08-07) — `6345f21` | Four of five were misdiagnosed in the brief and turned out to be different bugs than described — see the section below for each actual cause. Item 1 needed no code fix (the "placeholder" is the asset file); it gained a `prebuild` wiring guard and a flagged naming decision. Motion had three separate causes, one of them the machine's own reduced-motion setting. |
+| 5 | Fix pass 2 of 3 — project detail-page layout, `/process` pin, duplicate CTA, single root elements, lint, reveal coverage, Sarah filename | **Shipped** (2026-08-07) — `513329e` | Six of eight as briefed. The `/process` pin was **already built**, not missing — but its progress readout ran a step and a half ahead of the content, and its reduced-motion degradation depended on Tailwind's utility sort order. Lint had no config file at all. See the section below. |
+| 6 | Fix pass 3 of 3 — nav CTA size, home Process teaser, `/contact` trust dots, `flourish-mark` doc, validation tests, phone typing cap, `aria-describedby`, dark favicon, success copy | **Shipped** (2026-08-07) — `8a17326`, plus `2713070` for the CLAUDE.md compression | Eight of nine were real. **Item 1 was not**: the nav CTA already rendered at the standard size — measured 14/24px, 14.5px — so nothing was changed. Item 6's stated fix ("cap at 15 characters") would have reproduced the very bug it was written to avoid; implemented as a 15-**digit** cap instead. Item 5's "25 unit cases pass" claim had no test file behind it at all. See the section below. |
 
 ## Prompt 6 — nine scoped fixes
 
-*2026-08-07. Awaiting approval to commit at time of writing.*
+*Shipped 2026-08-07 in `8a17326`. The CLAUDE.md compression below followed in `2713070`.*
 
 ### The two places the brief and the repo disagreed
 
@@ -103,9 +112,36 @@ the doc described an intent the pipeline never had — and a master edit could
 silently ship stale icons. `prebuild` now runs `generate-icons.ts` ahead of
 `check-media.ts`, which makes §13 true. Outputs stay committed and deterministic.
 
+### CLAUDE.md compression (`2713070`)
+
+CLAUDE.md loads on every session. It was ~3,874 tokens, 57% of it Hard rules and
+21% "Verifying visually". Most rules were written as *rule + full incident
+post-mortem*, and the post-mortem is already here — checked before cutting, not
+assumed: `hover-card` appears 4× in this file, `FragmentInstance` 2×,
+`MinAnimate` 2×, `tg-pin` 2×. Net **~3,874 → ~3,192 (18%)**. All 26 rules
+verified present afterwards by keyword sweep; only case history was removed.
+
+**The cascade/reconciliation block was deliberately left uncompressed** — about
+800 tokens of what remains. Those six rules (`translate` vs `transform`, Tailwind
+source order, `FragmentInstance`, the `currentColor` border, `RevealController`
+deps, form-step keys) are the ones where the mechanism *is* the rule: reduced to
+a bare imperative, a later session reasons its way around them, and they are
+precisely the class of defect no linter can catch. Paying that cost per session
+beats re-losing them. **Don't "finish the job" on that block later** — the 18%
+is the ceiling, not a partial result.
+
+The remaining structural lever, considered and **rejected**: moving the cascade
+block to its own doc read on demand would reach ~2,400 tokens. A rule that isn't
+in context is a rule that gets violated, and these are the expensive ones.
+
+Two debugging recipes moved out of CLAUDE.md and now live only here — the
+stale-port kill command and the Playwright/Bun constraint, both in the Prompt 5
+verification notes. They are things to look up when stuck, not standing rules.
+**If this file is ever restructured, those two need to survive the move.**
+
 ## Prompt 5 — project detail pages, the /process pin, and repo hygiene (eight items)
 
-*2026-08-07. Awaiting approval to commit at time of writing.*
+*Shipped 2026-08-07 in `513329e`, with the `sarah-thumb.webp` rename following in `8b27975`.*
 
 ### What the brief got right, and the two places it didn't
 
@@ -717,13 +753,12 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 | Motion cannot be visually confirmed in this environment | Two independent blockers, neither of them the code: Windows animations are off (`MinAnimate=0`), so `prefers-reduced-motion: reduce` matches machine-wide; and the in-app Browser pane is hidden (`document.hidden === true`), so the page never composites — `requestAnimationFrame` and IntersectionObserver callbacks never fire and screenshots time out | To see the entrances: turn Windows animations on (Settings → Accessibility → Visual effects → Animation effects) and keep the Browser pane displayed. **Not changed here — it is an accessibility preference** |
 | ~~`bun run lint` is broken~~ | **Resolved 2026-08-07.** There was no config file of any kind, so ESLint 9 exited before linting anything. `eslint.config.mjs` added, importing `eslint-config-next`'s native flat config directly (it is **not** FlatCompat-loadable). 0 errors. One warning left deliberately — see the Prompt 5 section | — |
 | Cal.com scheduling | Current funnel problem is lead follow-up, not booking friction — adding a second conversion path before measuring the first risks splitting the data | A few weeks of real inbound data suggests booking friction is real |
-| Privacy policy — concierge data flow, CRM forwarding, phone field not yet disclosed | Legal document, needs real review, not invented text | Legal review happens |
 | Terms of Service | No checkout/account system to need one; the one place it'd matter (concierge liability) needs a lawyer's line, not mine | If launch reveals an actual need |
 | GBP Services section | Not a website task | Anytime — highest-leverage open SEO item, do in parallel |
 | ~~`GEMINI_API_KEY` not set~~ | **Resolved 2026-08-06.** Key present; real replies verified | — |
 | ~~No KV/Upstash credentials~~ | **Resolved 2026-08-06.** `UPSTASH_REDIS_REST_URL` / `_TOKEN` present; limiter verified against real Upstash keys | — |
 | ~~Contact + concierge never exercised end to end~~ | **Resolved 2026-08-06.** Real submissions landed in the CRM and Resend, with message IDs recorded above | — |
-| Privacy policy — concierge data flow, CRM forwarding, phone field **still undisclosed** | Legal document, needs real review, not invented text. Flagged for a second time | Legal review. This is the last content blocker before launch |
+| Privacy policy — concierge data flow, CRM forwarding, phone field **still undisclosed** | Legal document, needs real review, not invented text. Flagged three times now, and it was listed twice in this table until 2026-08-07 | Legal review. **This is the last content blocker before launch** |
 | `[NEEDS REAL DATA]` — Field Photo Reports outcome | Never filled, per the hard rule | If a real, verifiable number exists |
 | GBP review permalink | Still open; testimonial links to the GBP listing instead | When the direct review URL is available |
 | `lockup-master.svg` wordmark still a `<text>` element | Pre-existing; the site renders the lockup as JSX so it's unaffected, but exported assets are | Before handing the SVG to any external vendor |
