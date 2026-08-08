@@ -10,6 +10,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 
 - **Phase 1 (Discovery) & Phase 2 (Blueprint):** complete. `CANONICAL.md` is the PRD and technical roadmap — unusually thorough, which is why Phase 3 looks different from the framework's default.
 - **Phase 3 (Prompt execution):** **code complete as of 2026-08-07.** Six prompts ran — the master build, the design-export audit, and four fix passes (3, 4, 5, 6), the last three of which were the planned three-prompt fix pack. Everything remaining is content or operations, not code: see Known Gaps.
+- **Prompt 7 (2026-08-08) was an audit, not a build step, and changed no code.** It found **19 measured mobile findings, 3 of them blocking**, which means there is now a code task queued that did not exist on 2026-08-07 — a fix prompt written from `docs/MOBILE-AUDIT.md`. "Code complete" above describes the state the six build prompts reached; it is no longer the same as "nothing left to fix".
 
 **What actually blocks launch** (none of it a code task):
 
@@ -17,10 +18,10 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | --- | --- |
 | **Privacy policy** — concierge data flow, CRM forwarding, phone field all undisclosed | Legal review. Flagged twice; this is the last content blocker |
 | **Compact-context image recapture** — all 8 posters are off 16:10, one is a simulator crop (PLAYBOOK §12 violation) | User, in flight. Drop-in, no code change; re-run `bun run check:media` |
-| **Domain cutover** — still a Vercel preview, and CRM CORS is hard-locked to `https://tekguyz.com` | Flag before changing either; it fails closed and silent |
+| ~~**Domain cutover** — still a Vercel preview~~ **Measured 2026-08-08: `https://tekguyz.com` is serving this build.** Production parity spot-check at 360×800 and 390×844 — header height, nav CTA, `closing-cta` button, concierge launcher rect, `scrollWidth`/`clientWidth`, `<title>` and `h1` — **every measured value identical to local**; the only difference is the chunk hash (`/_next/static/immutable/chunks/1nsnopzbdaany.css` vs local `/_next/static/chunks/2jhuu8e85udez.css`), i.e. a Vercel build of the same source. CRM CORS is still hard-locked to `https://tekguyz.com` | Cutover appears already done. **CLAUDE.md's opening line still says "deployed as a Vercel preview, not yet pointed at the live domain" and is now stale** — correct it. Still flag before changing the domain or the CORS origin; it fails closed and silent |
 | GBP Services section | Not a website task; highest-leverage open SEO item |
 
-**Why this wasn't a 6–12 prompt pack:** the default range assumes a Phase-2 blueprint that leaves real gaps for each prompt to resolve. This one didn't — five documents (CANONICAL, DESIGN, COPY, SEO, PLAYBOOK) resolved hundreds of decisions before any prompt ran, which let the master prompt absorb work (Gemini swap, rate limiter, full SEO, confirmation email) that would normally be separate steps. Six total, against a predicted 4–5. The overshoot was the fix passes, and the recurring cause is worth naming: **four of five items in Prompt 4, two of eight in Prompt 5, and one of nine in Prompt 6 were misdiagnosed in their brief** — the symptom was real, the stated cause wasn't. Budget for diagnosis, not just repair.
+**Why this wasn't a 6–12 prompt pack:** the default range assumes a Phase-2 blueprint that leaves real gaps for each prompt to resolve. This one didn't — five documents (CANONICAL, DESIGN, COPY, SEO, PLAYBOOK) resolved hundreds of decisions before any prompt ran, which let the master prompt absorb work (Gemini swap, rate limiter, full SEO, confirmation email) that would normally be separate steps. Six build/fix prompts against a predicted 4–5, plus Prompt 7, which is an audit and changed no code. The overshoot was the fix passes, and the recurring cause is worth naming: **four of five items in Prompt 4, two of eight in Prompt 5, and one of nine in Prompt 6 were misdiagnosed in their brief** — the symptom was real, the stated cause wasn't. Budget for diagnosis, not just repair. **Prompt 7 was structured specifically to stop feeding that loop**: it measures and reports symptoms, and quarantines every cause it might have guessed at into a labelled hypotheses section.
 
 ## Prompt history
 
@@ -32,6 +33,125 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 4 | Fix pass 1 of 3 — shared components: LiveFrame asset wiring, nav/stripe collision, `/contact` landing position, motion audit, contact-form field contamination | **Shipped** (2026-08-07) — `6345f21` | Four of five were misdiagnosed in the brief and turned out to be different bugs than described — see the section below for each actual cause. Item 1 needed no code fix (the "placeholder" is the asset file); it gained a `prebuild` wiring guard and a flagged naming decision. Motion had three separate causes, one of them the machine's own reduced-motion setting. |
 | 5 | Fix pass 2 of 3 — project detail-page layout, `/process` pin, duplicate CTA, single root elements, lint, reveal coverage, Sarah filename | **Shipped** (2026-08-07) — `513329e` | Six of eight as briefed. The `/process` pin was **already built**, not missing — but its progress readout ran a step and a half ahead of the content, and its reduced-motion degradation depended on Tailwind's utility sort order. Lint had no config file at all. See the section below. |
 | 6 | Fix pass 3 of 3 — nav CTA size, home Process teaser, `/contact` trust dots, `flourish-mark` doc, validation tests, phone typing cap, `aria-describedby`, dark favicon, success copy | **Shipped** (2026-08-07) — `8a17326`, plus `2713070` for the CLAUDE.md compression | Eight of nine were real. **Item 1 was not**: the nav CTA already rendered at the standard size — measured 14/24px, 14.5px — so nothing was changed. Item 6's stated fix ("cap at 15 characters") would have reproduced the very bug it was written to avoid; implemented as a 15-**digit** cap instead. Item 5's "25 unit cases pass" claim had no test file behind it at all. See the section below. |
+| 7 | Mobile & motion audit — **measure only, no fixes** | **Complete** (2026-08-08) | **Zero code changed.** Deliverables are `docs/MOBILE-AUDIT.md` and the re-runnable harness `scripts/audit-mobile.ts`. 18 routes × 7 mobile viewports light + 2 dark = **162 rows, 0 errors**. **19 findings: 3 blocking, 14 defect, 2 polish.** The pass reports causes nowhere — every inference is quarantined in a `Hypotheses (unverified)` section, deliberately, because 7 of 22 items across passes 4–6 inherited a wrong cause from their brief. First pass able to measure the motion-enabled path locally (Playwright context override). See the section below. |
+
+## Prompt 7 — mobile & motion audit (measure only)
+
+*2026-08-08. **No code changed.** Committed: `docs/MOBILE-AUDIT.md`,
+`scripts/audit-mobile.ts`, one `.gitignore` line for `.audit/`. Nothing under
+`app/`, `components/`, `lib/`, `config/`, `content/`, `public/` was touched.*
+
+**The report is the deliverable and it is the sole input to the fix prompt.** Do not
+re-derive its numbers from this summary — read `docs/MOBILE-AUDIT.md`. What follows
+is only what a future session needs to know *about* that file.
+
+### The rule this pass was run under, and why it should survive
+
+**The audit records symptom + where it is observable + the measured value, and
+stops.** No finding row states a cause. Everything inferred lives in a clearly
+separated `Hypotheses (unverified)` section (H-1 … H-6), each labelled with the
+finding IDs it would explain and with what evidence would confirm or kill it.
+
+That structure is a direct response to this file's own history: **7 of 22 items
+across passes 4, 5 and 6 were misdiagnosed in their brief** — the symptom real, the
+stated cause wrong, the prescribed fix aimed at a bug that did not exist. A cause
+written into a brief gets inherited as fact. **If the fix prompt is written from
+this audit, keep the hypotheses labelled as hypotheses.**
+
+### Coverage
+
+18 routes × 7 mobile viewports (360×800, 375×667, 390×844, 414×896, 767×1024,
+768×1024, 844×390) in light, plus `narrow` and `standard` in dark — **162 rows, 0
+errors**. Real mobile contexts throughout (`isMobile: true`, `hasTouch: true`, a
+plausible `deviceScaleFactor`); **no Playwright `devices[...]` descriptor matched any
+of the seven sizes exactly**, so all seven are constructed. A resized desktop context
+was used nowhere — it leaves `isMobile`/`hasTouch` at desktop values, which changes
+how `dvh` resolves and how tap targets hit-test.
+
+**19 findings: 3 blocking, 14 defect, 2 polish.** The three widest:
+
+- **M-01 (blocking)** — 11 of 18 routes at **768–1023px** render their `page-hero`
+  `h1` into a **144–274px** column at 46–50px type, wrapping to **4–7 lines**.
+  `Four ways we help.` stacks as four single-word lines; `/work/team-performance`
+  runs to seven. The same `/work` headline is **719px wide on one line at 767**.
+  Confirmed by screenshot as well as by measurement.
+- **M-15 / M-06 (defect)** — the concierge launcher is **234 × 50px at every
+  viewport from 360 to 1440** (65% of a 360px viewport, 16.3% of 1440), and
+  mid-scroll it covers **174 distinct route/element pairs** across all 18 routes —
+  65 of them ≥50% covered, including each page's own `Let's Talk` at up to **81.1%**.
+  **Zero persist at maximum scroll**, so it is entirely a transient condition.
+- **M-09/10/11/12 (defect)** — DESIGN.md §8's 44×44 floor fails on **162 of 162
+  rows**: theme toggle 38×38, every footer link 22.4px tall, nav lockup 30.4px,
+  in-content links 18–23.2px. 73 distinct signatures, 2,707 instances.
+
+**Clean, and worth knowing before anyone "fixes" it:** horizontal overflow is 0 on
+161 of 162 rows (the exception is `/work` at 844×390, +5px, with **no element rect
+crossing the edge** — M-17); element-to-viewport-edge is clean on all 162;
+every `/contact` control is exactly 44px tall; the hero's right-edge bleed is
+correctly **off** below `md`; and **dark mode returns identical counts to light on
+all 18 routes for every check** — no finding in the report is theme-dependent.
+
+**Two prior measurements re-confirmed rather than contradicted.** The nav CTA is
+14/24px at 14.5px wherever it renders, matching Prompt 6 exactly — and it does
+**not** render in the collapsed header below 768 at all, only in the drawer. The
+`<header>`'s own `border-bottom` computes to `0px` at every viewport in both themes,
+so the Prompt 4 `currentColor` fix has not regressed.
+
+### The motion half — which override produced it
+
+**This is the first pass that measured the motion-enabled path locally**, and the
+qualification matters more than the result. Playwright drives its own Chromium and
+its context option `reducedMotion: 'no-preference'` overrides the OS preference for
+the page under test. Verified to have taken:
+`matchMedia('(prefers-reduced-motion: reduce)').matches === false` inside that
+context. **The machine's own setting (`MinAnimate = 0`) was not changed and must not
+be — it is a standing accessibility preference.**
+
+So: **every motion-on number in the report came from a context override, not from a
+motion-enabled device.** Both items this file had listed as unconfirmed are now
+closed on that basis, and the Known Gap row records the same qualification.
+
+Everything else — the whole layout sweep — was taken under `reducedMotion: 'reduce'`
+deliberately: a rect sampled mid-transition is a snapshot of an animation, not a
+layout measurement.
+
+Inventory highlights (full table in the report §5.1): `.reveal` transitions
+`opacity` **and `translate`** at 500ms `cubic-bezier(0.16, 1, 0.3, 1)` — the Prompt 4
+`translate`-not-`transform` rule verified intact in the shipped CSS, measured
+mid-flight at `translate: 0px 5.74622px`. `.reveal` hooks fire **11/11, 8/8, 5/5,
+3/3, 4/4, 1/1, 4/4, 2/2** against their server-rendered counts, and
+`anyLeftInvisible` is empty on every route in both motion states.
+
+**The reduced-motion floor holds, with one measured deviation.** Nothing left at
+`opacity: 0`, `.tg-pin` computes to `position: static`, status dot
+`animation: none` at 0.85 — but `getAnimations()` is **not empty**: one retained
+Motion `Animation` on the launcher on 7 of 8 routes, eight on `/`. The `.tg-seq` ones
+are pinned by `!important` and provably do not move. The launcher is not pinned;
+sampling it returned `opacity: 1, transform: none` on 16 of 16 runs, **but those
+samples land after a 240ms entrance would have finished**, so this does not prove the
+entrance is suppressed. Filed as M-19 `polish` on that basis, with the corrected
+measurement written into H-4. **Do not upgrade it to a confirmed accessibility gap
+without running that measurement.**
+
+### Two harness traps, both already paid for
+
+- **`el.matches(rule.selectorText)` finds nothing if you test `rule.cssRules` first.**
+  In current Chromium a `CSSStyleRule` also exposes `.cssRules` (for CSS nesting), so
+  a grouping-rule-first walk treats *every* style rule as a container and returns
+  zero matches. Check `selectorText` first, then recurse. This is what makes
+  "which declaration does the height resolve from" answerable at all — it is how the
+  concierge panel was traced to **no height declaration whatsoever** (content-sized,
+  no `vh`, no `dvh`).
+- **Tailwind's `sr-only` plus a later `px-4 py-3` reports a real rect.** The skip link
+  measured 32×24 at `left: -1` and flagged as an undersized, clipped tap target on all
+  18 routes before the visibility check learned to exclude
+  `clip: rect(0px, 0px, 0px, 0px)`. It was a harness false positive, not a defect, and
+  the finding was withdrawn.
+
+Both fixes are in `scripts/audit-mobile.ts`. Re-run it with
+`node --experimental-strip-types scripts/audit-mobile.ts all` — **not under Bun**,
+same constraint as Prompt 5 — and let its own stylesheet-200 guard pass before
+trusting any number it prints.
 
 ## Prompt 6 — nine scoped fixes
 
@@ -743,13 +863,14 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 | **The four project thumbs are now rendered at 16:10 and are 600×450 (4:3)** — `object-fit: cover` drops the bottom ~17% of each. Newly visible because project detail pages did not show an image before this pass | Same recapture already in flight; no code change needed when it lands | On drop-in, with the rest of the 1440×900 set |
 | `components/contact-form.tsx:92` — `react-hooks/incompatible-library` warning on React Hook Form's `watch()`. The React Compiler skips memoizing the component rather than risk stale UI | The mechanical fix is RHF's `useWatch`, but this is the file whose step-branch reconciliation caused the Prompt 4 field-contamination bug. Swapping its subscription API is a behavioural change, not a lint fix, and wants its own verification pass | Anytime it is worth a focused change plus a re-test of both form steps |
 | `bun.lock` lost a stale `vercel@^58.7.1` devDependency during this pass | Not intentional and not a removal: the committed lockfile listed it while `package.json` never has, so any `bun install` would have re-synced it the same way. Net dependency change from this pass is zero — `eslint-config-next` was already installed | Confirm the Vercel CLI is not expected as a local devDependency; if it is, add it to `package.json` properly |
-| ~~Motion-enabled behavior is unverified~~ | **Partly resolved 2026-08-07**, by the user on a Pixel 9A: the concierge thinking-stripe shimmer runs, and the hero's entrance sequence is visible on load — so the reveal layer and the four-colour treatment both work. The static stripe seen on the dev machine was the spec'd reduced-motion fallback, not a defect | Still unconfirmed with motion on: the `/process` progress fill advancing with scroll, and the closing-CTA echo. Check those two next time a motion-enabled device is in front of the site |
+| ~~Motion-enabled behavior is unverified~~ | **Resolved 2026-08-08 (Prompt 7).** Partly resolved 2026-08-07 by the user on a Pixel 9A (thinking-stripe shimmer runs; hero entrance visible on load). The two remaining items are now measured — see the Prompt 7 section for the tables. **`/process` progress fill advances with scroll:** `0% → 25% → 53% → 81% → 100%` at `scrollY` 0/360/720/1080/1440, `transition: height 120ms linear`, and exactly one rail label is ink-weighted at every sample (Discovery → Build → Launch & Support). **`closing-cta` echo fires:** four `.tg-seq` items enter from `opacity: 0` / `translateY(32px)`, staggering headline → subhead → trust → CTA from ~350ms and fully resolved by **~770ms**. **How, and this qualifies the result:** both came from **Playwright's `reducedMotion: 'no-preference'` context override at 1280×900, not from a motion-enabled device** — verified to have taken by `matchMedia('(prefers-reduced-motion: reduce)').matches === false` inside that context. **The machine's OS preference (`MinAnimate = 0`) was not touched.** The rail is `hidden lg:block`, so it renders at no mobile viewport and had to be measured above 1024px | — for these two. A real motion-enabled device would still be the stronger evidence for anything new, but nothing is outstanding |
 | `/privacy` ships zero scroll reveals | Out of scope this pass and arguably correct — it is a legal text page, and entrance animation on policy copy is decoration | Only if wanted |
-| Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Still open. Prompt 6 was the doc-correction pass but scoped its DESIGN.md edit to `flourish-mark` only, and this is a value judgement (which number is right), not a stale-claim fix | Someone decides whether 200 or 240 is correct, then the other one changes |
+| Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Still open, and **no longer only a code reading**: measured live 2026-08-08 in the shipped stylesheet with motion on. `document.getAnimations()` on the nav fill layer (`div.absolute.inset-0.-z-10`) returns three `CSSTransition`s — `background-color`, `border-bottom-color`, `backdrop-filter` — each **`duration: 240ms`, `easing: ease`**. So 240 is what visitors get; DESIGN.md's 200 is what no surface implements. This remains a value judgement (which number is right), not a stale-claim fix | Someone decides whether 200 or 240 is correct, then the other one changes. The decision is now the only thing missing — the measurement is done |
 | `app/icon.svg` is no longer transparent | Deliberate, 2026-08-07 (Prompt 6). It took the same `#101010` plate as the rest of the set so the favicon reads identically across browsers. The trade is that it no longer adapts to a light tab strip — it is now a dark tile there rather than a bare mark | Only if the dark tile reads badly on a light-chrome browser in practice |
 | Favicon generation now runs on `prebuild` | Not a gap, a note: PLAYBOOK §13 always claimed build-time generation and it was manual until now. `sharp` + `png-to-ico` are devDependencies, which Vercel installs for builds — if a future deploy ever runs with `NODE_ENV=production` install pruning, this step is what breaks first | A deploy fails at `prebuild` on a missing `sharp` |
 | `bun run test` is not wired into CI or `prebuild` | The suite is pure-function and fast (~0.7s), but nothing yet forces it to run. Adding it to `prebuild` would couple the build to test state, which is a call worth making deliberately rather than in a fix pass | CI exists, or someone wants the build to gate on it |
 | ~~**Every other route still returns a multi-child fragment**~~ | **Resolved 2026-08-07.** All 7 remaining page components wrapped in a single root element. Measured across all 18 routes with `Element.prototype.scrollIntoView` instrumented: exactly **1** call per route, target a `DIV` | — |
+| **Four things Prompt 7's audit could not reach** (`docs/MOBILE-AUDIT.md` §8). **1. `/contact` step 2 is unmeasured** — reaching it needs valid step-1 input and a real state transition, so the `01 / 02` counter and step header were measured in their step-1 state only; findings M-02 and M-07 describe step 1. **2. The concierge thinking stripe (`.shimmer-seg`) was not exercised** — it only exists in the DOM while a request is in flight, which costs a live Gemini call and an Upstash limiter hit. The user's Pixel 9A confirmation (2026-08-07) remains the only evidence it shimmers. **3. Real `dvh` behaviour is unverifiable here** — headless Chromium has no collapsing URL bar, so `100dvh` and `100vh` probe **identical at all seven viewports**. It happens not to matter for the panel-overflow finding (M-03) because the panel's height chain contains neither unit, but no `dvh` conclusion may be drawn from that file. **4. The `/process` rail's agreement with its reference line was not re-proved** — the fill's advance and the highlight's advance are both confirmed, but the probe written to check *which* step sits under the 45%-of-viewport line selected the wrong elements and returned empty at every offset. **Prompt 5's measurement of that agreement at eight scroll offsets stands; Prompt 7 neither contradicts nor re-confirms it** | 1, 2 and 4 are harness work, each small and each listed with the exact fix in MOBILE-AUDIT.md §8 / H-4. 3 is not fixable in headless Chromium at all — it needs a real device | 1 and 4: whenever the harness is next opened, e.g. by the fix prompt re-running it to diff. 2: alongside any other work that already justifies a live concierge call. 3: only on a real phone |
 | Motion cannot be visually confirmed in this environment | Two independent blockers, neither of them the code: Windows animations are off (`MinAnimate=0`), so `prefers-reduced-motion: reduce` matches machine-wide; and the in-app Browser pane is hidden (`document.hidden === true`), so the page never composites — `requestAnimationFrame` and IntersectionObserver callbacks never fire and screenshots time out | To see the entrances: turn Windows animations on (Settings → Accessibility → Visual effects → Animation effects) and keep the Browser pane displayed. **Not changed here — it is an accessibility preference** |
 | ~~`bun run lint` is broken~~ | **Resolved 2026-08-07.** There was no config file of any kind, so ESLint 9 exited before linting anything. `eslint.config.mjs` added, importing `eslint-config-next`'s native flat config directly (it is **not** FlatCompat-loadable). 0 errors. One warning left deliberately — see the Prompt 5 section | — |
 | Cal.com scheduling | Current funnel problem is lead follow-up, not booking friction — adding a second conversion path before measuring the first risks splitting the data | A few weeks of real inbound data suggests booking friction is real |
