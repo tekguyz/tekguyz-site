@@ -57,7 +57,10 @@ export function ClosingCta() {
 
           <SequenceItem role="cta">
             <div className="mt-9 flex flex-col items-center gap-[18px]">
-              <ButtonLink href="/contact" size="large">
+              {/* `data-primary-cta` is the concierge launcher's yield-rule
+                  target (M-15). Exactly two elements carry it site-wide: this
+                  button and the home hero's CTA row. */}
+              <ButtonLink href="/contact" size="large" data-primary-cta>
                 Let&rsquo;s Talk
               </ButtonLink>
               <button

@@ -21,7 +21,17 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > | **M-04** `/contact` trust row, **768/844 rows only** | **Resolved** | 3 lines @768 → **1**; 2 lines @844 → **1**. Its `closing-cta` and sub-767 rows are untouched |
 > | **M-07 / M-08** step counter + title, **768/844 rows only** | **Resolved** | both **1 line**. Their sub-767 rows are untouched |
 > | **M-16** orphan lines, **768/844 rows** | **Partial** | `Four ways we help.` L4-in-144px → **L1 in 704px**. Case-study headlines still orphan in a now-deliberate 249px column. No copy changed |
-> | **M-03, M-05, M-06, M-09 – M-15, M-19** | **Open** | Out of Prompt 8's scope by instruction — tap targets, the concierge, the footer masthead and the sub-767 rows are later batches |
+> | **M-03** panel overshoots the top edge, `blocking` | **Resolved** (Prompt 10, 2026-08-09) | `top: -119.0` at 844×390 → **sheet mode, `top: 0`, `overflowsViewportTop: false`**. Panel bound to `max-height: calc(100dvh - 48px)`; **no top overflow at any of the 8 viewports**, close control on-screen at all 8. **No `blocking` finding remains open** |
+> | **M-14** 32px close control | **Resolved** (Prompt 10) | 32.0 × 32.0 → **44.0 × 44.0 at all 8 viewports**, grown by padding; the `✕` glyph stays at **16px** |
+> | **M-06 / M-15** launcher size + CTA occlusion | **Resolved** (Prompt 10) | Launcher unchanged at 234 × 50 **by decision** — it now *yields*, going to `opacity: 0` / `pointer-events: none` / `aria-hidden` / out of the tab order while a `data-primary-cta` element is in view. Full 162-row sweep re-run: **primary-CTA overlaps 174 → 0** (worst case was 81.1%). **Across all interactive elements 174 → 143, 44 still >25%, worst 99.6%** — five non-CTA element classes the rule deliberately does not cover, itemised in DESIGN.md §8 and tracked as a new gap in PROGRESS.md. **0 at maximum scroll**, unchanged |
+> | **M-19** launcher animates under `reduce` | **Resolved** (Prompt 10) | **H-4 confirmed first**, then fixed by removing the entrance rather than pinning it. See §7 H-4 |
+> | **M-05, M-09 – M-13** | **Open** | Out of Prompts 8 and 10's scope by instruction — tap targets, the footer masthead and the sub-767 rows are the one remaining batch |
+>
+> **Erratum (2026-08-09), banner-level — the row below it is not edited.** `/work`'s
+> `page-hero` h1 at 767 measures **2 rendered lines, not 1**. The **719.0px width in
+> M-01 and §4.3 is correct** and is unchanged by Prompt 8; only the line count was
+> misrecorded. `docs/PROGRESS.md` repeated the wrong count in its Prompt 7 summary
+> and has been corrected there too.
 >
 > **H-1 confirmed** by its own kill test before any fix shipped; the diagnostic was
 > then reverted and DESIGN.md §8's 8-column layout implemented instead. One thing
@@ -29,7 +39,17 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > `style` attributes. **H-3 resolved** as an H-1 consequence. **H-2 re-measured, not
 > acted on**: the clamp still resolves to 46.08px at 768, but with the column now
 > full-container no `page-hero` h1 exceeds 2 lines, so it is not a second
-> contributor at these widths. **H-4, H-5, H-6 untested** — still open.
+> contributor at these widths.
+>
+> **H-4 CONFIRMED and H-6 CONFIRMED** by Prompt 10 (2026-08-09); **H-5 was not
+> tested and is now moot** — its kill test was "reduce the launcher's width and
+> re-run the sweep", and the launcher's width was deliberately not reduced. What
+> H-5 asked (are M-06 and M-15 one problem?) was answered a different way: yielding
+> the launcher without changing its width resolved both, so they share a cause, but
+> that cause is the launcher's *presence*, not its width. H-4's confirmation
+> required exactly the sampler §7 specified — a `MutationObserver` arming a `rAF`
+> loop from DOM insertion. The post-hoc sample it replaced was not merely weak; it
+> read the opposite result.
 
 Every number below came out of `scripts/audit-mobile.ts`, which is committed
 alongside this file. Re-run it against the same commit and the same numbers come

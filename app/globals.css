@@ -437,6 +437,26 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Concierge launcher — the yield rule.
+
+   The launcher fades out while a primary CTA is on screen (M-06 + M-15). It is
+   OPACITY ONLY: a translate or scale here would be a second, undocumented
+   motion pattern, and the launcher's Motion entrance — which animated
+   translateY(8) and ran unsuppressed under `reduce` (M-19 / H-4, confirmed by
+   measurement) — is exactly what this replaces.
+
+   A real rule rather than two Tailwind utilities because the two properties
+   need two different durations: 240ms for the yield, the site's standard 120ms
+   for the button's own hover. Both are declared here together — a `transition`
+   shorthand resets every transition property, so they cannot be split.
+--------------------------------------------------------------------------- */
+.tg-yield {
+  transition:
+    opacity 240ms var(--ease-hover),
+    background-color 120ms var(--ease-hover);
+}
+
+/* ---------------------------------------------------------------------------
    Concierge "thinking" — the ONLY moving use of the four-color system.
    Four discrete segments, never a blended gradient.
 --------------------------------------------------------------------------- */
@@ -610,6 +630,14 @@
   .status-dot-live {
     animation: none !important;
     opacity: 0.85;
+  }
+
+  /* The launcher's yield is instant under `reduce` — it still yields, it just
+     doesn't fade. The universal `transition-duration: 0.001ms !important` above
+     already reaches this; stated explicitly because it is an accessibility
+     floor and must not rest on a rule that could be scoped down later. */
+  .tg-yield {
+    transition: none !important;
   }
 
   .shimmer-seg {

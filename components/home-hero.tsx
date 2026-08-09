@@ -69,7 +69,10 @@ export function HomeHero({
             </SequenceItem>
 
             <SequenceItem role="cta">
-              <div className="mt-10 flex flex-wrap gap-3">
+              {/* The concierge launcher yields while this row is on screen
+                  (M-15). Tagged on the row, not the two buttons, so the
+                  launcher yields to the pair as one conversion moment. */}
+              <div data-primary-cta className="mt-10 flex flex-wrap gap-3">
                 <ButtonLink href="/work">See Our Work</ButtonLink>
                 <ButtonLink href="/contact" variant="secondary" size="nav">
                   Let&rsquo;s Talk

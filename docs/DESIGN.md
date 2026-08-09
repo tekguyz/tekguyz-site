@@ -343,7 +343,145 @@ its longest item is `Process` at 51px; Solutions (136px) and the email address
 (126px) both need a wide one. Ordering it the obvious way puts the email in a 121px
 column and wraps it.
 
-Touch targets ≥ 44×44px. Inputs 44px tall. Visible keyboard focus rings throughout. Skip-to-content link.
+### Touch targets — a two-tier policy, not a flat floor
+
+A single `≥ 44×44px` floor was the whole spec here until 2026-08-09, and it was
+contradicted by shipped code on **73 distinct signatures across 2,707 instances**
+(M-09 – M-13) — every one a height failure except the 38×38 theme toggle. A floor
+that nothing meets is not enforced anywhere; it is ignored everywhere. The policy
+is therefore two-tier:
+
+- **44 × 44px minimum for standalone controls** — buttons, links rendered as
+  buttons, icon controls, form controls, nav items, the theme toggle, the
+  concierge launcher and its close control.
+- **24 × 24px minimum for links inline in running prose**, which is WCAG 2.2 AA's
+  Target Size (Minimum) floor. A 44px box around a mid-sentence link either
+  overlaps its neighbours or forces a line-height that breaks §2's type scale, so
+  the AA floor is the deliberate ceiling of ambition there, not an oversight.
+- **Targets are expanded by padding or a pseudo-element, never by resizing the
+  painted box.** The visual weight of a 14.5px text link is a design decision from
+  the approved export; growing the box to 44px changes the composition. An
+  `::after` overlay or asymmetric padding grows the hit area and leaves the render
+  identical.
+
+**The shipped 38px and 22.4px values are not spec.** They are the open findings
+this policy exists to resolve; the tap-target fix pass implements what is written
+above. See PROGRESS.md's Known Gaps.
+
+Inputs 44px tall. Visible keyboard focus rings throughout. Skip-to-content link.
+
+### Concierge geometry
+
+`position: fixed`, outside the grid, so none of this is reachable from a layout
+fix — and all of it is bounded by the **viewport**, never by content or by width.
+
+**Panel height.** `max-height: calc(100dvh - 48px)`, with the message list's
+300px floor yielding rather than forcing overflow. Why: the panel used to be
+**380 × 485px with no `height`, `max-height`, `vh` or `dvh` anywhere in its
+chain**, anchored `bottom: 24px`. 485 + 24 = 509 against a 390px-tall viewport,
+so it grew upward and overshot the top edge by exactly **119px** (M-03,
+`blocking`), taking its only close control off-screen. A content-driven height on
+a bottom-anchored fixed element is the defect; a viewport bound is the fix.
+**`dvh` vs `svh` vs `vh` cannot be distinguished in the audit harness** —
+headless Chromium has no collapsing URL bar, and all three probe identical — so
+this choice is confirmed on a real device or not at all.
+
+**The 300px floor is `flex: 1 1 300px` + `min-height: 0`, not `min-height:
+300px`.** A hard `min-height` cannot yield: the list would hold 300px and the
+panel would clip it against its own `overflow: hidden`, which is the same defect
+one layer down. As a flex basis the 300px is a preference — the list keeps it
+when there is room, compresses and scrolls inside itself when the viewport bound
+bites, and grows to fill in sheet mode. **If a future message list grows past
+300px the fix is scrolling inside the list. The panel never grows past the
+bound.**
+
+**Sheet threshold is keyed to viewport height, never width.** Below
+`(max-height: 560px)` the panel takes a full-screen sheet treatment with body
+scroll lock, `aria-modal="true"`, and Escape-to-close. Why the unit matters: the
+blocking case is **844×390** — a phone held sideways — which is *wider* than
+768px. A threshold keyed to width misses it entirely, the same trap the 768–1023
+band above was built out of, and worth naming twice. 560 is derived: 485px of
+panel content + the 24px bottom offset + a 24px top gap = 533, rounded up.
+
+**The non-modal contract holds above that threshold.** The launcher is persistent
+and the page scrolls behind an open panel at normal viewport heights; the sheet is
+the bounded exception for short viewports only. Above the threshold there is **no
+focus trap, no scroll lock, and no `aria-modal`** — trapping focus there would
+break a deliberate site-wide decision (no modals anywhere), not fix an oversight.
+
+**Dialog keyboard and focus baseline, both modes.** Escape closes the panel.
+Focus moves into the panel on open and returns to the launcher on close. Sheet
+mode additionally traps Tab for as long as it is open. The one documented
+exception to "returns to the launcher": if the launcher is yielded because the
+panel was opened from the `closing-cta` text link — which is on screen and
+therefore hiding it — focus returns to that link instead. Returning focus to an
+`aria-hidden` control is worse than not returning it.
+
+**Close control: 44 × 44px, grown by padding around the glyph.** The `✕` stays at
+its exported 16px; the box grows outward around it, with a −6px right margin so
+the painted glyph sits where the export puts it. It was 32 × 32 (M-14). Same
+tier-1 floor as the launcher, per the two-tier policy above — and the same
+"expand, never resize" rule.
+
+**Safe-area insets are additive.** `calc(24px + env(safe-area-inset-bottom, 0px))`
+and the equivalent for `right`; the sheet takes all four sides. Always the
+two-argument form, so a browser without `env()` resolves to the existing 24px
+rather than 0.
+
+**Launcher.** Measured: **234.0 × 50.0px, byte-identical at all eight audited
+viewports** — 65.0% of a 360px viewport, 16.3% of 1440 (M-06). Mid-scroll it
+covered **174 distinct route/element pairs**, 65 of them ≥50% covered, including
+each page's own `Let's Talk` at up to **81.1%** — and **zero persisted at maximum
+scroll**, so the occlusion was entirely transient (M-15).
+
+**The launcher yields; it does not shrink.** Its width and label are unchanged at
+every viewport. An `IntersectionObserver` watches the page's hero CTA and the
+`closing-cta` button — those two elements only, tagged `data-primary-cta`, which
+is the one place CTA detection lives. While either is in the viewport the
+launcher goes to `opacity: 0`, `pointer-events: none`, `aria-hidden="true"`, and
+out of the tab order; otherwise `opacity: 1`. It is never hidden-but-focusable.
+
+Why yielding rather than a narrow variant: shrinking below 414px addresses M-06's
+width and does nothing for M-15, where **109 of the 174 pairs occur above 414px**.
+Yielding fixes both with one mechanism, and extends the rule that already existed
+(never visible over the hero) instead of inventing a second one. Why the target
+set is exactly two elements: M-15 measured against each page's own primary
+conversion element, not every CTA-shaped control. `/work`'s per-project "Try it"
+links and the case-study CTAs are not in it — an observer keyed to every
+CTA-styled element would flicker the launcher on any scroll-heavy route.
+
+**Opacity only — no transform, no translate, no scale.** A second motion pattern
+here is as unwelcome as extending the four-colour shimmer. The transition is
+`.tg-yield` in `globals.css`, a real rule rather than a Tailwind pair because its
+two properties need two durations (240ms opacity, 120ms the button's own hover)
+and a `transition` shorthand resets every transition property. Under
+`prefers-reduced-motion: reduce` the change is instant.
+
+**Acceptance criterion (M-15): 0 primary-CTA pairs above 25% coverage at any
+sampled scroll step.** Measured after: **0 of 0** — no overlap anywhere in the
+162-row sweep involves `Let's Talk` or `See Our Work`, against 174 pairs and an
+81.1% worst case before.
+
+**The criterion is scoped to primary CTAs, and the scope is doing work.** Across
+*every* interactive element the sweep still finds **143 pairs, 44 of them above
+25%, worst 99.6%** — five element classes the yield rule deliberately does not
+cover: `/work/[slug]` meta-rail links (12), inline `link-underline` text links
+(11), prev/next case-study nav links (9), footer links (6), `/contact` FAQ
+accordion triggers (6). Widening `data-primary-cta` to reach them is the wrong
+fix: it would flicker the launcher on every scroll-heavy route, which is worse
+than a transient overlap on a secondary link. **All 143 remain transient — 0 at
+maximum scroll**, unchanged from before.
+
+**The launcher carries no entrance animation.** Its Motion entrance
+(`opacity 0→1` + `y 8→0`, 240ms) ran **unsuppressed under `reduce`** — H-4
+confirmed by sampling from the instant of DOM insertion (M-19). Its replacement
+is the yield transition above, which is opacity-only and instant under `reduce`,
+so `getAnimations()` is empty on the launcher at rest.
+
+Why they were needed: the launcher and panel anchored a bare `bottom: 24px` with
+**no `env(safe-area-inset-*)` in any matching declaration**. On a device with a
+gesture bar that is 24px from the display edge, not from above the bar.
+Fixed-position elements take `env()` insets; nothing else does.
 
 ---
 
