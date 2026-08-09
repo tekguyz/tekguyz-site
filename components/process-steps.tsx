@@ -121,7 +121,9 @@ export function ProcessSteps() {
         </p>
       </div>
 
-      <div style={{ gridColumn: '4 / 13' }}>
+      {/* The rail beside this is `hidden lg:block`, so in the 768–1023 band there
+          is no second column and the steps take all 8 tracks. */}
+      <div className="[grid-column:4/13] max-lg:[grid-column:1/-1]">
         {processSteps.map((step, i) => (
           <div
             key={step.numeral}

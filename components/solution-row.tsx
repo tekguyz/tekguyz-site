@@ -29,7 +29,9 @@ export function SolutionRow({
       data-reveal-index={index}
       className={`reveal hover-row tg-grid items-center border-t border-border py-12 ${last ? 'border-b' : ''}`}
     >
-      <div className="flex items-center gap-[22px]" style={{ gridColumn: '1 / 6' }}>
+      {/* 768–1023: 5/gap/6 of 12 scales to 3/gap/4 of 8. The gap track is DESIGN.md
+          §3's deliberate one and survives the collapse. */}
+      <div className="flex items-center gap-[22px] [grid-column:1/6] max-lg:[grid-column:1/4]">
         <AccentDot solution={solution.slug} />
         <span
           data-shift
@@ -40,8 +42,7 @@ export function SolutionRow({
       </div>
 
       <div
-        className="flex items-center justify-between gap-8"
-        style={{ gridColumn: '7 / 13' }}
+        className="flex items-center justify-between gap-8 [grid-column:7/13] max-lg:[grid-column:5/9]"
       >
         <p className="max-w-[46ch] text-[length:var(--text-body)] text-secondary">
           {solution.hook}

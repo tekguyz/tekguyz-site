@@ -35,7 +35,13 @@ export function CaseStudyRow({
   const mediaFirst = index % 2 === 1;
 
   const text = (
-    <div style={{ gridColumn: mediaFirst ? '8 / 13' : '1 / 6' }}>
+    <div
+      className={
+        mediaFirst
+          ? '[grid-column:8/13] max-lg:[grid-column:6/9]'
+          : '[grid-column:1/6] max-lg:[grid-column:1/4]'
+      }
+    >
       <SolutionTag solution={entry.solution} label={entry.tag} />
       <h3
         className="mt-6 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
@@ -64,7 +70,15 @@ export function CaseStudyRow({
   );
 
   const media = (
-    <div style={{ gridColumn: mediaFirst ? '1 / 7' : '7 / 13' }}>
+    // 768–1023: the offset alternation is preserved, not flattened to halves —
+    // 5/gap/6 becomes 3/gap/4 and 6/gap/5 becomes 4/gap/3.
+    <div
+      className={
+        mediaFirst
+          ? '[grid-column:1/7] max-lg:[grid-column:1/5]'
+          : '[grid-column:7/13] max-lg:[grid-column:5/9]'
+      }
+    >
       <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
         <div>
           <Frame poster={entry.poster} alt={entry.alt} />

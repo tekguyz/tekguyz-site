@@ -27,7 +27,11 @@ export function PageHero({
       <SignatureStripe />
       <section style={{ paddingTop: 96, paddingBottom }}>
         <div className="tg-container tg-grid items-end">
-          <div style={{ gridColumn: '1 / 8' }}>
+          {/* 768–1023: the hero headline is single-column content at every width,
+              so it takes all 8 tracks. A 12-track placement left here reaches past
+              line 9 on an 8-track grid, which manufactures implicit tracks and
+              squeezes the h1 into ~144px. */}
+          <div className="[grid-column:1/8] max-lg:[grid-column:1/-1]">
             <FlourishMark className="mb-9" />
             <p className="mb-6 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
               {eyebrow}
@@ -40,7 +44,7 @@ export function PageHero({
             </h1>
           </div>
           {description && (
-            <div style={{ gridColumn: '9 / 13' }}>
+            <div className="[grid-column:9/13] max-lg:[grid-column:1/-1]">
               <p
                 className="text-[length:var(--text-body)] text-secondary"
                 style={{ textWrap: 'pretty' }}
@@ -73,7 +77,7 @@ export function SectionHead({
   const dim = onInk ? '#9CA3AF' : 'var(--tg-secondary)';
   return (
     <div className="tg-container tg-grid">
-      <div style={{ gridColumn: '1 / 7' }}>
+      <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
         <p
           className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
           style={{ color: dim }}
@@ -88,7 +92,7 @@ export function SectionHead({
         </h2>
       </div>
       {description && (
-        <div className="flex items-end" style={{ gridColumn: '8 / 13' }}>
+        <div className="flex items-end [grid-column:8/13] max-lg:[grid-column:1/-1]">
           <p className="text-[length:var(--text-body)]" style={{ color: dim }}>
             {description}
           </p>

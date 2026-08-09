@@ -11,6 +11,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Phase 1 (Discovery) & Phase 2 (Blueprint):** complete. `CANONICAL.md` is the PRD and technical roadmap — unusually thorough, which is why Phase 3 looks different from the framework's default.
 - **Phase 3 (Prompt execution):** **code complete as of 2026-08-07.** Six prompts ran — the master build, the design-export audit, and four fix passes (3, 4, 5, 6), the last three of which were the planned three-prompt fix pack. Everything remaining is content or operations, not code: see Known Gaps.
 - **Prompt 7 (2026-08-08) was an audit, not a build step, and changed no code.** It found **19 measured mobile findings, 3 of them blocking**, which means there is now a code task queued that did not exist on 2026-08-07 — a fix prompt written from `docs/MOBILE-AUDIT.md`. "Code complete" above describes the state the six build prompts reached; it is no longer the same as "nothing left to fix".
+- **Prompt 8 (2026-08-08) shipped fix batch A** — the 768–1023px band. H-1 was confirmed by diagnostic first, then the diagnostic reverted and DESIGN.md §8's 8-column layout implemented. Of the 19 findings, **7 are now resolved** (M-01, M-02, M-17, M-18, and the band rows of M-04, M-07, M-08). The remaining batches — tap targets, the concierge, and the sub-767 rows — are still queued.
 
 **What actually blocks launch** (none of it a code task):
 
@@ -18,7 +19,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | --- | --- |
 | **Privacy policy** — concierge data flow, CRM forwarding, phone field all undisclosed | Legal review. Flagged twice; this is the last content blocker |
 | **Compact-context image recapture** — all 8 posters are off 16:10, one is a simulator crop (PLAYBOOK §12 violation) | User, in flight. Drop-in, no code change; re-run `bun run check:media` |
-| ~~**Domain cutover** — still a Vercel preview~~ **Measured 2026-08-08: `https://tekguyz.com` is serving this build.** Production parity spot-check at 360×800 and 390×844 — header height, nav CTA, `closing-cta` button, concierge launcher rect, `scrollWidth`/`clientWidth`, `<title>` and `h1` — **every measured value identical to local**; the only difference is the chunk hash (`/_next/static/immutable/chunks/1nsnopzbdaany.css` vs local `/_next/static/chunks/2jhuu8e85udez.css`), i.e. a Vercel build of the same source. CRM CORS is still hard-locked to `https://tekguyz.com` | Cutover appears already done. **CLAUDE.md's opening line still says "deployed as a Vercel preview, not yet pointed at the live domain" and is now stale** — correct it. Still flag before changing the domain or the CORS origin; it fails closed and silent |
+| ~~**Domain cutover** — still a Vercel preview~~ **Measured 2026-08-08: `https://tekguyz.com` is serving this build.** Production parity spot-check at 360×800 and 390×844 — header height, nav CTA, `closing-cta` button, concierge launcher rect, `scrollWidth`/`clientWidth`, `<title>` and `h1` — **every measured value identical to local**; the only difference is the chunk hash (`/_next/static/immutable/chunks/1nsnopzbdaany.css` vs local `/_next/static/chunks/2jhuu8e85udez.css`), i.e. a Vercel build of the same source. CRM CORS is still hard-locked to `https://tekguyz.com` | Cutover appears already done. **CLAUDE.md's opening line was corrected in Prompt 8** — it now states the site is live and that CRM CORS is therefore active against the real production origin. Still flag before changing the domain or the CORS origin; it fails closed and silent |
 | GBP Services section | Not a website task; highest-leverage open SEO item |
 
 **Why this wasn't a 6–12 prompt pack:** the default range assumes a Phase-2 blueprint that leaves real gaps for each prompt to resolve. This one didn't — five documents (CANONICAL, DESIGN, COPY, SEO, PLAYBOOK) resolved hundreds of decisions before any prompt ran, which let the master prompt absorb work (Gemini swap, rate limiter, full SEO, confirmation email) that would normally be separate steps. Six build/fix prompts against a predicted 4–5, plus Prompt 7, which is an audit and changed no code. The overshoot was the fix passes, and the recurring cause is worth naming: **four of five items in Prompt 4, two of eight in Prompt 5, and one of nine in Prompt 6 were misdiagnosed in their brief** — the symptom was real, the stated cause wasn't. Budget for diagnosis, not just repair. **Prompt 7 was structured specifically to stop feeding that loop**: it measures and reports symptoms, and quarantines every cause it might have guessed at into a labelled hypotheses section.
@@ -34,6 +35,118 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 5 | Fix pass 2 of 3 — project detail-page layout, `/process` pin, duplicate CTA, single root elements, lint, reveal coverage, Sarah filename | **Shipped** (2026-08-07) — `513329e` | Six of eight as briefed. The `/process` pin was **already built**, not missing — but its progress readout ran a step and a half ahead of the content, and its reduced-motion degradation depended on Tailwind's utility sort order. Lint had no config file at all. See the section below. |
 | 6 | Fix pass 3 of 3 — nav CTA size, home Process teaser, `/contact` trust dots, `flourish-mark` doc, validation tests, phone typing cap, `aria-describedby`, dark favicon, success copy | **Shipped** (2026-08-07) — `8a17326`, plus `2713070` for the CLAUDE.md compression | Eight of nine were real. **Item 1 was not**: the nav CTA already rendered at the standard size — measured 14/24px, 14.5px — so nothing was changed. Item 6's stated fix ("cap at 15 characters") would have reproduced the very bug it was written to avoid; implemented as a 15-**digit** cap instead. Item 5's "25 unit cases pass" claim had no test file behind it at all. See the section below. |
 | 7 | Mobile & motion audit — **measure only, no fixes** | **Complete** (2026-08-08) | **Zero code changed.** Deliverables are `docs/MOBILE-AUDIT.md` and the re-runnable harness `scripts/audit-mobile.ts`. 18 routes × 7 mobile viewports light + 2 dark = **162 rows, 0 errors**. **19 findings: 3 blocking, 14 defect, 2 polish.** The pass reports causes nowhere — every inference is quarantined in a `Hypotheses (unverified)` section, deliberately, because 7 of 22 items across passes 4–6 inherited a wrong cause from their brief. First pass able to measure the motion-enabled path locally (Playwright context override). See the section below. |
+| 8 | Fix batch A — the 768–1023px layout band | **Shipped** (2026-08-08) | **H-1 confirmed by diagnostic before anything shipped**, then the diagnostic reverted and the layout DESIGN.md §8 actually specifies implemented instead. `.tg-grid` children carried 12-column placements into an 8-track grid, manufacturing 4 implicit tracks. Grid at 768 is now **8 explicit tracks, 0 implicit**. M-01 resolved on all 11 routes, M-02, M-18 and M-17 resolved, M-04's and M-07/M-08's band rows resolved. See the section below. |
+
+## Prompt 8 — fix batch A: the 768–1023px layout band
+
+*2026-08-08. Changed: `app/globals.css` (reverted to its pre-diagnostic state — no
+net change), `components/page-hero.tsx`, `components/solution-row.tsx`,
+`components/case-study-row.tsx`, `components/footer-dark.tsx`,
+`components/process-steps.tsx`, `app/page.tsx`, `app/contact/page.tsx`,
+`app/work/[slug]/page.tsx`, `app/solutions/[slug]/page.tsx`, plus the doc changes
+listed at the end of this section.*
+
+### H-1 was proved before anything was designed around it
+
+The audit's kill test was applied, measured, and reverted. One thing the audit's
+phrasing did not say and the test needs: **the diagnostic requires `!important`**.
+The placements it is fighting are inline `style` attributes, which beat any
+stylesheet rule; that is also why the `1 / -1` reset under 767 carries `!important`.
+A diagnostic without it measures nothing and reads as "H-1 is wrong".
+
+| Measurement @768 | Audit | Under diagnostic | Verdict |
+| --- | --- | --- | --- |
+| `/solutions` h1 | 144.0px, L4 | **704px, L1** | H-1 holds |
+| `/work` h1 | 144.0px, L5 | **704px, L2** | H-1 holds |
+| `/contact` form card | 230.0px | **704px** | H-1 holds |
+| Footer nav columns | 265.2 / 265.2 / 125.5 | **704 / 704 / 704** (stacked) | H-1 holds |
+| `grid-template-columns` | 8 explicit + **4 implicit** | 8 explicit, **0 implicit** | H-1 holds |
+
+### Why the shipped fix is not the diagnostic
+
+`1 / -1` across the whole band is a stack, and DESIGN.md §8 specifies an **8-column
+grid** there. Shipping the diagnostic would have resolved every symptom while
+contradicting the spec. So each child's 12-track span was re-derived onto 8 tracks,
+scaling by 8/12 and **keeping the deliberate gap track** §3 names rather than
+converting rows to halves:
+
+| Row | 12-track | 8-track |
+| --- | --- | --- |
+| `page-hero` headline / description | `1/8` + `9/13` | both `1/-1` — hero-scale type has no second column to sit beside |
+| `SectionHead` headline / description | `1/7` + `8/13` | both `1/-1`, same reason |
+| `solution-row` title / hook | `1/6` + `7/13` | `1/4` + `5/9` — 5:6 becomes 3:4, gap track preserved |
+| Case-study row, even | text `1/6` + media `7/13` | `1/4` + `5/9` |
+| Case-study row, odd | media `1/7` + text `8/13` | `1/5` + `6/9` — the offset alternation survives, not flattened to mirrored halves |
+| `/work/[slug]` content / `MetaRail` | `1/9` or `1/8` + `10/13` | `1/7` + `7/9` — the rail is **not** `hidden lg:block`, only its pinning is `lg:`-gated, so the band really does have two columns |
+| `/process` steps | `4/13` | `1/-1` — the rail beside it **is** `hidden lg:block`, so there is no second column to place |
+| `/contact` trust column / form card | `1/6` + `7/13` | both `1/-1` |
+| `/solutions/[slug]` title / body | `1/6` + `7/13` | both `1/-1` |
+| Footer nav ×3 | `1/5` + `5/9` + `9/13` | `1/4` + `4/6` + `6/9` — 4/4/4 becomes 3/2/3, and **Company** takes the narrow track because its longest item is `Process` at 51px, while Solutions (136px) and the email (126px) both need a wide one |
+
+### The mechanism, and why it is not the sort-order trap
+
+The inline `style={{ gridColumn }}` attributes were **removed**, not supplemented.
+A band rule left in `globals.css` would have had to beat an inline style, i.e. a
+second `!important` in a query adjacent to the existing one — exactly what
+CLAUDE.md's cascade section forbids. Both placements are now Tailwind arbitrary
+properties on the same element (`[grid-column:1/8] max-lg:[grid-column:1/-1]`), the
+idiom `home-hero.tsx` already used. That is still a source order, so it was
+**measured rather than assumed**, at every boundary:
+
+| Viewport | Tracks | `/work` row children |
+| --- | --- | --- |
+| 1440 / 1280 | 12 | 699.3 / 389.3 — unchanged from before |
+| 1024 | 12 | 550 / 304 |
+| **1023** | **8** | 959 / 959 |
+| **768** | **8** | 704 / 704 (detail page: 522 / 158) |
+| 767 | 1 | 719 / 719 — unchanged |
+
+### M-17 was a consequence, not a separate bug
+
+`/work` at 844×390 scrolled 5px horizontally with zero elements crossing the edge.
+It was re-checked after the grid fix **before** any bisect was started, per the
+brief, and measures **0px**. The implicit tracks were contributing to
+`scrollWidth` without producing a border box that crossed the edge — which is
+exactly the shape H-3 described. No `overflow-x: hidden` was shipped anywhere.
+
+### The nav 200ms / 240ms decision — Known Gap closed
+
+Decided in favour of **240ms**: it matches `--dur-base` and it is what ships.
+`docs/DESIGN.md` §4 was corrected; no code changed. This closes the open Known Gap
+below rather than leaving it as a value judgement.
+
+### Documentation changed, and why each one
+
+Two of these were asked for; the rest are the gap the work exposed. **The 8-column
+spans were shipped code with no entry in any authority doc** — a future session
+reading §3's 12-track spans would have re-derived different numbers and reopened the
+bug.
+
+| File | Change |
+| --- | --- |
+| `docs/DESIGN.md` §8 | **New — the 8-column spans table**, all ten rows, plus the derivation rule (scale 8/12, keep §3's gap track), why some rows go `1/-1` instead of splitting, the `/process`-vs-`/work/[slug]` rail distinction, and why the footer is 3/2/3 rather than 3/3/2 |
+| `docs/DESIGN.md` §3 | The asymmetry spans now say they are the **12-column case** and point at §8. They were previously readable as the only spans that exist |
+| `docs/DESIGN.md` §4 | Nav scrolled-state transition **200ms → 240ms** |
+| `CLAUDE.md` — What this is | Corrected: the site is **live**, and CRM CORS is therefore active against the real production origin |
+| `CLAUDE.md` — cascade section | **New rule:** a grid placement never ships as an inline `style`. Mechanism, per the compression convention; the incident is this section |
+| `docs/MOBILE-AUDIT.md` | **Status banner only — no finding row, number or hypothesis was edited.** That file is what the next fix pass measures against, so rewriting a row would destroy the before/after comparison. The banner carries the 7 resolved findings with their new numbers and the H-1/H-2/H-3 verdicts |
+| `docs/PROGRESS.md` | This section, the Prompt 8 history row, the phase-status line, the Known Gap closure, and a new Known Gap tracking batches B/C/D |
+
+**One inconsistency left standing, on purpose.** `components/home-hero.tsx` still
+carries an inline `gridColumn: '1 / 7'` on its text column. It is **not** a bug —
+`1 / 7` ends at line 7, so it fits inside 8 tracks and creates no implicit ones,
+which is why `/` never appeared in M-01. But its media sibling is
+`max-lg:[grid-column:1/-1]`, so in the band the text sits on 6 of 8 tracks above a
+full-width media panel. Converting it is a no-op refactor; **giving it a band value
+is a layout change to a route that measured clean**, and Prompt 8's scope fence was
+"placements Phase 1 identified". Left alone rather than changed quietly. `/` h1
+measures **522px L3 at 768**, unchanged by this pass.
+
+**Not changed, deliberately:** `docs/CANONICAL.md` (no architecture or CRM-contract
+decision moved), `docs/COPY.md` and `docs/SEO.md` (no string changed — M-16's
+remaining orphans are a wrap consequence and copy was out of scope),
+`docs/PLAYBOOK.md`, and `scripts/audit-mobile.ts` (altering an existing check would
+stop the before/after numbers comparing).
 
 ## Prompt 7 — mobile & motion audit (measure only)
 
@@ -854,6 +967,7 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 
 | Gap | Why deferred | Revisit when |
 | --- | --- | --- |
+| **12 of 19 mobile findings are still open** (`docs/MOBILE-AUDIT.md`, see its status banner). Prompt 8 took **fix batch A** — the whole 768–1023px band — and closed M-01, M-02, M-17, M-18 plus the band rows of M-04, M-07, M-08. What remains splits into three batches that were scoped out **by instruction**, not by oversight. **B — tap targets (M-09 – M-14):** site-wide, 73 distinct signatures across 2,707 instances, every one a height failure except the 38×38 theme toggle. It cannot ship as a code fix alone because DESIGN.md §8's `≥44×44` floor currently disagrees with shipped values everywhere, including the nav lockup and every footer link — the policy has to be amended or the floor enforced, and that is a decision. **C — the concierge (M-03 blocking, M-06, M-14, M-15, M-19):** the panel overshoots the top of a 844×390 viewport by 119px, taking its only close button off-screen; the launcher is 234px wide at every viewport, 65% of a 360px phone. `position: fixed`, outside the grid, so none of it was reachable from a grid fix. **D — the sub-767 rows of M-04 and M-05:** the `closing-cta` trust row wrapping to 3 lines and the footer masthead's social row dropping and left-aligning | Each batch is a different subsystem with a different failure mode, and batching by subsystem is what let batch A be diagnosed properly rather than guessed at — 7 of 22 items across passes 4–6 inherited a wrong cause from their brief. B additionally needs a spec decision before any code | **C first** — it holds the only remaining `blocking` finding. Then B, once the §8 floor question is answered. D is `defect`/`polish` and can ride along with either |
 | Hero video loop (`sarah-demo.mp4`) | Static image ships first; video is a post-launch enhancement | A new recording of the real dashboard exists |
 | Live iframe embeds (`embeddable` flags) | Needs `frame-ancestors` CSP added per demo app first | Ready to do the CSP work — one prompt per app, then flip flags |
 | Compact-context image ratios — **measured 2026-08-07: all 8 are off 16:10** (1.02–1.33 against a required 1.60); only the 16:9 hero passes. Two of them (`sarah-project-thumb`, `crunch-wrap-dashboard`) crop to a fragment that reads as invented content, and `sarah-project-thumb` is a **simulator crop**, the PLAYBOOK §12 hard-rule violation | User's own call — recapture in progress. Wiring is confirmed correct and guarded by `bun run check:media`, so a fresh file under the same name renders with no code change | On drop-in. Re-run `bun run check:media` to confirm |
@@ -865,7 +979,7 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 | `bun.lock` lost a stale `vercel@^58.7.1` devDependency during this pass | Not intentional and not a removal: the committed lockfile listed it while `package.json` never has, so any `bun install` would have re-synced it the same way. Net dependency change from this pass is zero — `eslint-config-next` was already installed | Confirm the Vercel CLI is not expected as a local devDependency; if it is, add it to `package.json` properly |
 | ~~Motion-enabled behavior is unverified~~ | **Resolved 2026-08-08 (Prompt 7).** Partly resolved 2026-08-07 by the user on a Pixel 9A (thinking-stripe shimmer runs; hero entrance visible on load). The two remaining items are now measured — see the Prompt 7 section for the tables. **`/process` progress fill advances with scroll:** `0% → 25% → 53% → 81% → 100%` at `scrollY` 0/360/720/1080/1440, `transition: height 120ms linear`, and exactly one rail label is ink-weighted at every sample (Discovery → Build → Launch & Support). **`closing-cta` echo fires:** four `.tg-seq` items enter from `opacity: 0` / `translateY(32px)`, staggering headline → subhead → trust → CTA from ~350ms and fully resolved by **~770ms**. **How, and this qualifies the result:** both came from **Playwright's `reducedMotion: 'no-preference'` context override at 1280×900, not from a motion-enabled device** — verified to have taken by `matchMedia('(prefers-reduced-motion: reduce)').matches === false` inside that context. **The machine's OS preference (`MinAnimate = 0`) was not touched.** The rail is `hidden lg:block`, so it renders at no mobile viewport and had to be measured above 1024px | — for these two. A real motion-enabled device would still be the stronger evidence for anything new, but nothing is outstanding |
 | `/privacy` ships zero scroll reveals | Out of scope this pass and arguably correct — it is a legal text page, and entrance animation on policy copy is decoration | Only if wanted |
-| Nav scrolled-state transition is **240ms** in code (`nav.tsx:77`) against DESIGN.md §4's stated **200ms** | Still open, and **no longer only a code reading**: measured live 2026-08-08 in the shipped stylesheet with motion on. `document.getAnimations()` on the nav fill layer (`div.absolute.inset-0.-z-10`) returns three `CSSTransition`s — `background-color`, `border-bottom-color`, `backdrop-filter` — each **`duration: 240ms`, `easing: ease`**. So 240 is what visitors get; DESIGN.md's 200 is what no surface implements. This remains a value judgement (which number is right), not a stale-claim fix | Someone decides whether 200 or 240 is correct, then the other one changes. The decision is now the only thing missing — the measurement is done |
+| ~~Nav scrolled-state transition is **240ms** in code against DESIGN.md §4's stated **200ms**~~ | **Resolved 2026-08-08 (Prompt 8).** Decided in favour of **240ms** — it matches `--dur-base` and it is what ships; the measurement (three `CSSTransition`s on the nav fill layer, each `duration: 240ms`, `easing: ease`) was already done in Prompt 7. `docs/DESIGN.md` §4 now states 240ms. **No code changed** | — |
 | `app/icon.svg` is no longer transparent | Deliberate, 2026-08-07 (Prompt 6). It took the same `#101010` plate as the rest of the set so the favicon reads identically across browsers. The trade is that it no longer adapts to a light tab strip — it is now a dark tile there rather than a bare mark | Only if the dark tile reads badly on a light-chrome browser in practice |
 | Favicon generation now runs on `prebuild` | Not a gap, a note: PLAYBOOK §13 always claimed build-time generation and it was manual until now. `sharp` + `png-to-ico` are devDependencies, which Vercel installs for builds — if a future deploy ever runs with `NODE_ENV=production` install pruning, this step is what breaks first | A deploy fails at `prebuild` on a missing `sharp` |
 | `bun run test` is not wired into CI or `prebuild` | The suite is pure-function and fast (~0.7s), but nothing yet forces it to run. Adding it to `prebuild` would couple the build to test state, which is a call worth making deliberately rather than in a fix pass | CI exists, or someone wants the build to gate on it |

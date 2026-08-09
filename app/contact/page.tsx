@@ -66,7 +66,10 @@ export default function ContactPage() {
       <SignatureStripe />
 
       <div className="tg-container tg-grid items-start pt-24 pb-32">
-        <div style={{ gridColumn: '1 / 6' }}>
+        {/* 768–1023: the form card is a single column at every width — there is no
+            second column for it to sit beside — so intake and its trust column
+            each take all 8 tracks rather than a third of the row. */}
+        <div className="[grid-column:1/6] max-lg:[grid-column:1/-1]">
           <FlourishMark className="mb-9" />
           <p className="mb-6 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
             Get In Touch
@@ -105,7 +108,7 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <div style={{ gridColumn: '7 / 13' }}>
+        <div className="[grid-column:7/13] max-lg:[grid-column:1/-1]">
           {/* useSearchParams needs a Suspense boundary to keep this route static. */}
           <Suspense fallback={<div className="min-h-[520px]" />}>
             <ContactForm />

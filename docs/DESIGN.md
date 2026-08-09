@@ -145,7 +145,11 @@ Hierarchy comes from weight and size, never from switching families. All numeral
 - **12-column grid**, 24px gutters, container 1280px max with 32px outer padding (24px mobile).
 - **Section rhythm:** 128px vertical padding desktop, 80px mobile. Consistent, generous — this carries the "premium" feel more than any decoration. **Sub-elements within a section (nav, footer masthead, `closing-cta`) use their own, smaller values — see their component entries. Don't let 128px leak into places it was never meant for; this has already happened twice.**
 
-**Asymmetry rules (this is what breaks the template look):**
+**Asymmetry rules (this is what breaks the template look).** These spans are the
+**12-column** case, i.e. ≥1024px. Every one of them has an 8-column equivalent for
+the 768–1023px band, tabulated in **§8** — read both before placing anything, because
+a 12-column span left to run on an 8-track grid silently creates implicit tracks
+rather than erroring:
 - Hero: text cols 1–6, media cols 7–12 **bleeding past the right viewport edge** (media container extends beyond the 1280px cap). Column spans are unchanged by the v2.2 type-scale fix — see §2 for why the fix was in font-size, not column width.
 - Solution rows: accent dot + title cols 1–5, hook + arrow cols 7–12. The gap at col 6 is intentional.
 - Featured Work rows alternate: text 1–5 / media 7–12, then media 1–6 / text 8–12. Not mirrored — offset.
@@ -165,7 +169,7 @@ Hierarchy comes from weight and size, never from switching families. All numeral
 
 **`button-secondary`** — transparent, ink text, 1px hairline border, radius 8px.
 
-**`nav`** — sticky. Transparent, no fill, no border at scroll position 0. Past 24px scroll: canvas (or `bg-dark`) at 80% opacity, `backdrop-blur(12px)`, hairline border-bottom fading in over 200ms. `logo-lockup` left (icon + wordmark, no tagline). Links center-right — Solutions / Work / Process / Contact, `--text-sm`, weight 500. Active-page indicator: 2px ink underline beneath the current page's link, width matching the link, no accent color. **Theme toggle is now an icon** (sun/moon or equivalent single glyph that swaps on click) — styled per the Icon Policy above, not a text label anymore. Primary CTA "Let's Talk" right-aligned, standard `button-primary` — must not wrap at any supported width. Mobile: hamburger, full-screen drawer, Solutions expands inline to the four accent-dot anchors.
+**`nav`** — sticky. Transparent, no fill, no border at scroll position 0. Past 24px scroll: canvas (or `bg-dark`) at 80% opacity, `backdrop-blur(12px)`, hairline border-bottom fading in over **240ms** (`--dur-base`; measured in the shipped stylesheet — this doc previously said 200ms, which no surface ever implemented). `logo-lockup` left (icon + wordmark, no tagline). Links center-right — Solutions / Work / Process / Contact, `--text-sm`, weight 500. Active-page indicator: 2px ink underline beneath the current page's link, width matching the link, no accent color. **Theme toggle is now an icon** (sun/moon or equivalent single glyph that swaps on click) — styled per the Icon Policy above, not a text label anymore. Primary CTA "Let's Talk" right-aligned, standard `button-primary` — must not wrap at any supported width. Mobile: hamburger, full-screen drawer, Solutions expands inline to the four accent-dot anchors.
 
 **`page-hero`** — top-of-page treatment for every inner route, including both `/solutions` (the index) and `/solutions/[slug]` (each detail page, headline drawn from that solution's own copy, not the generic page-hero pattern used elsewhere) — see COPY.md and CANONICAL.md for the index-plus-detail reversal. Also `/work`, `/process`, `/contact`. Eyebrow (`--text-caption`) above a headline at `--text-display` (not hero scale) above a one-line description at `--text-body`, `muted`, capped around 60ch. No media. **Does carry the `flourish-mark`**, above the eyebrow — the same stale "home-only" claim corrected in the `flourish-mark` entry below; the export shows the dots on every route's first section and that is what ships. Top padding matches standard section rhythm.
 
@@ -290,9 +294,54 @@ Never gate color logic on `useTheme()` or mount state when a CSS `dark:` variant
 | Breakpoint | Changes |
 | --- | --- |
 | < 768px | Hamburger drawer; hero at its clamp floor (40px); media stacks below text, no bleed; solution rows stack (dot+title, then hook); case studies stack; `LiveFrame` = poster + link always |
-| 768–1024px | Nav horizontal; asymmetric grid collapses to 8 columns; media bleed reduced |
+| 768–1024px | Nav horizontal; asymmetric grid collapses to 8 columns — **spans below**; media bleed reduced |
 | 1024–1440px | Full asymmetric grid, all bleeds active |
 | > 1440px | Container caps at 1280px; the right-edge hero bleed extends further |
+
+### The 8-column spans, 768–1023px
+
+"Collapses to 8 columns" was the whole spec here until 2026-08-08, and that was not
+enough to build from: every `.tg-grid` child kept its 12-column placement while the
+grid narrowed to 8 tracks, so placements reaching past line 9 manufactured **four
+implicit tracks** and squeezed headlines into ~144px. Measured, fixed and recorded
+in PROGRESS.md's Prompt 8 section. These are the shipped spans — grid **line**
+numbers, matching the code.
+
+Derivation rule, for anything added later: **scale the 12-track span by 8/12 and
+keep the gap track** §3 calls deliberate. Do not convert an asymmetric row to
+halves — the asymmetry is the point, and a mirrored 4/4 is the template look §0
+exists to avoid.
+
+| Row | 12-track (§3) | 8-track (768–1023) |
+| --- | --- | --- |
+| `page-hero` headline / description | `1/8` + `9/13` | both **`1/-1`** |
+| `SectionHead` headline / description | `1/7` + `8/13` | both **`1/-1`** |
+| `solution-row` title / hook | `1/6` + `7/13` | **`1/4`** + **`5/9`** |
+| Case-study row, even — text / media | `1/6` + `7/13` | **`1/4`** + **`5/9`** |
+| Case-study row, odd — media / text | `1/7` + `8/13` | **`1/5`** + **`6/9`** |
+| `/work/[slug]` content / meta rail | `1/9` or `1/8` + `10/13` | **`1/7`** + **`7/9`** |
+| `/process` steps | `4/13` | **`1/-1`** |
+| `/contact` trust column / form card | `1/6` + `7/13` | both **`1/-1`** |
+| `/solutions/[slug]` title / body | `1/6` + `7/13` | both **`1/-1`** |
+| Footer nav — Solutions / Company / Get In Touch | `1/5` + `5/9` + `9/13` | **`1/4`** + **`4/6`** + **`6/9`** |
+
+**Why some rows go full-width instead of splitting.** A hero- or display-scale
+heading has no second column to sit beside — `--text-hero` resolves to 46.08px at
+768, and a narrow column at that size is the artifact, not a layout. So `page-hero`,
+`SectionHead`, `/solutions/[slug]`'s header and `/contact` take all 8 tracks. Rows
+that carry two *genuine* columns — text against media, content against meta rail —
+keep both.
+
+**Two rows that look alike and are not.** `/process`'s progress rail is
+`hidden lg:block`, so the band has no second column and the steps take `1/-1`.
+`/work/[slug]`'s meta rail is **not** hidden — only its pinning is `lg:`-gated — so
+the band really does render two columns and both get placed. Check which case a new
+row is before placing a column that isn't there.
+
+**Footer 4/4/4 becomes 3/2/3, not 3/3/2.** Company takes the narrow track because
+its longest item is `Process` at 51px; Solutions (136px) and the email address
+(126px) both need a wide one. Ordering it the obvious way puts the email in a 121px
+column and wraps it.
 
 Touch targets ≥ 44×44px. Inputs 44px tall. Visible keyboard focus rings throughout. Skip-to-content link.
 

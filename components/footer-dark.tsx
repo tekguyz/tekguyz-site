@@ -116,7 +116,10 @@ export function FooterDark() {
           className="tg-grid mt-8 border-t pt-10"
           style={{ borderTopColor: HAIRLINE }}
         >
-          <div style={{ gridColumn: '1 / 5' }}>
+          {/* 768–1023: 4/4/4 of 12 becomes 3/2/3 of 8. Company gets the narrow
+              track because its longest item is `Process` at 51px; Solutions
+              (136px) and the email address (126px) both need the wide one. */}
+          <div className="[grid-column:1/5] max-lg:[grid-column:1/4]">
             <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
               Solutions
             </p>
@@ -140,7 +143,7 @@ export function FooterDark() {
             </div>
           </div>
 
-          <div style={{ gridColumn: '5 / 9' }}>
+          <div className="[grid-column:5/9] max-lg:[grid-column:4/6]">
             <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
               Company
             </p>
@@ -162,7 +165,7 @@ export function FooterDark() {
             </div>
           </div>
 
-          <div style={{ gridColumn: '9 / 13' }}>
+          <div className="[grid-column:9/13] max-lg:[grid-column:6/9]">
             <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
               Get In Touch
             </p>

@@ -4,6 +4,33 @@
 pass.** No finding row states a cause; everything inferred is quarantined in
 [Hypotheses (unverified)](#hypotheses-unverified) at the bottom.*
 
+> ### Status — 7 of 19 findings fixed by Prompt 8 (2026-08-08)
+>
+> **Nothing below this banner has been edited.** Every finding row, number and
+> hypothesis is exactly as measured at commit `51ee09c`, because this file is the
+> record that the fix passes measure *against* — rewriting a row would destroy the
+> before/after comparison. Read the rows as "what was true at `51ee09c`", and this
+> banner for what is true now.
+>
+> | Finding | Now | Measured after |
+> | --- | --- | --- |
+> | **M-01** `page-hero` h1 squeezed, 11 routes | **Resolved** | `/solutions` 144.0 L4 → **704 L1**; `/work` 144.0 L5 → **704 L2**; `/process` → **704 L1**; `/work/[slug]` 212.3–246.0 L6–L7 → **522 L2–L3** |
+> | **M-02** `/contact` card + counter | **Resolved** | card 230.0 → **704**; counter 3 lines → **1** |
+> | **M-17** `/work` 5px scroll @844 | **Resolved** | **0px**. It was an H-1 consequence, not a separate bug — no `overflow-x: hidden` was shipped |
+> | **M-18** footer columns unequal | **Resolved** | 265.2/265.2/125.5 → **249 / 158 / 249** |
+> | **M-04** `/contact` trust row, **768/844 rows only** | **Resolved** | 3 lines @768 → **1**; 2 lines @844 → **1**. Its `closing-cta` and sub-767 rows are untouched |
+> | **M-07 / M-08** step counter + title, **768/844 rows only** | **Resolved** | both **1 line**. Their sub-767 rows are untouched |
+> | **M-16** orphan lines, **768/844 rows** | **Partial** | `Four ways we help.` L4-in-144px → **L1 in 704px**. Case-study headlines still orphan in a now-deliberate 249px column. No copy changed |
+> | **M-03, M-05, M-06, M-09 – M-15, M-19** | **Open** | Out of Prompt 8's scope by instruction — tap targets, the concierge, the footer masthead and the sub-767 rows are later batches |
+>
+> **H-1 confirmed** by its own kill test before any fix shipped; the diagnostic was
+> then reverted and DESIGN.md §8's 8-column layout implemented instead. One thing
+> §7's phrasing omits: **the kill test needs `!important`** — it is fighting inline
+> `style` attributes. **H-3 resolved** as an H-1 consequence. **H-2 re-measured, not
+> acted on**: the clamp still resolves to 46.08px at 768, but with the column now
+> full-container no `page-hero` h1 exceeds 2 lines, so it is not a second
+> contributor at these widths. **H-4, H-5, H-6 untested** — still open.
+
 Every number below came out of `scripts/audit-mobile.ts`, which is committed
 alongside this file. Re-run it against the same commit and the same numbers come
 back. Where a number could not be obtained, that is said plainly in

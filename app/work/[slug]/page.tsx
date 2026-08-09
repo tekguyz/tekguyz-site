@@ -50,7 +50,10 @@ function MetaRail({
   status: StatusResult;
 }) {
   return (
-    <aside className="lg:sticky lg:top-[116px]" style={{ gridColumn: '10 / 13' }}>
+    // The rail is not `hidden lg:block` — it renders in the 768–1023 band, so the
+    // band gets two real columns: content 6 tracks, rail 2. Only the pinning is
+    // `lg:`-gated.
+    <aside className="lg:sticky lg:top-[116px] [grid-column:10/13] max-lg:[grid-column:7/9]">
       <div className="border-t border-border pt-5">
         <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
           Solution line
@@ -143,7 +146,9 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
       <SignatureStripe />
 
       <div className="tg-container tg-grid items-start pt-10 pb-32">
-        <div style={{ gridColumn: isCase ? '1 / 9' : '1 / 8' }}>
+        <div
+          className={`max-lg:[grid-column:1/7] ${isCase ? '[grid-column:1/9]' : '[grid-column:1/8]'}`}
+        >
           <Link href="/work" className="link-underline text-[0.875rem] font-semibold text-secondary">
             ← Work
           </Link>
