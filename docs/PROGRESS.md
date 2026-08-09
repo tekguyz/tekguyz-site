@@ -1089,8 +1089,23 @@ as obvious, it is still open.*
    rule.* `Ask about your project` is Claude-Design-generated, not user-authored.
    It is present, not missing, so it carries **no `[NEEDS COPY]` marker and stays
    live in code** — but it has never been confirmed as final copy, and the yield
-   decision above deliberately kept it. Candidates proposed in Prompt 10's report;
-   a human picks or confirms.
+   decision above deliberately kept it. **Candidates, for a human to pick or
+   confirm** — recorded here rather than left in a report, because a chat summary
+   is one `/clear` from gone:
+   - **`Ask about your project`** (shipped) — states the subject, no verb pressure.
+     The longest at 234px, which is what made it a yield problem rather than a
+     shrink problem.
+   - **`Tell us what you're dealing with`** — matches the panel's own opener and
+     the input placeholder, so the launcher and the first screen speak once.
+     Longer; re-measure the yield sweep if picked.
+   - **`Ask what we'd build`** — the concierge's actual promise, in the brand's
+     plain register. Shortest, and the only one that survives a width squeeze
+     without collapsing to an icon.
+   - **`Start a conversation`** — safest, and the most generic; it is the option
+     that reads closest to a stock chat bubble, which is the thing the label
+     exists to avoid.
+   Picking any of the last three is a copy change only — the yield rule is
+   width-independent, so nothing in the geometry needs revisiting.
 3. **The concierge disclaimer** — renders 2 lines at every viewport, including
    1440. Copy is locked, so shortening it needs a `docs/COPY.md` amendment and
    sign-off, not a fix pass. **Currently: unchanged.**
