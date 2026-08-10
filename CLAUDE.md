@@ -88,6 +88,12 @@ Acceptance criteria — not a checklist to narrate:
 - No hydration warnings.
 - Report what you did **not** finish. Never describe unfinished work as complete.
 
+## Checking production — the Vercel connector is available, use it
+
+**Hosting and runtime state are measurable, so measure them instead of citing a doc.** `list_projects` / `get_project` give the real project, domains and latest deployment target; `list_deployments` gives what each push actually did. That is how the `tekguyz-website` fiction was killed.
+
+**Environment variables are deliberately unreadable, and that does not make them unverifiable.** The connector exposes no env-var tool by design (the nearest, `get_project_deployment_protection`, says outright that password values are never returned) — a tool that could read them is one hop from a key landing in a transcript. But a *missing* secret throws at runtime, and **`get_runtime_errors` reads that**: it is how "are the 5 env vars set?" got answered in one read-only call, after being wrongly written off as human-only work. `get_runtime_logs` with `group_by: statusCode` is the cheap health check. **Ask what observable a thing produces before declaring it unknowable.**
+
 ## Verifying visually — read this before claiming you did
 
 - **Windows animations are off** on this machine (`MinAnimate = 0`), so `prefers-reduced-motion: reduce` matches machine-wide. A deliberate standing preference, not a misconfiguration — **don't change it, and don't burn turns emulating around it.** An inert entrance, a static concierge stripe, an IntersectionObserver that never fires: all expected here. **The motion layer is confirmed working** (user, Pixel 9A, 2026-08-07). Verify wiring by computed style and class count, **say which half you proved**, and leave the motion-enabled check to the user.

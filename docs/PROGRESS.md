@@ -1181,14 +1181,37 @@ build or test catches it. Re-measure it against the Vercel API rather than
 citing this file, and treat any push as production until that check says
 otherwise.
 
-**One thing this correction does NOT establish: whether the production
-environment variables are set.** The claim above that there are none was about a
-project believed to be a throwaway preview, and it was never re-checked. It
-cannot be settled by a build — `new Resend()` is constructed lazily precisely so
-a build passes without secrets — and it cannot be settled by an HTTP probe
-without submitting a real lead through the real CRM. **Unknown, and owned by a
-human.** If they are missing, the contact form and concierge are failing on live
-right now.
+**Production environment variables: SET, and confirmed 2026-08-09.** All five
+are present — user-confirmed, and independently corroborated by the runtime
+telemetry below. The "no environment variables set" claim above is dead; it
+described the first hours of the project's life and was never re-checked.
+
+**How it was corroborated, because the method is the reusable part.** This was
+first written up as "unknown, owned by a human" on the reasoning that a build
+proves nothing (`new Resend()` is lazily constructed precisely so a build passes
+without secrets) and an HTTP probe would mean pushing a real lead through the
+real CRM. **Both true, and both irrelevant — the question is answerable from
+runtime telemetry, read-only, without touching a single byte of user data:**
+
+- `get_runtime_errors` over 7 days returns **exactly one error group**:
+  `Concierge route error: Error: GEMINI_API_KEY is not set`, **count 1**, at
+  `2026-08-06T18:05:09Z`, on `dpl_GnaSZGCgGeENQoeY8ZTwEGJoDJGZ` — the *original*
+  Prompt 4 deployment. **Nothing since.** That single error, and its silence
+  afterwards, is the transition from unset to set, recorded in the logs.
+- `get_runtime_logs`, production, 7 days, grouped by status code: **47 requests,
+  all 200, zero non-200.** Low traffic, so treat the 200s as corroboration
+  rather than proof on their own — the error table is the load-bearing evidence.
+
+**The lesson, and it is not "check env vars".** A secret's *value* is
+deliberately unreadable — the Vercel connector exposes no environment-variable
+tool at all, and the nearest thing (`get_project_deployment_protection`) states
+outright that password values are never returned. That is correct design; a
+tool that could read them is one hop from a key landing in a transcript. But
+**"I cannot read the value" is not "I cannot answer the question."** What a
+missing secret *does* is throw at runtime, and runtime errors are readable. When
+a check looks blocked, ask what observable the thing produces before declaring
+it unknowable — declaring it unknowable was the actual error here, and it
+would have handed a human a task that took one read-only API call.
 - **Third bug, found only by deploying:** `new Resend(process.env.RESEND_API_KEY)` ran at module scope, and `new Resend(undefined)` throws on construction. Merely importing the action exploded during Next's page-data collection, so the Vercel build failed while passing locally purely because `.env.local` existed here. The client is now constructed lazily, and a full build with every secret removed is verified green (45/45 pages).
 
 ### Deliberate deviations from the export, for the record
