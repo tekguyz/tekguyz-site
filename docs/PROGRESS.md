@@ -14,6 +14,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Prompt 8 (2026-08-08) shipped fix batch A** — the 768–1023px band. H-1 was confirmed by diagnostic first, then the diagnostic reverted and DESIGN.md §8's 8-column layout implemented. Of the 19 findings, **7 are now resolved** (M-01, M-02, M-17, M-18, and the band rows of M-04, M-07, M-08). The remaining batches — tap targets, the concierge, and the sub-767 rows — are still queued.
 - **Prompt 10 (2026-08-09) shipped the concierge fix** — M-03, M-06, M-14, M-15, M-19. **No `blocking` finding remains open.** 12 of 19 findings are now resolved. One pass is left: tap targets and the sub-767 wrap rows (M-05's sub-767 rows, M-09 – M-13, M-04's sub-767 row).
 - **Prompt 11 (2026-08-09) shipped the tap-target and sub-767 pass** — M-04's and M-05's sub-767 rows, M-09 – M-13. **All 19 mobile findings are now resolved**, and the mobile-audit queue that Prompt 7 opened is closed. Tier failures **2,739 → 0** with **0 overlapping hit areas** and **no painted box resized**. `docs/MOBILE-AUDIT.md`'s banner carries the per-finding after-numbers.
+- **Prompt 12 (2026-08-10) fixed the React #418 hydration mismatch in `StatusLine`** — the one non-mobile defect Prompt 7 surfaced and quarantined. Server renders an absolute `at HH:MM UTC` stamp, the client swaps to the relative string post-hydration. **No known console error remains on any route.**
 
 **What actually blocks launch** (none of it a code task):
 
@@ -41,6 +42,58 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 
 | 10 | Concierge fix — M-03 (blocking), M-06, M-14, M-15, M-19 + the CLAUDE.md copy-gap rule | **Shipped** (2026-08-09) — `9a58fc1` | The last `blocking` finding closed. Panel bound to `calc(100dvh - 48px)` with a `(max-height: 560px)` full-screen sheet; the launcher **yields** to the two `data-primary-cta` elements rather than shrinking; close control 44×44 by padding, glyph unchanged; safe-area insets added additively; dialog keyboard/focus baseline established. **H-4 confirmed, not killed** — the launcher's Motion entrance ran unsuppressed under `reduce`, and was removed rather than pinned. See the section below. |
 | 11 | Tap targets & sub-767 wrap rows — M-04, M-05, M-09 – M-13 + front matter | **Shipped** (2026-08-09) — `9ecdebc` / `b450840` / `3507f2b` | DESIGN.md §8's two-tier floor implemented as **two shared `::before` overlay utilities** (`.tap-44`, `.tap-24`) rather than 73 call-site patches, because the 2,707 instances were a handful of shared components rendered many times. **`::before`, not `::after`** — `[data-navlink]::after` is the active-page indicator, and the nav links need both. M-10 forced the one real arithmetic decision: 44px targets in a 12px column gap **overlap by 9.6px**, so the footer gap went to 22px. The `.tg-seq` half of M-19 was re-tested with the armed sampler rather than inherited — **the pin holds, no `translate` pin needed**. New audit phase `taps` hit-tests targets, which is the only way to see a pseudo-element expansion. See the section below. |
+| 12 | `StatusLine` hydration fix — React #418 | **Shipped** (2026-08-10) — `fbb37a6` | The one finding Prompt 7 surfaced and quarantined, now closed. Server and first client render emit a fixed `at HH:MM UTC` stamp; the relative string is taken only post-hydration, so the swap is an update rather than a mismatch. No `suppressHydrationWarning`, no empty first paint. `useSyncExternalStore` rather than `useState` + `useEffect` — the latter is a lint **error** here (`react-hooks/set-state-in-effect`). One file, no call site changed. See the section below. |
+
+## Prompt 12 — the `StatusLine` hydration mismatch
+
+*2026-08-10, one commit — `fbb37a6`. Changed: `components/status-line.tsx`, and
+nothing else. All six call sites (`components/home-hero.tsx` ×2,
+`components/live-frame.tsx`, `components/project-card.tsx`, `app/page.tsx`,
+`app/work/[slug]/page.tsx`, `app/solutions/[slug]/page.tsx`) pass only
+serializable props, so the new client boundary needed no changes to any of them.*
+
+Prompt 7 surfaced React #418 on `/` and quarantined it. This closes it.
+
+**The two obvious fixes are both wrong, and it's worth saying why.** Deferring
+the whole line to an effect flashes an empty signature component — the one that
+carries the "we measure it rather than assert it" claim, on the home hero.
+`suppressHydrationWarning` silences the console while leaving two genuinely
+different trees in place, which is the symptom hidden, not the bug fixed.
+
+**What ships: the server renders an absolute stamp, the client swaps to the
+relative one after hydration.** An absolute timestamp is never *wrong*, only
+less friendly, so first paint is complete and correct on its own and the swap is
+a real update rather than a correction of a mismatch.
+
+**The absolute format is `at HH:MM UTC`, built from `getUTCHours` /
+`getUTCMinutes` with manual zero-padding — deliberately not `Intl` or
+`toLocaleTimeString`.** A locale- or timezone-dependent format is the same
+hydration mismatch one layer down: the server is UTC and the visitor is not.
+Zero-padded also means the existing `tabular-nums` still has something to align,
+which is the whole point of keeping it on a component whose text swaps.
+
+**The hook is `useSyncExternalStore`, and that is a lint consequence, not a
+preference.** The natural shape — `useState(absolute)` plus a `useEffect` that
+sets the relative string — is rejected by this repo's config
+(`react-hooks/set-state-in-effect`, an error, not a warning). `useSyncExternalStore`
+with a no-op `subscribe`, a constant `() => true` client snapshot and a constant
+`() => false` server snapshot expresses "server value, then client value" as the
+one thing React actually supports for this, with no cascading render.
+
+**Verified in a production build, not only in dev** — the distinction matters
+here because dev and prod handle mismatches differently. Server HTML on `/work`
+contains `checked <!-- -->at 03:37 UTC`; the same node after hydration reads
+`Live · checked just now`. Console on `/` and `/work/[slug]` in both `bun run
+start` and `bun run dev`: no #418, no hydration diff, only the pre-existing
+`/_vercel/insights` 404s that local has always had. Lint 0 errors (the
+`contact-form.tsx` React Compiler warning remains, as expected), 46/46 validation
+tests pass, `bun run build` clean.
+
+**Not done, named as such:** the relative string is computed once at mount and
+never ticks, so a page left open keeps saying "just now". That matches the
+previous behaviour exactly — the old value was also frozen at render — so it is
+not a regression, but "3 minutes ago" advancing while the page sits open would
+be a separate interval and was left out of scope.
 
 ## Prompt 11 — tap targets and the sub-767 wrap rows
 
@@ -242,7 +295,8 @@ hydration text mismatch, from `relativeTime(result.checkedAt)` in
 `components/status-line.tsx` — a relative timestamp baked at prerender and
 recomputed on the client. **Pre-existing, not a regression**: the identical error
 reproduces on `https://tekguyz.com`. It sits in a file this pass touched
-(`home-hero.tsx`'s tree), which is the only reason it was found.
+(`home-hero.tsx`'s tree), which is the only reason it was found. **Fixed in
+Prompt 12 (2026-08-10) — see the section below.**
 
 **Not done, named as such:** safe-area insets are verified on the **fallback path
 only** — a headless context has no insets, so all 8 viewports read `bottom: 24px`
