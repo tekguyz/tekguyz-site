@@ -64,8 +64,19 @@ export function FooterDark() {
   return (
     <footer className="footer-dark border-t" style={{ borderTopColor: HAIRLINE }}>
       <div className="tg-container pt-10">
-        {/* Masthead */}
-        <div className="flex flex-wrap items-start justify-between gap-12">
+        {/* Masthead.
+
+            M-05: below the wrap point the social row drops under the tagline
+            and the 48px `gap-12` — sized for the side-by-side arrangement —
+            became a wide empty band. The LEFT ALIGNMENT is correct and is not
+            the defect (DESIGN.md §9 left-anchors everything but the closing
+            CTA, so a wrapped social row belongs at the lockup's `left: 24px`).
+            Only the row gap is. 24px below 767 makes the stack read as a
+            deliberate group, and stays tighter than the 32px that follows it
+            down to the divider, which is what groups it with the lockup rather
+            than with the nav. Column gap is untouched, so the un-wrapped
+            arrangement at >=767 is byte-identical. */}
+        <div className="flex flex-wrap items-start justify-between gap-12 max-[766px]:gap-y-6">
           <div className="flex items-start gap-4">
             <ConnectedNodes size={40} stroke={HAIRLINE} />
             <div>
@@ -118,17 +129,33 @@ export function FooterDark() {
         >
           {/* 768–1023: 4/4/4 of 12 becomes 3/2/3 of 8. Company gets the narrow
               track because its longest item is `Process` at 51px; Solutions
-              (136px) and the email address (126px) both need the wide one. */}
+              (136px) and the email address (126px) both need the wide one.
+
+              M-10, and the arithmetic is the whole decision. The links are
+              22.4px tall, so a 44px target needs 10.8px above AND below. At the
+              shipped `gap: 12px` two vertically adjacent links would each grow
+              10.8px into a 12px gap and OVERLAP BY 9.6px — two invisible
+              targets fighting, resolved by source order, so tapping `Process`
+              could land on `Work`. That is worse than the 22px target it
+              replaces, because at least a small target can be aimed at.
+
+              Resolution (a) of the two permitted: widen the column gap to
+              **22px** so the 44px targets tile without touching. 10.8 + 10.8 =
+              21.6 against 22.0 — 0.4px of clearance, hit-tested at all 7
+              viewports. Resolution (b), real padding on each link, would have
+              cost 74px of footer height per column instead of 30px, and
+              DESIGN.md §4 is explicit that this row must not inherit
+              section-level spacing. 22px is the tightest value that works. */}
           <div className="[grid-column:1/5] max-lg:[grid-column:1/4]">
             <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
               Solutions
             </p>
-            <div className="flex flex-col items-start gap-3">
+            <div className="flex flex-col items-start gap-[22px]">
               {solutions.map((s) => (
                 <Link
                   key={s.slug}
                   href={`/solutions/${s.slug}`}
-                  className="flex items-center gap-3 text-[0.875rem] text-[#F5F5F5]"
+                  className="tap-44 flex items-center gap-3 text-[0.875rem] text-[#F5F5F5]"
                 >
                   {/* Dots use the real accent from config/solutions.ts and
                       never theme-swap — the footer is dark either way. */}
@@ -147,7 +174,7 @@ export function FooterDark() {
             <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
               Company
             </p>
-            <div className="flex flex-col items-start gap-3">
+            <div className="flex flex-col items-start gap-[22px]">
               {[
                 { href: '/work', label: 'Work' },
                 { href: '/process', label: 'Process' },
@@ -157,7 +184,7 @@ export function FooterDark() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="link-underline text-[0.875rem] text-[#F5F5F5]"
+                  className="tap-44 link-underline text-[0.875rem] text-[#F5F5F5]"
                 >
                   {l.label}
                 </Link>
@@ -169,10 +196,10 @@ export function FooterDark() {
             <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
               Get In Touch
             </p>
-            <div className="flex flex-col items-start gap-3 tabular-nums">
+            <div className="flex flex-col items-start gap-[22px] tabular-nums">
               <a
                 href={`mailto:${site.publicEmail}`}
-                className="link-underline text-[0.875rem] text-[#F5F5F5]"
+                className="tap-44 link-underline text-[0.875rem] text-[#F5F5F5]"
               >
                 {site.publicEmail}
               </a>

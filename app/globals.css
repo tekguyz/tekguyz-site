@@ -537,6 +537,51 @@
   background-size: 100% 1px;
 }
 
+/* ---------------------------------------------------------------------------
+   Tap targets — DESIGN.md §8's two-tier policy, implemented once.
+
+   44x44 for standalone controls, 24x24 (WCAG 2.2 AA) for links inline in
+   running prose. The expansion is a PSEUDO-ELEMENT OVERLAY, never a size
+   change: the visual weight of a 14.5px text link and a 38px toggle are
+   decisions from the approved export, and growing a painted box to 44px is a
+   composition change nobody has made. The overlay leaves the render
+   byte-identical and grows only the hit area.
+
+   ::before, not ::after, and that is load-bearing: `[data-navlink]::after` is
+   the active-page indicator bar, and the nav links are exactly the elements
+   that need both. One pseudo per job.
+
+   Centred on the element rather than inset from it, so a target wider than the
+   tier keeps its full width and only grows on the axis that is short. Every
+   adjacency this creates is hit-tested by `scripts/audit-mobile.ts taps` —
+   two overlapping invisible targets mean one silently steals the other's taps,
+   decided by source order, which nobody reading the JSX can see.
+--------------------------------------------------------------------------- */
+.tap-44,
+.tap-24 {
+  position: relative;
+}
+.tap-44::before,
+.tap-24::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* `translate`, not `transform` — the same split the reveal rule keeps, so a
+     hover lift on an ancestor can never fight this for one property. */
+  translate: -50% -50%;
+  width: 100%;
+  height: 100%;
+}
+.tap-44::before {
+  min-width: 44px;
+  min-height: 44px;
+}
+.tap-24::before {
+  min-width: 24px;
+  min-height: 24px;
+}
+
 /* `project-card`'s "Read the full story →" is a span, not a nested anchor — the
    whole card is the link, and an anchor inside an anchor would split one card
    into two tab stops. So the underline has to be driven by the card's hover and

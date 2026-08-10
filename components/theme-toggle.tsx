@@ -25,6 +25,13 @@ import { useTheme } from 'next-themes';
  *
  * `resolvedTheme` is still read, but only inside the click handler, where it
  * runs long after mount and cannot desynchronize the markup.
+ *
+ * TAP TARGET (M-09). The 38px box PAINTS — a 1px hairline at rest that darkens
+ * to border-strong on hover — so it is a composition decision from the export
+ * and is not resized. `tap-44` grows the hit area to 44x44 with a pseudo
+ * overlay and leaves all 38 painted pixels exactly where they were. This is the
+ * only control in the audit that failed on both axes, and the only one where
+ * "just make it 44" would have been visible.
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
@@ -34,7 +41,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       type="button"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       className={
-        'flex h-[38px] w-[38px] flex-none cursor-pointer items-center justify-center rounded-[6px] ' +
+        'tap-44 flex h-[38px] w-[38px] flex-none cursor-pointer items-center justify-center rounded-[6px] ' +
         'border border-border text-secondary transition-[border-color,color] duration-[240ms] ' +
         'hover:border-border-strong hover:text-fg ' +
         (className ?? '')

@@ -25,6 +25,9 @@
  *            not they failed a check
  *   motion   C. animation inventory, both reducedMotion states
  *   prod     D. production parity spot-check against https://tekguyz.com
+ *   taps     E. tap targets HIT-TESTED rather than rect-measured — the only
+ *            phase that can see a pseudo-element hit-area expansion, and the
+ *            one DESIGN.md §8's two-tier policy is verified against
  *
  * Output: `.audit/<phase>.json` (+ `.audit/shots/*.png`). `.audit/` is
  * gitignored — the repo is public and no binary belongs in it.
@@ -1437,6 +1440,149 @@ async function phaseMotion(browser: Browser) {
   return out;
 }
 
+/* --------------------------------------------- E. tap targets, hit-tested */
+
+/**
+ * Phase A's tap-target check reads `getBoundingClientRect`, which is the right
+ * measurement for "is the painted box 44px" and the WRONG one for "is the hit
+ * area 44px". DESIGN.md §8 expands targets by a pseudo-element overlay
+ * precisely so the painted box does NOT change, so a rect-based re-run of
+ * phase A after the fix reports every expanded target as still failing.
+ *
+ * This phase hit-tests instead. For each interactive element it probes the four
+ * corners and the centre of the tier box centred on the element, and asks
+ * `elementFromPoint` who owns that point. Owned by the element (or a descendant,
+ * or its own pseudo) = the tap lands. Owned by a DIFFERENT interactive element =
+ * an overlap, which §5 calls a defect in its own right because whichever paints
+ * last wins invisibly by source order.
+ *
+ * Both numbers are emitted: `rectSmall` stays comparable with the 2,707
+ * instances M-09 – M-13 recorded, `tierFail` is the one the fix is judged on.
+ */
+const TAP_PROBE = `
+(() => {
+  const a = window.__a;
+  const out = { rectSmall: [], tierFail: [], overlaps: [], multiline: [], probed: 0 };
+  const els = a.interactives();
+
+  // The declared tier wins where one is declared — the probe then checks what
+  // the code claims rather than what a heuristic guesses. Undeclared elements
+  // fall back to the same prose test phase A uses.
+  const tierOf = (el) => {
+    if (el.classList.contains('tap-24')) return 24;
+    if (el.classList.contains('tap-44')) return 44;
+    const cs = getComputedStyle(el);
+    const inProse = !!el.closest('p,li') && cs.display.startsWith('inline');
+    return inProse ? 24 : 44;
+  };
+
+  for (const el of els) {
+    // elementFromPoint only hit-tests the VISIBLE viewport, so every below-fold
+    // control reads as a miss unless it is scrolled in first. Centre it, then
+    // re-read the rect — the first version of this probe skipped the scroll and
+    // reported 44x44 footer icons as failures on every route.
+    el.scrollIntoView({ block: 'center', inline: 'center' });
+    const r = el.getBoundingClientRect();
+    const t = tierOf(el);
+    const rec = {
+      selector: a.sel(el),
+      text: a.txt(el, 44),
+      w: +r.width.toFixed(1),
+      h: +r.height.toFixed(1),
+      tier: t,
+      declared: el.classList.contains('tap-44') ? 'tap-44'
+              : el.classList.contains('tap-24') ? 'tap-24' : null,
+    };
+    if (r.width < 44 || r.height < 44) out.rectSmall.push(rec);
+
+    // An inline link that WRAPS has one client rect per line box, and its
+    // bounding rect is their union — whose centre often lands in the gutter
+    // between two lines, on no line box at all. Probing that centre measures
+    // the gutter, not the link. Where the union already clears the tier on both
+    // axes the target is genuinely large (the tap lands on whichever line the
+    // finger is over), so it passes and is counted separately.
+    const rects = [...el.getClientRects()];
+    if (rects.length > 1) {
+      if (r.width >= t && r.height >= t) {
+        out.multiline.push({ ...rec, lineBoxes: rects.length });
+        continue;
+      }
+    }
+    const box = rects.length ? rects.reduce((a2, b) => (b.width * b.height > a2.width * a2.height ? b : a2)) : r;
+    const cx = (box.left + box.right) / 2;
+    const cy = (box.top + box.bottom) / 2;
+    const d = t / 2 - 1;
+    const pts = [
+      ['c', cx, cy],
+      ['tl', cx - d, cy - d],
+      ['tr', cx + d, cy - d],
+      ['bl', cx - d, cy + d],
+      ['br', cx + d, cy + d],
+    ];
+    const miss = [];
+    for (const [name, x, y] of pts) {
+      // A probe point outside the viewport cannot be hit-tested and is not a
+      // failure of the element — recorded so it is never silently a pass.
+      if (x < 0 || y < 0 || x > window.innerWidth || y > document.documentElement.clientHeight) {
+        miss.push({ at: name, owner: 'offscreen' });
+        continue;
+      }
+      const hit = document.elementFromPoint(x, y);
+      out.probed++;
+      // The element itself, one of its descendants, or its own pseudo (which
+      // hit-tests as the originating element) all count as the tap landing.
+      // An ANCESTOR owning the point does not — that is the tap falling
+      // through to the container, which is exactly the failure being measured.
+      if (hit && (hit === el || el.contains(hit))) continue;
+      const thief = hit ? hit.closest('a,button,input,select,textarea,summary,[role="button"]') : null;
+      // The concierge launcher is fixed and floats over everything. Its
+      // overlaps are the recorded, out-of-scope gap from Prompt 10 — counting
+      // them as new adjacency defects here would be double-booking.
+      const isLauncher = !!thief && (thief.textContent || '').includes('Ask about your project');
+      miss.push({ at: name, owner: hit ? a.sel(hit) : null, thiefText: thief ? a.txt(thief, 30) : null, isInteractive: !!thief, isLauncher });
+      if (thief && !isLauncher) out.overlaps.push({ target: rec.selector, targetText: rec.text, at: name, stolenBy: a.sel(thief), stolenByText: a.txt(thief, 30) });
+    }
+    if (miss.length) out.tierFail.push({ ...rec, miss });
+  }
+  return out;
+})()
+`;
+
+async function phaseTaps(browser: Browser) {
+  const results: unknown[] = [];
+  const combos: { vp: VP; theme: 'light' | 'dark' }[] = [];
+  for (const vp of VIEWPORTS) {
+    combos.push({ vp, theme: 'light' });
+    if (vp.label === 'narrow' || vp.label === 'standard') combos.push({ vp, theme: 'dark' });
+  }
+
+  for (const { vp, theme } of combos) {
+    const { ctx, descriptor } = await makeContext(browser, { vp, theme, motion: 'reduce' });
+    const page = await ctx.newPage();
+    for (const route of ROUTES) {
+      try {
+        await load(page, BASE + route);
+        const r = (await page.evaluate(TAP_PROBE)) as {
+          rectSmall: unknown[];
+          tierFail: unknown[];
+          overlaps: unknown[];
+          multiline: unknown[];
+          probed: number;
+        };
+        results.push({ route, viewport: vp.label, theme, descriptor, ...r });
+        console.log(
+          `taps ${vp.label}/${theme} ${route.padEnd(30)} rectSmall=${r.rectSmall.length} tierFail=${r.tierFail.length} overlaps=${r.overlaps.length} multiline=${r.multiline.length}`,
+        );
+      } catch (e) {
+        results.push({ route, viewport: vp.label, theme, error: String(e) });
+        console.log(`taps ${vp.label}/${theme} ${route} FAILED ${e}`);
+      }
+    }
+    await ctx.close();
+  }
+  return results;
+}
+
 /* ------------------------------------------------------ D. production parity */
 
 async function phaseProd(browser: Browser) {
@@ -1538,6 +1684,7 @@ async function main() {
   if (phase === 'all' || phase === 'surfaces') await write('surfaces', await phaseSurfaces(browser));
   if (phase === 'all' || phase === 'motion') await write('motion', await phaseMotion(browser));
   if (phase === 'all' || phase === 'prod') await write('prod', await phaseProd(browser));
+  if (phase === 'all' || phase === 'taps') await write('taps', await phaseTaps(browser));
   if (phase === 'shots') await write('shots', await phaseShots(browser));
 
   await browser.close();

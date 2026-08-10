@@ -96,7 +96,12 @@ export function Nav() {
       />
 
       <div className="tg-container flex h-[76px] items-center gap-10">
-        <Link href="/" aria-label="TEKGUYZ home" className="flex flex-none items-center gap-[11px]">
+        {/* M-12: the lockup is the brand mark and does not get re-wrapped or
+            re-sized to reach 44px — `tap-44` grows only the hit area, centred,
+            so the 26px mark and the wordmark stay exactly where the export puts
+            them. 44 fits inside the 76px bar with room, and the nearest
+            neighbour is 40px away (`gap-10`), so nothing overlaps. */}
+        <Link href="/" aria-label="TEKGUYZ home" className="tap-44 flex flex-none items-center gap-[11px]">
           <ConnectedNodes size={26} />
           <span className="text-[19px] font-extrabold tracking-[-0.025em]">TEKGUYZ</span>
         </Link>
@@ -109,7 +114,12 @@ export function Nav() {
               aria-current={isActive(l.href) ? 'page' : undefined}
               data-navlink
               data-on={isActive(l.href) ? 'true' : 'false'}
-              className="text-[14.5px] font-medium transition-colors duration-[120ms]"
+              // M-13. `tap-44` uses ::before precisely because ::after here is
+              // the active-page indicator bar. Vertical growth is 10.4px each
+              // way inside a 76px bar; horizontal is 4.1px each way on the
+              // narrowest link (`Work`, 35.9px) into a 34px gap, so no two
+              // targets in this row can touch.
+              className="tap-44 text-[14.5px] font-medium transition-colors duration-[120ms]"
               style={{ color: isActive(l.href) ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
             >
               {l.label}
@@ -198,7 +208,11 @@ export function Nav() {
             </ButtonLink>
             <a
               href={`mailto:${site.publicEmail}`}
-              className="link-underline self-start text-[0.875rem] text-secondary"
+              // The drawer's own links are 48px and 72px tall and already pass;
+              // this email link was the one sub-768 control that did not. It is
+              // the mobile counterpart to M-13, which the audit scoped to the
+              // >=768 horizontal row only.
+              className="tap-44 link-underline self-start text-[0.875rem] text-secondary"
             >
               {site.publicEmail}
             </a>
