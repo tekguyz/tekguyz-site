@@ -15,6 +15,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Prompt 10 (2026-08-09) shipped the concierge fix** — M-03, M-06, M-14, M-15, M-19. **No `blocking` finding remains open.** 12 of 19 findings are now resolved. One pass is left: tap targets and the sub-767 wrap rows (M-05's sub-767 rows, M-09 – M-13, M-04's sub-767 row).
 - **Prompt 11 (2026-08-09) shipped the tap-target and sub-767 pass** — M-04's and M-05's sub-767 rows, M-09 – M-13. It claimed **all 19 mobile findings resolved** and the queue closed; **that claim was false and is corrected in Known Gaps (2026-08-10)** — the real split is **16 resolved · 1 partial (M-16) · 2 open (M-07, M-08 at sub-767)**. What the pass itself did is accurate as described: tier failures **2,739 → 0** with **0 overlapping hit areas** and **no painted box resized**. `docs/MOBILE-AUDIT.md`'s banner carries the per-finding after-numbers.
 - **Prompt 12 (2026-08-10) fixed the React #418 hydration mismatch in `StatusLine`** — the one non-mobile defect Prompt 7 surfaced and quarantined. Server renders an absolute `at HH:MM UTC` stamp, the client swaps to the relative string post-hydration. **No known console error remains on any route.**
+- **Prompt 13 (2026-08-10) closed the mobile queue and six D- items** — M-07 and M-08 at sub-767 (the last two open findings), plus D-01, D-02, D-03, D-05, D-06, D-10. The audit split is now **18 resolved · 1 partial (M-16, still partial)**. D-10 turned out to be a `tailwind-merge` bug affecting **every button on the site**, not a nav-only sizing error — see the section below.
 
 **What actually blocks launch** (none of it a code task):
 
@@ -43,6 +44,98 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 10 | Concierge fix — M-03 (blocking), M-06, M-14, M-15, M-19 + the CLAUDE.md copy-gap rule | **Shipped** (2026-08-09) — `9a58fc1` | The last `blocking` finding closed. Panel bound to `calc(100dvh - 48px)` with a `(max-height: 560px)` full-screen sheet; the launcher **yields** to the two `data-primary-cta` elements rather than shrinking; close control 44×44 by padding, glyph unchanged; safe-area insets added additively; dialog keyboard/focus baseline established. **H-4 confirmed, not killed** — the launcher's Motion entrance ran unsuppressed under `reduce`, and was removed rather than pinned. See the section below. |
 | 11 | Tap targets & sub-767 wrap rows — M-04, M-05, M-09 – M-13 + front matter | **Shipped** (2026-08-09) — `9ecdebc` / `b450840` / `3507f2b` | DESIGN.md §8's two-tier floor implemented as **two shared `::before` overlay utilities** (`.tap-44`, `.tap-24`) rather than 73 call-site patches, because the 2,707 instances were a handful of shared components rendered many times. **`::before`, not `::after`** — `[data-navlink]::after` is the active-page indicator, and the nav links need both. M-10 forced the one real arithmetic decision: 44px targets in a 12px column gap **overlap by 9.6px**, so the footer gap went to 22px. The `.tg-seq` half of M-19 was re-tested with the armed sampler rather than inherited — **the pin holds, no `translate` pin needed**. New audit phase `taps` hit-tests targets, which is the only way to see a pseudo-element expansion. See the section below. |
 | 12 | `StatusLine` hydration fix — React #418 | **Shipped** (2026-08-10) — `fbb37a6` | The one finding Prompt 7 surfaced and quarantined, now closed. Server and first client render emit a fixed `at HH:MM UTC` stamp; the relative string is taken only post-hydration, so the swap is an update rather than a mismatch. No `suppressHydrationWarning`, no empty first paint. `useSyncExternalStore` rather than `useState` + `useEffect` — the latter is a lint **error** here (`react-hooks/set-state-in-effect`). One file, no call site changed. See the section below. |
+| 13 | Mobile close-out — M-07, M-08 (sub-767) + D-01, D-02, D-03, D-05, D-06, D-10 | **Shipped** (2026-08-10) | The mobile queue closed: **M-07 and M-08 are resolved at every viewport**, and six of the twelve device observations with them. Two of the seven items were not what the brief said they were. **D-10's cause is `cn()`, not padding** — tailwind-merge drops `leading-none` when a later `text-*` class appears, so every button on the site rendered a 1.6 line box; the nav CTA's padding was already the standard 14×24. And **M-07/M-08 never failed at 844×390**, which the brief listed as a failing row: measured 1 line before the change and 1 after. See the section below. |
+
+## Prompt 13 — the mobile close-out, and a button bug hiding behind a design complaint
+
+*2026-08-10, one commit. Changed: `components/button.tsx`, `components/nav.tsx`,
+`components/faq-accordion.tsx`, `components/contact-form.tsx`,
+`components/home-hero.tsx`, `components/concierge/concierge.tsx`,
+`components/concierge/concierge-bus.ts`. No CSS, no doc-only items.*
+
+**M-07 + M-08 are one defect with one arithmetic behind it.** The `/contact`
+step header is title + counter + a 16px gap inside the card's content box. The
+row needs `193 + 16 + 51.3 = 260.3px`; the box is **230.4px at 360**, so flexbox
+shrinks both children and both wrap. The same sum is **0.3px short at 390** and
+clears from 414 up — which is exactly where the reported symptom stops, and is
+the check that the arithmetic is the cause rather than a coincidence. Fixed by
+dropping the card's padding from 40px to 24px below `sm` (40px is 22% of a 360px
+viewport) plus a 12px gap and `whitespace-nowrap` on the counter. **Both changes
+are scoped `max-sm`, so 767 / 768 / 844 are not in the query and measured
+byte-identical after.** Counter **44.8px tall / 2 lines → 22.4 / 1**; title
+**52.8 / 2 → 26.4 / 1**, at 360, 375 and 390.
+
+**`whitespace-nowrap` alone would not have fixed it** — it makes `01 / 02` one
+atom, which without the extra room just pushes the whole deficit onto the title.
+It is the guarantee, not the fix.
+
+**D-10 was a real symptom with a wrong cause, and the cause is `cn()`.** The nav
+CTA's padding was *already* the standard 14×24 — Prompt 6 measured that and
+correctly changed nothing. What no one measured was the **line box**: `base` in
+`button.tsx` declared `leading-none`, and it never reached the DOM. `cn()` is
+tailwind-merge; Tailwind's `text-*` utilities set line-height as well as size, so
+a later font-size class is treated as conflicting with an earlier `leading-*` and
+**drops it**. Every button on the site inherited the 1.6 body line-height:
+`14.5px × 1.6 = 23.2px` instead of 14.5px, **8.7px taller than the export**, which
+is what made the nav CTA read as `button-primary--large`. The line height now
+rides *on* the font-size utility (`text-[14.5px]/[1]`) so there is nothing left
+to resolve. Nav CTA **51.2 → 42.5px**; `closing-cta`'s large button **60.6 → 52px**,
+restoring the weight gap the one-off size exception exists to create.
+
+**The header height does not follow, and should not.** It is `h-[76px]`, a fixed
+value matching DESIGN's nav spec — measured 76 before and after. The CTA was
+never setting it; it was the tallest thing inside it, which is what that reads
+like on a phone.
+
+**Correcting the button dropped the nav CTA under the tap floor** (42.5 < 44), so
+it takes the same `.tap-44` `::before` overlay every other under-44 control in the
+bar carries. Hit-tested, not rect-measured: all five probes on the 44×44 tier box
+own to the CTA itself, and the corridor to the theme toggle 34px away is clear.
+No painted box was resized back up.
+
+**D-01 + D-02 are one channel.** `useSuppressLauncher` / `useLauncherSuppressed`
+in `concierge-bus.ts` — a counted `Set` behind `useSyncExternalStore`, fed by the
+drawer's `open` and the accordion's `open !== null`, and **ANDed with** the
+existing `[data-primary-cta]` observer. Counted rather than boolean because two
+suppressors can overlap and the last one out must be the one that releases.
+This is the channel the 2026-08-10 decision specified; it is deliberately **not**
+a widened observer, because the flicker risk that keeps `data-primary-cta` narrow
+is scroll-driven and a discrete boolean carries none of it. Measured in both
+states: `opacity 0` · `pointer-events: none` · `aria-hidden="true"` ·
+`tabIndex -1`, and the launcher's own centre point hit-tests to the element
+*behind* it. Restores on close, and the no-state-active behaviour is unchanged.
+
+**D-03 — the success message was already in a live region, and that was not
+enough.** `role="status"` carries an implicit `aria-live="polite"`, but the
+region and its content mount in the same commit, and a live region announces
+*changes* to a region that was already there. Submitting also unmounts the form,
+so the focused Send button goes with it and focus falls to `<body>` — from which
+the next stop is the first FAQ trigger, far below the message. Focus now moves to
+the success element (`tabIndex={-1}`), which fixes both halves at once: it is what
+a screen reader reads, and the scroll is a side effect of it. Measured after a
+submit driven through the honeypot's silent-accept path: `document.activeElement`
+**is** the status element, fully in viewport.
+
+**D-05 — anchor the top of the newest message, not the bottom of the list.** The
+list scrolled to `scrollHeight`, which puts the *end* of a long reply on screen.
+It now scrolls to the newest `[data-msg]`'s own top, which is **self-clamping** —
+a message shorter than the list cannot scroll past the maximum, so short
+exchanges behave exactly as before. Not `:last-of-type`: that matches per element
+name, and the two roles render as different elements. Verified with the list
+constrained to 90px and a 120.5px reply: newest top **0.3px** below the list top,
+`scrollTop` 809.6 against a maximum of 860 — it deliberately did not go to the
+end. The panel was not resized; its viewport bound and the `flex: 1 1 300px`
+floor are untouched.
+
+**D-06 — one line removed.** The text-column `StatusLine` under the hero CTA row
+was the unspecified one: COPY.md attaches the hero's status line to the media and
+DESIGN.md §5 lists it once. Hero instances **2 → 1**, in the media, at all seven
+viewports and at 1440.
+
+**What this pass did not do**, all of it deliberately out of scope: D-04 panel
+geometry, D-07/D-08 hero assets, D-09/D-11/D-12 spec gaps, the 768/844 rows of
+M-07/M-08 (left byte-identical on purpose), and the 143 non-CTA overlap pairs.
+No copy slot was missing, so no `[NEEDS COPY]` marker was emitted.
 
 ## Prompt 12 — the `StatusLine` hydration mismatch
 

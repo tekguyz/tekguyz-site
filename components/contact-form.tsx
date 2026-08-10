@@ -17,9 +17,9 @@ import { site } from '@/lib/site';
 import { capPhoneDigits, optionalPhone, optionalWebsite } from '@/lib/validation';
 
 /**
- * Two steps, inside a bordered card: 1px hairline, 16px radius, 40px padding,
- * with a header row carrying the step title and an "01 / 02" counter over a
- * 24px-padded rule.
+ * Two steps, inside a bordered card: 1px hairline, 16px radius, 40px padding —
+ * 24px below `sm`, see the step header below — with a header row carrying the
+ * step title and an "01 / 02" counter over a 24px-padded rule.
  *
  * Step 1 qualifies (interest, name, email); step 2 collects the detail. The
  * split exists so the first ask is three short fields rather than a wall.
@@ -65,6 +65,7 @@ export function ContactForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const mountedAt = useRef(Date.now());
   const step2Ref = useRef<HTMLDivElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
 
   const presetInterest = useMemo(() => {
     const slug = searchParams.get('interest');
@@ -113,6 +114,12 @@ export function ContactForm() {
     if (step === 2) step2Ref.current?.querySelector('input')?.focus();
   }, [step]);
 
+  // See the D-03 note on the success block for why this is a focus move rather
+  // than a scroll: the scroll is a side effect of it, not the point.
+  useEffect(() => {
+    if (sent) successRef.current?.focus();
+  }, [sent]);
+
   async function onSubmit(values: FormValues) {
     setServerError(null);
     const result = await sendContactEmail({ ...values, timestamp: mountedAt.current });
@@ -121,9 +128,27 @@ export function ContactForm() {
   }
 
   return (
-    <div className="rounded-[16px] border border-border p-10">
+    // 40px of card padding is 22% of a 360px viewport. Dropping it to 24 below
+    // `sm` is where the 30px the step header is short actually comes from; the
+    // step-header comment below has the arithmetic.
+    <div className="rounded-[16px] border border-border p-10 max-sm:p-6">
       {sent ? (
-        <div role="status">
+        /* D-03. Submitting unmounts the form, so the focused Send button goes
+           with it and focus falls to <body>; the next Tab — or Chrome's own
+           "resume from where the document is" behaviour — lands on the first
+           FAQ trigger, which is far enough down the page that the success
+           message the visitor just earned is off screen above and never read.
+           Moving focus here is what fixes both halves at once: it scrolls the
+           message into view and it is what a screen reader announces.
+
+           On whether this was announced before: it was already in a live
+           region — `role="status"` carries an implicit
+           `aria-live="polite"`. It just could not be relied on, because the
+           region and its content mount in the same commit and a live region
+           announces CHANGES to a region that was already there. `aria-live` is
+           now explicit for the same reason it always should be, but the focus
+           move is the mechanism that actually guarantees it is heard. */
+        <div ref={successRef} role="status" aria-live="polite" tabIndex={-1}>
           <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
             <span
               aria-hidden
@@ -152,11 +177,24 @@ export function ContactForm() {
             />
           </div>
 
-          <div className="flex items-center justify-between gap-4 border-b border-border pb-6">
+          {/* M-07 + M-08, and they are ONE defect with one arithmetic behind
+              it. The row is title + counter + a 16px gap inside the card's
+              content box. At 360 that box is 230.4px and the row needs
+              193 + 16 + 51.3 = 260.3px, so flexbox shrinks both children and
+              both wrap: `01 /` over `02`, and `need?` onto a second line. The
+              same sum is 0.3px short at 390 and clears comfortably from 414 up,
+              which is exactly the width where the reported symptom stops.
+
+              Both changes are scoped `max-sm` (below 640px) so 767, 768 and 844
+              — the rows Prompt 8 fixed — are not in the query at all and stay
+              byte-identical. `whitespace-nowrap` on the counter is not the fix
+              on its own: it makes "01 / 02" one atom, which without the room
+              below would just push the whole deficit onto the title. */}
+          <div className="flex items-center justify-between gap-4 border-b border-border pb-6 max-sm:gap-3">
             <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
               {step === 1 ? 'What do you need?' : 'Tell us more.'}
             </p>
-            <span className="text-[0.875rem] tracking-[0.04em] tabular-nums text-secondary">
+            <span className="text-[0.875rem] tracking-[0.04em] whitespace-nowrap tabular-nums text-secondary">
               0{step} / 02
             </span>
           </div>

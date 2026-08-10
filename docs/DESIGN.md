@@ -379,6 +379,45 @@ the lockup rather than with the nav below it.
 is correct** (§9 left-anchors everything but the closing CTA). It is not a
 centring bug; do not "fix" it.
 
+### The `/contact` form card at ≤ 639px
+
+*Added 2026-08-10. The step header's counter and title each wrapped to two lines
+at 360, 375 and 390 (M-07 / M-08).*
+
+The card's **40px padding drops to 24px below `sm` (640px)**, and the step
+header's gap goes 16 → 12px. This is arithmetic, not taste: the header row is
+title + counter + gap and needs **193 + 16 + 51.3 = 260.3px**, against a content
+box of **230.4px at 360**. The same sum is **0.3px short at 390** and clears from
+414 up, which is exactly where the reported symptom stopped. 40px of padding is
+22% of a 360px viewport.
+
+The counter also carries `white-space: nowrap`, because `01 / 02` is one atom.
+**That is the guarantee, not the fix** — on its own it just moves the whole
+deficit onto the title.
+
+**Both values are scoped `max-sm`, so 767, 768 and 844 are not inside the query.**
+Those rows were fixed by Prompt 8 and re-measured byte-identical after this
+change: card 719 / 704 / 780 at 40px padding, counter 51.3 × 22.4, one line.
+
+### Button line height — one class, never two
+
+*Added 2026-08-10, and it is a `cn()` fact rather than a visual one (D-10).*
+
+`button.tsx` writes its line height **on** the font-size utility —
+`text-[14.5px]/[1]`, `text-[16px]/[1]` — and must keep doing so. A separate
+`leading-none` does not survive: `cn()` is tailwind-merge, Tailwind's `text-*`
+utilities set line-height as well as size, so a later font-size class is treated
+as conflicting and the `leading-*` is dropped before it ever reaches the DOM.
+That is what shipped, silently, on **every button on the site**: a 14.5px button
+rendered a **23.2px** line box (the inherited 1.6 body value), 8.7px taller than
+the export, which made the nav CTA read as `button-primary--large` while its
+padding was already the standard 14×24.
+
+Shipped heights, all of them padding + a 1.0 line box: **nav 42.5 · default and
+form 44.5 · large 52**. The nav CTA is the one primary that lands under the 44px
+tap floor and carries a `.tap-44` overlay for it — **it is not padded back up**,
+because that would erase the size gap `button-primary--large` exists to create.
+
 ### Touch targets — a two-tier policy, not a flat floor
 
 A single `≥ 44×44px` floor was the whole spec here until 2026-08-09, and it was

@@ -78,7 +78,11 @@ export function HomeHero({
                   Let&rsquo;s Talk
                 </ButtonLink>
               </div>
-              <StatusLine result={status} className="mt-10" />
+              {/* No status line here. COPY.md's hero spec attaches it to the
+                  media, DESIGN.md §5 lists the hero's status line once, and
+                  nothing specifies a text-column instance — this one rendered
+                  the same string twice on one screen (D-06). The specified
+                  instance is the one inside `tg-hero-frame` below. */}
             </SequenceItem>
           </div>
 

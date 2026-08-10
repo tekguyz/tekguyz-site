@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useSuppressLauncher } from '@/components/concierge/concierge-bus';
 import { faq } from '@/content/faq';
 
 /**
@@ -31,6 +32,14 @@ import { faq } from '@/content/faq';
 export function FaqAccordion() {
   const [open, setOpen] = useState<number | null>(null);
   const triggers = useRef<(HTMLButtonElement | null)[]>([]);
+
+  /* D-02. An expanded answer is body copy the visitor deliberately asked for,
+     on the conversion route, and the launcher sits over its last lines. The FAQ
+     never moves: it is FAQPage JSON-LD and it is the content the page is for.
+     The floating element yields instead — and it yields on app state, because
+     "a row is expanded" is a discrete boolean, not something the launcher's
+     scroll-driven observer can see. */
+  useSuppressLauncher(open !== null);
 
   // WAI-ARIA accordion keys. Tab still moves in and out of the group normally;
   // this only adds movement BETWEEN headers, and only on an explicit keypress.

@@ -7,6 +7,7 @@ import { ConnectedNodes } from '@/components/logo-lockup';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ButtonLink } from '@/components/button';
 import { AccentDot } from '@/components/solution-tag';
+import { useSuppressLauncher } from '@/components/concierge/concierge-bus';
 import { solutions } from '@/content/solutions';
 import { site } from '@/lib/site';
 import { cn } from '@/lib/utils';
@@ -60,6 +61,15 @@ export function Nav() {
     setOpen(false);
     setSolutionsOpen(false);
   }
+
+  /* D-01. The drawer is `fixed inset-0 z-40`; the launcher is `fixed z-[80]`,
+     so it renders over a full-screen surface that is meant to be the only thing
+     on screen. The launcher's other yield input is an IntersectionObserver over
+     `[data-primary-cta]`, and an open drawer changes nothing about what is
+     intersecting the viewport — the drawer's own "Let's Talk" is not a tagged
+     target, and tagging it would widen the observer set the flicker rule keeps
+     narrow. So the drawer says so directly. */
+  useSuppressLauncher(open);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -126,7 +136,14 @@ export function Nav() {
             </Link>
           ))}
           <ThemeToggle />
-          <ButtonLink href="/contact" size="nav">
+          {/* D-10 restored this button to the standard 14x24 geometry, which
+              takes its painted height from 51.2px to 42.5px — correct, and
+              1.5px under the tap floor. So it gets the same `::before` overlay
+              every other under-44 control in the bar carries; the painted box
+              is not resized back up. Expansion is 0.75px each way, and the
+              nearest neighbour is the theme toggle 34px away (`gap-[34px]`),
+              whose own overlay grows 3px — 30px of clearance left. */}
+          <ButtonLink href="/contact" size="nav" className="tap-44">
             Let&rsquo;s Talk
           </ButtonLink>
         </nav>

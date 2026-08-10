@@ -4,8 +4,15 @@
 pass.** No finding row states a cause; everything inferred is quarantined in
 [Hypotheses (unverified)](#hypotheses-unverified) at the bottom.*
 
-> ### Status — 16 resolved · 1 partial (M-16) · 2 open (M-07, M-08 at sub-767)
+> ### Status — 18 resolved · 1 partial (M-16) · 0 open
 >
+> *Updated 2026-08-10 (Prompt 13). M-07 and M-08 are now resolved at **every**
+> viewport; the two rows below that reopened them are superseded by the two
+> Prompt 13 rows further down, and the 768/844 rows they were split from are
+> untouched and were re-measured as byte-identical. **M-16 is still partial** —
+> it is the one finding this file has never been able to call closed.*
+>
+
 > *Corrected 2026-08-10. This banner previously read "all 19 findings closed as of
 > Prompt 11 (2026-08-09)". That was false: M-07 and M-08 were resolved at 768/844
 > only, the exception was written into the same cell as the word **Resolved**, and
@@ -26,8 +33,15 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > | **M-18** footer columns unequal | **Resolved** | 265.2/265.2/125.5 → **249 / 158 / 249** |
 > | **M-04** `/contact` trust row, **768/844 rows only** | **Resolved** | 3 lines @768 → **1**; 2 lines @844 → **1**. Its `closing-cta` and sub-767 rows are untouched |
 > | **M-07 / M-08** step counter + title, **768/844 rows only** | **Resolved** | both **1 line**. Their sub-767 rows are untouched — **and are reopened, two rows below** |
-> | **M-07** step counter, **sub-767 rows** | **Open** (reopened 2026-08-10) | Never fixed. Pre-fix measurement stands: counter rect **44.9 × 44.8 @360**, **2 rendered lines**; one line at 414 and 767. The 768/844 row above remains correct and is **not** reopened |
-> | **M-08** step title, **sub-767 rows** | **Open** (reopened 2026-08-10) | Never fixed. Pre-fix measurement stands: title rect **169.1 × 52.8 @360 at 22px**, **2 rendered lines**; single line at 414 and 767. The 768/844 row above remains correct and is **not** reopened |
+> | **M-07** step counter, **sub-767 rows** | ~~Open~~ → **Resolved** (Prompt 13) | Reopened 2026-08-10, fixed the same day — **this row is the reopening, not the outcome**; the outcome is the M-07 row below. Pre-fix measurement, which the fix measures against: counter rect **44.9 × 44.8 @360**, **2 rendered lines**; one line at 414 and 767. The 768/844 row above remains correct and was never reopened |
+> | **M-08** step title, **sub-767 rows** | ~~Open~~ → **Resolved** (Prompt 13) | Same: **this row is the reopening, the M-08 row below is the outcome.** Pre-fix measurement — title rect **169.1 × 52.8 @360 at 22px**, **2 rendered lines**; single line at 414 and 767. The 768/844 row above remains correct and was never reopened |
+> | **M-07** step counter, **sub-767 rows** | **Resolved** (Prompt 13, 2026-08-10) | `44.9 × 44.8`, **2 lines** @360 → **22.4 tall, 1 line** at 360, 375 and 390. Card padding 40 → 24px and the header gap 16 → 12px, both scoped `max-sm`, plus `whitespace-nowrap` on the counter. **767 / 768 / 844 re-measured byte-identical**: card 719 / 704 / 780, padding 40px, counter 51.3 × 22.4, 1 line — they are not inside the `max-sm` query at all |
+> | **M-08** step title, **sub-767 rows** | **Resolved** (Prompt 13, 2026-08-10) | `169.1 × 52.8` at 22px, **2 lines** @360 → **193 × 26.4, 1 line** at 360, 375 and 390. Same surface, same fix — the row needs `193 + 16 + 51.3 = 260.3px` and had **230.4px** at 360; it is **0.3px** short at 390 and clears from 414 up, which is where the symptom stopped. Font size unchanged at 22px; nothing was retyped smaller |
+> | **D-01 / D-02** launcher over the drawer and the expanded FAQ | **Resolved** (Prompt 13) | Second yield input added — one shared app-state channel (`useSuppressLauncher`, counted `Set` + `useSyncExternalStore`), ANDed with the existing observer, **not** a widened `[data-primary-cta]` set. Both states measured: `opacity 0` · `pointer-events: none` · `aria-hidden="true"` · `tabIndex -1`, and the launcher's centre point hit-tests to the element behind it. Restores on close; the no-state-active launcher is unchanged. **The FAQ never moves** |
+> | **D-03** post-submit focus | **Resolved** (Prompt 13) | Focus lands on the success element (`tabIndex={-1}`, `role="status"`, explicit `aria-live="polite"`), in viewport. It **was** already in a live region — the region and its content just mount in the same commit, so the announcement could not be relied on; the focus move is the mechanism |
+> | **D-05** concierge scroll anchoring | **Resolved** (Prompt 13) | Scrolls to the newest message's own top instead of `scrollHeight`, and self-clamps, so short exchanges are unchanged. With the list constrained to 90px and a 120.5px reply: newest top **0.3px** below the list top, `scrollTop` **809.6** against a maximum of **860**. Panel geometry untouched |
+> | **D-06** duplicate hero status line | **Resolved** (Prompt 13) | **2 → 1** instance, on the media, at all 7 viewports and at 1440. The removed one is the text-column instance no doc specifies |
+> | **D-10** nav CTA size | **Resolved** (Prompt 13) | **51.2 → 42.5px** tall; padding was **already** 14×24 and is unchanged. The cause is `cn()`: tailwind-merge drops `leading-none` when a later `text-*` class follows it, so every button on the site rendered a **23.2px** line box instead of 14.5. Fixed at the source — `text-[14.5px]/[1]` — so `closing-cta`'s large button also corrects, **60.6 → 52px**. Header height **76 → 76**: it is `h-[76px]` and never followed the CTA. The corrected CTA falls 1.5px under the tap floor and takes a `.tap-44` overlay; hit-tested, 5 of 5 probes own to the CTA |
 > | **M-16** orphan lines, **768/844 rows** | **Partial** (never resolved) | `Four ways we help.` L4-in-144px → **L1 in 704px**. Case-study headlines still orphan in a now-deliberate 249px column. No copy changed. **Any cell naming M-16 anywhere in this file says partial — it is not a resolved finding** |
 > | **M-03** panel overshoots the top edge, `blocking` | **Resolved** (Prompt 10, 2026-08-09) | `top: -119.0` at 844×390 → **sheet mode, `top: 0`, `overflowsViewportTop: false`**. Panel bound to `max-height: calc(100dvh - 48px)`; **no top overflow at any of the 8 viewports**, close control on-screen at all 8. **No `blocking` finding remains open** |
 > | **M-14** 32px close control | **Resolved** (Prompt 10) | 32.0 × 32.0 → **44.0 × 44.0 at all 8 viewports**, grown by padding; the `✕` glyph stays at **16px** |

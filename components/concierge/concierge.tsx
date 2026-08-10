@@ -7,7 +7,10 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ConnectedNodes } from '@/components/logo-lockup';
 import { ThinkingStripe } from '@/components/concierge/thinking-stripe';
 import { Markdown } from '@/components/concierge/markdown';
-import { CONCIERGE_OPEN_EVENT } from '@/components/concierge/concierge-bus';
+import {
+  CONCIERGE_OPEN_EVENT,
+  useLauncherSuppressed,
+} from '@/components/concierge/concierge-bus';
 import { getWork } from '@/content/work';
 import { site } from '@/lib/site';
 
@@ -99,6 +102,9 @@ export function Concierge() {
 
   const [pastHero, setPastHero] = useState(false);
   const [ctaInView, setCtaInView] = useState(false);
+  /* The app-state half of the yield rule — an open nav drawer or an expanded
+     FAQ row. See concierge-bus.ts for why this is not a widened observer. */
+  const stateSuppressed = useLauncherSuppressed();
   const [sheet, setSheet] = useState(false);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -231,9 +237,33 @@ export function Concierge() {
     return () => document.removeEventListener('keydown', onTab, true);
   }, [open, sheet]);
 
+  /* Anchor the TOP of the newest message, not the bottom of the list (D-05).
+     Scrolling to `scrollHeight` puts the end of a long reply on screen and its
+     first line above the fold, so the visitor has to scroll up to read what
+     they just asked for. Anchoring the top is self-clamping: a message shorter
+     than the list can't scroll past the maximum, so it still lands at the
+     bottom and short exchanges behave exactly as before.
+
+     This is not a sizing fix — the panel's viewport bound and the list's
+     `flex: 1 1 300px` floor are deliberate (M-03), and a longer reply is
+     supposed to scroll inside the list rather than grow it. */
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages, busy]);
+    const list = scrollRef.current;
+    if (!list) return;
+    const behavior = reduceMotion ? 'auto' : 'smooth';
+    // Not `:last-of-type` — that matches per element name, and the two message
+    // roles render as different elements (<p> for the visitor, <div> for a
+    // reply), so a trailing reply would not shadow the <p> before it.
+    const msgs = list.querySelectorAll<HTMLElement>('[data-msg]');
+    const newest = msgs[msgs.length - 1];
+    if (!newest) {
+      list.scrollTo({ top: list.scrollHeight, behavior });
+      return;
+    }
+    const top =
+      newest.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+    list.scrollTo({ top, behavior });
+  }, [messages, busy, reduceMotion]);
 
   useEffect(() => {
     if (!open) return;
@@ -284,8 +314,10 @@ export function Concierge() {
   const showChips = messages.length === 0 && !busy;
 
   /* Yielded, not unmounted: focus return on close needs the launcher to still
-     be there, and an element that disappears from the DOM cannot transition. */
-  const launcherVisible = pastHero && !open && !ctaInView;
+     be there, and an element that disappears from the DOM cannot transition.
+     Two yield inputs, composed: the geometric one (a primary CTA on screen) and
+     the app-state one (drawer open, FAQ row expanded). Either suppresses. */
+  const launcherVisible = pastHero && !open && !ctaInView && !stateSuppressed;
 
   return (
     <>
@@ -369,17 +401,25 @@ export function Concierge() {
               )}
 
               <div className="flex flex-col gap-5" aria-live="polite">
+                {/* `data-msg` is the scroll anchor's handle — the newest one is
+                    what the list scrolls to the top of. It marks messages only:
+                    the thinking stripe, the capture confirmation and the error
+                    block are states, not turns, and anchoring to one of those
+                    would scroll the reply they belong to off the top. */}
                 {messages.map((m, i) =>
                   m.role === 'user' ? (
                     <p
                       key={i}
+                      data-msg
                       className="max-w-[85%] self-end rounded-[12px] bg-surface px-[14px] py-3 text-[0.875rem] leading-[1.55]"
                       style={{ textWrap: 'pretty' }}
                     >
                       {m.content}
                     </p>
                   ) : (
-                    <Markdown key={i} text={m.content} />
+                    <div key={i} data-msg>
+                      <Markdown text={m.content} />
+                    </div>
                   ),
                 )}
 
