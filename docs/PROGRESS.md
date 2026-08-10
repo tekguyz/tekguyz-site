@@ -1078,34 +1078,34 @@ as obvious, it is still open.*
    M-06's width and does nothing for M-15, where 109 of the 174 pairs occur above
    414px. Yielding answers both with one mechanism and extends the existing
    never-over-the-hero rule rather than inventing a second one. The
-   `Ask about your project` label survives — but see item 5, it is now open on
-   different grounds.
+   `Ask about your project` label survives — and item 5, which reopened it on
+   copy-authorship grounds, is now **closed too**: the label is human-confirmed.
 2. ~~**M-15's acceptance criterion**~~ — **decided and shipped 2026-08-09
    (Prompt 10): the hard number.** No route/element pair above **25% coverage at
    any sampled scroll step**. The transience argument was real but unverifiable by
    a fix pass; a number is. Recorded in DESIGN.md §8 and re-measured against the
    audit's own occlusion sweep.
-5. **The launcher's label** — *newly opened 2026-08-09 by CLAUDE.md's copy-gap
-   rule.* `Ask about your project` is Claude-Design-generated, not user-authored.
-   It is present, not missing, so it carries **no `[NEEDS COPY]` marker and stays
-   live in code** — but it has never been confirmed as final copy, and the yield
-   decision above deliberately kept it. **Candidates, for a human to pick or
-   confirm** — recorded here rather than left in a report, because a chat summary
-   is one `/clear` from gone:
-   - **`Ask about your project`** (shipped) — states the subject, no verb pressure.
-     The longest at 234px, which is what made it a yield problem rather than a
-     shrink problem.
-   - **`Tell us what you're dealing with`** — matches the panel's own opener and
-     the input placeholder, so the launcher and the first screen speak once.
-     Longer; re-measure the yield sweep if picked.
-   - **`Ask what we'd build`** — the concierge's actual promise, in the brand's
-     plain register. Shortest, and the only one that survives a width squeeze
-     without collapsing to an icon.
-   - **`Start a conversation`** — safest, and the most generic; it is the option
-     that reads closest to a stock chat bubble, which is the thing the label
-     exists to avoid.
-   Picking any of the last three is a copy change only — the yield rule is
-   width-independent, so nothing in the geometry needs revisiting.
+5. ~~**The launcher's label**~~ — **confirmed by the human 2026-08-09 (Prompt 11).
+   `Ask about your project` stays, as shipped, unchanged.** It was opened
+   2026-08-09 by CLAUDE.md's copy-gap rule on the grounds that it is
+   Claude-Design-generated rather than user-authored; it is now user-confirmed,
+   which is the only thing that was missing. No code change — the label was live
+   throughout and carried no `[NEEDS COPY]` marker, correctly, because the slot
+   was never empty. **This item is closed. Do not reopen it as "unconfirmed".**
+
+   **Candidate-list drift, recorded because the mechanism failed, not the
+   outcome.** Prompt 10's report proposed `Ask about your project` /
+   `Tell us what's slowing you down` / `See what we'd build for you` /
+   `Ask what we'd build`. What was later written into this file was
+   `Ask about your project` / `Tell us what you're dealing with` /
+   `Ask what we'd build` / `Start a conversation` — **regenerated from scratch
+   rather than transcribed**, and one of the new entries collided with the
+   concierge's own input placeholder (`Describe what you're dealing with…`), so
+   the list offered the human an option the product already says elsewhere. The
+   copy-gap rule exists to make a gap *visible*; regenerating the candidates
+   re-opened the same hole one level up, in the artifact meant to close it.
+   `CLAUDE.md` now requires candidates to be transcribed from the report that
+   proposed them and collision-checked against `docs/COPY.md`.
 3. **The concierge disclaimer** — renders 2 lines at every viewport, including
    1440. Copy is locked, so shortening it needs a `docs/COPY.md` amendment and
    sign-off, not a fix pass. **Currently: unchanged.**

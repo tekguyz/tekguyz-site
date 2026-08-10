@@ -221,7 +221,19 @@ export function ContactForm() {
                 {errors.email && <FieldError>{errors.email.message}</FieldError>}
               </div>
 
-              <Button type="button" size="form" onClick={goToStep2} className="mt-2 self-start">
+              {/* `data-primary-cta` is the concierge launcher's yield target.
+                  `/contact` had none, so the launcher never yielded on the
+                  site's highest-value conversion surface. Step 1's `Continue`
+                  and step 2's `Send Inquiry` are the same slot at different
+                  times — the two steps are exclusive branches, so exactly one
+                  is ever in the DOM and the observer only ever sees one. */}
+              <Button
+                type="button"
+                size="form"
+                onClick={goToStep2}
+                className="mt-2 self-start"
+                data-primary-cta
+              >
                 Continue
               </Button>
             </div>
@@ -338,7 +350,7 @@ export function ContactForm() {
                 <Button type="button" variant="secondary" size="nav" onClick={() => setStep(1)}>
                   Back
                 </Button>
-                <Button type="submit" size="form" disabled={isSubmitting}>
+                <Button type="submit" size="form" disabled={isSubmitting} data-primary-cta>
                   {isSubmitting ? 'Sending…' : 'Send Inquiry'}
                 </Button>
               </div>

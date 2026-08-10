@@ -19,6 +19,13 @@
  *             `reducedMotion: 'reduce'`. Constant through that window kills H-4.
  *   geometry  M-03 / M-14 / safe-area / sheet-threshold / keyboard + focus
  *             contract, at all 8 audited viewports.
+ *   seq       The `.tg-seq` half of M-19, which Prompt 10 left on Prompt 7's
+ *             reading. Same armed sampler as `m19`, pointed at the 8 hero
+ *             sequence elements on `/`. It exists because the globals.css pin
+ *             is `opacity: 1 !important; transform: none !important` and
+ *             `transform: none` does not beat a `translate` — the property
+ *             Motion writes on some paths. "The earlier reading stands" is the
+ *             exact assumption the launcher disproved.
  *
  * Output: `.audit/concierge-<phase>.json` (`.audit/` is gitignored).
  */
@@ -441,6 +448,129 @@ async function phaseGeometry(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference'
   return rows;
 }
 
+/* ----------------------------------------------------------------- phase: seq */
+
+/**
+ * The `.tg-seq` half of M-19. Identical arming protocol to `phaseM19`: the
+ * sampler is installed by `addInitScript`, so it observes `document` from
+ * before the first byte of the page is parsed and latches on the first
+ * `.tg-seq` insertion — the hero items are server-rendered with Motion's
+ * `initial="hidden"` inline styles, so they arrive during parse, and a
+ * post-hoc sample would land after any 500ms entrance had already resolved.
+ *
+ * Every `.tg-seq` in the document is sampled on every frame, not just the
+ * latched one, because the finding is about all 8 on `/`.
+ */
+async function phaseSeq(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference') => Promise<BrowserContext>) {
+  const rows: unknown[] = [];
+
+  for (const reduce of ['reduce', 'no-preference'] as const) {
+    for (const vpLabel of ['standard', 'bp-at'] as const) {
+      const vp = VIEWPORTS.find((v) => v.label === vpLabel)!;
+      const ctx = await ctxFor(vp, reduce);
+      const page = await ctx.newPage();
+
+      await page.addInitScript(() => {
+        (window as unknown as { __seq: unknown }).__seq = (() => {
+          const frames: { t: number; items: { i: number; opacity: string; transform: string; translate: string; anims: number }[] }[] = [];
+          let armed = false;
+          const t0 = performance.now();
+
+          const sample = () => {
+            const els = [...document.querySelectorAll<HTMLElement>('.tg-seq')];
+            frames.push({
+              t: +(performance.now() - t0).toFixed(1),
+              items: els.map((el, i) => {
+                const cs = getComputedStyle(el);
+                return {
+                  i,
+                  opacity: cs.opacity,
+                  transform: cs.transform,
+                  translate: cs.translate,
+                  anims: el.getAnimations().length,
+                };
+              }),
+            });
+            if (frames.length < 90) requestAnimationFrame(sample);
+          };
+
+          const obs = new MutationObserver(() => {
+            if (armed) return;
+            if (document.querySelector('.tg-seq')) {
+              armed = true;
+              sample();
+            }
+          });
+          obs.observe(document, { childList: true, subtree: true });
+
+          return {
+            frames,
+            armed: () => armed,
+            count: () => document.querySelectorAll('.tg-seq').length,
+            rest: () =>
+              [...document.querySelectorAll<HTMLElement>('.tg-seq')].map((el, i) => {
+                const cs = getComputedStyle(el);
+                return {
+                  i,
+                  opacity: cs.opacity,
+                  transform: cs.transform,
+                  translate: cs.translate,
+                  inlineStyle: el.getAttribute('style'),
+                };
+              }),
+          };
+        })();
+      });
+
+      await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+      await guardStylesheet(page);
+      await page.waitForTimeout(1600);
+
+      const r = await page.evaluate(() => {
+        const s = (window as any).__seq;
+        return { frames: s.frames, armed: s.armed(), count: s.count(), rest: s.rest() };
+      });
+
+      // Per-item distinct values across the whole sampled window. More than one
+      // value on any of the three properties means that item moved.
+      const n = r.rest.length;
+      const perItem: unknown[] = [];
+      for (let i = 0; i < n; i++) {
+        const vals = r.frames.map((f: any) => f.items[i]).filter(Boolean);
+        const distinct = (k: string) => [...new Set(vals.map((v: any) => v[k]))];
+        perItem.push({
+          i,
+          opacity: distinct('opacity'),
+          transform: distinct('transform'),
+          translate: distinct('translate'),
+          maxAnims: Math.max(0, ...vals.map((v: any) => v.anims)),
+          constant:
+            distinct('opacity').length === 1 &&
+            distinct('transform').length === 1 &&
+            distinct('translate').length === 1,
+        });
+      }
+
+      rows.push({
+        reduce,
+        viewport: vpLabel,
+        route: '/',
+        armed: r.armed,
+        seqCount: r.count,
+        frameCount: r.frames.length,
+        windowMs: r.frames.length ? +(r.frames[r.frames.length - 1].t - r.frames[0].t).toFixed(1) : 0,
+        allConstant: (perItem as any[]).every((p) => p.constant),
+        perItem,
+        rest: r.rest,
+      });
+
+      await page.close();
+      await ctx.close();
+    }
+  }
+  return rows;
+}
+
 /* ------------------------------------------------------------------------ run */
 
 async function main() {
@@ -459,6 +589,22 @@ async function main() {
       console.log(
         `  ${r.reduce.padEnd(14)} ${r.viewport.padEnd(9)} ${r.route.padEnd(10)} armed=${r.armed} n=${String(r.sampleCount).padStart(2)} win=${Math.round(r.windowMs)}ms constant=${r.constant} opacity=${JSON.stringify(r.distinctOpacity)} transform=${JSON.stringify(r.distinctTransform)} translate=${JSON.stringify(r.distinctTranslate)} restAnims=${r.rest?.animations}`,
       );
+    }
+  }
+
+  if (phase === 'seq' || phase === 'all') {
+    const rows = await phaseSeq(ctxFor);
+    await writeFile(`${OUT}/concierge-seq.json`, JSON.stringify(rows, null, 2));
+    console.log('\nseq rows:', rows.length);
+    for (const r of rows as any[]) {
+      console.log(
+        `  ${r.reduce.padEnd(14)} ${r.viewport.padEnd(9)} armed=${r.armed} n=${r.seqCount} frames=${r.frameCount} win=${Math.round(r.windowMs)}ms allConstant=${r.allConstant}`,
+      );
+      for (const p of r.perItem) {
+        console.log(
+          `      item ${p.i} constant=${p.constant} opacity=${JSON.stringify(p.opacity)} transform=${JSON.stringify(p.transform)} translate=${JSON.stringify(p.translate)} anims=${p.maxAnims}`,
+        );
+      }
     }
   }
 

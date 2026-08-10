@@ -8,6 +8,30 @@
 
 ---
 
+## Casing — Title Case for buttons, sentence case for conversation
+
+*Documented 2026-08-09 (Prompt 11). **This records what already ships; it changes
+no string.** It exists so a later consistency pass does not "normalise" the
+launcher to Title Case and quietly flatten the distinction.*
+
+**Title Case — navigational and committing CTAs.** The user is about to go
+somewhere or hand something over: `Let's Talk`, `See Our Work`, `Continue`,
+`Send Inquiry`, `Back`. These read as buttons because they are buttons.
+
+**Sentence case — conversational and inline affordances.** The user is about to
+read, look, or ask, in place: `Read the full story →`,
+`Talk about automating this →`, `Or ask our AI what we'd build for you`, and
+**the concierge launcher (`Ask about your project`) explicitly**. The launcher is
+the case that looks like an inconsistency and is not: it opens a conversation
+*in place* rather than committing to a navigation, and it sits beside Title Case
+buttons on purpose — the casing is the signal that it costs less.
+
+The test when adding a string: does clicking it commit the user to something
+(a route, a submission)? Title Case. Does it start or continue a conversation
+they can abandon in one click? Sentence case.
+
+---
+
 # GLOBAL
 
 ## Navigation
