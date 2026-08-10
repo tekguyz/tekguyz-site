@@ -1157,15 +1157,14 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 - ~~The preview has **no environment variables set**, so the contact form and concierge will fail at runtime there.~~ **Unverified as of the correction — see below.**
 
 **Hosting, as measured 2026-08-09 against the Vercel API.** There is exactly
-**one** project: **`tekguyz-site`** (`prj_xoYlJtk7Aie61D3bQiKj6XtMwnsw`, team
-`tekguyz` / `team_agYJ1s4InTpXXycvARJoGQ9g`), and it carries **`tekguyz.com`,
+**one** project: **`tekguyz-site`** (team `tekguyz`), and it carries **`tekguyz.com`,
 `www.tekguyz.com`**, `tekguyz-site.vercel.app` and the branch alias.
 **`tekguyz-website` does not exist** — it is not in the team's project list.
 `.vercel/project.json` in this repo points at `tekguyz-site`.
 
 **So every push to `master` deploys to production.** Confirmed from the
-deployment list: every deployment since `dpl_GnaSZGCgGeENQoeY8ZTwEGJoDJGZ`
-(Prompt 4's `651be7d`, the commit whose own message claims it was a preview)
+deployment list: every deployment since the one for Prompt 4's `651be7d`
+(the commit whose own message claims it was a preview)
 carries `target: "production"`. **Prompts 4, 5, 6, 8, 10 and 11 all shipped
 straight to live traffic.** The "preview" framing was wrong from the moment it
 was written, and because it lived here it was repeated as fact in
@@ -1195,8 +1194,8 @@ runtime telemetry, read-only, without touching a single byte of user data:**
 
 - `get_runtime_errors` over 7 days returns **exactly one error group**:
   `Concierge route error: Error: GEMINI_API_KEY is not set`, **count 1**, at
-  `2026-08-06T18:05:09Z`, on `dpl_GnaSZGCgGeENQoeY8ZTwEGJoDJGZ` — the *original*
-  Prompt 4 deployment. **Nothing since.** That single error, and its silence
+  `2026-08-06T18:05:09Z`, on the *original* Prompt 4 deployment. **Nothing
+  since.** That single error, and its silence
   afterwards, is the transition from unset to set, recorded in the logs.
 - `get_runtime_logs`, production, 7 days, grouped by status code: **47 requests,
   all 200, zero non-200.** Low traffic, so treat the 200s as corroboration

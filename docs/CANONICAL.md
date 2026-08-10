@@ -227,7 +227,9 @@ current status.
 
 **Hosting, corrected 2026-08-09 — this paragraph was wrong for four prompts and
 the error propagated.** There is exactly **one** Vercel project,
-**`tekguyz-site`** (`prj_xoYlJtk7Aie61D3bQiKj6XtMwnsw`, team `tekguyz`), and it
+**`tekguyz-site`** (team `tekguyz`; the project ID is in the gitignored
+`.vercel/project.json`, and is deliberately not repeated here — this repo is
+public), and it
 holds **both `tekguyz.com` and `www.tekguyz.com`**. `tekguyz-website` — named in
 earlier docs as the project serving the live domain — **does not exist.**
 Consequently **every push to `master` auto-deploys straight to production**;
