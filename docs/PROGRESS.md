@@ -13,6 +13,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Prompt 7 (2026-08-08) was an audit, not a build step, and changed no code.** It found **19 measured mobile findings, 3 of them blocking**, which means there is now a code task queued that did not exist on 2026-08-07 — a fix prompt written from `docs/MOBILE-AUDIT.md`. "Code complete" above describes the state the six build prompts reached; it is no longer the same as "nothing left to fix".
 - **Prompt 8 (2026-08-08) shipped fix batch A** — the 768–1023px band. H-1 was confirmed by diagnostic first, then the diagnostic reverted and DESIGN.md §8's 8-column layout implemented. Of the 19 findings, **7 are now resolved** (M-01, M-02, M-17, M-18, and the band rows of M-04, M-07, M-08). The remaining batches — tap targets, the concierge, and the sub-767 rows — are still queued.
 - **Prompt 10 (2026-08-09) shipped the concierge fix** — M-03, M-06, M-14, M-15, M-19. **No `blocking` finding remains open.** 12 of 19 findings are now resolved. One pass is left: tap targets and the sub-767 wrap rows (M-05's sub-767 rows, M-09 – M-13, M-04's sub-767 row).
+- **Prompt 11 (2026-08-09) shipped the tap-target and sub-767 pass** — M-04's and M-05's sub-767 rows, M-09 – M-13. **All 19 mobile findings are now resolved**, and the mobile-audit queue that Prompt 7 opened is closed. Tier failures **2,739 → 0** with **0 overlapping hit areas** and **no painted box resized**. `docs/MOBILE-AUDIT.md`'s banner carries the per-finding after-numbers.
 
 **What actually blocks launch** (none of it a code task):
 
@@ -39,6 +40,121 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 8 | Fix batch A — the 768–1023px layout band | **Shipped** (2026-08-08) — `681808e` | **H-1 confirmed by diagnostic before anything shipped**, then the diagnostic reverted and the layout DESIGN.md §8 actually specifies implemented instead. `.tg-grid` children carried 12-column placements into an 8-track grid, manufacturing 4 implicit tracks. Grid at 768 is now **8 explicit tracks, 0 implicit**. M-01 resolved on all 11 routes, M-02, M-18 and M-17 resolved, M-04's and M-07/M-08's band rows resolved. See the section below. |
 
 | 10 | Concierge fix — M-03 (blocking), M-06, M-14, M-15, M-19 + the CLAUDE.md copy-gap rule | **Shipped** (2026-08-09) — `9a58fc1` | The last `blocking` finding closed. Panel bound to `calc(100dvh - 48px)` with a `(max-height: 560px)` full-screen sheet; the launcher **yields** to the two `data-primary-cta` elements rather than shrinking; close control 44×44 by padding, glyph unchanged; safe-area insets added additively; dialog keyboard/focus baseline established. **H-4 confirmed, not killed** — the launcher's Motion entrance ran unsuppressed under `reduce`, and was removed rather than pinned. See the section below. |
+| 11 | Tap targets & sub-767 wrap rows — M-04, M-05, M-09 – M-13 + front matter | **Shipped** (2026-08-09) — `PROMPT11_HASH` | DESIGN.md §8's two-tier floor implemented as **two shared `::before` overlay utilities** (`.tap-44`, `.tap-24`) rather than 73 call-site patches, because the 2,707 instances were a handful of shared components rendered many times. **`::before`, not `::after`** — `[data-navlink]::after` is the active-page indicator, and the nav links need both. M-10 forced the one real arithmetic decision: 44px targets in a 12px column gap **overlap by 9.6px**, so the footer gap went to 22px. The `.tg-seq` half of M-19 was re-tested with the armed sampler rather than inherited — **the pin holds, no `translate` pin needed**. New audit phase `taps` hit-tests targets, which is the only way to see a pseudo-element expansion. See the section below. |
+
+## Prompt 11 — tap targets and the sub-767 wrap rows
+
+*2026-08-09, three commits. Changed: `app/globals.css` (two new utilities, no
+grid rules touched), `components/theme-toggle.tsx`, `components/nav.tsx`,
+`components/footer-dark.tsx`, `components/closing-cta.tsx`,
+`components/live-frame.tsx`, `components/home-hero.tsx`,
+`components/case-study-row.tsx`, `components/testimonial.tsx`,
+`components/contact-form.tsx`, `components/concierge/markdown.tsx`,
+`app/page.tsx`, `app/contact/page.tsx`, `app/work/[slug]/page.tsx`,
+`app/solutions/[slug]/page.tsx`, `app/not-found.tsx`, `app/error.tsx`, plus
+`scripts/audit-mobile.ts` and `scripts/audit-concierge.ts` (measurement only).*
+
+**The finding count was the misleading part.** 73 signatures across 2,707
+instances reads like 73 bugs. It is a handful of shared components rendered many
+times, and every one but the theme toggle failed on height alone — because the
+type scale gives a 14.5px link a ~22px line box and nothing had ever added
+vertical hit area. The fix is therefore **two CSS utilities and ~20 class
+additions**, not 2,707 patches.
+
+**`.tap-44` / `.tap-24` use `::before`, and that is load-bearing.**
+`[data-navlink]::after` is the active-page indicator bar, and the nav links are
+exactly the elements that need both a hit-area overlay and an indicator. One
+pseudo per job. The overlay is centred on the element with `min-width` /
+`min-height` at the tier, so a target already wider than 44px keeps its full
+width and grows only on the short axis. It uses `translate`, not `transform`,
+for the same reason `.reveal` does.
+
+**M-09 — the toggle paints, so it was not resized.** The first question §8's
+"never resize the painted box" rule raises is whether there *is* a painted box.
+There is: a 1px hairline at rest, darkening to `border-strong` on hover. So the
+38×38 render is unchanged and only the hit area is 44×44. Had it painted
+nothing, growing it directly would have been correct and simpler — that branch
+was checked, not assumed.
+
+**M-10 is the case where the arithmetic decides the fix.** Footer links are
+22.4px tall in a 12px column gap. Reaching 44px needs 10.8px above *and* below,
+so two vertically adjacent links would each expand into the same 12px gap and
+**overlap by 9.6px** — two invisible targets whose winner is source order, so a
+tap on `Process` could land on `Work`. That is strictly worse than a 22px target
+you can at least aim at. Resolution (a) shipped: the column gap goes to **22px**
+and the targets tile with 0.4px of clearance. Resolution (b) — real padding on
+each link — would have cost 74px of footer height per column against 30px, and
+DESIGN.md §4 says this row must not inherit section-level spacing.
+
+**M-11's substance is the classification, not the CSS.** 20 call sites, **17
+standalone (44) and 3 prose (24)**. `Open it in a new tab` was the close call
+because it renders two ways — as a blockified flex item in `LiveFrame` (137.1 ×
+23.2) and as a bare inline `<a>` in `/work/[slug]`'s meta rail (137.1 × 19.0).
+**Both got 44**: the inline one is inline because it is an `<a>` alone in a
+block, not because it sits in a sentence — it is the sole affordance under a
+"Live demo" label, which is a standalone control. The three prose-tier links are
+the ones genuinely mid-sentence: `/`'s "Open any of them right now.", the
+contact form's error-state mailto, and the concierge's markdown links. There,
+24×24 is the deliberate ceiling — a 44px box around a mid-sentence link either
+overlaps its neighbours or forces a line-height that breaks §2's type scale.
+
+**M-04's mechanism: a media query at 766px, not a sibling selector.** The defect
+is that a separator ends a line, and CSS selectors see DOM order while the
+defect is about the *rendered* break — the last dot in the DOM is not the dot
+that dangles. 766 is the measured threshold (one line at 767 and above, wrapped
+at every viewport below), so the row switches to a deliberate stack with the
+dots not rendered at exactly the width where it would otherwise wrap. The dots
+are `aria-hidden`, so hiding them costs nothing semantically. Both the
+`closing-cta` row and `/contact`'s own trust column take the same treatment;
+`/contact` additionally re-asserts `items-start`, because `items-center` is
+cross-axis and would centre the stack against §9.
+
+**M-05: the alignment was never the defect.** The audit describes the wrapped
+social row sitting at the lockup's `left: 24px` alongside the symptom, and §9
+left-anchors everything but the closing CTA — so left is correct and stayed. The
+48px `gap` inherited from the side-by-side arrangement was the defect; below 766
+the row gap is **24px**, tighter than the 32px that follows down to the divider,
+which groups the social row with the lockup rather than with the nav.
+
+**Verification needed a new harness phase, and that is the reusable lesson.**
+The existing sweep measures `getBoundingClientRect`. §8 expands targets by a
+pseudo-element *specifically so the box does not change*, so a rect-based re-run
+reports every fixed target as still failing — the measurement and the fix are
+looking at different things. `scripts/audit-mobile.ts taps` hit-tests instead:
+it probes the tier box's corners with `elementFromPoint` and asks who owns each
+point. That also turns "no two hit areas overlap" from an argument into a
+number, since a probe that lands on a *different* interactive element is exactly
+the overlap defect. Two things it had to get right, both of which read as
+passes when wrong: `elementFromPoint` only hit-tests the visible viewport, so
+every element must be scrolled in first; and an **ancestor** owning the probe
+point is a failure, not a pass — treating it as a pass reported 0 failures
+site-wide.
+
+**Results.** Tier failures **2,739 → 0**, overlaps **0**, across 18 routes × 7
+viewports (× light/dark at two of them). The undersized-*painted*-box inventory
+is unchanged at **2,729**, byte-identical in width and height on all 162
+combos — which is the proof that nothing was resized. Full per-finding
+after-numbers are in `docs/MOBILE-AUDIT.md`'s banner.
+
+**Front matter.** Open decision 5 (the launcher label) is **closed** — human
+confirmed `Ask about your project`, unchanged; the candidate-list drift that
+produced it is recorded there and the rule against regenerating candidates is
+now in `CLAUDE.md`. `docs/COPY.md` gained the Title-Case / sentence-case
+convention, documenting what already ships so the launcher is not later
+"normalised" to Title Case. `/contact`'s submit button now carries
+`data-primary-cta` on both steps — the branches are exclusive, so exactly one is
+ever in the DOM.
+
+**`.tg-seq` under `reduce`: re-tested, pin holds, nothing changed.** Prompt 10
+skipped this on the grounds that `globals.css` pins it, and the doubt was
+specific — the pin is `transform: none !important`, which does not beat a
+`translate`, and "the earlier reading stands" is the exact assumption M-19
+disproved for the launcher. Measured with the same MutationObserver-armed rAF
+sampler: all 12 `.tg-seq` elements on `/` constant at `opacity: 1` /
+`transform: none` / `translate: none` over 69–90 frames at two viewports, while
+the same sampler under `no-preference` reads full opacity and `matrix()` ramps
+on the same elements. Motion writes `transform` here, not `translate`. **No
+`translate: none` pin was added, because none was needed.**
 
 ## Prompt 10 — the concierge fix
 
@@ -1120,12 +1236,12 @@ as obvious, it is still open.*
 
 | Gap | Why deferred | Revisit when |
 | --- | --- | --- |
-| **7 of 19 mobile findings are still open** (`docs/MOBILE-AUDIT.md`, see its status banner). Prompt 8 closed M-01, M-02, M-17, M-18 plus the band rows of M-04, M-07, M-08; **Prompt 10 closed M-03, M-06, M-14, M-15 and M-19** — see their sections above; neither is re-summarised here. **The batch letters for the remaining work are retired** (Prompt 8's own "batch A" label stands as history): two incompatible letterings existed for the same work, which made a prompt title ambiguous about which subsystem it edited. The subsystem name carries everything the letter did. ~~**1 — the concierge fix**~~ **shipped 2026-08-09 (Prompt 10); no `blocking` finding remains open.** M-14 was routed to it rather than to the tap-target pass because it sits inside the component being rebuilt, and that held: fixing it twice in two diffs to the same file is how a rebuild loses a fix. **One pass remains — tap targets and the sub-767 wrap rows (M-09 – M-13, plus the sub-767 rows of M-04 and M-05):** 73 distinct signatures across 2,707 instances, every one a height failure except the 38×38 theme toggle; plus the `closing-cta` trust row wrapping to 3 lines and the footer masthead's social row dropping and left-aligning | **The tap-target policy is decided, not blocked.** DESIGN.md §8 now carries a two-tier floor — 44×44 for standalone controls, WCAG 2.2 AA's 24×24 for links inline in prose, expanded by padding or a pseudo-element and never by resizing the painted box. That row previously said this batch could not ship without a spec decision; the decision exists, and the pass implements §8. **Why these two stayed one pass and not two:** tap targets and the sub-767 rows both land in `footer-dark.tsx` and the `closing-cta` band, so splitting them puts two diffs on the same files. Batching by subsystem is also what let Prompt 8 be diagnosed rather than guessed at — 7 of 22 items across passes 4–6 inherited a wrong cause from their brief. **Note for that pass: `closing-cta.tsx` now carries a `data-primary-cta` attribute** that the concierge launcher's yield observer reads. It is not decorative and must survive the trust-row rework | **Tap targets and the sub-767 rows** — the only remaining fix pass |
+| ~~**7 of 19 mobile findings are still open**~~ **CLOSED 2026-08-09 (Prompt 11). All 19 are resolved and no mobile fix pass remains.** Prompt 8 closed M-01, M-02, M-17, M-18 plus the band rows of M-04, M-07, M-08; Prompt 10 closed M-03, M-06, M-14, M-15, M-19; **Prompt 11 closed M-09 – M-13 and the sub-767 rows of M-04 and M-05** — see its section above, not re-summarised here. The predicted shape held: 73 signatures across 2,707 instances were a handful of shared components rendered many times, and the fix is two CSS utilities plus ~20 class additions. The `data-primary-cta` attribute on `closing-cta.tsx` survived the trust-row rework, as required, and gained a counterpart on `/contact` | **The policy was decided before the pass ran, and that is why it shipped as implementation rather than investigation.** DESIGN.md §8's two-tier floor — 44×44 standalone, WCAG 2.2 AA's 24×24 for prose links, expanded by padding or pseudo-element and never by resizing — was written by Prompt 10 and implemented verbatim here. **The one thing §8 did not anticipate:** a rect-based sweep cannot verify a pseudo-element expansion, so the harness needed a hit-testing phase (`taps`) before the fix could be checked at all | **Closed.** What remains under the mobile heading is not a finding: M-16's orphan lines (a copy question), and real-device confirmation of safe-area insets and the motion-enabled path |
 | ~~**Safe-area insets — there are none.**~~ **Closed 2026-08-09 (Prompt 10).** The launcher and panel now carry `calc(24px + env(safe-area-inset-bottom, 0px))` and the `right` equivalent, additive to the existing 24px; the full-screen sheet takes all four sides. Always the two-argument `env()` form, so a browser without support resolves to 24px rather than 0 — confirmed by measurement, which reads `bottom: 24px` at all 8 viewports in a headless context with no insets | Not a grid problem and not reachable from one. Recorded in DESIGN.md §8's *Concierge geometry* alongside the values it applies to | **Real-device confirmation is still outstanding** — a headless context has no insets to add, so only the fallback path has been measured |
 | ~~**Dialog keyboard and focus management is unmeasured, not known-broken.**~~ **Closed 2026-08-09 (Prompt 10).** Baseline established and measured at all 8 viewports (`scripts/audit-concierge.ts geometry`): Escape closes in every mode, focus moves into the panel on open and back to the launcher on close in every mode, and sheet mode additionally traps Tab, sets `aria-modal="true"` and locks body scroll. Non-modal mode does none of those three and the page still scrolls behind — verified with a real wheel event, because `overflow: hidden` never stops a scripted `window.scrollBy` and the programmatic probe reports every working lock as broken | Stating it as a defect would have been inventing a measurement. What it turned out to be: Escape already worked and focus-on-open already worked; **focus return on close did not exist at all** | Closed |
-| ~~**H-4 (M-19)**~~ **CONFIRMED and closed 2026-08-09 (Prompt 10).** The MutationObserver-armed rAF sampler caught the launcher animating under `reduce` on 6 of 6 route/viewport combinations — `opacity` through 15–17 intermediate values, `transform` `matrix(1,0,0,1,0,8)` → `none` through 16, over ~240ms from DOM insertion. `reduce` and `no-preference` traces are indistinguishable. The entrance was **removed**, not pinned: the yield rule that replaces it is opacity-only and instant under `reduce` | Filed `polish` in Prompt 7 and deliberately not upgraded without the right measurement — which was the correct call, since the measurement inverted the reading | Closed. **The `.tg-seq` half of M-19 was not re-tested** and its 8 animations on `/` stand as Prompt 7 measured them; they are pinned by `globals.css` and were never the doubtful case |
+| ~~**H-4 (M-19)**~~ **CONFIRMED and closed 2026-08-09 (Prompt 10).** The MutationObserver-armed rAF sampler caught the launcher animating under `reduce` on 6 of 6 route/viewport combinations — `opacity` through 15–17 intermediate values, `transform` `matrix(1,0,0,1,0,8)` → `none` through 16, over ~240ms from DOM insertion. `reduce` and `no-preference` traces are indistinguishable. The entrance was **removed**, not pinned: the yield rule that replaces it is opacity-only and instant under `reduce` | Filed `polish` in Prompt 7 and deliberately not upgraded without the right measurement — which was the correct call, since the measurement inverted the reading | Closed. **The `.tg-seq` half was re-tested by Prompt 11 (2026-08-09) rather than left on the earlier reading — the pin holds.** All 12 `.tg-seq` elements on `/` are constant at `opacity: 1` / `transform: none` / `translate: none` over 69–90 armed frames at two viewports, while the same sampler under `no-preference` reads 28–32 opacity values and full `matrix()` ramps on the same elements. Motion writes `transform` here, so `transform: none !important` is sufficient and **no `translate` pin was added** |
 | **`/` throws a hydration mismatch (React #418)** — *diagnosed 2026-08-09 by Prompt 10, in passing.* `relativeTime(result.checkedAt)` in `components/status-line.tsx` renders a **relative** timestamp, baked into the prerendered HTML at build time and recomputed on the client, so the two texts diverge by however long the deploy has been live. **Pre-existing, not a Prompt 10 regression — the identical error reproduces on `https://tekguyz.com`** | It violates the Definition of Done's "no hydration warnings", which means that line has been passing on an unchecked assumption. Found only because `home-hero.tsx` was touched for the `data-primary-cta` tag | **Unassigned.** The fix is a real decision, not a one-liner: render an absolute timestamp, or defer the relative one to an effect, or `suppressHydrationWarning`. `StatusLine` is the signature component and appears on the home hero and ink band, so it is not a quiet change |
-| **44 launcher overlaps above 25% remain on non-CTA elements** — *opened 2026-08-09 by Prompt 10's own re-measurement.* The yield rule took primary-CTA overlaps from 174 to **0**, which is the acceptance criterion it was written against. Measured across *every* interactive element the sweep still finds **143 pairs, 44 above 25%, worst 99.6%**, in five classes: `/work/[slug]` meta-rail links (12), inline `link-underline` text links (11), prev/next case-study nav links (9), footer links (6), `/contact` FAQ accordion triggers (6) | **Not fixed by widening `data-primary-cta`, and Prompt 10 was instructed to name it rather than silently widen.** An observer keyed to every CTA-styled element flickers the launcher on any scroll-heavy route, which is worse than a transient overlap on a secondary link. **All 143 are transient — 0 at maximum scroll** | **Nobody, yet.** It needs a human decision on whether a transient overlap of a secondary link is a defect at all. If it is, the mechanism is a different one — an occlusion-aware offset, not more observer targets |
+| **44 launcher overlaps above 25% remain on non-CTA elements** — *opened 2026-08-09 by Prompt 10's own re-measurement.* The yield rule took primary-CTA overlaps from 174 to **0**, which is the acceptance criterion it was written against. Measured across *every* interactive element the sweep still finds **143 pairs, 44 above 25%, worst 99.6%**, in five classes: `/work/[slug]` meta-rail links (12), inline `link-underline` text links (11), prev/next case-study nav links (9), footer links (6), `/contact` FAQ accordion triggers (6) | **Not fixed by widening `data-primary-cta`, and Prompt 10 was instructed to name it rather than silently widen.** An observer keyed to every CTA-styled element flickers the launcher on any scroll-heavy route, which is worse than a transient overlap on a secondary link. **All 143 are transient — 0 at maximum scroll** | **Nobody, yet.** It needs a human decision on whether a transient overlap of a secondary link is a defect at all. If it is, the mechanism is a different one — an occlusion-aware offset, not more observer targets. **Re-measured after Prompt 11 as an observation only, with nothing changed: 143 → 140 pairs, 44 → 45 above 25%, worst 99.6% → 100.0%, primary-CTA overlaps still 0.** Effectively unmoved, which is expected — the tap-target fix grows hit areas by overlay and overlay area is not in the sweep's rects |
 | **M-16's remaining orphan lines** — case-study headlines still orphan inside the 249px column at 768. That column is now **deliberate** (DESIGN.md §8's 8-column spans), so this is a wrap consequence of locked copy, resolvable only by changing the copy | It belongs to no fix pass: there is no layout defect left under it, and copy is locked | **A copy review**, or item 4 of *Decisions still open* resolving against the column |
 | Hero video loop (`sarah-demo.mp4`) | Static image ships first; video is a post-launch enhancement | A new recording of the real dashboard exists |
 | Live iframe embeds (`embeddable` flags) | Needs `frame-ancestors` CSP added per demo app first | Ready to do the CSP work — one prompt per app, then flip flags |

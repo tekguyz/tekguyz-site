@@ -88,13 +88,21 @@ export default function ContactPage() {
             take it from there.
           </p>
 
-          <div className="reveal mt-12 flex flex-wrap items-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary">
+          {/* M-04's sub-767 half. Prompt 8 fixed this row's 768 and 844 cases
+              via the 8-column grid; below 767 the cause is different and the
+              fix is the same one `closing-cta` uses — see the long note there
+              for why it is a 766px media query and not a sibling selector.
+              `items-start` is re-asserted in the column direction: `items-center`
+              is cross-axis, so it would centre these three facts horizontally
+              once stacked, and DESIGN.md §9 left-anchors everything but the
+              closing CTA. */}
+          <div className="reveal mt-12 flex flex-wrap items-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary max-[766px]:flex-col max-[766px]:items-start">
             {TRUST.map((line, i) => (
               <Fragment key={line}>
                 {i > 0 && (
                   <span
                     aria-hidden
-                    className="h-[3px] w-[3px] flex-none rounded-full"
+                    className="h-[3px] w-[3px] flex-none rounded-full max-[766px]:hidden"
                     style={{ background: 'var(--tg-muted-soft)' }}
                   />
                 )}

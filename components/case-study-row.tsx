@@ -47,7 +47,7 @@ export function CaseStudyRow({
         className="mt-6 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
         style={{ textWrap: 'pretty' }}
       >
-        <Link href={`/work/${entry.slug}`} className="link-underline">
+        <Link href={`/work/${entry.slug}`} className="tap-44 link-underline">
           {entry.name}
         </Link>
       </h3>
@@ -62,7 +62,7 @@ export function CaseStudyRow({
       </PullQuote>
       <Link
         href={`/work/${entry.slug}`}
-        className="link-underline mt-9 inline-block text-[14.5px] font-semibold"
+        className="tap-44 link-underline mt-9 inline-block text-[14.5px] font-semibold"
       >
         Read the full story →
       </Link>

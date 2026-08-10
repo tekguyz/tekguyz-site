@@ -54,7 +54,7 @@ export default async function HomePage() {
         <div className="tg-container py-9">
           <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
             Eight live builds.{' '}
-            <Link href="/work" className="link-underline text-secondary">
+            <Link href="/work" className="tap-24 link-underline text-secondary">
               Open any of them right now.
             </Link>
           </p>
@@ -131,7 +131,7 @@ export default async function HomePage() {
         <div className="tg-container mt-14">
           <Link
             href="/process"
-            className="link-underline text-[14.5px] font-semibold text-fg"
+            className="tap-44 link-underline text-[14.5px] font-semibold text-fg"
           >
             See our full process →
           </Link>
@@ -176,7 +176,7 @@ function BandRow({
       <StatusLine result={status} onInk className="mt-10" />
       <Link
         href={`/work/${entry.slug}`}
-        className="link-underline mt-[22px] inline-block text-[14.5px] font-semibold text-[#F5F5F5]"
+        className="tap-44 link-underline mt-[22px] inline-block text-[14.5px] font-semibold text-[#F5F5F5]"
       >
         Read the full story →
       </Link>

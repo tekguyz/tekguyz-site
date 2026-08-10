@@ -12,7 +12,7 @@ export default function NotFound() {
         </h1>
         <p className="mt-6 max-w-[52ch] text-[length:var(--text-body)] text-secondary">
           The link might be old, or it might be a typo. Head back to the homepage, or{' '}
-          <Link href="/work" className="link-underline text-fg">
+          <Link href="/work" className="tap-24 link-underline text-fg">
             see our work
           </Link>
           .

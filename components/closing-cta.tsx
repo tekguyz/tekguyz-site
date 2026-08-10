@@ -44,9 +44,27 @@ export function ClosingCta() {
             </p>
           </SequenceItem>
 
-          {/* Its own element, not merged into the subhead. */}
+          {/* Its own element, not merged into the subhead.
+
+              M-04. Below the wrap point this row broke one-fact-per-line, and
+              the breaks fell AFTER each fact — so each 3px dot terminated a
+              line instead of separating two visible items. A separator with
+              nothing after it is not a separator; it reads as a typo.
+
+              The mechanism is a media query at 766px rather than a
+              `:not(:last-child)` selector, because CSS selectors see DOM order
+              and the defect is about the RENDERED break — the last dot in the
+              DOM is not the dot that ends a line. 766 is the measured
+              threshold: the row is one line at 767 (and everything above) and
+              wrapped at every viewport below it, so the query switches exactly
+              where the wrap does, and the row never renders in the broken
+              in-between state where it wraps with the dots still on.
+
+              Below it the row becomes a deliberate stack and the dots do not
+              render at all. They are `aria-hidden`, so removing them costs
+              nothing semantically. */}
           <SequenceItem role="trust">
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary max-[766px]:flex-col">
               <span>Free first conversation</span>
               <Dot />
               <span>A flat quote before anything starts</span>
@@ -66,7 +84,7 @@ export function ClosingCta() {
               <button
                 type="button"
                 onClick={openConcierge}
-                className="link-underline cursor-pointer text-[0.875rem] leading-[1.55] text-secondary"
+                className="tap-44 link-underline cursor-pointer text-[0.875rem] leading-[1.55] text-secondary"
               >
                 Or ask our AI what we&rsquo;d build for you
               </button>
@@ -82,7 +100,7 @@ function Dot() {
   return (
     <span
       aria-hidden
-      className="h-[3px] w-[3px] flex-none rounded-full"
+      className="h-[3px] w-[3px] flex-none rounded-full max-[766px]:hidden"
       style={{ background: 'var(--tg-muted-soft)' }}
     />
   );

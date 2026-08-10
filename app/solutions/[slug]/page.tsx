@@ -74,7 +74,7 @@ export default async function SolutionDetailPage({
       <div className="tg-container pt-10 pb-32">
         <Link
           href="/solutions"
-          className="link-underline text-[0.875rem] font-semibold text-secondary"
+          className="tap-44 link-underline text-[0.875rem] font-semibold text-secondary"
         >
           ← Solutions
         </Link>
@@ -142,7 +142,7 @@ export default async function SolutionDetailPage({
               </p>
               <Link
                 href={solution.cta.href}
-                className="link-underline flex-none text-[14.5px] font-semibold"
+                className="tap-44 link-underline flex-none text-[14.5px] font-semibold"
               >
                 {solution.cta.label} →
               </Link>

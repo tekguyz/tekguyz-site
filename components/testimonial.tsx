@@ -43,14 +43,14 @@ export function Testimonial({ contextSlug }: { contextSlug: string }) {
             href={site.gbp}
             target="_blank"
             rel="noopener noreferrer"
-            className="link-underline text-[14.5px] font-semibold text-[#F5F5F5]"
+            className="tap-44 link-underline text-[14.5px] font-semibold text-[#F5F5F5]"
           >
             Read it on Google →
           </a>
         </div>
         <Link
           href={`/work/${contextSlug}`}
-          className="link-underline text-[0.875rem] text-[#9CA3AF]"
+          className="tap-44 link-underline text-[0.875rem] text-[#9CA3AF]"
         >
           This is the work he&rsquo;s describing →
         </Link>

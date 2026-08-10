@@ -339,7 +339,7 @@ export function ContactForm() {
               {serverError && (
                 <p role="alert" className="text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>
                   {serverError} Or email us directly at{' '}
-                  <a href={`mailto:${site.publicEmail}`} className="link-underline">
+                  <a href={`mailto:${site.publicEmail}`} className="tap-24 link-underline">
                     {site.publicEmail}
                   </a>
                   .

@@ -4,7 +4,7 @@
 pass.** No finding row states a cause; everything inferred is quarantined in
 [Hypotheses (unverified)](#hypotheses-unverified) at the bottom.*
 
-> ### Status — 7 of 19 findings fixed by Prompt 8 (2026-08-08)
+> ### Status — all 19 findings closed as of Prompt 11 (2026-08-09)
 >
 > **Nothing below this banner has been edited.** Every finding row, number and
 > hypothesis is exactly as measured at commit `51ee09c`, because this file is the
@@ -25,7 +25,48 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > | **M-14** 32px close control | **Resolved** (Prompt 10) | 32.0 × 32.0 → **44.0 × 44.0 at all 8 viewports**, grown by padding; the `✕` glyph stays at **16px** |
 > | **M-06 / M-15** launcher size + CTA occlusion | **Resolved** (Prompt 10) | Launcher unchanged at 234 × 50 **by decision** — it now *yields*, going to `opacity: 0` / `pointer-events: none` / `aria-hidden` / out of the tab order while a `data-primary-cta` element is in view. Full 162-row sweep re-run: **primary-CTA overlaps 174 → 0** (worst case was 81.1%). **Across all interactive elements 174 → 143, 44 still >25%, worst 99.6%** — five non-CTA element classes the rule deliberately does not cover, itemised in DESIGN.md §8 and tracked as a new gap in PROGRESS.md. **0 at maximum scroll**, unchanged |
 > | **M-19** launcher animates under `reduce` | **Resolved** (Prompt 10) | **H-4 confirmed first**, then fixed by removing the entrance rather than pinning it. See §7 H-4 |
-> | **M-05, M-09 – M-13** | **Open** | Out of Prompts 8 and 10's scope by instruction — tap targets, the footer masthead and the sub-767 rows are the one remaining batch |
+> | ~~**M-05, M-09 – M-13**~~ | **Resolved** (Prompt 11) | See the seven rows below — this row is the pre-Prompt-11 state and is kept so the batch's history reads straight |
+> | **M-04** `closing-cta` + `/contact`, **sub-767 rows** | **Resolved** (Prompt 11, 2026-08-09) | Both rows stack below 766px with the separators **not rendered** (`display: none`, 0×0 rect) — no dot terminates a line at 360 / 375 / 390 / 414. Both still render **one line, 21.7px, with both 3×3 dots** at 767, 768 and 844. `/contact`'s stack stays left-anchored: all three facts at `left: 24.0` |
+> | **M-05** footer masthead, **sub-767** | **Resolved** (Prompt 11) | tagline-bottom → social-top **48.0 → 24.0px** at all four phone widths; social-bottom → divider **32.0px, unchanged**; `socialRow_isLeftAligned: true`, still at the lockup's `left: 24.0`. At ≥767 `wrapped: false` and the social row stays right-aligned — **byte-identical**, only `row-gap` is touched and an un-wrapped row never uses it |
+> | **M-09** theme toggle 38×38 | **Resolved** (Prompt 11) | **The 38px box paints** — a 1px hairline at rest that darkens to `border-strong` on hover — so it was **not resized**. Hit area **38×38 → 44×44** by pseudo overlay; all 38 painted pixels unmoved |
+> | **M-10** footer links 22.4px | **Resolved** (Prompt 11) | Column `gap: 12px → 22px`, then 44×44 overlays. The arithmetic that forced it: 44 needs 10.8px each side, and two adjacent links expanding into a 12px gap **overlap by 9.6px**. At 22px they tile with 0.4px clearance. **0 overlapping hit areas** measured |
+> | **M-11** `a.link-underline`, 17 routes | **Resolved** (Prompt 11) | 20 call sites tiered — **17 standalone (44×44), 3 prose (24×24)**. `Open it in a new tab` renders two ways and got **44 in both**: neither occurrence is mid-sentence. Expansion is `::before` overlay throughout, so no line box moved |
+> | **M-12** nav lockup 120.9×30.4 | **Resolved** (Prompt 11) | Hit area 44×44, mark and wordmark unmoved; nearest neighbour is 40px away |
+> | **M-13** nav links 23.2px | **Resolved** (Prompt 11) | Hit area 44×44 via `::before` — `::after` is the active-page indicator, which is why the overlay uses the other pseudo. The drawer's sub-768 counterpart (the `hello@` link, not in M-13) was fixed alongside |
+>
+> **The tap-target sweep, before → after: 2,739 tier failures → 0**, across all
+> 18 routes × 7 viewports (× light/dark at `narrow` and `standard`), and
+> **0 overlapping hit areas**. **No painted box changed size**: the undersized-box
+> inventory is identical at **2,729 instances** before and after, with byte-equal
+> width and height on all 162 route/viewport/theme combos — which is the point,
+> since §8 expands targets and never resizes them.
+>
+> **That last number is why phase A cannot verify this fix and phase E exists.**
+> Phase A's tap check reads `getBoundingClientRect`, so a pseudo-element hit-area
+> expansion is invisible to it and it reports every fixed target as still
+> failing. `scripts/audit-mobile.ts taps` hit-tests instead — it probes the tier
+> box's corners with `elementFromPoint` and asks who owns each point, which also
+> makes an overlap between two invisible targets a measurable result rather than
+> an argument.
+>
+> **`.tg-seq` under `reduce` — re-tested, the pin holds** (Prompt 11,
+> `scripts/audit-concierge.ts seq`). This was the half of M-19 that Prompt 10
+> left on Prompt 7's reading, and the doubt was specific: the pin is
+> `opacity: 1 !important; transform: none !important`, and `transform: none` does
+> not beat a `translate`. Measured with the same MutationObserver-armed rAF
+> sampler that inverted the launcher's reading: **all 12 `.tg-seq` elements on
+> `/` are constant at `opacity: 1` / `transform: none` / `translate: none`** over
+> 69–90 sampled frames (~2.7s from DOM insertion) at both `standard` and
+> `bp-at`. The same sampler under `no-preference` reads 28–32 distinct opacity
+> values and full `matrix(1,0,0,1,0,32) → none` ramps on the same elements, so it
+> demonstrably sees the entrance when there is one. **Motion writes `transform`
+> here, not `translate`; no `translate: none` pin was needed and none was added.**
+>
+> **Launcher occlusion, re-measured as an observation only** — nothing about the
+> yield rule was touched. **143 → 140 pairs, 44 → 45 above 25%, worst 99.6% →
+> 100.0%; primary-CTA overlaps remain 0.** Effectively unmoved, as expected: tap
+> targets grew by overlay, and overlay area is not in the sweep's rects. The
+> recorded gap stands unchanged.
 >
 > **Erratum (2026-08-09), banner-level — the row below it is not edited.** `/work`'s
 > `page-hero` h1 at 767 measures **2 rendered lines, not 1**. The **719.0px width in

@@ -84,7 +84,7 @@ export function FrameMeta({
         target="_blank"
         rel="noopener noreferrer"
         data-uline
-        className="link-underline text-[14.5px] font-semibold"
+        className="tap-44 link-underline text-[14.5px] font-semibold"
         style={{ color: onInk ? '#F5F5F5' : 'var(--tg-fg)' }}
       >
         Open it in a new tab

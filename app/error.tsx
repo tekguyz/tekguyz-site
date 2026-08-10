@@ -23,7 +23,7 @@ export default function GlobalError({
         </h1>
         <p className="mt-6 max-w-[52ch] text-[length:var(--text-body)] text-secondary">
           Not yours — ours. Refresh, and if it keeps happening, tell us at{' '}
-          <a href={`mailto:${site.publicEmail}`} className="link-underline text-fg">
+          <a href={`mailto:${site.publicEmail}`} className="tap-24 link-underline text-fg">
             {site.publicEmail}
           </a>
           .

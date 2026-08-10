@@ -52,7 +52,7 @@ function inline(text: string, keyPrefix: string): ReactNode[] {
             href={href}
             target={href.startsWith('/') ? undefined : '_blank'}
             rel={href.startsWith('/') ? undefined : 'noopener noreferrer'}
-            className="link-underline font-semibold"
+            className="tap-24 link-underline font-semibold"
           >
             {link[1]}
           </a>,

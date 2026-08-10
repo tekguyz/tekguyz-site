@@ -93,7 +93,7 @@ export function HomeHero({
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-underline self-start text-[14.5px] font-semibold"
+                  className="tap-44 link-underline self-start text-[14.5px] font-semibold"
                 >
                   Open it in a new tab
                 </a>

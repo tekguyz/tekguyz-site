@@ -58,7 +58,7 @@ function MetaRail({
         <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
           Solution line
         </p>
-        <Link href={`/solutions/${solution.slug}`} className="flex items-center gap-3">
+        <Link href={`/solutions/${solution.slug}`} className="tap-44 flex items-center gap-3">
           <AccentDot solution={entry.solution} />
           <span className="link-underline text-[14.5px] font-semibold">{solution.name}</span>
         </Link>
@@ -82,7 +82,7 @@ function MetaRail({
           href={entry.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="link-underline text-[14.5px] font-semibold"
+          className="tap-44 link-underline text-[14.5px] font-semibold"
         >
           Open it in a new tab
         </a>
@@ -149,7 +149,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
         <div
           className={`max-lg:[grid-column:1/7] ${isCase ? '[grid-column:1/9]' : '[grid-column:1/8]'}`}
         >
-          <Link href="/work" className="link-underline text-[0.875rem] font-semibold text-secondary">
+          <Link href="/work" className="tap-44 link-underline text-[0.875rem] font-semibold text-secondary">
             ← Work
           </Link>
 
@@ -277,7 +277,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
               {prev && (
                 <Link
                   href={`/work/${prev.slug}`}
-                  className="link-underline text-[14.5px] font-semibold text-secondary"
+                  className="tap-44 link-underline text-[14.5px] font-semibold text-secondary"
                 >
                   ← {prev.name}
                 </Link>
@@ -285,7 +285,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
               {next && (
                 <Link
                   href={`/work/${next.slug}`}
-                  className="link-underline text-[14.5px] font-semibold text-secondary"
+                  className="tap-44 link-underline text-[14.5px] font-semibold text-secondary"
                 >
                   {next.name} →
                 </Link>
