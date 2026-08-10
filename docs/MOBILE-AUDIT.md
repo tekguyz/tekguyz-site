@@ -4,7 +4,13 @@
 pass.** No finding row states a cause; everything inferred is quarantined in
 [Hypotheses (unverified)](#hypotheses-unverified) at the bottom.*
 
-> ### Status — all 19 findings closed as of Prompt 11 (2026-08-09)
+> ### Status — 16 resolved · 1 partial (M-16) · 2 open (M-07, M-08 at sub-767)
+>
+> *Corrected 2026-08-10. This banner previously read "all 19 findings closed as of
+> Prompt 11 (2026-08-09)". That was false: M-07 and M-08 were resolved at 768/844
+> only, the exception was written into the same cell as the word **Resolved**, and
+> the next summarisation dropped it. A real-device pass on a Pixel 9A (2026-08-09)
+> found both still live at sub-767.*
 >
 > **Nothing below this banner has been edited.** Every finding row, number and
 > hypothesis is exactly as measured at commit `51ee09c`, because this file is the
@@ -19,8 +25,10 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > | **M-17** `/work` 5px scroll @844 | **Resolved** | **0px**. It was an H-1 consequence, not a separate bug — no `overflow-x: hidden` was shipped |
 > | **M-18** footer columns unequal | **Resolved** | 265.2/265.2/125.5 → **249 / 158 / 249** |
 > | **M-04** `/contact` trust row, **768/844 rows only** | **Resolved** | 3 lines @768 → **1**; 2 lines @844 → **1**. Its `closing-cta` and sub-767 rows are untouched |
-> | **M-07 / M-08** step counter + title, **768/844 rows only** | **Resolved** | both **1 line**. Their sub-767 rows are untouched |
-> | **M-16** orphan lines, **768/844 rows** | **Partial** | `Four ways we help.` L4-in-144px → **L1 in 704px**. Case-study headlines still orphan in a now-deliberate 249px column. No copy changed |
+> | **M-07 / M-08** step counter + title, **768/844 rows only** | **Resolved** | both **1 line**. Their sub-767 rows are untouched — **and are reopened, two rows below** |
+> | **M-07** step counter, **sub-767 rows** | **Open** (reopened 2026-08-10) | Never fixed. Pre-fix measurement stands: counter rect **44.9 × 44.8 @360**, **2 rendered lines**; one line at 414 and 767. The 768/844 row above remains correct and is **not** reopened |
+> | **M-08** step title, **sub-767 rows** | **Open** (reopened 2026-08-10) | Never fixed. Pre-fix measurement stands: title rect **169.1 × 52.8 @360 at 22px**, **2 rendered lines**; single line at 414 and 767. The 768/844 row above remains correct and is **not** reopened |
+> | **M-16** orphan lines, **768/844 rows** | **Partial** (never resolved) | `Four ways we help.` L4-in-144px → **L1 in 704px**. Case-study headlines still orphan in a now-deliberate 249px column. No copy changed. **Any cell naming M-16 anywhere in this file says partial — it is not a resolved finding** |
 > | **M-03** panel overshoots the top edge, `blocking` | **Resolved** (Prompt 10, 2026-08-09) | `top: -119.0` at 844×390 → **sheet mode, `top: 0`, `overflowsViewportTop: false`**. Panel bound to `max-height: calc(100dvh - 48px)`; **no top overflow at any of the 8 viewports**, close control on-screen at all 8. **No `blocking` finding remains open** |
 > | **M-14** 32px close control | **Resolved** (Prompt 10) | 32.0 × 32.0 → **44.0 × 44.0 at all 8 viewports**, grown by padding; the `✕` glyph stays at **16px** |
 > | **M-06 / M-15** launcher size + CTA occlusion | **Resolved** (Prompt 10) | Launcher unchanged at 234 × 50 **by decision** — it now *yields*, going to `opacity: 0` / `pointer-events: none` / `aria-hidden` / out of the tab order while a `data-primary-cta` element is in view. Full 162-row sweep re-run: **primary-CTA overlaps 174 → 0** (worst case was 81.1%). **Across all interactive elements 174 → 143, 44 still >25%, worst 99.6%** — five non-CTA element classes the rule deliberately does not cover, itemised in DESIGN.md §8 and tracked as a new gap in PROGRESS.md. **0 at maximum scroll**, unchanged |
@@ -68,10 +76,12 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > targets, wrapping and overflow are identical on all 36 route/viewport/theme
 > combos — but `/` at 360 returns **1 launcher-occlusion pair in light and 4 in
 > dark**, all under 25%, at scroll steps y=960/1440/1920. Those are the home
-> solution rows, and the cause is the yield rule's timing: whether the launcher
-> has finished yielding at a given 120ms-settled scroll step is a transition
-> race, not a theme. Recorded rather than folded into "identical", because the
-> parity claim is only useful if a break in it gets reported.
+> solution rows. **Cause not isolated, both under threshold — closed on that
+> basis** (2026-08-10). This entry previously asserted a scroll-step timing race
+> as the cause; no kill test was ever run against it, and an unverified cause
+> stated as fact is exactly what this file's preamble forbids. Recorded rather
+> than folded into "identical", because the parity claim is only useful if a
+> break in it gets reported.
 >
 > **Launcher occlusion, re-measured as an observation only** — nothing about the
 > yield rule was touched. **143 → 140 pairs, 44 → 45 above 25%, worst 99.6% →
@@ -757,3 +767,31 @@ trusting anything it prints:
 ```bash
 (Get-NetTCPConnection -LocalPort 3210 -State Listen).OwningProcess | % { taskkill /PID $_ /T /F }
 ```
+
+---
+
+## 10. Device pass — 2026-08-09 (Pixel 9A)
+
+**These are not harness output.** The D- series is a set of **unmeasured device
+observations** made by a person holding a phone. Nothing here has a rect, a
+viewport matrix, or a re-runnable probe behind it, and **none of them carries a
+cause** — symptom and location only. That is deliberate: 7 of 22 items across
+earlier passes inherited a wrong cause from a brief that asserted one, so a D-
+item is not to be diagnosed from this file. Whoever fixes one measures it first.
+
+This pass is also what reopened **M-07** and **M-08** at sub-767 — see the banner.
+
+| ID | Observation |
+| --- | --- |
+| **D-01** | Concierge launcher renders above the open mobile nav drawer. |
+| **D-02** | Concierge launcher covers FAQ body text on `/contact` when an accordion item is expanded. Static overlap at rest after a user action — a different class from the transient scroll overlaps already recorded. |
+| **D-03** | After contact form submit, focus lands on the first FAQ accordion trigger; the success message is off-screen above and is never seen. |
+| **D-04** | Concierge panel reads small at portrait phone heights and on desktop. Design decision, not a defect. |
+| **D-05** | A concierge response longer than the message list leaves the user scrolled to the list's end; reading the response requires scrolling up. |
+| **D-06** | Home hero renders a second status-line instance in the text column beneath the CTA row, in addition to the one attached to the media. |
+| **D-07** | Home hero media's right-edge bleed crops through card content at viewports above 1440. |
+| **D-08** | Home hero poster is illegible at 360px, where the media stacks full-width. |
+| **D-09** | The proof line ("Eight live builds. Open any of them right now.") is specified in CANONICAL.md §98 as content and has no entry in DESIGN.md. No typographic or spacing treatment exists for it. |
+| **D-10** | Nav "Let's Talk" renders larger than DESIGN.md:172's standard button-primary and is setting the header's height. |
+| **D-11** | LiveFrame's surrounding container — surface fill, padding, radius, and whether the status block sits inside or beneath the frame — is unspecified in DESIGN.md:186. |
+| **D-12** | closing-cta is built exactly to DESIGN.md:176 and reads flat. Every element is centered with identical gaps and there is no hierarchy anchor. Approximately 200px of dead vertical space sits above it (preceding section's 128px bottom padding + the CTA's own 64px top). A spec revision, not a defect. |

@@ -435,8 +435,17 @@ Inputs 44px tall. Visible keyboard focus rings throughout. Skip-to-content link.
 `position: fixed`, outside the grid, so none of this is reachable from a layout
 fix — and all of it is bounded by the **viewport**, never by content or by width.
 
+**Panel size (revised 2026-08-10, D-04).** Desktop panel **420 × 640**, message
+list floor **`flex: 1 1 440px`**. `max-height: calc(100dvh - 48px)` **still
+governs** — **640 is a preference, not a floor; the viewport bound still wins.**
+The revision came from a device read: the panel read small at portrait phone
+heights and on desktop. It changes the preferred size and nothing about the
+bound. The paragraphs below describe the mechanism, and the 380×485 / 300px
+figures they cite are the *pre-revision* state kept because the argument is
+about the mechanism, not the numbers.
+
 **Panel height.** `max-height: calc(100dvh - 48px)`, with the message list's
-300px floor yielding rather than forcing overflow. Why: the panel used to be
+floor yielding rather than forcing overflow. Why: the panel used to be
 **380 × 485px with no `height`, `max-height`, `vh` or `dvh` anywhere in its
 chain**, anchored `bottom: 24px`. 485 + 24 = 509 against a 390px-tall viewport,
 so it grew upward and overshot the top edge by exactly **119px** (M-03,
@@ -446,22 +455,32 @@ a bottom-anchored fixed element is the defect; a viewport bound is the fix.
 headless Chromium has no collapsing URL bar, and all three probe identical — so
 this choice is confirmed on a real device or not at all.
 
-**The 300px floor is `flex: 1 1 300px` + `min-height: 0`, not `min-height:
-300px`.** A hard `min-height` cannot yield: the list would hold 300px and the
+**The list floor is a flex basis + `min-height: 0`, never a `min-height`** — now
+`flex: 1 1 440px`, previously `flex: 1 1 300px`; the rule is the property, not
+the number. A hard `min-height` cannot yield: the list would hold its floor and the
 panel would clip it against its own `overflow: hidden`, which is the same defect
-one layer down. As a flex basis the 300px is a preference — the list keeps it
+one layer down. As a flex basis the floor is a preference — the list keeps it
 when there is room, compresses and scrolls inside itself when the viewport bound
 bites, and grows to fill in sheet mode. **If a future message list grows past
-300px the fix is scrolling inside the list. The panel never grows past the
+its floor the fix is scrolling inside the list. The panel never grows past the
 bound.**
 
-**Sheet threshold is keyed to viewport height, never width.** Below
-`(max-height: 560px)` the panel takes a full-screen sheet treatment with body
-scroll lock, `aria-modal="true"`, and Escape-to-close. Why the unit matters: the
+**Sheet threshold: `(max-height: 560px)` OR `(max-width: 767px)`.**
+**The height condition is the load-bearing one and is not up for revision.** The
 blocking case is **844×390** — a phone held sideways — which is *wider* than
-768px. A threshold keyed to width misses it entirely, the same trap the 768–1023
-band above was built out of, and worth naming twice. 560 is derived: 485px of
-panel content + the 24px bottom offset + a 24px top gap = 533, rounded up.
+768px. A threshold keyed to **width alone misses it entirely**, the same trap the
+768–1023 band above was built out of, and worth naming twice. 560 is derived:
+485px of panel content + the 24px bottom offset + a 24px top gap = 533, rounded
+up.
+
+**The width condition added 2026-08-10 (D-04) is ADDITIVE, not a reversal.** It
+is an `or`, and it exists because a **tall portrait phone** clears 560px of
+height and still wants a sheet — a case the height condition legitimately does
+not cover. **Removing the height condition and keeping the width one reopens
+M-03, the one `blocking` finding this section was written to close.** Stated
+explicitly so the next reader does not "fix" it back to width-only. Below either
+threshold the panel takes a full-screen sheet treatment with body scroll lock,
+`aria-modal="true"`, and Escape-to-close.
 
 **The non-modal contract holds above that threshold.** The launcher is persistent
 and the page scrolls behind an open panel at normal viewport heights; the sheet is
