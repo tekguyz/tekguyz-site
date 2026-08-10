@@ -62,6 +62,17 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > demonstrably sees the entrance when there is one. **Motion writes `transform`
 > here, not `translate`; no `translate: none` pin was needed and none was added.**
 >
+> **One light/dark difference, and it is not a layout difference.** The original
+> audit recorded dark as returning counts identical to light on all 18 routes for
+> every check. After Prompt 11 that still holds for every *layout* check — tap
+> targets, wrapping and overflow are identical on all 36 route/viewport/theme
+> combos — but `/` at 360 returns **1 launcher-occlusion pair in light and 4 in
+> dark**, all under 25%, at scroll steps y=960/1440/1920. Those are the home
+> solution rows, and the cause is the yield rule's timing: whether the launcher
+> has finished yielding at a given 120ms-settled scroll step is a transition
+> race, not a theme. Recorded rather than folded into "identical", because the
+> parity claim is only useful if a break in it gets reported.
+>
 > **Launcher occlusion, re-measured as an observation only** — nothing about the
 > yield rule was touched. **143 → 140 pairs, 44 → 45 above 25%, worst 99.6% →
 > 100.0%; primary-CTA overlaps remain 0.** Effectively unmoved, as expected: tap

@@ -293,7 +293,7 @@ Never gate color logic on `useTheme()` or mount state when a CSS `dark:` variant
 
 | Breakpoint | Changes |
 | --- | --- |
-| < 768px | Hamburger drawer; hero at its clamp floor (40px); media stacks below text, no bleed; solution rows stack (dot+title, then hook); case studies stack; `LiveFrame` = poster + link always |
+| < 768px | Hamburger drawer; hero at its clamp floor (40px); media stacks below text, no bleed; solution rows stack (dot+title, then hook); case studies stack; `LiveFrame` = poster + link always; **two rows stack deliberately at `≤ 766px` — see below** |
 | 768–1024px | Nav horizontal; asymmetric grid collapses to 8 columns — **spans below**; media bleed reduced |
 | 1024–1440px | Full asymmetric grid, all bleeds active |
 | > 1440px | Container caps at 1280px; the right-edge hero bleed extends further |
@@ -343,6 +343,42 @@ its longest item is `Process` at 51px; Solutions (136px) and the email address
 (126px) both need a wide one. Ordering it the obvious way puts the email in a 121px
 column and wraps it.
 
+### The two deliberate stacks at ≤ 766px
+
+*Added 2026-08-09. Both were `flex-wrap: wrap` rows whose wrapped state was an
+artifact rather than a layout, and both are now explicit.*
+
+**The trust row — `closing-cta` and `/contact` alike.** Three facts separated by
+two 3px `muted-soft` dots. **At ≥ 767 it is one 21.7px line with both dots. At
+≤ 766 it is a `flex-direction: column` stack with a 10px row gap and the dots not
+rendered at all.** The invariant: **a separator must never be the last thing on a
+line.** Wrapped, the breaks fall after each fact, so every dot terminated a line
+instead of separating two visible items — which reads as a typo, not a rule.
+
+The threshold is **766px and it is a media query, not a sibling selector**. CSS
+selectors see DOM order, and the defect is about the *rendered* break: the last
+dot in the DOM is not the dot that dangles. 766 is where the row measurably stops
+fitting on one line, so the switch happens exactly at the wrap and the row never
+renders in the broken in-between state. The dots are `aria-hidden`, so removing
+them costs nothing semantically. **Do not restore the dots at a width where the
+row still wraps** — that is the original defect, re-shipped.
+
+`/contact`'s copy of the row also re-asserts `align-items: flex-start` in the
+column direction, because `items-center` is cross-axis and would centre the
+stack, against §9's left-anchor rule.
+
+**The footer masthead.** Lockup + tagline on the left, 44×44 social row on the
+right, `gap: 48px`. Below the wrap point the social row drops under the tagline,
+where **48px was a gap sized for a horizontal arrangement** and read as an empty
+band. **Row gap is 24px at ≤ 766**; column gap is untouched, so the un-wrapped
+arrangement above 767 is byte-identical. 24 is deliberately tighter than the
+32px that follows down to the divider — that is what groups the social row with
+the lockup rather than with the nav below it.
+
+**The wrapped social row is left-aligned at the lockup's `left: 24px`, and that
+is correct** (§9 left-anchors everything but the closing CTA). It is not a
+centring bug; do not "fix" it.
+
 ### Touch targets — a two-tier policy, not a flat floor
 
 A single `≥ 44×44px` floor was the whole spec here until 2026-08-09, and it was
@@ -360,13 +396,37 @@ is therefore two-tier:
   the AA floor is the deliberate ceiling of ambition there, not an oversight.
 - **Targets are expanded by padding or a pseudo-element, never by resizing the
   painted box.** The visual weight of a 14.5px text link is a design decision from
-  the approved export; growing the box to 44px changes the composition. An
-  `::after` overlay or asymmetric padding grows the hit area and leaves the render
+  the approved export; growing the box to 44px changes the composition. A pseudo
+  overlay or asymmetric padding grows the hit area and leaves the render
   identical.
 
-**The shipped 38px and 22.4px values are not spec.** They are the open findings
-this policy exists to resolve; the tap-target fix pass implements what is written
-above. See PROGRESS.md's Known Gaps.
+**Shipped 2026-08-09. This section is now a description, not a target.** The
+mechanism is two utilities in `globals.css` — `.tap-44` and `.tap-24` — not 73
+call-site patches, because the 2,707 instances were a handful of shared
+components rendered many times. Add one of those two classes to a new control;
+do not invent a third expansion.
+
+**The overlay is `::before`.** `[data-navlink]::after` is the active-page
+indicator bar and the nav links need both, so the two jobs get one pseudo each.
+An `::after` overlay — which an earlier draft of this section named — silently
+destroys the indicator on exactly the elements M-13 was about. The overlay is
+centred with `min-width`/`min-height` at the tier, so a target already wider than
+the tier keeps its full width and grows only on the short axis, and it uses
+`translate` rather than `transform` for the same reason `.reveal` does.
+
+**Expansion has a spacing consequence, and it is a layout decision.** Two 44px
+targets stacked closer than 44px apart *overlap*, and the winner is source
+order — invisible in the JSX, and strictly worse than the small target it
+replaced, because a user tapping `Process` reaches `Work`. The footer link
+columns are the case that forced it: 22.4px links at `gap: 12px` would have
+overlapped by 9.6px, so **the footer link column gap is 22px** and that value is
+spec, not styling. Check every adjacency an expansion creates.
+
+**These are verified by hit-testing, never by rects.** `getBoundingClientRect`
+cannot see a pseudo overlay, so a rect-based check reports every correctly-fixed
+target as still failing. `scripts/audit-mobile.ts taps` probes the tier box with
+`elementFromPoint`; it is the only measurement this policy can be checked
+against, and it is also what makes "no two hit areas overlap" a number.
 
 Inputs 44px tall. Visible keyboard focus rings throughout. Skip-to-content link.
 
