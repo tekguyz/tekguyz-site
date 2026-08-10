@@ -21,7 +21,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | --- | --- |
 | **Privacy policy** — concierge data flow, CRM forwarding, phone field all undisclosed | Legal review. Flagged twice; this is the last content blocker |
 | **Compact-context image recapture** — all 8 posters are off 16:10, one is a simulator crop (PLAYBOOK §12 violation) | User, in flight. Drop-in, no code change; re-run `bun run check:media` |
-| ~~**Domain cutover** — still a Vercel preview~~ **Measured 2026-08-08: `https://tekguyz.com` is serving this build.** Production parity spot-check at 360×800 and 390×844 — header height, nav CTA, `closing-cta` button, concierge launcher rect, `scrollWidth`/`clientWidth`, `<title>` and `h1` — **every measured value identical to local**; the only difference is the chunk hash (`/_next/static/immutable/chunks/1nsnopzbdaany.css` vs local `/_next/static/chunks/2jhuu8e85udez.css`), i.e. a Vercel build of the same source. CRM CORS is still hard-locked to `https://tekguyz.com` | Cutover appears already done. **CLAUDE.md's opening line was corrected in Prompt 8** — it now states the site is live and that CRM CORS is therefore active against the real production origin. Still flag before changing the domain or the CORS origin; it fails closed and silent |
+| ~~**Domain cutover** — still a Vercel preview~~ **Measured 2026-08-08: `https://tekguyz.com` is serving this build.** Production parity spot-check at 360×800 and 390×844 — header height, nav CTA, `closing-cta` button, concierge launcher rect, `scrollWidth`/`clientWidth`, `<title>` and `h1` — **every measured value identical to local**; the only difference is the chunk hash (`/_next/static/immutable/chunks/1nsnopzbdaany.css` vs local `/_next/static/chunks/2jhuu8e85udez.css`), i.e. a Vercel build of the same source. CRM CORS is still hard-locked to `https://tekguyz.com` | **Cutover confirmed done, and the topology behind it corrected 2026-08-09 against the Vercel API** — one project (`tekguyz-site`) holding both `tekguyz.com` and `www.tekguyz.com`; `tekguyz-website` does not exist; **every push to `master` deploys to production.** See the Deploy section below for how that error propagated. Still flag before changing the domain or the CORS origin; it fails closed and silent |
 | GBP Services section | Not a website task; highest-leverage open SEO item |
 
 **Why this wasn't a 6–12 prompt pack:** the default range assumes a Phase-2 blueprint that leaves real gaps for each prompt to resolve. This one didn't — five documents (CANONICAL, DESIGN, COPY, SEO, PLAYBOOK) resolved hundreds of decisions before any prompt ran, which let the master prompt absorb work (Gemini swap, rate limiter, full SEO, confirmation email) that would normally be separate steps. Six build/fix prompts against a predicted 4–5, plus Prompt 7, which is an audit and changed no code. The overshoot was the fix passes, and the recurring cause is worth naming: **four of five items in Prompt 4, two of eight in Prompt 5, and one of nine in Prompt 6 were misdiagnosed in their brief** — the symptom was real, the stated cause wasn't. Budget for diagnosis, not just repair. **Prompt 7 was structured specifically to stop feeding that loop**: it measures and reports symptoms, and quarantines every cause it might have guessed at into a labelled hypotheses section.
@@ -1153,8 +1153,42 @@ Reinstated with IntersectionObserver per DESIGN.md's correction, replacing the
 ### Deploy
 
 - Repo pushed to `https://github.com/tekguyz/tekguyz-site.git` (branch `master`). The repo is **public**; verified before pushing that `.env.local` is untracked and no secret-shaped strings exist anywhere in the tree.
-- **Preview** deployed to a NEW Vercel project `tekguyz-site` — deliberately not `tekguyz-website`, which is the project actually serving tekguyz.com. The preview carries no domain alias, so it cannot affect the live site. Confirmed tekguyz.com still returns 200 afterwards.
-- The preview has **no environment variables set**, so the contact form and concierge will fail at runtime there. Everything else renders. Add the env set to the `tekguyz-site` project before using the preview to test those paths.
+- ~~**Preview** deployed to a NEW Vercel project `tekguyz-site` — deliberately not `tekguyz-website`, which is the project actually serving tekguyz.com. The preview carries no domain alias, so it cannot affect the live site.~~ **WRONG, and corrected 2026-08-09 (Prompt 11). Read the correction below before acting on anything in this section.**
+- ~~The preview has **no environment variables set**, so the contact form and concierge will fail at runtime there.~~ **Unverified as of the correction — see below.**
+
+**Hosting, as measured 2026-08-09 against the Vercel API.** There is exactly
+**one** project: **`tekguyz-site`** (`prj_xoYlJtk7Aie61D3bQiKj6XtMwnsw`, team
+`tekguyz` / `team_agYJ1s4InTpXXycvARJoGQ9g`), and it carries **`tekguyz.com`,
+`www.tekguyz.com`**, `tekguyz-site.vercel.app` and the branch alias.
+**`tekguyz-website` does not exist** — it is not in the team's project list.
+`.vercel/project.json` in this repo points at `tekguyz-site`.
+
+**So every push to `master` deploys to production.** Confirmed from the
+deployment list: every deployment since `dpl_GnaSZGCgGeENQoeY8ZTwEGJoDJGZ`
+(Prompt 4's `651be7d`, the commit whose own message claims it was a preview)
+carries `target: "production"`. **Prompts 4, 5, 6, 8, 10 and 11 all shipped
+straight to live traffic.** The "preview" framing was wrong from the moment it
+was written, and because it lived here it was repeated as fact in
+`docs/CANONICAL.md` §9 — the highest-authority doc — where it survived four
+prompts.
+
+**How it surfaced:** it was quoted back to the user as reassurance after a push
+("this should deploy a preview and not touch live traffic"), and the user
+corrected it. A hosting claim nobody re-measured became the basis of a safety
+statement about a live site. **The lesson is the mechanism, not the fact:** the
+deploy topology is external state, it drifts without touching the repo, and no
+build or test catches it. Re-measure it against the Vercel API rather than
+citing this file, and treat any push as production until that check says
+otherwise.
+
+**One thing this correction does NOT establish: whether the production
+environment variables are set.** The claim above that there are none was about a
+project believed to be a throwaway preview, and it was never re-checked. It
+cannot be settled by a build — `new Resend()` is constructed lazily precisely so
+a build passes without secrets — and it cannot be settled by an HTTP probe
+without submitting a real lead through the real CRM. **Unknown, and owned by a
+human.** If they are missing, the contact form and concierge are failing on live
+right now.
 - **Third bug, found only by deploying:** `new Resend(process.env.RESEND_API_KEY)` ran at module scope, and `new Resend(undefined)` throws on construction. Merely importing the action exploded during Next's page-data collection, so the Vercel build failed while passing locally purely because `.env.local` existed here. The client is now constructed lazily, and a full build with every secret removed is verified green (45/45 pages).
 
 ### Deliberate deviations from the export, for the record

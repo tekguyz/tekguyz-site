@@ -3,6 +3,8 @@
 ## What this is
 The tekguyz.com rebuild — **live. `https://tekguyz.com` serves this build**, confirmed by measurement (Prompt 7 audit §6: every measured value identical to local, only the chunk hash differs). **So the CRM CORS lock is active against the real production origin, and a domain or hosting change now fails closed on live traffic, not on a preview.** TEKGUYZ is a small, technical team that builds custom software systems, AI assistants, and automated workflows for operational businesses.
 
+**`git push origin master` IS a production deploy.** One Vercel project — `tekguyz-site` — holds both `tekguyz.com` and `www.tekguyz.com`, and pushes to `master` auto-deploy to it. There is **no preview project** between the repo and live traffic; `tekguyz-website` does not exist, whatever older notes say. So a push is outward-facing and irreversible-ish: ask first, and never describe one as "just a preview". This was wrong in `CANONICAL.md` §9 and `PROGRESS.md` for four prompts and got quoted back to the user as a safety claim — the topology is external state that drifts without touching the repo, so **re-measure it, don't cite a doc.**
+
 Stack: Next.js 16 App Router · TypeScript · Tailwind v4 (CSS-first `@theme`) · Bun · Motion · React Hook Form + Zod · Resend · Gemini 3.6 Flash · Upstash · Vercel.
 Package manager is **Bun**. `bun install` / `bun add`. Keep `bun.lock` committed. Never npm or pnpm.
 

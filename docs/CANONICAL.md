@@ -219,13 +219,23 @@ Building on what's already live (canonicals, robots, sitemap, ProfessionalServic
 
 ## 9. Build sequence
 
-**Steps 1–6 are complete.** The site is built, audited against the approved
-Claude Design export, verified against live integrations, committed, and
-deployed as a Vercel preview. `docs/PROGRESS.md` is the running record of what
-each prompt covered — read that, not this list, for current status.
+**Steps 1–6 are complete, and step 7's domain half is done.** The site is built,
+audited against the approved Claude Design export, verified against live
+integrations, committed, and **deployed to production**. `docs/PROGRESS.md` is
+the running record of what each prompt covered — read that, not this list, for
+current status.
 
-7. **Remaining before launch:** point a domain at it, add the privacy
-   disclosures (see Known Gaps), recapture the compact-context images.
+**Hosting, corrected 2026-08-09 — this paragraph was wrong for four prompts and
+the error propagated.** There is exactly **one** Vercel project,
+**`tekguyz-site`** (`prj_xoYlJtk7Aie61D3bQiKj6XtMwnsw`, team `tekguyz`), and it
+holds **both `tekguyz.com` and `www.tekguyz.com`**. `tekguyz-website` — named in
+earlier docs as the project serving the live domain — **does not exist.**
+Consequently **every push to `master` auto-deploys straight to production**;
+there is no preview project standing between the repo and live traffic, and
+there has not been one since Prompt 4. Anything that says otherwise is stale.
+
+7. **Remaining before launch:** add the privacy disclosures (see Known Gaps) and
+   recapture the compact-context images. *(The domain is pointed and live.)*
 8. **Later:** one CSP prompt per demo app (`frame-ancestors https://tekguyz.com`),
    then flip `embeddable` flags to `true` to activate live embeds.
 
