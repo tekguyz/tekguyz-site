@@ -49,15 +49,32 @@ export default async function HomePage() {
         status={statuses[hero.slug]!}
       />
 
-      {/* Proof line — a bordered band, one sentence, no card. */}
+      {/* Proof line — CANONICAL §98, treatment in DESIGN.md §4 `proof-line`.
+          Hairlines top and bottom, no fill, no radius: that IS the "no card".
+          36px is the band's own padding, not section rhythm — it's a
+          rule-to-rule beat between two sections, not a section.
+
+          Two clauses, two scales, one baseline row. The claim is the anchor;
+          the invitation is the click, and it is INK, not `muted`. It shipped
+          muted, and `link-underline` grows from 0% — it draws nothing at rest —
+          so the only actionable element on the proof band had no rest-state
+          affordance and was the lighter half of its own sentence. */}
       <section className="border-y border-border">
-        <div className="tg-container py-9">
+        <div className="tg-container flex flex-wrap items-baseline gap-x-5 gap-y-2 py-9">
           <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
-            Eight live builds.{' '}
-            <Link href="/work" className="tap-24 link-underline text-secondary">
-              Open any of them right now.
-            </Link>
+            Eight live builds.
           </p>
+          {/* tap-44, not tap-24: the 24px tier is for links inline in running
+              prose, and this one is no longer inside the sentence's `<p>` —
+              it's its own element on its own baseline, and it stacks onto its
+              own line below 768. Nothing interactive is adjacent, so the
+              overlay has nothing to collide with. */}
+          <Link
+            href="/work"
+            className="tap-44 link-underline text-[length:var(--text-body)] font-semibold"
+          >
+            Open any of them right now.
+          </Link>
         </div>
       </section>
 
@@ -159,8 +176,8 @@ function BandRow({
     <div
       className={
         mediaFirst
-          ? '[grid-column:8/13] max-lg:[grid-column:6/9]'
-          : '[grid-column:1/6] max-lg:[grid-column:1/4]'
+          ? '[grid-row:1] [grid-column:8/13] max-lg:[grid-column:6/9]'
+          : '[grid-row:1] [grid-column:1/6] max-lg:[grid-column:1/4]'
       }
     >
       <SolutionTag solution={entry.solution} label={entry.tag} onInk />
@@ -187,8 +204,8 @@ function BandRow({
     <div
       className={
         mediaFirst
-          ? '[grid-column:1/7] max-lg:[grid-column:1/5]'
-          : '[grid-column:7/13] max-lg:[grid-column:5/9]'
+          ? '[grid-row:1] [grid-column:1/7] max-lg:[grid-column:1/5]'
+          : '[grid-row:1] [grid-column:7/13] max-lg:[grid-column:5/9]'
       }
     >
       <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
@@ -204,21 +221,20 @@ function BandRow({
     // Featured Work rows enter text and media as one unit. This is the home
     // band's own row component, distinct from components/case-study-row.tsx,
     // which is why the earlier pass's hook-up missed it entirely.
+    //
+    // DOM order is READING order — text, then media, on every row, whichever
+    // side the media takes on desktop. The alternation is now carried entirely
+    // by `grid-column`, with both halves pinned to `grid-row: 1` so sparse
+    // auto-flow can't push the left-hand item down a row. Swapping the DOM
+    // instead put two posters back to back below 768px, where the grid is one
+    // column and source order is all that's left of the layout: row 0 ended on
+    // its image and row 1 opened with the next one.
     <article
       data-reveal-index={index}
-      className={`reveal tg-container tg-grid items-center gap-y-12 ${index === 0 ? 'mt-24 border-b border-[#2A2A2C] pb-24' : 'pt-24'}`}
+      className={`reveal tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-24 border-b border-[#2A2A2C] pb-24' : 'pt-24'}`}
     >
-      {mediaFirst ? (
-        <>
-          {media}
-          {text}
-        </>
-      ) : (
-        <>
-          {text}
-          {media}
-        </>
-      )}
+      {text}
+      {media}
     </article>
   );
 }

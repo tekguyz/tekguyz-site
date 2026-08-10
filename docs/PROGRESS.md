@@ -17,6 +17,8 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Prompt 12 (2026-08-10) fixed the React #418 hydration mismatch in `StatusLine`** — the one non-mobile defect Prompt 7 surfaced and quarantined. Server renders an absolute `at HH:MM UTC` stamp, the client swaps to the relative string post-hydration. **No known console error remains on any route.**
 - **Prompt 13 (2026-08-10) closed the mobile queue and six D- items** — M-07 and M-08 at sub-767 (the last two open findings), plus D-01, D-02, D-03, D-05, D-06, D-10. The audit split is now **18 resolved · 1 partial (M-16, still partial)**. D-10 turned out to be a `tailwind-merge` bug affecting **every button on the site**, not a nav-only sizing error — see the section below.
 
+- **Prompt 14 (2026-08-10) closed the three specification gaps** — D-09, D-11, D-12, each written into DESIGN.md (now v2.5) before it was implemented. The D- register is **9 shipped · 3 deferred**; the three left are D-04 (specified, not yet built) and D-07/D-08, which need new captures rather than code.
+
 **What actually blocks launch** (none of it a code task):
 
 | Blocker | Owner |
@@ -44,7 +46,163 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 10 | Concierge fix — M-03 (blocking), M-06, M-14, M-15, M-19 + the CLAUDE.md copy-gap rule | **Shipped** (2026-08-09) — `9a58fc1` | The last `blocking` finding closed. Panel bound to `calc(100dvh - 48px)` with a `(max-height: 560px)` full-screen sheet; the launcher **yields** to the two `data-primary-cta` elements rather than shrinking; close control 44×44 by padding, glyph unchanged; safe-area insets added additively; dialog keyboard/focus baseline established. **H-4 confirmed, not killed** — the launcher's Motion entrance ran unsuppressed under `reduce`, and was removed rather than pinned. See the section below. |
 | 11 | Tap targets & sub-767 wrap rows — M-04, M-05, M-09 – M-13 + front matter | **Shipped** (2026-08-09) — `9ecdebc` / `b450840` / `3507f2b` | DESIGN.md §8's two-tier floor implemented as **two shared `::before` overlay utilities** (`.tap-44`, `.tap-24`) rather than 73 call-site patches, because the 2,707 instances were a handful of shared components rendered many times. **`::before`, not `::after`** — `[data-navlink]::after` is the active-page indicator, and the nav links need both. M-10 forced the one real arithmetic decision: 44px targets in a 12px column gap **overlap by 9.6px**, so the footer gap went to 22px. The `.tg-seq` half of M-19 was re-tested with the armed sampler rather than inherited — **the pin holds, no `translate` pin needed**. New audit phase `taps` hit-tests targets, which is the only way to see a pseudo-element expansion. See the section below. |
 | 12 | `StatusLine` hydration fix — React #418 | **Shipped** (2026-08-10) — `fbb37a6` | The one finding Prompt 7 surfaced and quarantined, now closed. Server and first client render emit a fixed `at HH:MM UTC` stamp; the relative string is taken only post-hydration, so the swap is an update rather than a mismatch. No `suppressHydrationWarning`, no empty first paint. `useSyncExternalStore` rather than `useState` + `useEffect` — the latter is a lint **error** here (`react-hooks/set-state-in-effect`). One file, no call site changed. See the section below. |
+| 14 | The three specification gaps — D-09 (proof line), D-11 (`LiveFrame` container), D-12 (`closing-cta`) | **Shipped** (2026-08-10) | Spec first, then code, for each of the three; DESIGN.md goes v2.4 → v2.5. None was a bug — each was built correctly against guidance that did not exist. The proof line's actionable half was `muted` **and** `link-underline` draws nothing at rest, so it had no affordance at all; `LiveFrame`'s padding is now stated as permanently 0, because `aspect-ratio` governs the outer box and any padding silently breaks the locked ratio it is there to enforce; and **`closing-cta`'s 200px of dead space was a boundary collision, not internal spacing** — fixed in one `:has(+ .tg-closing)` declaration, 202px → 114px, with the internal rhythm re-cut to 24 · 48 · 24 · 16. The `taps` audit script could not run (Playwright browser launch fails on this machine); its probe was replicated in-pane instead. **Also fixed in the same pass, reported by the user mid-session:** the alternating case-study rows put two posters back to back below 768px, because the alternation was carried by DOM order and a one-column grid has nothing else left — moved onto `grid-column` with a `grid-row: 1` pin. And their `gap-y-12` had never applied. See the section below. |
 | 13 | Mobile close-out — M-07, M-08 (sub-767) + D-01, D-02, D-03, D-05, D-06, D-10 | **Shipped** (2026-08-10) | The mobile queue closed: **M-07 and M-08 are resolved at every viewport**, and six of the twelve device observations with them. Two of the seven items were not what the brief said they were. **D-10's cause is `cn()`, not padding** — tailwind-merge drops `leading-none` when a later `text-*` class appears, so every button on the site rendered a 1.6 line box; the nav CTA's padding was already the standard 14×24. And **M-07/M-08 never failed at 844×390**, which the brief listed as a failing row: measured 1 line before the change and 1 after. See the section below. |
+
+## Prompt 14 — the three specification gaps: proof line, `LiveFrame` container, `closing-cta`
+
+*2026-08-10. Changed: `docs/DESIGN.md` (v2.4 → v2.5), `app/page.tsx`,
+`components/live-frame.tsx`, `components/closing-cta.tsx`, `app/globals.css`.*
+
+**D-09, D-11 and D-12 are shipped.** Prompt 13 deferred all three with the same
+instruction — *a design pass writes the spec before anything implements it* —
+and that is what this was: **the DESIGN.md entry first, then the code**, for
+each of the three. None of them was a bug. Each was built correctly against
+guidance that did not exist, which is why they were one pass and not three: a
+piecemeal fix would have produced three unrelated treatments.
+
+**D-09 — the proof line.** CANONICAL §98 fixed the content and said "no card",
+and DESIGN.md had no entry at all. The band now says what "no card" *is* in
+positive terms (hairline top and bottom, no fill, no radius, 36px of its own
+padding — a rule-to-rule beat, not a section), and the sentence became **two
+clauses at two scales on one baseline row**: the claim at `--text-title`/600, the
+invitation at `--text-body`/600, 20px apart, stacking below 768.
+
+The defect it replaces is the one worth remembering. The whole line rendered at
+28px with the link half in `muted` — and **`link-underline` draws nothing at
+rest**, it grows from 0% on hover and focus. So the only actionable element on
+the site's proof band had no rest-state affordance *and* was the lighter of the
+two halves: the hierarchy was inverted. Both halves are ink now; the size step
+carries it, which is what §2 says for everything else. The link also moved
+`tap-24` → `tap-44` — it is no longer inline in a `<p>`, so the prose tier no
+longer applies to it.
+
+**D-11 — the `LiveFrame` container.** The old entry specified the two ratios and
+`object-fit` and stopped, so the compact contexts inherited a generic card. Four
+values now, and one of them is load-bearing: **padding is 0 and stays 0.**
+`aspect-ratio` governs the *outer* box, so any padding is subtracted from the
+media — the frame keeps its 16:10 while the screenshot inside it quietly stops
+being 16:10. The fill moved from a literal `#FFFFFF` to `--tg-surface`, which
+resolves correctly in dark mode and inside `.ink-band` without a branch, and
+which is only ever a loading state: under `cover` it is never visible once the
+poster paints. The status block stays **beneath** the frame — inside means an
+overlay on the real product's own header, the same lie as fake browser chrome —
+and became a caption *attached* to it: 12px below instead of 18px, left-anchored,
+20px between status and link instead of `justify-between`, which on an 803px
+detail-page frame had thrown the two halves of one idea to opposite corners.
+
+**D-12 — `closing-cta`, and where the 200px actually lived.** Two separate
+things, and only one of them was inside the component.
+
+The **internal rhythm** ran 24 / 32 / 36 — a near-linear ramp, so every gap read
+the same, nothing grouped, and a centered stack with nothing grouping it reads
+flat. It is now **24 · 48 · 24 · 16**: one step for a pair, two for the single
+register break (statement → ask), half for the subordinate concierge link. No
+card, border, fill or divider was added — the flatness was never in the
+elements, so the fix could only be in the gaps.
+
+The **dead space was a boundary collision, and it is fixed at the boundary.**
+Measured 202px from the last content to the closing headline on `/`: a block
+closing at full 128px bottom rhythm, then the 6px stripe, then the CTA's own
+64px top — two complete gaps stacked across a rule. 128px separates two *content*
+sections, and what follows here is a coloured rule, which is already a boundary.
+So the CTA's own top padding went to 40/32px and the block that closes into the
+stripe sheds half its rhythm, in **one declaration** in `globals.css`:
+`:where(section, div):has(+ .tg-closing)`. **Verified before writing it that all
+seven routes carrying `closing-cta` end that element at exactly 128px**, so the
+rule only ever reduces and can never add padding to a neighbour that had none.
+Measured after: **202px → 114px desktop, 82px mobile.**
+
+Two mechanics inside that one rule are worth keeping:
+
+- It is **unlayered**, so it beats Tailwind's `pb-32` (in `@layer utilities`) by
+  layer. Both are (0,1,0), so a layered rule would have left this resting on
+  source order — the exact trap §8 records for `motion-reduce:lg:static`.
+- Its query is `min-width: 768px`, **not** the `max-width: 767px` used elsewhere
+  in the file, because the CTA's own top padding is Tailwind's `md:`. Measured
+  during this pass: a viewport reporting `innerWidth` 767 matched **neither**
+  `max-width: 767px` nor `min-width: 768px` — the real CSS width was fractional.
+  A complementary query would have left a hairline band where one half of the
+  pair switched and the other did not. **Two declarations that have to agree get
+  the same query.**
+
+**Rejected, and recorded in DESIGN.md so the next pass doesn't re-open them:**
+promoting the proof line to `--text-display` (three display-scale elements in one
+scroll); an accent dot before it (accents mean *solution line*, and this sentence
+spans all four); dropping the frame radius below 12px (the card read came from the
+mat, not the corner); moving `closing-cta`'s trust line below the button (a
+content reorder wearing a spacing costume, and it separates the concierge link
+from the button it is an alternative to); and dropping the trust line to
+`--text-caption` (it would have split `/contact`'s identical three facts from
+these).
+
+### Reported during the same session: back-to-back posters below 768px
+
+Not one of the three, and not a spec gap — a real layout defect, found by the user
+on a phone and fixed in the same pass.
+
+**The symptom:** on the home Featured Work band the second case study led with its
+image, so scrolling gave two posters in a row with nothing but whitespace between
+them. `/work` had it on rows 1 and 3 of 4, and worse there — that component's media
+column also carries the status line, the "Try it" note and "How it's built", so the
+odd rows **opened with a screenshot and a build note for a project the visitor had
+not been introduced to yet.**
+
+**The cause:** the alternation was carried by **DOM order**. Both components
+rendered `{media}{text}` on odd rows and `{text}{media}` on even ones. Below 768px
+`.tg-grid` collapses to one column and forces `grid-column: 1 / -1 !important` on
+every child — at which point source order is the entire layout, and the alternation
+that reads as deliberate offset on desktop reads as two images stuck together.
+
+**Why it was built that way, which is the part worth keeping:** explicit
+`grid-column` alone does not survive **sparse auto-flow**. The placement cursor
+never moves backwards, so an item whose column-start sits behind it is pushed to the
+next row — emit text at `8/13` and then media at `1/7` and the media lands on row 2.
+Swapping the DOM was the cheapest way to keep the cursor ascending. The fix is to
+remove the constraint instead: **both halves are pinned to `grid-row: 1`**, so the
+columns alone decide the visual order and the DOM can stay in reading order at every
+width. The `≤767` reset releases the pin (`grid-row: auto !important`) in the **same
+block** that releases `grid-column`, so the two can never disagree — including at
+the fractional widths where `max-width: 767px` and `min-width: 768px` are both
+false, which this session measured directly.
+
+**Found while fixing it, and separately real:** both components declared
+`gap-y-12` on the row and **it had never applied on any viewport**. `.tg-grid` sets
+the shorthand `gap: 24px` **unlayered**, which beats a layered `row-gap` from
+`@layer utilities` regardless of source order — the same shape as the `cn()`
+dropping `leading-none` bug from Prompt 13, one layer up, and equally invisible to
+the linter and to anyone reading the JSX. The stacked halves have shipped at 24px
+for the life of the site. Now `.tg-split` in `globals.css`, unlayered, at the
+intended 48px. Mobile rhythm is now 48px inside the pair against 160px (`/work`) /
+192px (home) between rows.
+
+**Measured after, both components:** at 390 and 360, **0 back-to-back images**, all
+rows text→48px→media, and tab order matches visual order with **0 inversions** — the
+reason the fix is a DOM reorder and not an `order` utility, which would have left
+focus order pointing at the old sequence. At 1440: 12 explicit column tracks, **1
+row track, 0 implicit**, alternation byte-identical to before (odd rows still media
+104–700 / text 828–1320). At 800 and at the fractional 767: **8 explicit tracks, 1
+row track, 0 implicit**, offset alternation intact. Tap probe on `/work` at 390 and
+360: 0 tier failures, 0 overlaps.
+
+**Scope check:** `grid-column` appears on five other components
+(`/work/[slug]`, `footer-dark`, `solution-row`). All place in **ascending** column
+order, so none of them needed the pin and none was touched.
+
+**Verification.** `bun run build`, `bun run lint` (0 errors) and `bun run test`
+(46/46) pass. Values confirmed in the live DOM, both themes, at 1440 / 844×390 /
+767 / 390 / 360. Under `reduce`, all four `.tg-seq` items measure opacity 1,
+`transform: none`, 0 running animations, and nothing is hidden. **The `taps`
+audit could not be run: Playwright's bundled `chrome-headless-shell` launches and
+then never connects on this machine (180s timeout, twice, sandbox on and off) —
+an environment failure, not a code one.** Its `TAP_PROBE` was replicated verbatim
+in the browser pane instead and run on `/`, `/work` and `/work/ai-voice-receptionist`
+at 360×800, 390×844, 767×1024 and 844×390: **0 tier failures and 0 overlapping
+hit areas** at every combination, with one pre-existing exclusion — the
+`sr-only` skip link in `app/layout.tsx:49`, which is clipped rather than
+zero-sized and so passes the shared `visible()` filter. It is untouched by this
+pass and unrelated to it. **Re-run the real script before trusting these numbers
+as the site-wide figure.**
 
 ## Prompt 13 — the mobile close-out, and a button bug hiding behind a design complaint
 
@@ -1521,6 +1679,23 @@ built), D-07 and D-08 (need new captures, not code), D-09, D-11 and D-12
 (**specification gaps — a design pass writes the spec before anything implements
 it.** Do not invent a treatment for the proof line, the `LiveFrame` container or
 `closing-cta`).
+
+### Register status update — 9 shipped, 3 deferred (2026-08-10, Prompt 14)
+
+**D-09, D-11 and D-12 are shipped.** The design pass the deferral called for ran
+as one pass: DESIGN.md v2.5 carries an entry for each — the proof line (new), the
+`LiveFrame` container (new sub-entry), and `closing-cta`'s internal rhythm plus
+the §3 rule for the boundary above it — and each entry states its values, its
+reasoning, and the alternative it rejected. Full write-up in the Prompt 14
+section above. **The three still deferred are D-04** (specified in DESIGN.md, not
+yet built) **and D-07 / D-08**, which need new captures rather than code and
+remain blocked on the same recapture as the eight off-ratio posters.
+
+**One thing the D-11 wording got right and is worth keeping as a habit:** it
+argued the dead space to a *cause* before assigning the item — `cover` crops and
+can never letterbox, therefore the space is the container's, therefore this is a
+spec gap and not the capture backlog. That is what kept D-11 from being folded
+into D-07/D-08 and fixed with a photo.
 
 **One correction the register earned.** D-10 named a cause — "renders larger than
 DESIGN.md:172's standard button-primary", read as padding — and the padding was

@@ -38,8 +38,8 @@ export function CaseStudyRow({
     <div
       className={
         mediaFirst
-          ? '[grid-column:8/13] max-lg:[grid-column:6/9]'
-          : '[grid-column:1/6] max-lg:[grid-column:1/4]'
+          ? '[grid-row:1] [grid-column:8/13] max-lg:[grid-column:6/9]'
+          : '[grid-row:1] [grid-column:1/6] max-lg:[grid-column:1/4]'
       }
     >
       <SolutionTag solution={entry.solution} label={entry.tag} />
@@ -75,8 +75,8 @@ export function CaseStudyRow({
     <div
       className={
         mediaFirst
-          ? '[grid-column:1/7] max-lg:[grid-column:1/5]'
-          : '[grid-column:7/13] max-lg:[grid-column:5/9]'
+          ? '[grid-row:1] [grid-column:1/7] max-lg:[grid-column:1/5]'
+          : '[grid-row:1] [grid-column:7/13] max-lg:[grid-column:5/9]'
       }
     >
       <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
@@ -93,20 +93,19 @@ export function CaseStudyRow({
   return (
     // `reveal` on the row, never on the halves — text and media enter as one
     // unit, because they are one idea.
+    //
+    // DOM order is READING order — text, then media, on every row. The
+    // alternation is carried by `grid-column` alone, both halves pinned to
+    // `grid-row: 1`. Swapping the DOM instead broke worse here than on the home
+    // band: below 768px the grid is one column, so the odd rows opened with a
+    // poster, a status line and "How it's built" for a project the visitor had
+    // not been introduced to yet, and the media block of one row landed
+    // directly under the media block of the last.
     <article
-      className={`reveal tg-container tg-grid items-start gap-y-12 py-20 ${index > 0 ? 'border-t border-border' : ''}`}
+      className={`reveal tg-container tg-grid tg-split items-start py-20 ${index > 0 ? 'border-t border-border' : ''}`}
     >
-      {mediaFirst ? (
-        <>
-          {media}
-          {text}
-        </>
-      ) : (
-        <>
-          {text}
-          {media}
-        </>
-      )}
+      {text}
+      {media}
     </article>
   );
 }

@@ -280,6 +280,48 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   DESIGN.md §3 — the boundary above `closing-cta`, counted once.
+
+   Every route ends the same way: a block closing at full 128px bottom rhythm,
+   then the signature stripe, then the CTA's own top padding. That is two
+   complete gaps stacked across a 6px rule — 202px from the last content to the
+   closing headline on `/`, and more on the routes whose closing block carries
+   its own trailing padding.
+
+   128px separates two CONTENT sections. What follows here is a full-bleed
+   coloured rule, and a rule is already a boundary, so the block that closes
+   into it sheds half its rhythm. With the CTA's 40/32px top padding that leaves
+   110px desktop / 78px mobile in total — one rhythm unit, counted once.
+
+   Fixed HERE, at the collision, not at `--tg-section` and not in seven pages'
+   markup. Verified before writing it that all seven routes carrying
+   `closing-cta` end that element at exactly 128px, so this only ever reduces —
+   it can never add padding to a neighbour that had none. Re-measure if a
+   route's closing block changes shape.
+
+   Unlayered on purpose: Tailwind's `pb-32` lives in `@layer utilities` and this
+   has the same (0,1,0) specificity, so it wins by LAYER, never by source order.
+   §8's `motion-reduce:lg:static` note is why that distinction is not optional.
+
+   Mobile-first, and the breakpoint is `min-width: 768px` rather than the
+   `max-width: 767px` used elsewhere in this file, because the CTA's own top
+   padding is Tailwind's `md:` — also `min-width: 768px`. A viewport can land on
+   a fractional CSS width (measured: `innerWidth` 767 with BOTH `max-width:767px`
+   and `min-width:768px` false), so a `max-width` twin would leave a hairline
+   band where one half of this pair switched and the other did not. Two
+   declarations that have to agree get the same query, not the complementary one.
+--------------------------------------------------------------------------- */
+:where(section, div):has(+ .tg-closing) {
+  padding-bottom: 40px;
+}
+
+@media (min-width: 768px) {
+  :where(section, div):has(+ .tg-closing) {
+    padding-bottom: 64px;
+  }
+}
+
 /* DESIGN.md §8 — 768–1024px collapses the asymmetric grid to 8 columns. */
 @media (max-width: 1023px) {
   .tg-grid {
@@ -293,7 +335,30 @@
   }
   .tg-grid > * {
     grid-column: 1 / -1 !important;
+    /* `grid-row` is released here for the same reason `grid-column` is. The
+       alternating rows (home Featured Work, /work case studies) pin BOTH halves
+       to `grid-row: 1` on the multi-column bands, because explicit column
+       placement alone does not survive sparse auto-flow: an item whose
+       column-start sits behind the placement cursor is pushed to the next row,
+       which is what forced those components to alternate their DOM order in the
+       first place. Pinned to row 1, the columns alone decide the visual order,
+       so the DOM can stay in reading order — text, then media — at every width.
+       Down here there is one column and the halves must stack, so the pin has to
+       go, or both halves would occupy the same cell. */
+    grid-row: auto !important;
   }
+}
+
+/* The alternating case-study row's own split gap.
+   NOT a `gap-y-*` utility: `.tg-grid` sets the shorthand `gap: 24px` unlayered,
+   so it beats any layered `row-gap` from `@layer utilities` regardless of source
+   order. `gap-y-12` was declared on both components and had never once applied —
+   the stacked halves have always sat at 24px. Same class of silent drop as the
+   `cn()`/`leading-none` bug, one layer up. Only ever visible below 768px, where
+   the halves stack; above that each row is a single grid row and row-gap is
+   inert. */
+.tg-split {
+  row-gap: 48px;
 }
 
 .tabular {

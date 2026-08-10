@@ -8,8 +8,25 @@ import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
 /**
  * Centered — the one section permitted to be.
  *
- * Export values: max-width 760px, padding 64px 32px 48px. Deliberately more
- * compact than a standard 128px section; that spacing leak has happened twice.
+ * Export values: max-width 760px, padding 40px 32px 48px (32px top below 768).
+ * Deliberately more compact than a standard 128px section; that spacing leak has
+ * happened twice. The top padding used to be 64px, which stacked a second full
+ * gap on top of the preceding section's own 128px across a 6px stripe — 202px
+ * of dead space, measured on `/`. That half is fixed at the collision, in
+ * `globals.css` (`:has(+ .tg-closing)`), NOT here and NOT at the global rhythm.
+ *
+ * INTERNAL RHYTHM — 24 · 48 · 24 · 16, and the numbers are the hierarchy.
+ * It ran 24 / 32 / 36: a near-linear ramp in which every gap reads the same,
+ * so nothing groups and a centered stack with nothing grouping it reads flat.
+ * The elements were all correct; only the gaps were wrong.
+ *
+ *   headline -> subhead   24   one step; they are one statement
+ *   subhead  -> trust     48   two steps; the only break, statement -> ask
+ *   trust    -> button    24   one step; the facts belong to the ask
+ *   button   -> link      16   half a step; the link is subordinate
+ *
+ * One step for a pair, two for the break, half for the subordinate. No fill,
+ * border, card or divider was added — the flatness was never in the elements.
  *
  * The subhead and the trust line are TWO SEPARATE ELEMENTS. The trust row is
  * its own flex-wrap row with 3px muted-soft dot separators, so it reflows to
@@ -24,10 +41,10 @@ import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
  */
 export function ClosingCta() {
   return (
-    <section>
+    <section className="tg-closing">
       <SignatureStripe />
       <SequenceRoot trigger="inView">
-        <div className="mx-auto max-w-[760px] px-8 pt-16 pb-12 text-center">
+        <div className="mx-auto max-w-[760px] px-8 pt-8 pb-12 text-center md:pt-10">
           <SequenceItem role="headline">
             <h2 className="text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
               Let&rsquo;s talk about your business.
@@ -64,7 +81,7 @@ export function ClosingCta() {
               render at all. They are `aria-hidden`, so removing them costs
               nothing semantically. */}
           <SequenceItem role="trust">
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary max-[766px]:flex-col">
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary max-[766px]:flex-col">
               <span>Free first conversation</span>
               <Dot />
               <span>A flat quote before anything starts</span>
@@ -74,7 +91,7 @@ export function ClosingCta() {
           </SequenceItem>
 
           <SequenceItem role="cta">
-            <div className="mt-9 flex flex-col items-center gap-[18px]">
+            <div className="mt-6 flex flex-col items-center gap-4">
               {/* `data-primary-cta` is the concierge launcher's yield-rule
                   target (M-15). Exactly two elements carry it site-wide: this
                   button and the home hero's CTA row. */}

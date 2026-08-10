@@ -4,13 +4,29 @@ import type { StatusResult } from '@/lib/status';
 import { cn } from '@/lib/utils';
 
 /**
- * The deferred-embed container.
+ * The deferred-embed container. DESIGN.md §4, `LiveFrame` → "the container".
  *
  * Export values: native `aspect-ratio` (16/10 in every compact context, 16/9 in
- * the hero) with `overflow:hidden`, a white fill, a 1px hairline and 12px
- * radius. The image is `object-fit:cover` with `object-position:top center` —
- * a dashboard screenshot cropped from the bottom keeps its header and primary
- * content, which is the readable part.
+ * the hero) with `overflow:hidden`, a 1px hairline and 12px radius. The image is
+ * `object-fit:cover` with `object-position:top center` — a dashboard screenshot
+ * cropped from the bottom keeps its header and primary content, which is the
+ * readable part.
+ *
+ * PADDING IS ZERO AND STAYS ZERO. `aspect-ratio` governs the OUTER box, so any
+ * padding is subtracted from the media: the frame keeps its 16:10 and the
+ * screenshot inside it quietly stops being 16:10. It also produces the mat of
+ * dead space that made this read as chrome around an asset rather than the
+ * asset. `cover` crops and can never letterbox, so space around the media is
+ * always the container's, never the capture's.
+ *
+ * The fill is `--tg-surface`, not a literal white. Under `cover` it is never
+ * visible once the poster paints — it is a loading/failure state, not a design
+ * surface, and its only job is to avoid punching a white rectangle into a dark
+ * page while the image decodes. Inside `.ink-band` the same token already
+ * resolves to #1A1A1C, so no branch is needed.
+ *
+ * The hero's `tg-hero-frame` is a different thing on purpose: a surface panel
+ * with 32px padding that bleeds off the viewport edge. Don't port it down.
  *
  * This is a real `aspect-ratio` property, not a padding-top percentage hack.
  *
@@ -40,10 +56,10 @@ export function Frame({
 }) {
   return (
     <div
-      className={cn('relative w-full overflow-hidden rounded-[12px] border', className)}
+      className={cn('relative w-full overflow-hidden rounded-[12px] border p-0', className)}
       style={{
         aspectRatio: ratio,
-        background: '#FFFFFF',
+        background: 'var(--tg-surface)',
         borderColor: onInk ? '#2A2A2C' : 'var(--tg-border)',
         ...(viewTransitionName ? { viewTransitionName } : {}),
       }}
@@ -61,9 +77,21 @@ export function Frame({
 }
 
 /**
- * The row beneath a frame: status on the left, the demo link on the right.
- * Export puts these on one `space-between` row with 18px of separation from the
- * frame and `flex-wrap` so they stack rather than crush on narrow columns.
+ * The caption beneath a frame — DESIGN.md §4. BENEATH, never inside: an overlay
+ * would cover the real product's own header, which is the part that makes the
+ * poster credible, and is the same lie as drawing fake browser chrome.
+ *
+ * 12px below the frame, not 18px. 12 reads as belonging to the frame above; 18
+ * reads as the next block starting.
+ *
+ * Left-anchored, 20px apart, NOT `justify-between`. On an 803px detail-page
+ * frame `space-between` threw "Live · checked 4 minutes ago" and "Open it in a
+ * new tab" to opposite corners — two labels in two places instead of one
+ * caption saying "this is running, go look". No mid-dot between them either:
+ * `status-line` already owns a `·` internally, and a second dot device at a
+ * second weight inside one caption line is noise.
+ *
+ * `flex-wrap` so they stack rather than crush on narrow columns.
  */
 export function FrameMeta({
   status,
@@ -77,7 +105,7 @@ export function FrameMeta({
   className?: string;
 }) {
   return (
-    <div className={cn('mt-[18px] flex flex-wrap items-center justify-between gap-6', className)}>
+    <div className={cn('mt-3 flex flex-wrap items-center gap-x-5 gap-y-3', className)}>
       <StatusLine result={status} onInk={onInk} />
       <a
         href={url}

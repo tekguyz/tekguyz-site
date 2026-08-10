@@ -1,8 +1,20 @@
-# TEKGUYZ Design System v2.4
+# TEKGUYZ Design System v2.5
 
-*Becomes `/docs/DESIGN.md` in the repo. Supersedes v2.3.*
+*Becomes `/docs/DESIGN.md` in the repo. Supersedes v2.4.*
 
 **Governed by:** TEKGUYZ-REBUILD-CANONICAL.md · **Copy:** TEKGUYZ-COPY-DECK-V2.md
+
+## Changelog (v2.4 → v2.5)
+
+Three elements that shipped as generic defaults, because this document never
+specified them. None of them was a build error — each was built correctly
+against guidance that did not exist. **They are one pass**, because fixing a
+specification gap piecemeal produces three unrelated treatments.
+
+- **The proof line gets an entry at all** (D-09). CANONICAL §98 fixed its content and its "no card" treatment and stopped there, so it shipped as one 28px line whose *actionable half* was muted grey with no rest-state underline. New entry in §4.
+- **`LiveFrame`'s container is specified** (D-11). The old entry defined the two ratios and `object-fit` and said nothing about fill, padding, radius, or where the status block sits — so the compact contexts inherited a generic card. The hero's panel was specified; the compact contexts' plate was not. New sub-entry under `LiveFrame` in §4.
+- **The alternating case-study rows stop alternating their DOM order** (§3, §8). Reported after the pass above: below 768px the home band and `/work` put two posters back to back, because a one-column grid has nothing left but source order. The alternation moves entirely onto `grid-column` with both halves pinned to `grid-row: 1`. Found alongside it: `gap-y-12` on those rows **had never applied** — `.tg-grid`'s unlayered `gap: 24px` beat it — so the stacked split gap is now a real 48px via `.tg-split`.
+- **`closing-cta` gets an internal rhythm, and the ~200px of dead space above it is fixed at the collision** (D-12). The band matched its old entry element for element and read flat: near-linear 24/32/36 gaps, so nothing grouped and nothing anchored. Revised entry in §4, plus a new rule in §3 for the section boundary above it.
 
 ## Changelog (v2.3 → v2.4)
 
@@ -152,12 +164,39 @@ a 12-column span left to run on an 8-track grid silently creates implicit tracks
 rather than erroring:
 - Hero: text cols 1–6, media cols 7–12 **bleeding past the right viewport edge** (media container extends beyond the 1280px cap). Column spans are unchanged by the v2.2 type-scale fix — see §2 for why the fix was in font-size, not column width.
 - Solution rows: accent dot + title cols 1–5, hook + arrow cols 7–12. The gap at col 6 is intentional.
-- Featured Work rows alternate: text 1–5 / media 7–12, then media 1–6 / text 8–12. Not mirrored — offset.
+- Featured Work rows alternate: text 1–5 / media 7–12, then media 1–6 / text 8–12. Not mirrored — offset. **The alternation is `grid-column` only. DOM order is reading order — text, then media — on every row, and both halves are pinned to `grid-row: 1`.** The pin is not decoration: with sparse auto-flow, an item whose column-start sits *behind* the placement cursor is pushed to the next row, so the odd row's left-hand media would drop below its text if the DOM stayed in reading order without it. That is why these two components alternated their source order for months, and **that alternation is what put two posters back to back below 768px** — one column, so source order is all that survives of the layout: the row ended on its image and the next opened with the following one. On `/work` it was worse than cosmetic, because the media column carries the status line and "How it's built": the odd rows opened with a screenshot and a build note for a project the visitor had not been introduced to yet. Pin the row, place the columns, leave the DOM alone.
 - Detail pages, and `/work` index case-study rows: content cols 1–8, sticky meta rail cols 10–12. The media column (image, status-line, caption, `build-narrative`) should read as intentionally composed against the text column, not trail off into empty space — see `build-narrative` in §4.
 - **Only the closing CTA band is centered.** Everything else is left-anchored.
 
 **Radius:** 4px inputs · 6px tags/pills · 8px buttons · 12px cards · 16px large containers · full for dots/badges.
 **Elevation:** flat. Hairlines only, no shadows anywhere. Hover lift comes from position, not shadow.
+
+**The boundary above `closing-cta` — one gap, counted once.** Every route ends the
+same way: a section closing at full 128px bottom rhythm, then the signature
+stripe, then `closing-cta`'s own top padding. That is two complete gaps stacked
+across a 6px rule, and it measured **202px** from the last piece of content to
+the closing headline on `/` (and more on `/solutions`, `/process` and the detail
+pages, where the preceding block has its own trailing padding on top of that).
+
+128px exists to separate **two content sections**. What follows here is not a
+content section — it is a full-bleed coloured rule, and a rule is already a
+boundary. So a section that closes *into* the closing stripe sheds half its
+bottom rhythm: **64px desktop, 40px below 768px.** With `closing-cta`'s own
+40/32px top padding that puts the last content 110px (desktop) / 78px (mobile)
+from the closing headline — roughly one rhythm unit **in total**, which is what
+the rhythm was always asking for.
+
+**This is fixed at the collision, not at the global value.** `--` the 128px
+section rhythm is untouched, and so is every page's markup: the rule is
+`:where(section, div):has(+ .tg-closing)` in `globals.css`, one declaration,
+matching only the element that immediately precedes the closing band. Verified
+before it was written that **all seven routes carrying `closing-cta` end that
+element at exactly 128px**, so the rule only ever *reduces* — it can never add
+padding to a neighbour that had none. It sits unlayered in `globals.css`, so it
+beats Tailwind's `pb-32` from `@layer utilities` by layer rather than by source
+order; see §8's note on why a source-order win is not something to rest on.
+Re-measure `padding-bottom` on that element if a route's ending block ever
+changes shape.
 
 **Signature stripe:** four-segment accent bar, exactly three per page — top of hero, above closing CTA, bottom of footer. Nowhere else. Identical treatment every time it appears: full-bleed edge-to-edge, 6px height, four equal-width segments.
 
@@ -173,7 +212,37 @@ rather than erroring:
 
 **`page-hero`** — top-of-page treatment for every inner route, including both `/solutions` (the index) and `/solutions/[slug]` (each detail page, headline drawn from that solution's own copy, not the generic page-hero pattern used elsewhere) — see COPY.md and CANONICAL.md for the index-plus-detail reversal. Also `/work`, `/process`, `/contact`. Eyebrow (`--text-caption`) above a headline at `--text-display` (not hero scale) above a one-line description at `--text-body`, `muted`, capped around 60ch. No media. **Does carry the `flourish-mark`**, above the eyebrow — the same stale "home-only" claim corrected in the `flourish-mark` entry below; the export shows the dots on every route's first section and that is what ships. Top padding matches standard section rhythm.
 
-**`closing-cta`** — centered, the one section permitted to be. Deliberately more compact than a standard section, not equal to one: padding roughly 64px / 48px mobile. Headline at `--text-display`. Trust lines beneath the subhead in `--text-sm`, `muted`, one single line separated by mid-dots. No proof line. **`button-primary--large`, a documented one-off size exception**: 18×32px padding, ~16px text — the only button on the site that deviates from the standard size. Earned deliberately: this is the page's single most important remaining ask, and the standard button size was reading as underweighted against the headline stacked above it, which was the actual cause of the "still doesn't work" complaint — not the padding, which was already correct. **Beneath the button, one small secondary link**: "Or ask our AI what we'd build for you" — `--text-sm`, `muted`, no button styling, opens the concierge panel. A lower-commitment alternate path, not a competing CTA — this is the only place the concierge gets a second entry point beyond its own persistent launcher, and it stays deliberately quiet so it doesn't dilute the primary ask. On scroll into view, replays the hero's load sequence **timing** (headline → subhead → trust lines → button, see §6) once — **no second set of flourish dots**; the one-per-page rule is absolute and wins over the echo. The signature stripe directly above it uses the same full-bleed treatment as every other instance.
+**`proof-line`** — the homepage band between the hero and Solutions, CANONICAL §98. That section fixes the content and says "one sentence, no card"; this is the treatment, which it never gave.
+
+Full-bleed band, **hairline top and bottom, no fill, no radius, no inset** — which is what "no card" means here in positive terms, not merely as a prohibition. **36px vertical padding**, its own value: the band is a rule-to-rule beat between two sections, not a section, and 128px must not leak into it. Left-anchored in `tg-container` like everything else outside the closing CTA.
+
+**The two clauses are two elements at two scales, baseline-aligned on one row**, 20px apart, wrapping to a stack below the container's break:
+
+- *Eight live builds.* — `--text-title`, weight 600, −0.02em, **ink**. This is the claim and the anchor.
+- *Open any of them right now.* — `--text-body`, weight 600, **ink**, `link-underline`, `tap-24`, → `/work`.
+
+The defect this replaces is worth stating, because it will look like a small thing next time: the whole sentence rendered at 28px with the link half in `muted`. **`link-underline` draws nothing at rest** — it grows from 0% on hover and focus — so the only actionable element on the site's proof band had *no rest-state affordance at all* and was the lighter of the two halves. Muting the invitation inverts the hierarchy: the claim is what you read, the invitation is what you click, and de-emphasising the second one is backwards. Both halves are now ink; the size step, not colour, carries the hierarchy, which is the same rule §2 states for everything else.
+
+**Rejected: promoting the whole line to `--text-display`** so it reads as a statement band. It would have put three display-scale elements inside one scroll — the hero h1 above it and the "What We Do" section head below — and the proof line is a supporting fact, not a third headline. **Also rejected: an accent dot before the sentence.** The four accents mean *solution line*; this sentence is about all eight builds across all four, so no accent is correct for it and one would have to be picked arbitrarily.
+
+**`closing-cta`** — centered, the one section permitted to be. Deliberately more compact than a standard section, not equal to one: **40px top / 48px bottom, 32px top on mobile**, and see §3 for the section boundary above it, which is where the ~200px of dead space actually lived. Headline at `--text-display`, max-width 760px. Trust lines in `--text-sm`, `muted`, one single line separated by mid-dots. No proof line. **`button-primary--large`, a documented one-off size exception**: 18×32px padding, ~16px text — the only button on the site that deviates from the standard size. Earned deliberately: this is the page's single most important remaining ask, and the standard button size was reading as underweighted against the headline stacked above it, which was the actual cause of the "still doesn't work" complaint — not the padding, which was already correct. **Beneath the button, one small secondary link**: "Or ask our AI what we'd build for you" — `--text-sm`, `muted`, no button styling, opens the concierge panel. A lower-commitment alternate path, not a competing CTA — this is the only place the concierge gets a second entry point beyond its own persistent launcher, and it stays deliberately quiet so it doesn't dilute the primary ask. On scroll into view, replays the hero's load sequence **timing** (headline → subhead → trust lines → button, see §6) once — **no second set of flourish dots**; the one-per-page rule is absolute and wins over the echo. The signature stripe directly above it uses the same full-bleed treatment as every other instance.
+
+**Internal rhythm — 24 · 48 · 24 · 16, and the numbers are the hierarchy.** The band previously ran 24 / 32 / 36 between its four elements: a near-linear ramp, in which every gap reads the same, nothing groups, and a centered stack with nothing grouping it reads flat. That was the whole of the complaint — the elements were all correct.
+
+There are two groups here, and the spacing is what says so:
+
+| From → to | Gap | Why |
+| --- | --- | --- |
+| headline → subhead | **24px** | One step. They are one statement; the subhead completes the headline. |
+| subhead → trust line | **48px** | Two steps — the only break inside the band, and the register change from *statement* to *what you get*. |
+| trust line → button | **24px** | One step. The trust facts belong to the ask they precede, not to the statement. |
+| button → concierge link | **16px** | Half a step. The link is subordinate to the button, and the gap says so without shrinking or greying anything further. |
+
+One step for a pair, two for the break, half for the subordinate. Everything stays on the 4px scale in §3, nothing is centered differently, and no fill, border, card or divider was added — **the fix is entirely in the gaps**, which is the only way it could be, since the flatness was never in the elements.
+
+**Rejected: moving the trust line below the button**, so the order became headline → subhead → CTA → trust. It is a real improvement in the abstract — the ask arrives 68px sooner and the microcopy supports the button it sits under — and it was rejected anyway, for two reasons. It reorders content this document had already specified as "beneath the subhead", which is a content decision wearing a spacing costume; and it separates the concierge link from the button it is an alternative to, which is the one adjacency the entry above says to protect. The load sequence's `trust` beat (0.48s) would also have had to be re-timed past `cta` (0.6s) to stop the block animating out of visual order, which is a second change to pay for the first. Grouping by gap gets the hierarchy without any of that.
+
+**Rejected: dropping the trust line to `--text-caption`** so the centered stack tapers by measure as well as by weight. It would work, and it would also mean changing `/contact`'s trust facts to match — those three facts render identically in both places by rule, and splitting them is exactly the kind of drift that rule exists to prevent.
 
 **`solution-row`** *(replaces `solution-card`)* — full-width row, hairline top border, 48px vertical padding. Accent dot (10px) + display-size title on the left, one-line hook + arrow on the right. Hover: title shifts 4px right, arrow shifts 4px right, hairline darkens to `border-strong`. No icons — the dot is the icon. No card fill, no box.
 
@@ -187,7 +256,18 @@ rather than erroring:
 
 **Hero is a distinct context from the compact card contexts** — the same underlying screenshot doesn't have to be the same crop, or even the same file, in both places. A dense multi-panel dashboard can read fine at card size and feel cluttered blown up large in the hero. It's legitimate for a case study to have: a tighter, simpler hero crop (or, if available, a short looped video with a matching static poster for `prefers-reduced-motion` and slow connections — the previous build had exactly this for the AI Voice Receptionist hero: a video loop plus a same-dimension fallback poster, separate from the still used in the compact card contexts) and a separate, more detail-dense still for the compact `case-study-row`/detail-page contexts. Don't force one asset to serve both jobs if it isn't reading well in one of them.
 
-- `embeddable: false` (all entries at launch): renders poster at its context's locked ratio, 1px hairline border, radius 12px, white bg, plus "Open it in a new tab."
+**The container — plate, not panel.** The ratios and `object-fit` above were specified and the box around them was not, so the compact contexts inherited a generic card and read as one. Four values, and the reasoning matters more than any of them:
+
+- **Padding: 0. The media meets the border, always.** This is the load-bearing one. `aspect-ratio` governs the *outer* box, so any padding is subtracted from the media — the frame keeps its 16:10 and the screenshot inside it silently stops being 16:10. Padding also produces exactly the mat of dead space that made the frame read as chrome around an asset instead of the asset itself. There is no value of this other than zero. If a frame looks like it has space around its media, that space is the container's, because `cover` crops and can never letterbox.
+- **Fill: `--tg-surface`,** theme-aware, never a literal `#FFFFFF`. Under `cover` the fill is *never visible once the poster paints* — which is the point: it is a loading and failure state, not a design surface, and its only job is to not punch a white rectangle into a dark page for the frames it takes to decode. On the home ink band `--tg-surface` already resolves to `#1A1A1C` through `.ink-band`, so the same declaration is correct in both places without a branch.
+- **Radius 12px, 1px hairline** (`--tg-border`; `#2A2A2C` on ink). Unchanged, and deliberately so — 12px is §3's card/media radius and the export's value. **Rejected: dropping to 4px or 0** so the frame reads as a plate rather than a card. It would not have fixed anything — the card read came from the mat, not the corner — and it would have broken the export for no gain.
+- **The status block sits BENEATH the frame, never inside it.** Inside means an overlay on the screenshot, and every one of these posters is a real production UI whose own header lives at the top of the crop; covering it with our chrome is the same lie as drawing fake browser chrome around it, which the list below already bans. Beneath, it is a **caption attached to the frame**: 12px below (not 18px — 12 reads as *belonging to* the frame above, 18 reads as the next block), left-anchored to the frame's left edge, status and the demo link on one wrapping row **20px apart**.
+
+That row was `justify-between`, which on a 803px detail-page frame threw "Live · checked 4 minutes ago" and "Open it in a new tab" to opposite corners — two labels in two places rather than one caption saying *this is running, go look*. It is left-anchored now, and with **no mid-dot separator**: `status-line` already owns a `·` internally, and a second separator on the same line would put two different dot devices at two different weights inside one caption.
+
+**The hero is not this.** `tg-hero-frame` is a surface-filled panel with 32px padding that bleeds off the right viewport edge — specified, deliberate, and the reason the compact contexts' gap went unnoticed for so long. **Do not port the panel down to card scale.** At 373px tall a 32px mat is most of what you see, and the panel's whole argument is the bleed, which no compact context has.
+
+- `embeddable: false` (all entries at launch): renders poster at its context's locked ratio, 1px hairline border, radius 12px, surface fill, plus "Open it in a new tab."
 - `embeddable: true` (later): renders click-to-activate iframe in the same frame, same dimensions, zero layout change.
 - No fake browser chrome drawn around it — the real product's own UI is what makes it credible.
 - Mobile: poster + link regardless of flag.
@@ -342,6 +422,32 @@ row is before placing a column that isn't there.
 its longest item is `Process` at 51px; Solutions (136px) and the email address
 (126px) both need a wide one. Ordering it the obvious way puts the email in a 121px
 column and wraps it.
+
+### The single-column band, ≤ 767px — and the two things that must be released together
+
+The `.tg-grid` reset here forces `grid-column: 1 / -1 !important` on every child.
+It must also force **`grid-row: auto !important`**, and the two belong in the same
+declaration block for a reason that is not stylistic: the alternating case-study
+rows pin both halves to `grid-row: 1` (see §3), and a pin that survived into a
+one-column band would stack both halves into the same cell. **Released together,
+they can never disagree** — including at the fractional viewport widths where
+`max-width: 767px` and `min-width: 768px` are *both* false, measured on this
+machine at `innerWidth` 767. A row release written as its own complementary query
+would have had exactly that hairline band to get wrong.
+
+**The split gap is `.tg-split` in `globals.css`, not a `gap-y-*` utility.**
+`.tg-grid` sets the shorthand `gap: 24px` **unlayered**, so it beats any layered
+`row-gap` from `@layer utilities` no matter where the class appears. Both
+components declared `gap-y-12` and **it had never once applied** — the stacked
+halves shipped at 24px for the entire life of the site. Same class of failure as
+`cn()` dropping `leading-none`, one layer up: a declared value that never reached
+the DOM, invisible to the linter and to anyone reading the JSX. The shipped value
+is now the intended **48px**, which only ever renders in this band; above 767 each
+row is a single grid row and `row-gap` is inert.
+
+The resulting mobile rhythm for a case-study row is **48px inside the pair,
+160px (`/work`) or 192px (home) between rows** — the split is one idea, the gap
+between rows is a section boundary, and a 1:3.3 ratio is what says so.
 
 ### The two deliberate stacks at ≤ 766px
 
@@ -607,4 +713,4 @@ Fixed-position elements take `env()` insets; nothing else does.
 
 **Do:** ink for every primary CTA · accent mapping in shared config only · real product in every `LiveFrame` · one `flourish-mark` per page, home only · left-anchor everything but the closing CTA · keep case-study and project components visibly different in weight · light as default · show a current-page indicator in nav · give dark mode real bright elements, not a uniformly dark page · use icons for the footer social row and theme toggle, styled to match the site's own line weight · verify text-on-tint contrast across every badge/status/success/error surface, in both themes, before shipping · let `closing-cta`'s button be the one documented size exception on the site.
 
-**Don't:** tint a button with accent · add a 5th accent · add icons to solution rows · use cyberpunk/terminal aesthetics or monospace body type · auto-switch dark mode · use any banned motion effect · center-align section content outside `closing-cta` · interleave case studies and projects on `/work` · put an image on `project-card` · use a sandbox/emulator illustration in a `LiveFrame` where a real screenshot is available · use a generic imported social-icon or theme-toggle icon set without restyling it to match · let the closing CTA or footer masthead inherit full section-level spacing · use a blended gradient anywhere, including the concierge's thinking indicator · extend the four-color moving treatment beyond the concierge's thinking state · reproduce the current site's layout.
+**Don't:** tint a button with accent · add a 5th accent · add icons to solution rows · use cyberpunk/terminal aesthetics or monospace body type · auto-switch dark mode · use any banned motion effect · center-align section content outside `closing-cta` · interleave case studies and projects on `/work` · put an image on `project-card` · pad the inside of a `LiveFrame` or overlay its status block on the poster · mute the actionable half of the proof line · use a sandbox/emulator illustration in a `LiveFrame` where a real screenshot is available · use a generic imported social-icon or theme-toggle icon set without restyling it to match · let the closing CTA or footer masthead inherit full section-level spacing · use a blended gradient anywhere, including the concierge's thinking indicator · extend the four-color moving treatment beyond the concierge's thinking state · reproduce the current site's layout.
