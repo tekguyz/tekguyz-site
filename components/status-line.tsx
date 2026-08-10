@@ -1,5 +1,24 @@
+'use client';
+
+import { useSyncExternalStore } from 'react';
 import { relativeTime, cn } from '@/lib/utils';
 import type { StatusResult } from '@/lib/status';
+
+/**
+ * Deterministic on both sides of hydration: fixed UTC, no locale, no timezone
+ * lookup. `relativeTime` cannot be — the elapsed interval differs between
+ * prerender and hydration, which is the #418 this replaces. An absolute stamp
+ * is never wrong, only less friendly, so first paint is complete on its own.
+ */
+/** The stamp never changes after mount, so there is nothing to subscribe to. */
+const subscribeNever = () => () => {};
+
+function absoluteTime(from: number): string {
+  const d = new Date(from);
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mm = String(d.getUTCMinutes()).padStart(2, '0');
+  return `at ${hh}:${mm} UTC`;
+}
 
 /**
  * The signature component. Replaces the decorative LIVE badge everywhere.
@@ -26,7 +45,13 @@ export function StatusLine({
   className?: string;
 }) {
   const live = result.status === 'live';
-  const stamp = relativeTime(result.checkedAt);
+
+  // Server and first client render both produce the absolute stamp; the
+  // relative one is only ever computed after hydration, so the swap is an
+  // update rather than a mismatch. `useSyncExternalStore` is the hook that
+  // expresses "server value, then client value" without a setState-in-effect.
+  const hydrated = useSyncExternalStore(subscribeNever, () => true, () => false);
+  const stamp = hydrated ? relativeTime(result.checkedAt) : absoluteTime(result.checkedAt);
 
   const fg = onInk ? '#F5F5F5' : 'var(--tg-fg)';
   const dim = onInk ? '#9CA3AF' : 'var(--tg-secondary)';
