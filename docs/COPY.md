@@ -533,13 +533,25 @@ ERROR: Something didn't go through. Try again, or email us directly at hello@tek
 LAUNCHER: Ask about your project
 OPENER: Tell me what's slowing your business down and I'll tell you what we'd build for it. I can also pass your details straight to the team.
 INPUT PLACEHOLDER: Describe what you're dealing with…
-DISCLAIMER: `[OPEN SLOT — no locked copy]` This is a starting sketch, not a quote — pricing always comes from a real conversation.
+DISCLAIMER: A starting sketch, not a quote.
 
-*(**No longer locked copy, 2026-08-10.** The disclaimer is an **open slot**: the
-string above stays live because it is a shipped string, not a missing one — so it
-takes **no `[NEEDS COPY]` marker** and renders as-is until replaced. **No
-replacement copy was written in the prompt that opened the slot**, deliberately.
-Whoever fills it proposes candidates rather than editing in place.)*
+*(**Slot filled and re-locked 2026-08-11**, by the human, from a transcribed
+four-candidate list. It replaces `This is a starting sketch, not a quote —
+pricing always comes from a real conversation.`, which was 86 characters and
+wrapped to **2 lines at every viewport including 1440** — the reason the slot was
+opened. The replacement is 31 characters and fits one line at 360px.
+**The dropped half was dropped on purpose:** the human's stated reason is that
+the chat footer does not need to say where a real number comes from. The
+concierge's no-price rule is unaffected — it is enforced in
+`lib/concierge/system-prompt.ts`, not by this line, and this line was never what
+held it. The other three candidates all kept a pricing clause and were not
+picked.)*
+
+*(History of the slot: **unlocked 2026-08-10** — the shipped string stayed live
+because it was a shipped string, not a missing one, so it correctly took **no
+`[NEEDS COPY]` marker**. No replacement was written in the prompt that opened the
+slot, deliberately; whoever filled it proposed candidates rather than editing in
+place, which is what happened here.)*
 SUGGESTION CHIPS (empty state, three, disappear after first message):
   · We're missing after-hours calls
   · Everything lives in spreadsheets
@@ -655,5 +667,5 @@ DESCRIPTION: `What information TEKGUYZ collects through this website, why, and h
 
 1. ~~`[NEEDS REAL DATA]` on the Field Photo Reports outcome~~ **Resolved 2026-08-10 as: the marker stays.** No real number exists, so it is never filled and never rendered. The sentence is scheduled for a reword (drop the "seeing" repetition, add a faster-billing outcome) — **not written yet**. See the section itself.
 2. ~~GBP review permalink for the testimonial attribution link~~ **Resolved 2026-08-10.** `https://www.google.com/maps?cid=13204262572880001655`, verified that day. Google offers no durable per-review permalink; the profile URL is the stable substitute, by decision.
-2b. **The concierge footer disclaimer is now an open slot** (2026-08-10) — the shipped string stays live, no replacement written yet.
+2b. ~~**The concierge footer disclaimer is now an open slot** (2026-08-10) — the shipped string stays live, no replacement written yet.~~ **Filled and re-locked 2026-08-11: `A starting sketch, not a quote.`** Picked by the human from four transcribed candidates; the pricing clause was dropped deliberately. See the Concierge microcopy section.
 3. Confirm the Field Photo Reports demo still exposes the admin/installer switcher as described, and that the Bundle Builder sandbox still accepts `1` as the test card — both are stated as fact in copy and would be embarrassing if stale.

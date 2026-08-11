@@ -397,8 +397,8 @@ exists to avoid.
 | `page-hero` headline / description | `1/8` + `9/13` | both **`1/-1`** |
 | `SectionHead` headline / description | `1/7` + `8/13` | both **`1/-1`** |
 | `solution-row` title / hook | `1/6` + `7/13` | **`1/4`** + **`5/9`** |
-| Case-study row, even — text / media | `1/6` + `7/13` | **`1/4`** + **`5/9`** |
-| Case-study row, odd — media / text | `1/7` + `8/13` | **`1/5`** + **`6/9`** |
+| Case-study row, even — text / media | `1/6` + `7/13` | both **`1/-1`** (revised 2026-08-11) |
+| Case-study row, odd — media / text | `1/7` + `8/13` | both **`1/-1`** (revised 2026-08-11) |
 | `/work/[slug]` content / meta rail | `1/9` or `1/8` + `10/13` | **`1/7`** + **`7/9`** |
 | `/process` steps | `4/13` | **`1/-1`** |
 | `/contact` trust column / form card | `1/6` + `7/13` | both **`1/-1`** |
@@ -409,8 +409,59 @@ exists to avoid.
 heading has no second column to sit beside — `--text-hero` resolves to 46.08px at
 768, and a narrow column at that size is the artifact, not a layout. So `page-hero`,
 `SectionHead`, `/solutions/[slug]`'s header and `/contact` take all 8 tracks. Rows
-that carry two *genuine* columns — text against media, content against meta rail —
-keep both.
+that carry two *genuine* columns — content against meta rail — keep both.
+
+**Case-study rows joined them 2026-08-11, and the reason generalises the rule
+above.** The stated principle was about a *heading* too large for its column. The
+same artifact appears when the column is too narrow for **body prose**, and at 768
+both halves of a case-study row were starved at once: the text column measured
+**249px**, which at `--text-body` is roughly **31 characters per line** against the
+45–75 the measure exists to hold. The alternatives were tried on paper and
+rejected. A mirrored **4/4** is the template look §0 exists to avoid, and 336px is
+still only ~39 characters. Giving text **5** tracks and media **3** reaches a
+comfortable ~55 characters but drops the poster to 249px wide — 156px tall at
+16:10 — and the poster is the proof the `/work` index exists to show, so that
+trade buys the measure by spending the argument. **768 does not have the width for
+two genuine columns here, so it gets one.** Stacked, the text runs the full 672px
+and the poster does too.
+
+**This is `/work` only.** The home Featured Work band is its own row component
+(`app/page.tsx`), not `components/case-study-row.tsx`, and was **not** changed —
+it carries a different copy length and its own band treatment. If it is ever
+revised, it is revised on its own measurement, not by inheriting this one.
+
+**The mechanism, which is not optional here.** Both halves pin to `grid-row: 1` on
+the multi-column bands so the alternation can ride on `grid-column` while the DOM
+stays in reading order. **A pin surviving into a one-column band puts both halves
+in the same cell**, so the 768–1023 stack has to release `grid-row` and
+`grid-column` **together, in one block** — exactly as the ≤767 reset does. It ships
+as a real rule in `globals.css` (`.tg-stack-md`), unlayered and `!important`,
+because the placements it overrides are Tailwind arbitrary properties of the same
+(0,1,0) specificity: two same-property utilities have no winner, only a source
+order, and §8's `motion-reduce:lg:static` note is why no layout floor may rest on
+one.
+
+**Its query is `max-width: 1023px` with no lower bound**, which looks like it
+restates the ≤767 reset and does so on purpose. A `min-width: 768px` arm is the
+*complementary* query to that reset, and a viewport can land on a fractional width
+where both are false (measured: `innerWidth` 767 with `max-width:767px` and
+`min-width:768px` both false) — in that hairline the row would fall back to the
+8-track split. Overlapping instead of abutting, with identical values in the
+overlap, means the two can never disagree at any width. Below 768 the visible
+result is unchanged either way.
+
+**Measured after the change** — at 768: 8 explicit tracks and 0 implicit; both
+halves `1 / -1` with `grid-row: auto`; text column **249px → 688.8px**; body prose
+**30.2 → 68 characters per line**, inside the 45–75 band. Headlines: at 249px two
+of the four wrapped to a two-word last line (`Quality Tracking`, `Live Demo`);
+at 688.8px **all four set on one line**, so there is no wrap left to orphan. Same
+result at **844**, the other width M-16 was filed against — stacked, 764.8px,
+four of four on one line, no horizontal scroll at either.
+
+*Counting lines here needs the character-rect method, not `Range.getClientRects()`
+on the element: the headline wraps a `<Link>`, so the range returns a rect per
+element boundary and reports two "lines" for a single visual one. The first pass
+at this measurement made exactly that error.*
 
 **Two rows that look alike and are not.** `/process`'s progress rail is
 `hidden lg:block`, so the band has no second column and the steps take `1/-1`.

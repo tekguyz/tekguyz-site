@@ -4,13 +4,22 @@
 pass.** No finding row states a cause; everything inferred is quarantined in
 [Hypotheses (unverified)](#hypotheses-unverified) at the bottom.*
 
-> ### Status — 18 resolved · 1 partial (M-16) · 0 open
+> ### Status — 19 resolved · 0 partial · 0 open
+>
+> *Updated 2026-08-11. **M-16 is now resolved**, the last finding this file had
+> never been able to call closed — not by a copy review, but because the 249px
+> column its orphans lived in was retired: case-study rows stack in the 768–1023
+> band, and 4 of 4 headlines set on one line at both 768 and 844. See its row
+> below for the measurement.*
 >
 > *Updated 2026-08-10 (Prompt 13). M-07 and M-08 are now resolved at **every**
 > viewport; the two rows below that reopened them are superseded by the two
 > Prompt 13 rows further down, and the 768/844 rows they were split from are
-> untouched and were re-measured as byte-identical. **M-16 is still partial** —
-> it is the one finding this file has never been able to call closed.*
+> untouched and were re-measured as byte-identical.*
+>
+> **A caution this file earned twice, and it still applies to whatever is
+> measured next:** this banner has twice claimed more closure than the rows
+> beneath it carried. A count here is only ever as good as the cell it summarises.
 >
 
 > *Corrected 2026-08-10. This banner previously read "all 19 findings closed as of
@@ -42,7 +51,7 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > | **D-05** concierge scroll anchoring | **Resolved** (Prompt 13) | Scrolls to the newest message's own top instead of `scrollHeight`, and self-clamps, so short exchanges are unchanged. With the list constrained to 90px and a 120.5px reply: newest top **0.3px** below the list top, `scrollTop` **809.6** against a maximum of **860**. Panel geometry untouched |
 > | **D-06** duplicate hero status line | **Resolved** (Prompt 13) | **2 → 1** instance, on the media, at all 7 viewports and at 1440. The removed one is the text-column instance no doc specifies |
 > | **D-10** nav CTA size | **Resolved** (Prompt 13) | **51.2 → 42.5px** tall; padding was **already** 14×24 and is unchanged. The cause is `cn()`: tailwind-merge drops `leading-none` when a later `text-*` class follows it, so every button on the site rendered a **23.2px** line box instead of 14.5. Fixed at the source — `text-[14.5px]/[1]` — so `closing-cta`'s large button also corrects, **60.6 → 52px**. Header height **76 → 76**: it is `h-[76px]` and never followed the CTA. The corrected CTA falls 1.5px under the tap floor and takes a `.tap-44` overlay; hit-tested, 5 of 5 probes own to the CTA |
-> | **M-16** orphan lines, **768/844 rows** | **Partial** (never resolved) | `Four ways we help.` L4-in-144px → **L1 in 704px**. Case-study headlines still orphan in a now-deliberate 249px column. No copy changed. **Any cell naming M-16 anywhere in this file says partial — it is not a resolved finding** |
+> | **M-16** orphan lines, **768/844 rows** | **Resolved** (2026-08-11) | `Four ways we help.` L4-in-144px → **L1 in 704px** (Prompt 8). The second half — case-study headlines orphaning in the then-deliberate 249px column — closed 2026-08-11 when that column was retired: case-study rows **stack** in the 768–1023 band (DESIGN.md §8), text half **688.8px at 768 / 764.8px at 844**, and **4 of 4 headlines set on one line at both widths**. Still no copy changed. **This cell read "Partial (never resolved)" and instructed every other cell to say the same; that instruction is now spent — but it was correct for as long as it stood, and the row was twice summarised as resolved before it was** |
 > | **M-03** panel overshoots the top edge, `blocking` | **Resolved** (Prompt 10, 2026-08-09) | `top: -119.0` at 844×390 → **sheet mode, `top: 0`, `overflowsViewportTop: false`**. Panel bound to `max-height: calc(100dvh - 48px)`; **no top overflow at any of the 8 viewports**, close control on-screen at all 8. **No `blocking` finding remains open** |
 > | **M-14** 32px close control | **Resolved** (Prompt 10) | 32.0 × 32.0 → **44.0 × 44.0 at all 8 viewports**, grown by padding; the `✕` glyph stays at **16px** |
 > | **M-06 / M-15** launcher size + CTA occlusion | **Resolved** (Prompt 10) | Launcher unchanged at 234 × 50 **by decision** — it now *yields*, going to `opacity: 0` / `pointer-events: none` / `aria-hidden` / out of the tab order while a `data-primary-cta` element is in view. Full 162-row sweep re-run: **primary-CTA overlaps 174 → 0** (worst case was 81.1%). **Across all interactive elements 174 → 143, 44 still >25%, worst 99.6%** — five non-CTA element classes the rule deliberately does not cover, itemised in DESIGN.md §8 and tracked as a new gap in PROGRESS.md. **0 at maximum scroll**, unchanged |

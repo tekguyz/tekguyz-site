@@ -101,8 +101,24 @@ export function CaseStudyRow({
     // poster, a status line and "How it's built" for a project the visitor had
     // not been introduced to yet, and the media block of one row landed
     // directly under the media block of the last.
+    //
+    // `tg-stack-md` STACKS these rows in the 768–1023 band (DESIGN.md §8,
+    // 2026-08-11): the 8-track split starved both halves at once — 249px of text
+    // is ~31 characters — so the band takes one full-width column instead of two
+    // narrow ones. It releases `grid-row` and `grid-column` together, because a
+    // row-1 pin in a one-column band stacks both halves into the same cell.
+    // Because DOM order is already reading order, stacking needs no `order`
+    // utility and tab order is unchanged.
+    //
+    // The `max-lg:` placements below are now overridden at every width — ≤767 by
+    // the grid reset, 768–1023 by `tg-stack-md` — and are KEPT anyway, on
+    // purpose. They are the safe degradation: if `.tg-stack-md` is ever dropped,
+    // the band falls back to §8's 8-track split rather than to the unprefixed
+    // 12-column spans, which on an 8-track grid manufacture implicit tracks and
+    // collapse the row (H-1, Prompt 8). A fallback that is currently inert is
+    // not the same as a value that never applied.
     <article
-      className={`reveal tg-container tg-grid tg-split items-start py-20 ${index > 0 ? 'border-t border-border' : ''}`}
+      className={`reveal tg-container tg-grid tg-split tg-stack-md items-start py-20 ${index > 0 ? 'border-t border-border' : ''}`}
     >
       {text}
       {media}

@@ -329,6 +329,50 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   DESIGN.md §8 — case-study rows stack in the 768–1023 band (2026-08-11).
+
+   The 8-track split starved BOTH halves at once: the text column measured 249px,
+   about 31 characters at `--text-body` against the 45–75 a measure exists to
+   hold, and the alternatives all bought one half by spending the other (4/4 is
+   the template look §0 avoids; 5/3 fixes the prose and drops the poster to 249px
+   wide, and the poster is what the `/work` index is for). So the band gets one
+   genuine column instead of two starved ones. This is the same escape `page-hero`,
+   `SectionHead`, `/contact` and `/solutions/[slug]` already take at 768 — §8's
+   reasoning was written about an oversized heading, and it generalises to prose.
+
+   `grid-row` and `grid-column` are released TOGETHER, in this one block, for the
+   same reason the ≤767 reset releases them together: the halves are pinned to
+   `grid-row: 1` on the multi-column bands so the alternation can ride on
+   `grid-column` while the DOM stays in reading order, and a pin surviving into a
+   one-column band stacks both halves into the SAME CELL. Split across two rules
+   they could disagree; here they cannot.
+
+   Unlayered and `!important` on purpose: the placements this overrides are
+   Tailwind arbitrary properties (`[grid-column:1/6]`, `[grid-row:1]`) of the same
+   (0,1,0) specificity, and two same-property utilities have no winner — only a
+   source order. §8's `motion-reduce:lg:static` note is why that is not a
+   stylistic call.
+
+   NO lower bound, deliberately, and this was nearly written the other way. A
+   `min-width: 768px` arm is the COMPLEMENTARY query to the ≤767 reset's
+   `max-width: 767px`, and a viewport can land on a fractional width where both
+   are false — measured elsewhere in this file: `innerWidth` 767 with
+   `max-width:767px` and `min-width:768px` both false. In that hairline band
+   neither rule would apply and the row would silently fall back to the 8-track
+   split. Sharing the reset's upper region instead means the two rules OVERLAP
+   rather than abut, and they set identical values there, so they cannot disagree
+   at any width. Same principle as the `closing-cta` boundary above: two
+   declarations that have to agree get the same query, never the complementary
+   one.
+--------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .tg-stack-md > * {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
+}
+
 @media (max-width: 767px) {
   .tg-grid {
     grid-template-columns: repeat(1, 1fr);

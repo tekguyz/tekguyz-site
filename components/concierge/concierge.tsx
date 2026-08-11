@@ -483,8 +483,7 @@ export function Concierge() {
                 className={capReached ? 'text-[0.75rem] leading-[1.5] text-secondary' : 'mb-[14px] text-[0.75rem] leading-[1.5] text-secondary'}
                 style={{ textWrap: 'pretty' }}
               >
-                This is a starting sketch, not a quote — pricing always comes from a real
-                conversation.
+                A starting sketch, not a quote.
               </p>
               {!capReached && (
                 <form
