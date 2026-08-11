@@ -2,10 +2,17 @@
 
 import { Resend } from 'resend';
 import { z } from 'zod';
+import { after } from 'next/server';
 import { headers } from 'next/headers';
 import { site } from '@/lib/site';
 import { checkContactLimit } from '@/lib/rate-limit';
-import { optionalPhone, optionalWebsite } from '@/lib/validation';
+import { optionalPhone, optionalWebsite, personName, stripUiCopy } from '@/lib/validation';
+import {
+  archiveFailedLead,
+  LEAD_FAILURE_MARKER,
+  LEAD_HONEYPOT_MARKER,
+  type LeadFailureStage,
+} from '@/lib/lead-archive';
 
 /**
  * THE shared lead-capture action. Called by the contact form AND the concierge
@@ -26,6 +33,38 @@ import { optionalPhone, optionalWebsite } from '@/lib/validation';
  *
  * Kept as-is: Zod validation, the minimum-fill-time check, the silent bot
  * accept, and parallel dispatch via Promise.allSettled.
+ *
+ * ---------------------------------------------------------------------------
+ * WHAT THE VISITOR WAITS FOR, AND WHAT THEY DON'T (2026-08-11)
+ *
+ * Measured against production: 7.36s to return, with every dependency awaited.
+ * Most of that is the CRM endpoint, which takes 2–5s because it awaits its own
+ * Gemini spam-shield call and its own Resend send before responding. None of
+ * that gets faster from this side, so none of it is waited on from this side.
+ *
+ * The action now returns as soon as validation and the rate limit have run, and
+ * the CRM write plus both emails happen in `after()`. Two rules fall out of
+ * that, and both are load-bearing:
+ *
+ *  1. THE RESULT DEPENDS ON VALIDATION AND THE RATE LIMIT ONLY. It previously
+ *     returned { success: false } whenever the internal notification errored —
+ *     even when the CRM write had already succeeded. That inverts the priority:
+ *     the CRM row IS the lead, email is a notification about it. And because
+ *     the CRM upserts BY EMAIL, a visitor told to try again does not create a
+ *     duplicate — they OVERWRITE their own captured enquiry with a second,
+ *     usually shorter attempt. Failing on a notification failure was destroying
+ *     the very thing it was reporting on.
+ *
+ *  2. EVERY FAILURE INSIDE after() IS RECORDED TWICE. The visitor is already
+ *     gone by then, so an unlogged failure is a lead that exists nowhere. Each
+ *     one emits a greppable marker carrying the submitter's email and an ISO
+ *     timestamp, AND persists the full payload to Upstash (lib/lead-archive).
+ *
+ * The CRM write fires EXACTLY ONCE and is never retried, for the upsert reason
+ * above: a retry from stale data can overwrite a row a later submission fixed.
+ * There is no queue and no job runner — after() plus one Upstash write is the
+ * whole mechanism.
+ * ---------------------------------------------------------------------------
  */
 
 /**
@@ -51,7 +90,12 @@ function resend(): Resend {
 }
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  /**
+   * Shape-checked, not just length-checked. The CRM enforces nothing on
+   * client_name, which is how 160 characters of scraped page prose became a
+   * lead's name. Rule in lib/validation.ts, shared with the client schema.
+   */
+  name: personName,
   email: z.email('Please enter a valid email address'),
   company: z.string().optional(),
   /**
@@ -64,7 +108,24 @@ const contactSchema = z.object({
   website: optionalWebsite,
   projectType: z.string().min(1, 'Please select a project type'),
   budget: z.string().optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
+  /**
+   * Optional HERE, min 10 on the client — a deliberate asymmetry, and the one
+   * direction of drift this file's own rules allow.
+   *
+   * Incoming copy is run through stripUiCopy first, so a message that was
+   * nothing but scraped page prose arrives blank. Blank must then be ACCEPTED
+   * and omitted from the CRM payload, not rejected: message is optional to the
+   * CRM, and the alternative is telling a visitor their submission failed over
+   * a field they never filled in. The client still asks a real person for at
+   * least 10 characters, so this looseness is only ever reached by a caller
+   * that bypassed the form.
+   */
+  message: z
+    .string()
+    .optional()
+    .refine((v) => v === undefined || v.trim() === '' || v.trim().length >= 10, {
+      message: 'Message must be at least 10 characters',
+    }),
   /**
    * Honeypot. Deliberately not a real CRM field name.
    *
@@ -89,7 +150,18 @@ export async function sendContactEmail(
   data: ContactFormData,
   source: string = 'Website Contact Form',
 ): Promise<ContactResult> {
-  const validatedFields = contactSchema.safeParse(data);
+  /**
+   * Strip site copy BEFORE validation, so a message that was only scraped prose
+   * reduces to blank and takes the "absent" path rather than the "invalid" one.
+   * Running it after would mean validating a string nobody typed.
+   */
+  const sanitized: ContactFormData = {
+    ...data,
+    name: typeof data.name === 'string' ? data.name.trim() : data.name,
+    message: typeof data.message === 'string' ? stripUiCopy(data.message) : data.message,
+  };
+
+  const validatedFields = contactSchema.safeParse(sanitized);
   if (!validatedFields.success) {
     return { success: false, error: 'Invalid fields. Please check your input and try again.' };
   }
@@ -99,7 +171,20 @@ export async function sendContactEmail(
 
   // Silently accept bots — report success, dispatch nothing. Anything that
   // looked like an error here would tell a bot exactly which field caught it.
+  //
+  // Silent to the BOT, not to us. This branch used to be invisible from the
+  // outside: a false positive (a password manager or an accessibility tool
+  // filling a hidden input) was indistinguishable from a real catch, because
+  // both produced the same nothing. The marker below carries enough shape to
+  // tell them apart — a bot fills the honeypot and pads the visible fields,
+  // a mis-filled human still has a real name and a real message. The honeypot
+  // VALUE is never logged, only its length; it is attacker-controlled text.
   if (hp_confirm && hp_confirm.trim().length > 0) {
+    console.warn(
+      `${LEAD_HONEYPOT_MARKER} at=${new Date().toISOString()} source="${source}" ` +
+        `email=${email} hpLength=${hp_confirm.trim().length} nameLength=${name.length} ` +
+        `messageLength=${message?.trim().length ?? 0} fillMs=${timestamp ? Date.now() - timestamp : 'n/a'}`,
+    );
     return { success: true };
   }
 
@@ -118,29 +203,155 @@ export async function sendContactEmail(
     }
   }
 
-  try {
-    const crmEndpoint = process.env.CRM_TRIAGE_ENDPOINT;
-    const crmPromise = crmEndpoint
-      ? fetch(crmEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            // Confirmed CRM contract. client_name and email are the only
-            // required fields; everything else is optional.
-            client_name: name,
-            email,
-            company,
-            phone,
-            website,
-            service_category: projectType,
-            // The CRM has no budget column, so it rides along in the message.
-            message: budget ? `Budget: ${budget}\n\n${message}` : message,
-            // Server-set, never a user-facing field.
-            lead_source: source,
-          }),
-        })
-      : Promise.resolve(null);
+  /**
+   * Everything below happens after the response. Nothing in it can change what
+   * the visitor is told — that decision is already made, one line down.
+   */
+  after(() => deliver({ name, email, company, phone, website, projectType, budget, message }, source));
 
+  return { success: true };
+}
+
+interface LeadFields {
+  name: string;
+  email: string;
+  company?: string;
+  phone?: string;
+  website?: string;
+  projectType: string;
+  budget?: string;
+  message?: string;
+}
+
+/**
+ * The CRM payload, built once and shared by the write and the failure record —
+ * so what gets archived on failure is literally what would have been sent, not
+ * a second construction of it that could drift.
+ *
+ * Blank optional fields are OMITTED rather than sent empty. Under upsert-by-
+ * email an empty string is a value: it would overwrite a phone number the CRM
+ * already had with nothing.
+ */
+function crmPayload(lead: LeadFields, source: string): Record<string, string> {
+  const message = lead.message?.trim() ?? '';
+  const withBudget = lead.budget
+    ? message
+      ? `Budget: ${lead.budget}\n\n${message}`
+      : `Budget: ${lead.budget}`
+    : message;
+
+  const payload: Record<string, string> = {
+    // Confirmed CRM contract. client_name and email are the only required
+    // fields; everything else is optional.
+    client_name: lead.name,
+    email: lead.email,
+    service_category: lead.projectType,
+    // Server-set, never a user-facing field.
+    lead_source: source,
+  };
+  if (lead.company?.trim()) payload.company = lead.company.trim();
+  if (lead.phone?.trim()) payload.phone = lead.phone.trim();
+  if (lead.website?.trim()) payload.website = lead.website.trim();
+  // The CRM has no budget column, so it rides along in the message.
+  if (withBudget) payload.message = withBudget;
+  return payload;
+}
+
+/** One place to record a post-response failure, so neither channel can be forgotten. */
+async function recordFailure(
+  stage: LeadFailureStage,
+  lead: LeadFields,
+  source: string,
+  payload: unknown,
+  error: unknown,
+): Promise<void> {
+  const at = new Date().toISOString();
+  const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  console.error(
+    `${LEAD_FAILURE_MARKER} stage=${stage} at=${at} email=${lead.email} source="${source}" ${detail}`,
+  );
+  await archiveFailedLead({ stage, at, source, email: lead.email, payload, error: detail });
+}
+
+/**
+ * Runs inside after(). Never throws — a throw here is a failure with no record,
+ * which is the one outcome this whole path exists to prevent.
+ */
+async function deliver(lead: LeadFields, source: string): Promise<void> {
+  const payload = crmPayload(lead, source);
+  // The CRM write and the emails are independent, and each records its own
+  // failure. They are kicked off together and settled together — the two Resend
+  // sends run in parallel with each other inside sendEmails.
+  await Promise.all([sendToCrm(lead, source, payload), sendEmails(lead, source, payload)]);
+}
+
+/** The lead itself. One request, no retry — see the upsert note at the top. */
+async function sendToCrm(
+  lead: LeadFields,
+  source: string,
+  payload: Record<string, string>,
+): Promise<void> {
+  const crmEndpoint = process.env.CRM_TRIAGE_ENDPOINT;
+  if (!crmEndpoint) {
+    await recordFailure('crm', lead, source, payload, 'CRM_TRIAGE_ENDPOINT is not set');
+    return;
+  }
+
+  try {
+    /**
+     * The timeout is 20s against a measured 2–5s endpoint: generous enough that
+     * it is never hit in normal operation, present so a hung socket cannot pin
+     * the function open for its whole duration.
+     */
+    const response = await fetch(crmEndpoint, {
+      method: 'POST',
+      // Content-Type only. The CRM's CORS allows no other header, and a custom
+      // one fails preflight.
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(20_000),
+    });
+
+    if (!response.ok) {
+      // 404 here is indistinguishable from a wrong URL or a bad secret, and 429
+      // is per-organization rather than per-IP, so the status is worth keeping.
+      await recordFailure(
+        'crm',
+        lead,
+        source,
+        payload,
+        `HTTP ${response.status}${
+          response.status === 429
+            ? ` (retry-after ${response.headers.get('retry-after') ?? 'unset'})`
+            : ''
+        }`,
+      );
+      return;
+    }
+
+    // Log the leadId, so a submission can be traced from this line to a CRM row
+    // without opening the CRM.
+    const leadId = await response
+      .json()
+      .then((body: { leadId?: string }) => body?.leadId ?? 'unreported')
+      .catch(() => 'unparseable');
+    console.info(
+      `[contact] CRM accepted leadId=${leadId} email=${lead.email} source="${source}" at=${new Date().toISOString()}`,
+    );
+  } catch (error) {
+    await recordFailure('crm', lead, source, payload, error);
+  }
+}
+
+/** Notification and confirmation. Both are ABOUT the lead, never the lead itself. */
+async function sendEmails(
+  lead: LeadFields,
+  source: string,
+  payload: Record<string, string>,
+): Promise<void> {
+  const { name, email, company, phone, website, projectType, budget, message } = lead;
+
+  try {
     const notifyPromise = resend().emails.send({
       from: `TEKGUYZ <${site.publicEmail}>`,
       to: site.formDeliveryEmail,
@@ -156,7 +367,7 @@ export async function sendContactEmail(
         `Budget: ${budget || 'N/A'}`,
         '',
         'Message:',
-        message,
+        message?.trim() || '(none given)',
       ].join('\n'),
     });
 
@@ -171,7 +382,7 @@ export async function sendContactEmail(
         'Thanks for reaching out. Your message is in, and you’ll hear back from us within one business day.',
         '',
         "Here's what you sent us:",
-        `${projectType} · ${message}`,
+        message?.trim() ? `${projectType} · ${message.trim()}` : projectType,
         '',
         'If you need to add anything, just reply to this email — it comes straight to us.',
         '',
@@ -180,50 +391,33 @@ export async function sendContactEmail(
       ].join('\n'),
     });
 
-    const [crmResult, notifyResult, confirmResult] = await Promise.allSettled([
-      crmPromise,
+    // The two sends run in parallel with each other, and neither can fail a
+    // submission any more: by the time either settles the visitor has already
+    // been told it went through, and it did.
+    const [notifyResult, confirmResult] = await Promise.allSettled([
       notifyPromise,
       confirmPromise,
     ]);
 
-    if (crmResult.status === 'rejected') {
-      console.error('CRM Webhook error:', crmResult.reason);
-    } else if (crmResult.status === 'fulfilled' && crmResult.value && 'ok' in crmResult.value) {
-      // Log the outcome either way — a silent CRM is how a lead goes missing
-      // without anyone noticing, and this is the only server-side trace of it.
-      if (!crmResult.value.ok) {
-        console.error('CRM Webhook non-ok response:', crmResult.value.status);
-      } else {
-        console.info(`[contact] CRM accepted (${crmResult.value.status}) source="${source}"`);
-      }
+    if (notifyResult.status === 'rejected') {
+      await recordFailure('notify', lead, source, payload, notifyResult.reason);
+    } else if (notifyResult.value.error) {
+      await recordFailure('notify', lead, source, payload, notifyResult.value.error);
+    } else {
+      console.info(`[contact] notification sent id=${notifyResult.value.data?.id}`);
     }
 
-    // A failed confirmation must never fail the submission — the lead is
-    // already captured at this point and the person did nothing wrong.
     if (confirmResult.status === 'rejected') {
-      console.error('Confirmation email dispatch failed:', confirmResult.reason);
-    } else if (confirmResult.status === 'fulfilled' && confirmResult.value.error) {
-      console.error('Confirmation email error:', confirmResult.value.error);
-    } else if (confirmResult.status === 'fulfilled') {
+      await recordFailure('confirm', lead, source, payload, confirmResult.reason);
+    } else if (confirmResult.value.error) {
+      await recordFailure('confirm', lead, source, payload, confirmResult.value.error);
+    } else {
       console.info(`[contact] confirmation sent id=${confirmResult.value.data?.id}`);
     }
-
-    // The internal notification is the one that decides success: if nobody at
-    // TEKGUYZ hears about the lead, the submission genuinely did not go through.
-    if (notifyResult.status === 'fulfilled') {
-      const { error } = notifyResult.value;
-      if (error) {
-        console.error('Resend API error:', error);
-        return { success: false, error: GENERIC_ERROR };
-      }
-      console.info(`[contact] notification sent id=${notifyResult.value.data?.id}`);
-      return { success: true };
-    }
-
-    console.error('Resend API dispatch failed:', notifyResult.reason);
-    return { success: false, error: GENERIC_ERROR };
   } catch (error) {
-    console.error('Contact form unexpected error:', error);
-    return { success: false, error: GENERIC_ERROR };
+    // Reached when construction itself throws — a missing RESEND_API_KEY does
+    // so before either promise exists to settle, taking both sends with it.
+    await recordFailure('notify', lead, source, payload, error);
+    await recordFailure('confirm', lead, source, payload, error);
   }
 }

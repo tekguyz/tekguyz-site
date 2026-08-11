@@ -1,13 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
+  NAME_MAX,
   PHONE_MAX_DIGITS,
   PHONE_MIN_DIGITS,
   capPhoneDigits,
+  isPlausibleName,
   isPlausiblePhone,
   isPlausibleWebsite,
+  isUiCopy,
   optionalPhone,
   optionalWebsite,
+  personName,
+  stripUiCopy,
 } from './validation';
+import { DEFAULT_DETAILS_PLACEHOLDER } from '../content/solutions';
 
 /**
  * The regression suite PROGRESS.md's Pass 3 claimed ("25 unit cases pass") and
@@ -175,5 +181,124 @@ describe('optional schemas — blank is fine, a filled value is checked', () => 
   it('accepts a filled-and-valid value on both', () => {
     expect(optionalPhone.safeParse('(954) 555-0123').success).toBe(true);
     expect(optionalWebsite.safeParse('tekguyz.com').success).toBe(true);
+  });
+});
+
+/**
+ * The boilerplate guard and the client_name shape check, both added after two
+ * real leads showed the CRM accepting things nobody typed: 73242a46 carried the
+ * /contact hero subhead as its message, e6c84f86 carried 160 characters of
+ * scraped page prose as its name. The CRM's spam shield then read that
+ * boilerplate as bot-like — correctly — and misflagged genuine enquiries.
+ *
+ * The exact strings below are the ones that were actually submitted, curly
+ * quotes and all, because that is the form they arrive in: the page renders
+ * `&rsquo;`, so a scraped value is never byte-identical to the source literal.
+ */
+
+const HERO_SUBHEAD_AS_SUBMITTED =
+  'Tell us what you’re working with and what you’re trying to fix. We’ll take it from there.';
+
+describe('isUiCopy', () => {
+  it('catches the hero subhead exactly as lead 73242a46 submitted it', () => {
+    expect(isUiCopy(HERO_SUBHEAD_AS_SUBMITTED)).toBe(true);
+  });
+
+  it('catches it with our own budget prefix in front, which is how it arrived', () => {
+    expect(isUiCopy(`Budget: $50k+\n\n${HERO_SUBHEAD_AS_SUBMITTED}`)).toBe(true);
+  });
+
+  it('catches a textarea placeholder', () => {
+    expect(isUiCopy(DEFAULT_DETAILS_PLACEHOLDER)).toBe(true);
+  });
+
+  it('catches a field placeholder submitted whole', () => {
+    expect(isUiCopy('you@company.com')).toBe(true);
+  });
+
+  it('does not flag a short placeholder appearing inside a real sentence', () => {
+    // Containment only applies to long entries — `Select one` is a substring of
+    // plenty of legitimate messages.
+    expect(isUiCopy('We have three vendors and need to select one by Friday.')).toBe(false);
+  });
+
+  it('does not flag a real message', () => {
+    expect(
+      isUiCopy('We book about 40 jobs a week in a spreadsheet and it keeps double-booking us.'),
+    ).toBe(false);
+  });
+
+  it('treats blank as not copy, so an empty optional field is never an error', () => {
+    expect(isUiCopy('')).toBe(false);
+    expect(isUiCopy('   ')).toBe(false);
+  });
+});
+
+describe('stripUiCopy', () => {
+  it('leaves a real message untouched', () => {
+    const real = 'Our intake is three people re-typing the same form. Can that be one step?';
+    expect(stripUiCopy(real)).toBe(real);
+  });
+
+  it('reduces a message that was only site copy to blank', () => {
+    expect(stripUiCopy(HERO_SUBHEAD_AS_SUBMITTED)).toBe('');
+  });
+
+  it('keeps what the visitor wrote and drops the scraped run around it', () => {
+    const mixed = `${HERO_SUBHEAD_AS_SUBMITTED} We need a booking tool for 12 vans.`;
+    expect(stripUiCopy(mixed)).toBe('We need a booking tool for 12 vans.');
+  });
+
+  it('is quote-shape agnostic — the DOM form and the source form both strip', () => {
+    const straight = HERO_SUBHEAD_AS_SUBMITTED.replace(/’/g, "'");
+    expect(stripUiCopy(straight)).toBe('');
+  });
+});
+
+describe('isPlausibleName — the client_name shape check the CRM has none of', () => {
+  it.each([
+    'Alex',
+    'Mary-Jane O’Connell',
+    'José García',
+    'María del Carmen García de la Vega',
+    '大野 智',
+  ])('accepts a real name: %s', (value) => {
+    expect(isPlausibleName(value)).toBe(true);
+  });
+
+  it('rejects the 160-character prose blob that lead e6c84f86 submitted', () => {
+    const blob =
+      'Tell us what you’re working with and what you’re trying to fix. Free conversation, ' +
+      'flat quote, no surprises — we reply within one business day. Talk to us today.';
+    expect(blob.length).toBeGreaterThan(100);
+    expect(isPlausibleName(blob)).toBe(false);
+  });
+
+  it('rejects anything over NAME_MAX characters', () => {
+    expect(isPlausibleName('a'.repeat(NAME_MAX + 1))).toBe(false);
+    expect(isPlausibleName(`${'a'.repeat(NAME_MAX - 1)}b`)).toBe(true);
+  });
+
+  it.each([
+    ['a multi-line block', 'Alex\nSecond line'],
+    ['an email address', 'alex@tekguyz.com'],
+    ['a URL', 'https://tekguyz.com'],
+    ['mid-value sentence punctuation', 'We build systems. Talk to us'],
+    ['a question', 'What do you need?'],
+    ['digits and punctuation only', '123 456'],
+    ['site copy', 'Your name'],
+  ])('rejects %s', (_label, value) => {
+    expect(isPlausibleName(value)).toBe(false);
+  });
+
+  it('rejects a value that is too short before it rejects anything else', () => {
+    expect(isPlausibleName('A')).toBe(false);
+  });
+});
+
+describe('personName schema', () => {
+  it('accepts a name and rejects prose, so both sides of the form agree', () => {
+    expect(personName.safeParse('Dana Whitfield').success).toBe(true);
+    expect(personName.safeParse(HERO_SUBHEAD_AS_SUBMITTED).success).toBe(false);
   });
 });

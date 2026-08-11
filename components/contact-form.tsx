@@ -14,7 +14,13 @@ import {
   budgetOptions,
 } from '@/content/solutions';
 import { site } from '@/lib/site';
-import { capPhoneDigits, optionalPhone, optionalWebsite } from '@/lib/validation';
+import {
+  capPhoneDigits,
+  isUiCopy,
+  optionalPhone,
+  optionalWebsite,
+  personName,
+} from '@/lib/validation';
 
 /**
  * Two steps, inside a bordered card: 1px hairline, 16px radius, 40px padding —
@@ -34,14 +40,29 @@ import { capPhoneDigits, optionalPhone, optionalWebsite } from '@/lib/validation
 
 const schema = z.object({
   projectType: z.string().min(1, 'Pick the closest match'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  // Shape as well as length. A 160-character block of scraped page prose used
+  // to pass as a name, because neither this schema nor the CRM checked for it.
+  name: personName,
   email: z.email('Please enter a valid email address'),
   company: z.string().optional(),
   // Same rules the server enforces — see lib/validation.ts. Optional means the
   // field may be blank, not that a filled value goes unchecked.
   phone: optionalPhone,
   website: optionalWebsite,
-  message: z.string().min(10, 'Tell us a little more — at least 10 characters'),
+  /**
+   * Still required of a person, and still 10 characters — the server is looser
+   * here on purpose (it accepts blank), because it also serves the concierge
+   * and anything that bypasses this form. The boilerplate refusal is the half
+   * that has to hold on BOTH sides: the placeholder never reaches the CRM as
+   * content, and a human who somehow pasted the page copy in gets told so here
+   * rather than having it silently stripped after they hit send.
+   */
+  message: z
+    .string()
+    .min(10, 'Tell us a little more — at least 10 characters')
+    .refine((v) => !isUiCopy(v), {
+      message: 'Tell us in your own words — that text is from this page.',
+    }),
   budget: z.string().optional(),
   // Not `.max(0)` on the client either: a client-side rule on a hidden field
   // makes handleSubmit fail silently and the request never reaches the server,

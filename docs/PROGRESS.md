@@ -18,6 +18,7 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 - **Prompt 13 (2026-08-10) closed the mobile queue and six D- items** — M-07 and M-08 at sub-767 (the last two open findings), plus D-01, D-02, D-03, D-05, D-06, D-10. The audit split is now **18 resolved · 1 partial (M-16, still partial)**. D-10 turned out to be a `tailwind-merge` bug affecting **every button on the site**, not a nav-only sizing error — see the section below.
 
 - **Prompt 14 (2026-08-10) closed the three specification gaps** — D-09, D-11, D-12, each written into DESIGN.md (now v2.5) before it was implemented. The D- register is **9 shipped · 3 deferred**; the three left are D-04 (specified, not yet built) and D-07/D-08, which need new captures rather than code.
+- **Prompt 15 (2026-08-11) reworked contact-action dispatch** — not a Known-Gaps item, a contract change: the CRM upserts by email and takes 2–5s, both confirmed against source and the live DB. The action now returns in **246–683ms measured** (was 3–4s) via `after()`, records every post-response failure to a log marker plus Upstash, and stops the CRM+notification write path from accepting page boilerplate as a lead's name or message. See the section below.
 
 **What actually blocks launch** (none of it a code task):
 
@@ -48,6 +49,95 @@ Mapped to the TEKGUYZ Engineering workspace's Phase 1/2/3 framework:
 | 12 | `StatusLine` hydration fix — React #418 | **Shipped** (2026-08-10) — `fbb37a6` | The one finding Prompt 7 surfaced and quarantined, now closed. Server and first client render emit a fixed `at HH:MM UTC` stamp; the relative string is taken only post-hydration, so the swap is an update rather than a mismatch. No `suppressHydrationWarning`, no empty first paint. `useSyncExternalStore` rather than `useState` + `useEffect` — the latter is a lint **error** here (`react-hooks/set-state-in-effect`). One file, no call site changed. See the section below. |
 | 14 | The three specification gaps — D-09 (proof line), D-11 (`LiveFrame` container), D-12 (`closing-cta`) | **Shipped** (2026-08-10) | Spec first, then code, for each of the three; DESIGN.md goes v2.4 → v2.5. None was a bug — each was built correctly against guidance that did not exist. The proof line's actionable half was `muted` **and** `link-underline` draws nothing at rest, so it had no affordance at all; `LiveFrame`'s padding is now stated as permanently 0, because `aspect-ratio` governs the outer box and any padding silently breaks the locked ratio it is there to enforce; and **`closing-cta`'s 200px of dead space was a boundary collision, not internal spacing** — fixed in one `:has(+ .tg-closing)` declaration, 202px → 114px, with the internal rhythm re-cut to 24 · 48 · 24 · 16. The `taps` audit script could not run (Playwright browser launch fails on this machine); its probe was replicated in-pane instead. **Also fixed in the same pass, reported by the user mid-session:** the alternating case-study rows put two posters back to back below 768px, because the alternation was carried by DOM order and a one-column grid has nothing else left — moved onto `grid-column` with a `grid-row: 1` pin. And their `gap-y-12` had never applied. See the section below. |
 | 13 | Mobile close-out — M-07, M-08 (sub-767) + D-01, D-02, D-03, D-05, D-06, D-10 | **Shipped** (2026-08-10) | The mobile queue closed: **M-07 and M-08 are resolved at every viewport**, and six of the twelve device observations with them. Two of the seven items were not what the brief said they were. **D-10's cause is `cn()`, not padding** — tailwind-merge drops `leading-none` when a later `text-*` class appears, so every button on the site rendered a 1.6 line box; the nav CTA's padding was already the standard 14×24. And **M-07/M-08 never failed at 844×390**, which the brief listed as a failing row: measured 1 line before the change and 1 after. See the section below. |
+| 15 | Contact action: `after()` dispatch, honeypot/CRM observability, boilerplate-copy and name-shape guards | **Shipped** (2026-08-11) | Not a bug fix — the CRM contract itself changed underneath the action: it upserts **by email**, and it takes 2–5s because it awaits its own Gemini spam-shield and Resend calls. The action returned in a measured 3–4s warm before, all of it spent waiting on dependencies this side can't speed up, and it failed the visitor whenever only the *notification* email errored, which under upsert-by-email meant a retry destroyed the visitor's own already-captured enquiry rather than duplicating it. Now returns as soon as validation and the rate limit pass — **246–683ms measured, warm and cold, against the real CRM and Resend** — and does the CRM write plus both emails in `after()`, each failure recorded to a greppable log marker and a 90-day Upstash record so a lead is never delivered nowhere. Two real leads had also been arriving with page boilerplate as their content (a placeholder textarea string, a 160-char scraped block as a name) and tripping the CRM's own spam shield; `lib/validation.ts` now strips known UI copy from `message` and rejects it outright from `name`. See the section below. |
+
+## Prompt 15 — the contact action stopped waiting on its own dependencies
+
+*2026-08-11. Changed: `app/actions/contact.ts`, `app/api/concierge/route.ts`,
+`lib/validation.ts` (+46 → 73 test cases in `lib/validation.test.ts`), new
+`lib/lead-archive.ts`. `docs/CANONICAL.md` §"Carrying forward the existing
+code" gained the CRM's upsert/latency contract and this change's summary.*
+
+**Not a bug fix — the CRM's own contract had never been written down**, and
+once it was (verified against source and the live DB, not re-derived), three
+things this action was doing turned out to be actively harmful rather than
+merely slow:
+
+1. **It awaited the CRM write and both emails before returning.** Measured
+   7.36s against production before this change; the endpoint itself takes
+   2–5s because it awaits its own Gemini spam-shield call and its own Resend
+   send before responding, which nothing on the site side can shorten.
+2. **It failed the *visitor* whenever only the internal notification email
+   errored** — even after the CRM write had already succeeded. Harmless on
+   its own, except the CRM **upserts by email**: a visitor told to retry
+   after a false failure doesn't create a duplicate, they overwrite their
+   own already-captured lead with a second, usually shorter attempt. The
+   error-handling was quietly destroying the exact data it was reporting a
+   problem with.
+3. **The CRM enforces no shape on `client_name` and the site sent whatever a
+   filler put in `message`.** Two real submissions arrived with the
+   `/contact` hero subhead as their message and 160 characters of scraped
+   page prose as their name — which the CRM's spam shield, correctly, read
+   as bot-like, misflagging genuine enquiries in the process.
+
+**The fix.** `sendContactEmail` now validates and rate-limits, then returns
+immediately; the CRM write and both Resend sends happen in `after()` from
+`next/server`, so nothing downstream of the response can change what the
+visitor is told. Measured on the same machine, same real backend, matched
+cold/warm pairs before and after: **4129ms → 683ms cold, 3017ms → 246ms
+warm.** The CRM write fires exactly once and is never retried — per the
+upsert contract, a retry from stale data risks overwriting a row a later
+submission already corrected.
+
+Every dependency failure inside `after()` is recorded twice, because the
+visitor is already gone by the time it happens: a greppable
+`[LEAD-DELIVERY-FAILURE]` marker (email + ISO timestamp) and the full CRM
+payload persisted to Upstash via the new `lib/lead-archive.ts`
+(`tg:lead:fail:<ISO>:<6 random chars>`, 90-day TTL, newest-first index at
+`tg:lead:fail:index`). No queue, no job runner — `after()` plus one Upstash
+write is the whole mechanism. The honeypot's silent-accept branch got the
+same treatment (`[LEAD-HONEYPOT]`, field lengths and fill time only, never
+the honeypot's own attacker-controlled value), because it used to be
+genuinely invisible — a real catch and a mis-filled accessibility tool
+produced identical nothing.
+
+**The boilerplate guard, added to `lib/validation.ts` as the two narrow
+exceptions the brief allowed.** `isUiCopy` / `stripUiCopy` import the actual
+placeholder strings from `content/solutions.ts` rather than transcribing
+them, normalise curly quotes and dashes (the page renders `&rsquo;`, so a
+scraped value is never byte-identical to source), and only treat a string as
+copy on exact match — containment only applies past a 40-character floor, so
+short entries like "Select one" don't false-positive inside a real sentence.
+`message` runs through `stripUiCopy` **before** validation, so a message that
+was only scraped prose reduces to blank and is accepted and omitted, not
+rejected — the CRM has no message requirement, and failing a visitor over a
+field they never filled would be worse than the original bug. `personName`
+adds a shape check with no script, capitalisation, or word-count assumption
+(TEKGUYZ takes international enquiries): 2–80 characters, one line, no `@`
+or URL, no mid-value sentence punctuation, and not UI copy itself. One
+consequence worth flagging explicitly: the **server** now accepts a blank
+`message` while the **client** still requires 10 characters — deliberate,
+because the server also serves the concierge, which bypasses the form
+entirely.
+
+**Verified, not asserted:** built with `.env.local` moved aside (secrets-free
+build passes), 73/73 Vitest cases including the two real submitted strings
+that exposed the original bug, and four live local runs against the real
+CRM/Resend/Upstash — normal success, CRM-down, Resend-down (missing key,
+thrown at construction), and the honeypot — each read back from server logs
+and, for the failure cases, from Upstash directly. Five submissions from one
+test address in the real CRM returned the same `leadId` five times, which is
+the upsert contract confirmed live rather than quoted. The concierge's
+shared call path was hit directly (`POST /api/concierge`) and produced its
+own CRM row with `source="AI Concierge"`, confirming `after()` fires
+correctly from a route handler too, not just a server action.
+
+**Not done in this pass:** a production measurement against `tekguyz.com`
+itself — the local numbers above are same-machine, same-backend matched
+pairs, not a substitute for the real thing once this is live. Two synthetic
+CRM rows from testing are left for a human to delete
+(`contact-action-check-2026-08-11@tekguyz.com`,
+`dana@whitfieldplumbing-test.example`).
 
 ## Prompt 14 — the three specification gaps: proof line, `LiveFrame` container, `closing-cta`
 

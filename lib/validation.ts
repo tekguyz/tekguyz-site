@@ -1,4 +1,7 @@
 import { z } from 'zod';
+// Relative, not `@/content/solutions`: this module is covered by a Vitest suite
+// that runs without a config, so it has no tsconfig path aliases to resolve.
+import { detailsPlaceholder, DEFAULT_DETAILS_PLACEHOLDER } from '../content/solutions';
 
 /**
  * Shared field rules for the contact form.
@@ -101,6 +104,159 @@ export function capPhoneDigits(value: string, max = PHONE_MAX_DIGITS): string {
   }
   return value;
 }
+
+/* -------------------------------------------------------------------------
+ * Two additions beyond the original phone/website scope, both deliberate:
+ * a boilerplate guard and a shape check for `client_name`. Everything above
+ * this line is unchanged.
+ *
+ * WHY THEY LIVE HERE. This module exists so the client schema and the server
+ * schema cannot drift, and both new rules have to hold on both sides — the
+ * client so a person gets a normal inline error, the server because the client
+ * is not the only caller (the concierge and anything POSTing the action
+ * directly both bypass it). Putting them anywhere else recreates exactly the
+ * drift this file was written to prevent.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Static UI copy that has been observed arriving as if a visitor had typed it.
+ *
+ * This is not hypothetical. Lead 73242a46 carried the /contact hero subhead as
+ * its message; lead e6c84f86 carried 160 characters of scraped page prose as
+ * its name. Automated form-fillers read visible copy and placeholders off the
+ * DOM, and the CRM's spam shield then — correctly — reads that boilerplate as
+ * bot-like, which is why genuine leads kept getting misflagged.
+ *
+ * The placeholders are IMPORTED rather than transcribed, so editing the copy
+ * cannot silently unhook the guard. The two page strings are literals because
+ * they live in JSX prose, not in a constant.
+ */
+const UI_COPY: readonly string[] = [
+  ...Object.values(detailsPlaceholder),
+  DEFAULT_DETAILS_PLACEHOLDER,
+  // Field placeholders, in DOM order.
+  'Your name',
+  'you@company.com',
+  'Company name',
+  '(xxx) xxx-xxxx',
+  'yoursite.com',
+  'Select one',
+  // /contact hero subhead + meta description.
+  "Tell us what you're working with and what you're trying to fix. We'll take it from there.",
+  "Tell us what you're working with and what you're trying to fix. Free conversation, flat quote, no surprises — we reply within one business day.",
+];
+
+/**
+ * Curly quotes and dashes are the whole reason this exists: the page renders
+ * `&rsquo;`, so the string a scraper submits is never byte-identical to the
+ * source literal. Normalising both sides is what makes the comparison hold.
+ */
+function normalizeCopy(v: string): string {
+  return v
+    .replace(/[‘’ʼ]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/[‐-―]/g, '-')
+    .replace(/ /g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * Containment is only safe for long strings. `Select one` appears inside plenty
+ * of legitimate sentences; the 89-character hero subhead does not.
+ */
+const CONTAINMENT_MIN = 40;
+
+const NORMALIZED_COPY = UI_COPY.map(normalizeCopy);
+
+/** True when the value IS site copy — exact for short entries, substring for long ones. */
+export function isUiCopy(raw: string): boolean {
+  const value = normalizeCopy(raw);
+  if (!value) return false;
+  return NORMALIZED_COPY.some(
+    (copy) => copy === value || (copy.length >= CONTAINMENT_MIN && value.includes(copy)),
+  );
+}
+
+/**
+ * Remove any long UI-copy run from a value and return what the visitor actually
+ * wrote — usually nothing, which is the point. The observed message was
+ * `Budget: $50k+\n\n<hero subhead>`: the budget prefix is ours and legitimate,
+ * the rest was never typed.
+ *
+ * Short entries are not stripped, only matched whole, for the containment
+ * reason above. A value that reduces to blank is treated as absent, never as an
+ * error — message is optional to the CRM, and failing a visitor over a field
+ * they left empty would be worse than the bug.
+ */
+export function stripUiCopy(raw: string): string {
+  let value = raw;
+  for (const entry of UI_COPY) {
+    if (normalizeCopy(entry).length < CONTAINMENT_MIN) continue;
+    value = value.replace(copyPattern(entry), ' ');
+  }
+  // Short entries are matched whole, never stripped — see CONTAINMENT_MIN.
+  return isUiCopy(value) ? '' : value.replace(/\s+\n/g, '\n').trim();
+}
+
+/**
+ * A regex that matches an entry as it appears in the DOM rather than in source:
+ * whitespace runs are interchangeable, and every quote and dash matches its
+ * typographic variants. Operating on the raw string this way avoids having to
+ * map a normalized index back onto the original characters.
+ */
+function copyPattern(entry: string): RegExp {
+  const body = entry
+    .split('')
+    .map((ch) => {
+      if (/\s/.test(ch)) return '\\s+';
+      if (/['‘’ʼ]/.test(ch)) return "['‘’ʼ]";
+      if (/["“”]/.test(ch)) return '["“”]';
+      if (/[-‐-―]/.test(ch)) return '[-‐-―]';
+      return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    })
+    .join('')
+    // The trailing period of a sentence is often dropped or kept inconsistently.
+    .replace(/\\\.$/, '\\.?');
+  return new RegExp(body, 'gi');
+}
+
+/**
+ * `client_name` shape check.
+ *
+ * The CRM enforces no length or shape on this column at all, which is how a
+ * 160-character prose blob became somebody's name. The rules are deliberately
+ * about what a name ISN'T — TEKGUYZ takes international enquiries, so anything
+ * asserting a script, a word count of two, or a capitalisation pattern would
+ * reject real people.
+ */
+export const NAME_MAX = 80;
+/** Long enough for `María del Carmen García de la Vega`; short of a sentence. */
+const NAME_MAX_WORDS = 8;
+
+export function isPlausibleName(raw: string): boolean {
+  const value = raw.trim();
+  if (value.length < 2 || value.length > NAME_MAX) return false;
+  // A name is one line. Prose and scraped blocks are not.
+  if (/[\r\n]/.test(value)) return false;
+  // Contact details and URLs have their own fields.
+  if (/[@]|https?:\/\/|www\./i.test(value)) return false;
+  // Sentence punctuation mid-value means this is prose, not a name.
+  if (/[.!?][)\]"']?\s/.test(value)) return false;
+  if (/[!?]$/.test(value)) return false;
+  if (value.split(/\s+/).length > NAME_MAX_WORDS) return false;
+  // Must actually contain a letter, in any script.
+  if (!/\p{L}/u.test(value)) return false;
+  return !isUiCopy(value);
+}
+
+export const NAME_ERROR = 'Enter your name as you’d like us to use it';
+
+export const personName = z
+  .string()
+  .min(2, 'Name must be at least 2 characters')
+  .refine(isPlausibleName, { message: NAME_ERROR });
 
 export const WEBSITE_ERROR = 'Enter a valid website, like tekguyz.com';
 export const PHONE_ERROR = 'Enter a valid phone number';

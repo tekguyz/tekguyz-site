@@ -138,8 +138,14 @@ export async function POST(req: Request) {
       );
       if (sent.success) {
         leadCaptured = true;
+        // "Accepted", not "delivered". The shared action now returns as soon as
+        // it has validated and rate-limited, and does the CRM write and both
+        // emails in after() — so at this point delivery is guaranteed to be
+        // ATTEMPTED and recorded either way, not observed to have finished.
+        // Telling the model otherwise would put a claim in the visitor's face
+        // that nothing here can actually stand behind.
         toolResult =
-          'Lead captured and delivered. Confirm to the visitor and set the expectation of a reply within one business day.';
+          'Lead captured. Confirm to the visitor and set the expectation of a reply within one business day.';
       } else {
         toolResult = `Lead delivery failed. Apologize briefly and give the visitor ${site.publicEmail} as the direct fallback.`;
       }
