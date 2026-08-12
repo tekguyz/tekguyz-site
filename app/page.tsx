@@ -79,7 +79,7 @@ export default async function HomePage() {
       </section>
 
       {/* Solutions — four full-width rows, never a four-card grid. */}
-      <section className="py-32">
+      <section className="py-20 md:py-32">
         <SectionHead
           eyebrow="What We Do"
           headline="What We Do"
@@ -94,7 +94,7 @@ export default async function HomePage() {
 
       {/* Featured Work — the full-bleed ink band. Ink in BOTH themes; in dark
           mode it's separated from the page by a hairline, not a fill change. */}
-      <section className="ink-band border-y border-border py-32">
+      <section className="ink-band border-y border-border py-20 md:py-32">
         <SectionHead
           eyebrow="Our Work"
           headline="Two we're proud of."
@@ -107,7 +107,7 @@ export default async function HomePage() {
       </section>
 
       {/* Testimonial — Review schema, no numeric rating (none exists). */}
-      <section className="py-32">
+      <section className="py-20 md:py-32">
         <div className="tg-container">
           <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
             What Clients Say
@@ -123,7 +123,7 @@ export default async function HomePage() {
           four condensed lines are the `teaser` field that content/process.ts has
           always carried for exactly this section. No numerals: DESIGN.md §4
           scopes `numeral-device` to /process and nothing else on the site. */}
-      <section className="border-t border-border py-32">
+      <section className="border-t border-border py-20 md:py-32">
         <SectionHead
           eyebrow="How We Work"
           headline="How We Work"
@@ -231,7 +231,7 @@ function BandRow({
     // its image and row 1 opened with the next one.
     <article
       data-reveal-index={index}
-      className={`reveal tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-24 border-b border-[#2A2A2C] pb-24' : 'pt-24'}`}
+      className={`reveal tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-16 md:mt-24 border-b border-[#2A2A2C] pb-16 md:pb-24' : 'pt-16 md:pt-24'}`}
     >
       {text}
       {media}

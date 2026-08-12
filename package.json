@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "vitest run && bun run scripts/generate-icons.ts && bun run scripts/check-media.ts",
+    "prebuild": "vitest run && bun run scripts/generate-icons.ts && bun run scripts/check-media.ts && bun run scripts/check-design.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
     "icons": "bun run scripts/generate-icons.ts",
-    "check:media": "bun run scripts/check-media.ts"
+    "check:media": "bun run scripts/check-media.ts",
+    "check:design": "bun run scripts/check-design.ts",
+    "audit:mobile": "node --experimental-strip-types scripts/audit-mobile.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",

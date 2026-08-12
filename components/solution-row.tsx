@@ -27,7 +27,12 @@ export function SolutionRow({
       href={`/solutions/${solution.slug}`}
       data-row
       data-reveal-index={index}
-      className={`reveal hover-row tg-grid items-center border-t border-border py-12 ${last ? 'border-b' : ''}`}
+      /* `tg-rule` is additive to `hover-row`, not a replacement for it: the
+         border still darkens (that is the row's own edge responding) and the
+         2px ink bar draws along the bottom on top of it. The bar is what makes
+         the four rows read as a list you are moving through rather than four
+         things that happen to change colour. */
+      className={`reveal hover-row tg-rule tg-grid items-center border-t border-border py-12 ${last ? 'border-b' : ''}`}
     >
       {/* 768–1023: 5/gap/6 of 12 scales to 3/gap/4 of 8. The gap track is DESIGN.md
           §3's deliberate one and survives the collapse. */}

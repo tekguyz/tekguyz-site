@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type ChangeEventHandler } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEventHandler,
+  type CSSProperties,
+} from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -211,7 +218,22 @@ export function ContactForm() {
               byte-identical. `whitespace-nowrap` on the counter is not the fix
               on its own: it makes "01 / 02" one atom, which without the room
               below would just push the whole deficit onto the title. */}
-          <div className="flex items-center justify-between gap-4 border-b border-border pb-6 max-sm:gap-3">
+          {/* The step rail. This header already ended in a hairline, so the
+              progress indicator IS that hairline drawing to 50% and then to
+              100% — the same `.tg-rule` primitive as the nav's current-page
+              bar, not a second progress mechanism bolted on. `data-on` gives
+              it the persistent ink weight; the inline custom property says how
+              far. Inline beats `.tg-rule:hover`, so pointing at the header
+              cannot make the rail claim a step the visitor has not reached.
+
+              Deliberately on the HEADER and not on the step branches: the
+              `key` discipline below is what keeps step 1's inputs from
+              becoming step 2's, and nothing here touches it. */}
+          <div
+            data-on="true"
+            style={{ '--tg-rule-scale': step === 1 ? 0.5 : 1 } as CSSProperties}
+            className="tg-rule flex items-center justify-between gap-4 border-b border-border pb-6 max-sm:gap-3"
+          >
             <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
               {step === 1 ? 'What do you need?' : 'Tell us more.'}
             </p>

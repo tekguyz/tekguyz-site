@@ -43,7 +43,7 @@ export function HomeHero({
   status: StatusResult;
 }) {
   return (
-    <section className="overflow-x-clip pt-24 pb-32">
+    <section className="overflow-x-clip pt-16 md:pt-24 pb-20 md:pb-32">
       <SequenceRoot trigger="load">
         <div data-hero-grid className="tg-container tg-grid items-center gap-y-14">
           <div style={{ gridColumn: '1 / 7' }}>

@@ -53,7 +53,7 @@ export default async function WorkPage() {
         ))}
       </div>
 
-      <div className="tg-container mt-16 pb-32">
+      <div className="tg-container mt-16 pb-20 md:pb-32">
         <GroupHead title="Projects" note="Lighter builds, same standard" />
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {projects.map((entry, i) => (

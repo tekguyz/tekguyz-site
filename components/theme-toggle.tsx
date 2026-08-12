@@ -54,6 +54,11 @@ export function ThemeToggle({ className }: { className?: string }) {
         height="18"
         viewBox="0 0 24 24"
         aria-hidden
+        /* The glyph swap is a `display` change and `display` is discrete, so
+           the swap itself cannot animate. The SVG holding both glyphs turns
+           instead, and the swap happens inside the turn — one control
+           rotating rather than two icons blinking. See globals.css. */
+        className="tg-theme-glyph"
         style={{
           display: 'block',
           fill: 'none',

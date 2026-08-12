@@ -65,7 +65,7 @@ export default function ContactPage() {
 
       <SignatureStripe />
 
-      <div className="tg-container tg-grid items-start pt-24 pb-32">
+      <div className="tg-container tg-grid items-start pt-16 md:pt-24 pb-20 md:pb-32">
         {/* 768–1023: the form card is a single column at every width — there is no
             second column for it to sit beside — so intake and its trust column
             each take all 8 tracks rather than a third of the row. */}
@@ -131,7 +131,7 @@ export default function ContactPage() {
           route needs to convey. (The controller reveals anything already on
           screen at mount without animating, so a reveal here is only ever an
           entrance for a visitor who scrolls to it.) */}
-      <section className="reveal pb-32">
+      <section className="reveal pb-20 md:pb-32">
         <div className="tg-container">
           <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
             Common Questions

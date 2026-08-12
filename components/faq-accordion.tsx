@@ -24,10 +24,13 @@ import { faq } from '@/content/faq';
  * agree that every row is collapsed and no row can pull the viewport to itself
  * on first paint.
  *
- * Panels stay in the DOM and collapse with `hidden` rather than unmounting.
- * Conditional rendering left all six `aria-controls` pointing at ids that did
- * not exist while collapsed, which is exactly the state a screen reader meets
- * on page load.
+ * Panels stay in the DOM and collapse with `.tg-collapse` rather than
+ * unmounting. Conditional rendering left all six `aria-controls` pointing at
+ * ids that did not exist while collapsed, which is exactly the state a screen
+ * reader meets on page load. `hidden` fixed that and cost the animation;
+ * `.tg-collapse` keeps the fix and animates, by flipping `visibility` on a
+ * delay instead of `display` instantly — see globals.css for why the
+ * visibility half is not optional.
  */
 export function FaqAccordion() {
   const [open, setOpen] = useState<number | null>(null);
@@ -62,7 +65,15 @@ export function FaqAccordion() {
         return (
           <div
             key={item.question}
-            className={`border-t border-border ${i === faq.length - 1 ? 'border-b' : ''}`}
+            data-open={isOpen}
+            /* `tg-rule` draws the 2px ink bar along the row's bottom edge — the
+               same primitive as the nav's current-page indicator, so "open"
+               and "you are here" are one gesture the visitor learns once.
+               `data-drawn` rather than `data-on`: an open row is a state the
+               visitor put it in, not a location, so it takes the transient
+               weight, and hovering a closed row previews the same shape. */
+            data-drawn={isOpen}
+            className={`tg-rule border-t border-border ${i === faq.length - 1 ? 'border-b' : ''}`}
           >
             <h3 className="m-0">
               <button
@@ -81,26 +92,42 @@ export function FaqAccordion() {
                 <span className="text-[1.25rem] leading-[1.3] font-semibold tracking-[-0.02em]">
                   {item.question}
                 </span>
-                <span aria-hidden className="flex-none text-[1.125rem] leading-none">
-                  {isOpen ? '−' : '+'}
-                </span>
+                {/* Two bars, one rotating — not a `+`/`−` character swap. A
+                    text swap has nothing to animate and re-rasterises the
+                    glyph mid-interaction. `.tg-mark` inherits currentColor, so
+                    it rides the trigger's muted → ink shift for free. */}
+                <span aria-hidden className="tg-mark" />
               </button>
             </h3>
             {/* Focus deliberately STAYS on the trigger when a row opens — that
                 is the ARIA pattern, and moving it into the panel would scroll
                 the row the visitor just tapped out from under their thumb. */}
+            {/* `hidden` is gone, replaced by `.tg-collapse` — a 0fr→1fr grid,
+                which is the only way to animate to a content height without
+                measuring it in JS (and a measured height is what makes an
+                accordion jump when the copy or the wrapping width changes).
+
+                The accessibility guarantee `hidden` gave for free is carried
+                by the `visibility` flip inside `.tg-collapse`, NOT by
+                overflow: a clipped box is still in the accessibility tree, and
+                without that flip a screen reader would read all six answers on
+                the conversion route while every row looked shut. The panel
+                stays mounted either way, so `aria-controls` never points at an
+                id that does not exist. */}
             <div
               id={`faq-panel-${i}`}
               role="region"
               aria-labelledby={`faq-trigger-${i}`}
-              hidden={!isOpen}
+              className="tg-collapse"
             >
-              <p
-                className="m-0 max-w-[62ch] pr-12 pb-8 text-[length:var(--text-body)] text-secondary"
-                style={{ textWrap: 'pretty' }}
-              >
-                {item.answer}
-              </p>
+              <div>
+                <p
+                  className="tg-collapse-content m-0 max-w-[62ch] pr-12 pb-8 text-[length:var(--text-body)] text-secondary"
+                  style={{ textWrap: 'pretty' }}
+                >
+                  {item.answer}
+                </p>
+              </div>
             </div>
           </div>
         );

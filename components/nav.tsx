@@ -129,7 +129,14 @@ export function Nav() {
               // way inside a 76px bar; horizontal is 4.1px each way on the
               // narrowest link (`Work`, 35.9px) into a 34px gap, so no two
               // targets in this row can touch.
-              className="tap-44 text-[14.5px] font-medium transition-colors duration-[120ms]"
+              // `tg-rule` now owns the indicator itself. It used to be a
+              // private `[data-navlink]::after` rule; it is the site's one
+              // state primitive, and the nav consumes it rather than keeping a
+              // second copy. `data-on` takes the persistent ink weight, and
+              // hovering a non-current link draws the same bar at
+              // `border-strong` — the shape previews, the weight says whether
+              // you are actually there.
+              className="tap-44 tg-rule text-[14.5px] font-medium transition-colors duration-[120ms]"
               style={{ color: isActive(l.href) ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
             >
               {l.label}

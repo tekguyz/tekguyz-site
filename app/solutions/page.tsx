@@ -43,7 +43,7 @@ export default function SolutionsPage() {
         description="Most businesses come to us with a bottleneck, not a spec. These are the four shapes that bottleneck usually takes."
       />
 
-      <section className="pb-32">
+      <section className="pb-20 md:pb-32">
         <div className="tg-container">
           {solutions.map((s, i) => (
             <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} index={i} />

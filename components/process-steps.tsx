@@ -79,7 +79,7 @@ export function ProcessSteps() {
   }, [reduced]);
 
   return (
-    <div className="tg-container tg-grid items-start pb-32">
+    <div className="tg-container tg-grid items-start pb-20 md:pb-32">
       <div className="tg-pin hidden lg:block" style={{ gridColumn: '1 / 3' }}>
         <div className="flex gap-5">
           <div
@@ -133,7 +133,7 @@ export function ProcessSteps() {
             // No data-reveal-index: the stagger is for grids that enter
             // together. These four are a screen apart, so an index would just
             // add up to 240ms of dead time before a step that arrives alone.
-            className={`reveal relative border-t border-border pt-18 pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
+            className={`reveal relative border-t border-border pt-18 pb-16 md:pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
           >
             <span
               aria-hidden

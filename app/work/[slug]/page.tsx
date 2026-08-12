@@ -145,7 +145,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
 
       <SignatureStripe />
 
-      <div className="tg-container tg-grid items-start pt-10 pb-32">
+      <div className="tg-container tg-grid items-start pt-10 pb-20 md:pb-32">
         <div
           className={`max-lg:[grid-column:1/7] ${isCase ? '[grid-column:1/9]' : '[grid-column:1/8]'}`}
         >

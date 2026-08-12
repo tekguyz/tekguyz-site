@@ -71,7 +71,7 @@ export default async function SolutionDetailPage({
 
       <SignatureStripe />
 
-      <div className="tg-container pt-10 pb-32">
+      <div className="tg-container pt-10 pb-20 md:pb-32">
         <Link
           href="/solutions"
           className="tap-44 link-underline text-[0.875rem] font-semibold text-secondary"
@@ -151,7 +151,7 @@ export default async function SolutionDetailPage({
         </div>
 
         {related.length > 0 && (
-          <div className="mt-24">
+          <div className="mt-16 md:mt-24">
             <p className="mb-8 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
               The builds
             </p>

@@ -69,7 +69,7 @@ export default function PrivacyPage() {
 
       <PageHero eyebrow="Legal" headline="Privacy Policy" />
 
-      <section className="pb-32">
+      <section className="pb-20 md:pb-32">
         <div className="tg-container">
           <p className="text-[0.875rem] text-secondary">
             <span className="tabular">Last updated: July 13, 2026</span>

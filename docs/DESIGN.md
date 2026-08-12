@@ -1,8 +1,74 @@
-# TEKGUYZ Design System v2.5
+# TEKGUYZ Design System v2.6
 
-*Becomes `/docs/DESIGN.md` in the repo. Supersedes v2.4.*
+*Supersedes v2.5.*
 
-**Governed by:** TEKGUYZ-REBUILD-CANONICAL.md · **Copy:** TEKGUYZ-COPY-DECK-V2.md
+**Governed by:** `docs/CANONICAL.md` · **Copy:** `docs/COPY.md`
+
+## How to read a value in this document
+
+This document has been wrong in public more than once — §4 claimed the nav
+border faded over 200ms when no surface ever implemented that, §4 called
+`flourish-mark` home-only while it rendered on every route, and three "open
+blockers" quoted from it in August 2026 turned out to be already built. The
+cause is structural: it was written as one voice, so a measured fact and an
+untested aspiration looked identical on the page.
+
+**From v2.6, every value carries its provenance, and a value that cannot be
+given one gets deleted — because a number nobody can source is a number nobody
+checked.** Three kinds, and they are not interchangeable:
+
+| Marker | Means | If it disagrees with the code |
+| --- | --- | --- |
+| **[measured]** | Read out of the code, with the file it came from and the date. | **The document is wrong.** Re-measure and fix the document. |
+| **[decided]** | A choice, with a date and a reason, usually naming what was rejected. Cannot be derived from code. | **The code is wrong.** This is the half worth keeping. |
+| **[export]** | The approved Claude Design export's value, not yet built. | Neither is wrong yet. It is a target, and it says so. |
+
+### The values moved out. This file is the reasons.
+
+**Every token now lives in [`TOKENS.md`](TOKENS.md), where it is enforced** —
+`bun run check:design` runs on every `prebuild` and fails the build when that
+file and `app/globals.css` disagree, naming the token and both values. **40
+tokens are under test**: colour, type, radius, container, motion, density.
+
+That split is the actual fix for what went wrong here. This document was 89KB
+doing two jobs at once, and a reader could not tell a measured fact from an
+untested aspiration, so the measured half rotted. Now:
+
+| You want | Go to |
+| --- | --- |
+| A **value** — "what is `--dur-base`?" | `TOKENS.md`. It is checked, so quote it freely. |
+| A **reason** — "why no overshoot?" | Here. |
+| A **mechanism** — "why is `LiveFrame`'s padding 0?" | Here. Prose, uncheckable, still authoritative. |
+
+**Do not copy a token value back into this file.** One source per number is the
+entire point; a second copy is a second thing to drift.
+
+### Conversion status, honestly
+
+| Section | State |
+| --- | --- |
+| All token values | Moved to `TOKENS.md`, **enforced** |
+| §6 motion, §8.0 density | Rewritten with provenance |
+| §4 components, §5 status-line, §7 dark mode, §9 do/don't | **Still the old single voice.** Treat with suspicion until converted. |
+
+That remainder is genuine work, not a formatting pass: each claim has to be
+measured against the code before it can be marked, and §4 alone is 60+ claims
+across 15 components. **Prose is not checkable by the guard and never will be** —
+"the status block sits beneath the frame" has no token to compare against.
+
+## Changelog (v2.5 → v2.6)
+
+- **§6 Motion rewritten as a three-layer system.** The site shipped with an
+  *entrance* layer and a thin *hover* layer and **no state layer at all** —
+  nothing animated when something on the page changed. That absence, not the
+  count of motion ideas, is what made it read like a document.
+- **`.tg-rule` — one state primitive, drawn from the nav's own indicator.**
+  Generalised rather than invented; the nav's active-page bar already did it
+  and was the only thing that did.
+- **§8 gains a density scale.** Mobile was desktop values with one `sm:` step,
+  chosen per component. Two tokens now carry it, and the exemplar
+  (`testimonial.tsx`) is rebuilt against them.
+- **The provenance convention above.**
 
 ## Changelog (v2.4 → v2.5)
 
@@ -125,14 +191,9 @@ Semantic: `success` #10B981 · `warning` #F59E0B · `error` #EF4444.
 
 **Never** in body copy, never in a headline, never as a body-text substitute anywhere. It's a functional accent typeface, the same restraint logic as the four accent colors — earns its place by doing a specific job, not by being sprinkled in for texture.
 
-```css
---text-hero:    clamp(2.5rem, 6vw, 4.5rem);    /* 40 -> 72px, measured against the real headline */
---text-display: clamp(2rem, 4.5vw, 3.5rem);    /* 32 -> 56px  */
---text-title:   clamp(1.375rem, 2vw, 1.75rem); /* 22 -> 28px  */
---text-body:    1.0625rem;                     /* 17px       */
---text-sm:      0.875rem;                      /* 14px       */
---text-caption: 0.75rem;                       /* 12px       */
-```
+**The type scale lives in [`TOKENS.md`](TOKENS.md#type), where it is enforced.**
+Do not copy the values here — one source per number is the whole point of the
+split.
 
 **Why 72px, exactly:** the first correction (76px) was still one step off — it wraps to 4 lines, not 3, in the unchanged 596px hero text column. 72px is the measured value that actually hits 3 lines with the CTA row inside the first viewport, confirmed against the real headline, not estimated. **The rule that governs is the constraint, not this pixel value**: this headline must wrap to no more than 3 lines on desktop, and the primary CTA row must always be visible without scrolling. If the headline copy changes length in the future, re-measure against that rule — don't assume 72px still holds.
 
@@ -168,8 +229,11 @@ rather than erroring:
 - Detail pages, and `/work` index case-study rows: content cols 1–8, sticky meta rail cols 10–12. The media column (image, status-line, caption, `build-narrative`) should read as intentionally composed against the text column, not trail off into empty space — see `build-narrative` in §4.
 - **Only the closing CTA band is centered.** Everything else is left-anchored.
 
-**Radius:** 4px inputs · 6px tags/pills · 8px buttons · 12px cards · 16px large containers · full for dots/badges.
-**Elevation:** flat. Hairlines only, no shadows anywhere. Hover lift comes from position, not shadow.
+**Radius, container and spacing values live in
+[`TOKENS.md`](TOKENS.md#radius-container-spacing), where they are enforced.**
+
+**Elevation: flat. [decided, standing]** Hairlines only, no shadows anywhere.
+Hover lift comes from position, not shadow.
 
 **The boundary above `closing-cta` — one gap, counted once.** Every route ends the
 same way: a section closing at full 128px bottom rhythm, then the signature
@@ -324,36 +388,177 @@ Replaces the decorative "LIVE" badge everywhere.
 
 ## 6. Motion
 
-| Layer | Tool |
-| --- | --- |
-| Scroll reveals | IntersectionObserver toggling a class, plain CSS transition |
-| Route transitions + shared elements | View Transitions API (`<ViewTransition>`) |
-| Presence, gesture, layout animation only | Motion |
+*Rewritten 2026-08-12 (Build Phase 1). Provenance markers per the note at the
+top of this document.*
 
-```css
---ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
---ease-hover:    cubic-bezier(0.4, 0, 0.2, 1);
---dur-fast: 120ms;  --dur-base: 240ms;
---dur-entrance: 500ms;  --dur-page: 320ms;
-```
+### 6.0 What was actually wrong
 
-**Hero load sequence** (initial load only, never re-triggers): flourish dots stagger 60ms apart → headline fades up (32px→0) at +180ms → subhead at +80ms → CTA row at +80ms → hero media scales 0.97→1 concurrently with the CTA row, not chained after. Resolves under ~900ms.
+**[measured 2026-08-12]** Before this rewrite the site's entire motion surface
+was: `.reveal` (fade + 16px rise), `.hover-card` (−3px lift), `.hover-row` (4px
+shift + border darken), `.link-underline` (background-size draw),
+`.status-dot-live` (pulse), `.shimmer-seg` (concierge), and the View Transition
+group rules. `motion` was imported in 2 files.
 
-**Closing CTA echo:** the sequence above replays for the closing CTA **minus the flourish dots** (one-per-page rule wins) — same stagger timing on headline → subhead → trust lines → button, `once: true`, triggered on scroll-into-view instead of page load.
+The useful way to read that list is not "one idea repeated." It is that two of
+the three layers below existed and **the middle one did not exist at all**:
 
-**Scroll reveals:** trigger at 15% into viewport. `translateY(16px)→0` + opacity, `--dur-entrance`, `--ease-entrance`, once. Stagger 80ms, max 4 concurrent. Featured Work rows reveal text + media as one unit. **Correction:** earlier versions specified `animation-timeline: view()` for this — technically wrong, since that API scrubs with scroll position (reverses on scroll-up) and can't express "once." Use IntersectionObserver adding a class on first intersection, removed observation after. Content must never render at `opacity:0` with no observer attached (a real bug this caused) — default to visible, reveal is progressive enhancement.
+| Layer | What it covers | State before this rewrite |
+| --- | --- | --- |
+| **Entrance** | An element arrives on screen for the first time. | Present, one recipe, applied everywhere. |
+| **State** | Something already on screen **changes**. | **Absent.** The FAQ toggled `hidden` and swapped the character `+` for `−`. Form steps swapped with no transition. The theme toggle was instant. |
+| **Feedback** | The visitor points at, presses, or focuses something. | Thin — three rules. Press did ship (`active:scale-[0.98]`, `button.tsx`); focus did not. |
 
-**Shared element:** build card poster + title carry a `view-transition-name` matching the detail page hero.
+A site with entrances and no state changes is a document that fades in. That is
+the whole of the complaint, and it is why the fix is not "more animation."
 
-**Hover:** cards `translateY(-3px)` + hairline→`border-strong`, `--dur-base`. Solution rows shift title and arrow 4px right. Text CTAs draw an underline left-to-right via `background-size`, 180ms.
+### 6.1 Why the motion tokens are what they are
 
-**Scroll behavior:** native. No Lenis, no smooth-scroll library. `scroll-behavior: smooth` for anchor jumps only.
+**The values live in [`TOKENS.md`](TOKENS.md#motion), where they are enforced.**
+This section is the reasoning, which is not checkable and is the reason this
+document still exists.
 
-**One pinned moment, `/process` only** — steps pin while a progress rail advances.
+**[decided 2026-08-12] No easing on this site overshoots.** `--ease-state` was
+chosen against a spring with a 1.32 overshoot, built and compared side by side.
+The spring reads as *performed*; every other signal on this site — the measured
+status line, the real timestamps, the HEAD checks — says *reported*. An
+overshoot is a small lie about physics on a site whose argument is that it does
+not exaggerate. **Rejected with it:** applying a longer, heavier motion register
+site-wide. It is the framework default dressed as a choice.
 
-**Banned, no exceptions:** parallax, gradient blobs, spinning shapes, marquees, particles, glassmorphism, cursor-followers, magnetic buttons, skeleton shimmer, uniform fade-everything-in, scroll-jacking beyond the single pinned section.
+**[decided 2026-08-12]** The two surfaces that genuinely *arrive and leave* —
+the concierge panel and the nav drawer — are the documented exception and may
+carry more weight than a row toggle. Presence is a different problem from state.
+Phase 2 owns the concierge; do not pre-empt it here.
 
-**`prefers-reduced-motion`** kills every entrance, the status pulse, the closing-CTA echo, and the pin.
+### 6.2 `.tg-rule` — the state primitive
+
+**[decided 2026-08-12]** Every state change on this site uses **one gesture: a
+2px hairline that draws from the left.** The visitor learns it once and then
+reads it everywhere — the nav's current page, a solution row under the pointer,
+an open FAQ answer.
+
+**This is a generalisation, not an invention, and that is the argument for it.**
+The nav's active-page indicator already drew exactly this bar — 2px, ink,
+`scaleX(0)` from `left center` — and it was the only thing on the site that did.
+`.tg-rule` is that rule with the selector widened; the nav now consumes it
+instead of owning a private copy, because two implementations of one idea drift.
+
+Two weights, and the split is what keeps it legible:
+
+| Hook | Colour | Meaning |
+| --- | --- | --- |
+| `:hover` / `:focus-visible` | `border-strong` | Transient. "This is a thing." |
+| `data-drawn="true"` | `border-strong` | Held by component state — an open accordion row. |
+| `data-on="true"` | `fg` | Persistent. "You are here." Nav only. |
+
+**[measured]** The persistent weight is written `.tg-rule[data-on='true']::after`
+at (0,3,0) so it beats the transient `.tg-rule:hover::after` at (0,2,0) **on
+specificity, never on source order** — §8's rule about not resting a
+wayfinding-bearing declaration on a utility sort applies to hand-written CSS too.
+
+**[measured]** It is `::after`, and there is no third option: `.tap-44` /
+`.tap-24` own `::before` site-wide and the nav links carry both.
+
+**Currently applied to** `nav.tsx` links, `solution-row.tsx`,
+`faq-accordion.tsx` rows. **[decided]** Not applied to `project-card` (it lifts;
+two signals for one hover is noise), the footer link columns (a drawn bar on 14
+links is wallpaper), or `case-study-row` (not an interactive row).
+
+### 6.3 State — what each interaction does
+
+**[measured 2026-08-12]**
+
+- **Accordion** — `.tg-collapse`, `grid-template-rows: 0fr → 1fr` over
+  `--dur-state`. The `+`/`−` character swap is gone: `.tg-mark` is two 1.5px
+  bars, one rotating 90° → 0°, inheriting `currentColor` so it rides the
+  trigger's muted → ink shift. The row draws its `.tg-rule`.
+  **The `visibility` flip inside `.tg-collapse` is not decoration** — a clipped
+  0fr box is still in the accessibility tree, so without it a screen reader
+  reads all six answers on the conversion route while every row looks shut. It
+  flips to `visible` instantly on open and to `hidden` on a `--dur-state` delay
+  on close.
+- **Contact form, step rail** — the step header already ended in a hairline, so
+  the progress indicator **is** that hairline, drawn to 50% and then 100%.
+  `.tg-rule` takes a partial value through `--tg-rule-scale`, which is what
+  makes this the same object as the nav indicator rather than a second progress
+  mechanism. **[measured]** The variable is set on the element (so it inherits
+  to the pseudo) and inline, so it beats `.tg-rule:hover` without `!important`
+  — pointing at the header cannot make the rail claim a step the visitor has
+  not reached. **[decided]** It goes on the header, never on the step branches:
+  the distinct `key`s on those branches are what stop step 1's inputs becoming
+  step 2's, and nothing here touches them.
+- **Theme toggle** — the SVG holding both glyphs rotates 90°, and the
+  `display`-driven glyph swap happens inside the turn. `display` is discrete
+  and cannot be animated; the container can. **[decided] Rejected: transitioning
+  page colours on theme change** — it requires a transition on `:root` covering
+  background and colour, which then applies to every descendant inheriting them
+  and competes with every element that has its own colour transition. A
+  site-wide cost for a moment most visitors see once.
+- **Hover, rows** — border darkens (unchanged) **and** `.tg-rule` draws. The
+  4px title/arrow shift is unchanged.
+- **Hover, cards** — unchanged, −3px.
+- **Press** — `active:scale-[0.98]`, `--dur-instant`. Already shipped.
+- **Focus** — **[decided]** deliberately *not* transitioned. The only way to add
+  it site-wide is a `transition` shorthand on a low-specificity group selector,
+  and a shorthand resets every transition property, so every element carrying
+  `.link-underline` / `.hover-card` / `.reveal` / `.tg-yield` would either lose
+  its own transition or silently drop the new one depending on which rule won.
+  An instant focus ring is also correct on its own terms.
+
+### 6.4 Entrance — unchanged, and why
+
+**[measured]** Scroll reveals trigger at 15% into viewport,
+`translate: 0 16px → none` + opacity, `--dur-entrance`, `--ease-entrance`, once.
+Stagger 80ms. The rise uses `translate`, never `transform`.
+
+**[measured]** `.reveal` alone does nothing; the hidden state lives on
+`.reveal-armed`, added only by `components/reveal.tsx` from an effect. Content
+is visible by default. `animation-timeline: view()` is wrong here — it scrubs
+with scroll and cannot express "once."
+
+**Hero load sequence [export]:** flourish dots stagger 60ms → headline fades up
+(32px→0) at +180ms → subhead +80ms → CTA row +80ms → hero media scales 0.97→1
+concurrently with the CTA row. Resolves under ~900ms. Closing-CTA echo replays
+the same timing minus the dots, `once: true`, on scroll-into-view.
+
+**Shared element [export]:** build card poster + title carry a
+`view-transition-name` matching the detail page hero.
+
+### 6.5 Scroll and the pin
+
+**[measured]** Native scrolling. No Lenis, no smooth-scroll library.
+`scroll-behavior: smooth` for anchor jumps only. One pinned moment, `/process`
+only — `.tg-pin`, a real rule inside `@media (min-width: 1024px)`, overridden by
+`position: static !important` in the reduced-motion block below it. The progress
+rail reads the step elements' own positions, never a fraction of the section's
+scrollable range.
+
+### 6.6 Banned — and what this list is actually rejecting
+
+**[decided, standing]** Parallax · gradient blobs · spinning shapes · marquees ·
+particles · glassmorphism · cursor-followers · magnetic buttons · skeleton
+shimmer · smooth-scroll libraries · scroll-jacking beyond the single pinned
+section.
+
+**This list rejects one aesthetic: the cyberpunk / hacker-terminal / dev-portfolio
+look. It is not a cap on motion, and it was read as one for the life of the
+project** — which is how the site ended up with a single entrance recipe and no
+state layer. Motion outside this list is wanted. The three-layer system above is
+the guidance that was missing when this bullet was the only thing here.
+
+### 6.7 `prefers-reduced-motion`
+
+**[measured]** Kills every entrance, the status pulse, the closing-CTA echo, the
+pin, and the concierge shimmer. **Hides nothing.** The universal reset zeroes
+`animation-duration` and `transition-duration` but **not `transition-delay`** —
+so `.tg-collapse`'s delayed `visibility` close is zeroed explicitly, or a
+reduced-motion visitor watches a painted answer sit in a zero-height box for
+320ms. Under reduce the accordion still opens; it snaps.
+
+**Development note:** this machine runs with Windows animations off
+(`MinAnimate = 0`), so `reduce` matches machine-wide. Verify wiring by computed
+style and class count, say which half was proved, and leave the motion-enabled
+check to the user.
 
 ---
 
@@ -370,6 +575,91 @@ Never gate color logic on `useTheme()` or mount state when a CSS `dark:` variant
 ---
 
 ## 8. Responsive
+
+### 8.0 The density scale
+
+*Added 2026-08-12 (Build Phase 1).*
+
+**[measured 2026-08-12]** The problem was never a component. It was that **every
+component picked its own mobile values by hand, with one `sm:` step**, so there
+was no such thing as "the mobile value" for anything. `testimonial.tsx` was the
+named exemplar: `px-8 py-14` / 72px glyph / `mt-14` / `pt-8` / a
+`flex-wrap gap-8` attribution row carrying four items, which at 360px broke to
+four stacked lines with 32px between each — roughly 200px of a ~500px component
+spent on attribution.
+
+**[decided 2026-08-12]** Two tokens — `--pad-container` (inside a card or panel)
+and `--gap-group` (between grouped elements within one component). **The values
+live in [`TOKENS.md`](TOKENS.md#density), where all three breakpoint values of
+each are enforced.** Components declare *intent*; the value resolves per width.
+Mobile-first, so a component that declares nothing gets the dense value rather
+than the loose one.
+
+### Section rhythm — the spec existed and was never built
+
+**[measured 2026-08-12] §3 has said "128px desktop, 80px mobile" since v2.2. The
+mobile half did not exist.** All 14 section-rhythm call sites across every route
+shipped the desktop value at every width — `/contact` ran `pt-24 pb-32` (96px /
+128px) at 360px, and the home page spent ~416px of a 360px-wide viewport on
+padding that the document already said should not be there. This was not a
+component problem, which is why the earlier read of "mobile density" as a
+`testimonial.tsx` problem understated it by an order of magnitude.
+
+**[decided] Implemented at the call sites, mobile-first, NOT behind a token.**
+`py-20 md:py-32`, `pt-16 md:pt-24`, `pb-16 md:pb-24`, `mt-16 md:mt-24`. Three
+reasons it is not a `--rhythm-section` token:
+
+1. `pt-24` (96px) is a page-top value, not the section rhythm, and one token
+   cannot be both.
+2. Mobile-first means the bare utility is the ≤767px value and `md:` raises it —
+   so the responsive intent is legible in the JSX, where the person changing it
+   is looking.
+3. **A token would have had to beat `.tg-grid`'s unlayered rules and the
+   `:has(+ .tg-closing)` rule by cascade.** Written this way it does not compete
+   with them at all.
+
+**[measured] The `closing-cta` invariant survives, and was re-measured rather
+than assumed.** `:where(section, div):has(+ .tg-closing)` is unlayered at 40px
+base / 64px ≥768px, so it still beats the utility and still only ever *reduces*:
+the section before the closing band measures **40px at 360px and 64px at
+1440px**, unchanged by this work. The earlier decision to defer section rhythm
+"because the 128px invariant would break" was over-cautious — the invariant is
+about the rule being able to reduce, and a smaller starting value cannot
+threaten that.
+
+**[decided] Two rules that generalise beyond the exemplar:**
+
+1. **Display-scale ornaments clamp *with* the type scale, not against it.** A
+   72px quote glyph beside a 24px quote is a desktop ratio shipped to a phone.
+   The glyph now shares the hero clamp (`clamp(2.5rem, 6vw, 4.5rem)`), so its
+   desktop ceiling is unchanged and only the floor moves.
+2. **A row that `flex-wrap`s is not a mobile layout — it is a desktop layout
+   coming apart.** Any row carrying more than two items becomes an *explicit*
+   stack below the container break, so its gaps are chosen rather than inherited
+   from whatever the wrap happened to do. **[measured]** The chosen gap is
+   constrained by `tap-44`, not by taste: two 44px hit overlays on ~21px painted
+   links need ≥44px centre-to-centre, so the stack gap is 24px. This is the same
+   arithmetic that set the footer's 22px column gap. Re-check any change with
+   `bun run scripts/audit-mobile.ts taps`, which hit-tests rather than measuring
+   rects.
+
+**[measured 2026-08-12] Result on the exemplar, at 360px: 798.7px → 561px, a
+30% reduction.** The pre-existing estimate in `STATUS.md` was "~500px"; the real
+figure was 799. Estimates of this were low by 60%, which is the argument for
+measuring every one of the remaining conversions rather than pattern-matching
+them.
+
+**[decided] A `ch` measure cap is NOT a desktop artefact — this was tried and
+reverted.** Releasing `max-w-[34ch]` on the quote below 768px looked like the
+same class of fix as the glyph and is not: at 360px the card's content box is
+264px, so the cap is not binding and removing it changes nothing, and the width
+where it *would* bind is ~700px, where releasing it hands the quote a 650px
+measure. Measure caps stay at every width.
+
+**Converted so far:** `testimonial.tsx`. Everything else still hand-picks, and
+each conversion is a real measurement rather than a find-and-replace.
+
+### 8.1 Breakpoints
 
 | Breakpoint | Changes |
 | --- | --- |

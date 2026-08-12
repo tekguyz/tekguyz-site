@@ -184,14 +184,43 @@
 }
 
 :root {
-  --dur-fast: 120ms;
-  --dur-base: 240ms;
-  --dur-entrance: 500ms;
-  --dur-page: 320ms;
+  /* DESIGN.md §6 — five durations, each with one job. A value that cannot be
+     given a job does not belong here. */
+  --dur-instant: 90ms; /* focus ring, press */
+  --dur-fast: 120ms; /* colour and opacity only */
+  --dur-base: 240ms; /* state: draw, rotate, shift */
+  --dur-state: 320ms; /* a box changes size: collapse, step */
+  --dur-entrance: 500ms; /* scroll reveal */
+  --dur-page: 320ms; /* view transition */
+
   --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Settles into place and stops. No overshoot anywhere on this site — an
+     overshoot says "performed," and every other signal here says "measured." */
+  --ease-state: cubic-bezier(0.2, 0.6, 0.2, 1);
+
   --container-max: 1280px;
   --container-pad: 32px;
+
+  /* DESIGN.md §8 — the density scale. Components declare intent and the value
+     resolves per width, instead of each one hand-picking `py-14 sm:py-18`.
+     Mobile-first: the bare :root IS the ≤767px value. */
+  --pad-container: 24px; /* inside a card or panel */
+  --gap-group: 28px; /* between grouped elements within one component */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --pad-container: 32px;
+    --gap-group: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --pad-container: 64px;
+    --gap-group: 56px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -612,25 +641,70 @@
   border-color: var(--tg-border-strong);
 }
 
-/* Active-page indicator: a 2px ink bar 10px under the link, wiping in from the
-   left over 240ms rather than appearing instantly. Ink, never accent. */
-[data-navlink] {
+/* ---------------------------------------------------------------------------
+   `.tg-rule` — THE state primitive. DESIGN.md §6.
+
+   A hairline that draws from the left. Every state change on this site uses
+   this one gesture, so that a visitor learns it once and then reads it
+   everywhere: the nav's current page, a solution row under the pointer, an
+   open FAQ answer, the step you have reached in the form.
+
+   This is a generalisation, not an invention. The nav's active-page indicator
+   already did exactly this — 2px, ink, `scaleX(0)` from `left center`, 240ms —
+   and it was the only thing on the site that did. Shipping a second copy of
+   the same mechanism under a different selector is how two implementations of
+   one idea drift apart, so the nav now consumes this rule rather than owning
+   a private one.
+
+   ::after, and that is a real constraint rather than a preference. `.tap-44` /
+   `.tap-24` own ::before site-wide, and the nav links carry BOTH — a 44px hit
+   overlay and a page indicator. One pseudo per job; there is no third.
+
+   Two weights, and the split is the whole reason this is legible:
+     :hover / :focus-visible  -> `border-strong`. Transient. "This is a thing."
+     [data-on='true']         -> `fg`. Persistent. "You are here."
+   The persistent weight is written at (0,3,0) so it beats the transient
+   (0,2,0) on specificity rather than on source order — DESIGN.md §8's note on
+   why an accessibility- or wayfinding-bearing declaration never rests on a
+   source-order win applies here directly.
+--------------------------------------------------------------------------- */
+.tg-rule {
   position: relative;
 }
-[data-navlink]::after {
+.tg-rule::after {
   content: '';
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -10px;
+  /* Default sits on the element's own bottom edge; the nav overrides to -10px
+     because its indicator hangs below the link's box by the export's value. */
+  bottom: -1px;
   height: 2px;
-  background: var(--tg-fg);
-  transform: scaleX(0);
+  background: var(--tg-border-strong);
+  /* Driven by a custom property rather than by competing `transform`
+     declarations, so the bar can also be drawn PARTWAY — which is what makes
+     the contact form's step rail the same object as the nav's indicator
+     instead of a second progress mechanism. The variable is set on the
+     element, not the pseudo, so it inherits; an inline value therefore beats
+     every selector below without needing !important. */
+  transform: scaleX(var(--tg-rule-scale, 0));
   transform-origin: left center;
-  transition: transform 240ms var(--ease-entrance);
+  transition: transform var(--dur-base) var(--ease-state);
 }
-[data-navlink][data-on='true']::after {
-  transform: scaleX(1);
+.tg-rule:hover,
+.tg-rule:focus-visible,
+.tg-rule[data-drawn='true'] {
+  --tg-rule-scale: 1;
+}
+.tg-rule[data-on='true'] {
+  --tg-rule-scale: 1;
+}
+.tg-rule[data-on='true']::after {
+  background: var(--tg-fg);
+}
+
+[data-navlink]::after {
+  bottom: -10px;
 }
 
 /* Text CTAs draw an underline left-to-right via background-size. */
@@ -645,6 +719,130 @@
 .link-underline:focus-visible {
   background-size: 100% 1px;
 }
+
+/* ---------------------------------------------------------------------------
+   `.tg-collapse` — a box that changes height. DESIGN.md §6.
+
+   `grid-template-rows: 0fr -> 1fr` is the only way to animate to a content
+   height without measuring it in JS, and measuring it in JS is what makes an
+   accordion jump when the copy changes or the text reflows at a new width.
+
+   THIS REPLACES `hidden` ON THE PANEL, and the swap has to carry the
+   accessibility guarantee `hidden` was giving for free. A collapsed box with
+   `overflow: hidden` is still in the accessibility tree and its contents are
+   still tab-reachable — a screen reader would read every FAQ answer on the
+   conversion route while every row looks shut. So the inner element also flips
+   `visibility`, which does remove it from the tree:
+
+     open   -> visible immediately (no delay), so the content is announced as
+               the box grows.
+     closed -> hidden, DELAYED by the full collapse duration, so the content is
+               still painted while the box is shrinking and only disappears
+               once there is nothing left to see.
+
+   The panel stays mounted either way. Conditional rendering left all six
+   `aria-controls` pointing at ids that did not exist while collapsed, which is
+   exactly the state a screen reader meets on page load; that fix is not being
+   undone here.
+--------------------------------------------------------------------------- */
+.tg-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-state) var(--ease-state);
+}
+.tg-collapse > * {
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-state);
+}
+[data-open='true'] .tg-collapse {
+  grid-template-rows: 1fr;
+}
+[data-open='true'] .tg-collapse > * {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* The content inside a collapse arrives after the box, not with it — 4px is
+   the whole move. Any more and the answer reads as a separate animation
+   rather than as the box's own contents settling. */
+.tg-collapse-content {
+  opacity: 0;
+  translate: 0 -4px;
+  transition:
+    opacity var(--dur-state) var(--ease-state),
+    translate var(--dur-state) var(--ease-state);
+}
+[data-open='true'] .tg-collapse-content {
+  opacity: 1;
+  translate: none;
+}
+
+/* ---------------------------------------------------------------------------
+   `.tg-mark` — the +/- indicator, rotated rather than replaced.
+
+   Swapping the character `+` for `-` is a text change, so there is nothing to
+   animate and the glyph flickers as the font re-rasterises. Two 1.5px bars
+   with one rotating 90deg -> 0deg is the same symbol, actually animated, and
+   it inherits `currentColor` so it tracks the trigger's muted -> ink shift for
+   free.
+--------------------------------------------------------------------------- */
+.tg-mark {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+.tg-mark::before,
+.tg-mark::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  background: currentColor;
+  translate: 0 -50%;
+}
+.tg-mark::after {
+  rotate: 90deg;
+  transition: rotate var(--dur-base) var(--ease-state);
+}
+[data-open='true'] .tg-mark::after {
+  rotate: 0deg;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme toggle — the control acknowledges the press.
+
+   Which glyph shows is decided by CSS (`.dark` on <html>), never by React
+   state, and that is not changing. `display` is discrete, so the swap itself
+   cannot be animated — but the SVG that CONTAINS both glyphs can turn, and the
+   swap happens inside the turn. The result is one control rotating, not two
+   icons blinking.
+
+   REJECTED: transitioning page colours on theme change. It needs a transition
+   on `:root` covering background and colour, which then applies to every
+   descendant that inherits them and to every element whose own colour
+   transition would now be competing — a site-wide cost for a one-off moment,
+   on a toggle most visitors press at most once.
+--------------------------------------------------------------------------- */
+.tg-theme-glyph {
+  transition: rotate var(--dur-base) var(--ease-state);
+}
+.dark .tg-theme-glyph {
+  rotate: 90deg;
+}
+
+/* Focus rings are deliberately NOT transitioned. It was considered and
+   rejected: the only way to add one site-wide is a `transition` shorthand on a
+   low-specificity group selector, and a shorthand resets every transition
+   property — so every element already carrying `.link-underline`,
+   `.hover-card`, `.reveal` or `.tg-yield` would either lose its own transition
+   or silently drop the new one depending on which rule won. An instant focus
+   ring is also simply correct: a keyboard user tracking their position wants
+   the indicator to be there, not arriving. */
 
 /* ---------------------------------------------------------------------------
    Tap targets — DESIGN.md §8's two-tier policy, implemented once.
@@ -761,6 +959,21 @@
 
   html {
     scroll-behavior: auto;
+  }
+
+  /* `.tg-collapse` closes its inner element's `visibility` on a DELAY, and the
+     universal reset above only zeroes transition-DURATION. Left alone, a
+     reduced-motion visitor closing an FAQ row would watch a fully painted
+     answer sit in a zero-height box for 320ms. Delay has to be zeroed too, and
+     the collapse itself must still work — it snaps open, it does not stop
+     opening. Nothing here hides content that was visible. */
+  .tg-collapse > *,
+  .tg-collapse-content {
+    transition-delay: 0s !important;
+  }
+  .tg-collapse-content {
+    opacity: 1 !important;
+    translate: none !important;
   }
 
   .reveal,
