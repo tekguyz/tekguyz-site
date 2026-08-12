@@ -148,15 +148,18 @@ Decided in advance so the choice is not retro-fitted to the data:
 **Superseded by the P1 result (§2).** This section predicted all four classes
 transient on the strength of the degeneracy thesis, which is withdrawn. The
 prediction now has no supporting argument and is recorded only as what was
-expected before measurement. §3's probe decides the classes. Meta-rail and inline `link-underline` are mid-page by construction;
-prev/next nav and the footer sit below the closing CTA and are expected to be
-reached only while the launcher is yielded.
+expected before measurement. §3's probe decides the classes.
 
-**That expectation is conditional on P1 (§4) and is not load-bearing.** If the
-footer outgrows the viewport at 360–390, prev/next and footer are expected to
-land **static** at those viewports and the plan changes shape. Both outcomes are
-written down here so neither can be presented afterwards as the one that was
-anticipated.
+The withdrawn prediction, kept as the record of what was expected: *"meta-rail
+and inline `link-underline` are mid-page by construction; prev/next nav and the
+footer sit below the closing CTA and are expected to be reached only while the
+launcher is yielded."* **The second clause is now measured false** — the footer
+outgrows every mobile viewport, so nothing below it is reached while the
+launcher is yielded.
+
+Both outcomes were written down in advance so neither could be presented
+afterwards as the one that was anticipated. The one that landed is the one that
+invalidated the author's own thesis.
 
 Stating the expectation in advance is deliberate: it makes a contradicting
 measurement visible as a contradiction rather than something to be rationalised.
