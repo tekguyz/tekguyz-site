@@ -1,156 +1,285 @@
 # Launcher-Overlap Re-Partition Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. **Do not dispatch subagents** — Tasks 5 and 6 share a verdict function that must stay identical, and every gate here is a stop-and-report-to-the-human gate.
 
 **Goal:** Re-partition the four untouched non-CTA launcher-overlap classes (meta-rail, inline `link-underline`, prev/next nav, footer) into transient-during-scroll and static-after-user-action, on a discriminator that can actually produce both verdicts, and update the three documents carrying the stale claim.
 
-**Architecture:** Measure the two facts that can invalidate the spec's §4 decision *first* (Tasks 1–2). Only then build the yielded-state probe, prove it can emit `static` against a known case (Task 4), and run it (Task 5). Documentation last, once verdicts exist.
+**Architecture:** Measure the two facts that can invalidate spec §4 *first* (Tasks 1–2), against a production build. Then extract the verdict rule into one tested pure function (Task 4) so the positive control (Task 5) exercises the same code the class partition uses (Task 6). Documentation last, once verdicts exist.
 
-**Tech Stack:** Playwright 1.62 driven by `node --experimental-strip-types`, Next 16 dev server on port 3210, existing harness `scripts/audit-mobile.ts`.
+**Tech Stack:** Playwright 1.62 driven by `node --experimental-strip-types`, Next 16 production build served locally, existing harness `scripts/audit-mobile.ts`, Vitest for the pure verdict function.
 
 **Spec:** `docs/superpowers/specs/2026-08-11-launcher-overlap-partition-design.md`
 
 ## Global Constraints
 
-- **Runner is `node --experimental-strip-types`, from the project directory.** Not Bun — post-reinstall Bun still times out at 60s. Never `bun run scripts/audit-mobile.ts`.
-- **`data-primary-cta` is not widened, on any element, under any outcome.** Hard rule, CLAUDE.md.
-- **Never measure a page whose stylesheet 404s.** `main()` already guards this; any ad-hoc script must too. A stale server on 3210 serves a previous build.
-- **Kill servers by port, never by process name:** `netstat -ano | grep ":3210" | grep LISTENING`, then `taskkill //PID <pid> //F`.
-- **The machine matches `prefers-reduced-motion: reduce`** (`MinAnimate = 0`). Do not change it, do not emulate around it. `.tg-yield` gets `transition: none` under `reduce`, so the launcher's presented state resolves instantly — this makes the opacity read binary and cleaner, not less valid.
-- **Historical numbers are FROZEN.** 143 / 44 / 99.6% and 140 / 45 / 100.0% are never edited in place. New numbers are published as a separate named baseline plus a dated erratum.
-- **A partially resolved class is never summarised as resolved.** Either every summary carries the qualifier, or it is split into its own ID. CLAUDE.md hard rule.
-- **`[NEEDS COPY: …]` conventions do not apply here** — this pass writes no user-facing copy.
-- **Report what was not finished.** Never describe unfinished work as complete.
+- **Runner is `node --experimental-strip-types`, from the project directory.** Never Bun — post-reinstall Bun still times out at 60s.
+- **Serve a PRODUCTION build, not dev.** `bun run build` was confirmed passing 2026-08-11 (exit 0, all routes prerendered), so spec §6's production path is open and there is no reason to fall back. **Dev is forbidden here for a specific reason:** Next's dev-tools indicator is a real DOM element in the bottom corner — the launcher's corner — and would be matched by the `INTERACTIVE` query and returned by `elementFromPoint` at the overlap centre, contaminating `topmostAtOverlapCentre` and appearing as its own overlap pair.
 
-**Server for every measuring task:**
-```bash
-npx next dev -p 3210
-```
-Confirm `http://localhost:3210/` returns 200 and its referenced stylesheet returns 200 before trusting any number.
+  ```bash
+  bun run build
+  npx next start -p 3210
+  ```
+
+  If a future run finds `prebuild` blocking on the off-ratio media guard, the fallback is dev **plus `devIndicators: false` in `next.config.ts`**, and the report must state that dev was used and why. That is not the expected path.
+- **`data-primary-cta` is not widened, on any element, under any outcome.** Hard rule, CLAUDE.md.
+- **Never measure a page whose stylesheet 404s.** A stale server on 3210 serves a previous build. `main()` guards this; ad-hoc probes must too.
+- **Kill servers by port, never by process name:** `netstat -ano | grep ":3210" | grep LISTENING`, then `taskkill //PID <pid> //F`.
+- **`.audit/` is gitignored (`.gitignore:35`).** Do **not** `git add` anything under it — the command errors and the commit lands with the script but no evidence. Evidence numbers are transcribed into the report and into `docs/` at Task 7.
+- **The machine matches `prefers-reduced-motion: reduce`** (`MinAnimate = 0`). Do not change it. `.tg-yield` gets `transition: none` under `reduce`, so the launcher's presented state resolves instantly — which makes the opacity read binary and cleaner, not less valid.
+- **Historical numbers are FROZEN.** 143 / 44 / 99.6% and 140 / 45 / 100.0% are never edited in place.
+- **A partially resolved class is never summarised as resolved.** CLAUDE.md hard rule.
+- **Report what was not finished.** Never describe unfinished work as complete.
 
 ---
 
-### Task 1: Measure P1 — does `closing-cta` survive to maximum scroll?
+### Task 1: Shared probe primitives — one definition, five consumers
 
-This is the fact that can invalidate spec §4. If `footer-dark` is taller than the viewport, `closing-cta` leaves the viewport at maximum scroll, the IntersectionObserver releases, and the launcher is re-presented over the footer — a static-at-rest overlap with no user action behind it.
-
-`components/footer-dark.tsx` stacks a masthead, tagline, a 44px social row, a hairline, and **three link columns that stack vertically below 768px** because `.tg-grid` is one column there. P1 failing at 360–390 is expected, not hypothetical. Measure it before anything else.
+Five probes need the same launcher lookup and the same presented-state test. Two locators means two possible elements and a partition drawn across both.
 
 **Files:**
-- Create: `scripts/probe-p1.ts` (throwaway; deleted in Task 6)
-- Read only: `components/footer-dark.tsx`, `components/closing-cta.tsx:98`
+- Create: `scripts/lib/probe-shared.ts`
 
 **Interfaces:**
-- Consumes: nothing.
-- Produces: `.audit/p1.json` — an array of `{ route, viewport, footerHeight, viewportHeight, ctaIntersectingAtMaxScroll, launcherOpacity, launcherPointerEvents, launcherPresented }`. Task 3 reads `launcherPresented` semantics from here; Task 5 cites this file.
+- Produces: `INIT_SCRIPT` (string), installed via `page.addInitScript`, defining `window.__tg` with `findFab()`, `presentedState(fab)`, `inView(el)`, `overlapArea(a,b)`, `sel(el)`. Consumed by Tasks 2, 3, 5, 6. Also exports `VPS`, `CLOSING_CTA_ROUTES`, `ALL_ROUTES`, and `settleToBottom` for Playwright-side use.
 
-- [ ] **Step 1: Start the dev server and confirm the stylesheet**
+- [ ] **Step 1: Write the module**
+
+```ts
+/**
+ * One definition of every primitive the overlap probes share. Two locators for
+ * the launcher would mean two possible elements and a partition drawn across
+ * both — audit-mobile.ts's own `findFab` is reproduced here verbatim.
+ */
+
+/** Routes that render <ClosingCta />, derived from the JSX usages, not sampled. */
+export const CLOSING_CTA_ROUTES = [
+  '/',
+  '/privacy',
+  '/process',
+  '/solutions',
+  '/solutions/ai-voice-agents',
+  '/work',
+  '/work/field-photo-reports',
+] as const;
+
+/** /contact renders no ClosingCta — the export has no closing CTA there. */
+export const ALL_ROUTES = [...CLOSING_CTA_ROUTES, '/contact'] as const;
+
+/** Labels match audit-mobile.ts's VIEWPORTS. Dark runs at narrow + standard,
+ *  the two the existing sweep already darkens (audit-mobile.ts:570). */
+export const VPS = [
+  { label: 'narrow', width: 360, height: 800, dsf: 3 },
+  { label: 'se', width: 375, height: 667, dsf: 2 },
+  { label: 'standard', width: 390, height: 844, dsf: 3 },
+  { label: 'large-phone', width: 414, height: 896, dsf: 2 },
+  { label: 'landscape', width: 844, height: 390, dsf: 3 },
+] as const;
+
+export const DARK_VPS = ['narrow', 'standard'] as const;
+
+export const INIT_SCRIPT = `
+window.__tg = {
+  /* Verbatim from audit-mobile.ts:474-477. */
+  findFab: () =>
+    [...document.querySelectorAll('button')].find((b) =>
+      (b.textContent || '').includes('Ask about your project'),
+    ) || null,
+
+  presentedState: (fab) => {
+    if (!fab) return { launcherOpacity: null, launcherPresented: false };
+    const cs = getComputedStyle(fab);
+    const opacity = Number(cs.opacity);
+    return {
+      launcherOpacity: opacity,
+      launcherPointerEvents: cs.pointerEvents,
+      launcherAriaHidden: fab.getAttribute('aria-hidden'),
+      launcherPresented: opacity > 0.5 && cs.pointerEvents !== 'none',
+    };
+  },
+
+  inView: (el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.bottom > 0 && r.top < window.innerHeight && r.width > 0 && r.height > 0;
+  },
+
+  overlapArea: (a, b) => {
+    const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+    const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+    return w > 0 && h > 0 ? w * h : 0;
+  },
+
+  sel: (el) => {
+    if (!el) return null;
+    const id = el.id ? '#' + el.id : '';
+    const cls = typeof el.className === 'string' && el.className
+      ? '.' + el.className.trim().split(/\\s+/).slice(0, 3).join('.')
+      : '';
+    return el.tagName.toLowerCase() + id + cls;
+  },
+
+  INTERACTIVE: 'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
+};
+`;
+
+/**
+ * scrollHeight is not stable at `load`: footer images and the font swap both
+ * change it afterwards. Scrolling once can leave the page ~200px above the
+ * bottom — exactly where the P1 answer flips. Loop until the height stops
+ * moving, then confirm we are actually at the bottom.
+ */
+export async function settleToBottom(page: import('playwright').Page) {
+  return page.evaluate(async () => {
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    let prev = -1;
+    let guard = 0;
+    while (prev !== document.documentElement.scrollHeight && guard++ < 12) {
+      prev = document.documentElement.scrollHeight;
+      window.scrollTo(0, prev);
+      await sleep(250);
+    }
+    await sleep(250);
+    const maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
+    return {
+      scrollY: Math.round(window.scrollY),
+      maxScrollY: Math.round(maxScrollY),
+      atBottom: Math.abs(window.scrollY - maxScrollY) <= 2,
+      settleIterations: guard,
+    };
+  });
+}
+```
+
+- [ ] **Step 2: Verify the route list against source**
 
 ```bash
-npx next dev -p 3210
+grep -rn "<ClosingCta" --include=*.tsx app/ | sed 's/:.*//' | sort -u
 ```
-In a second shell:
+
+Expected exactly 7 files: `app/page.tsx`, `app/privacy/page.tsx`, `app/process/page.tsx`, `app/solutions/page.tsx`, `app/solutions/[slug]/page.tsx`, `app/work/page.tsx`, `app/work/[slug]/page.tsx`. **`/privacy` does carry one** (`app/privacy/page.tsx:97`) — confirmed, not assumed.
+
+If the count is not 7, `CLOSING_CTA_ROUTES` is wrong and must be corrected before anything runs.
+
+- [ ] **Step 3: Verify the footer selector against source**
+
+```bash
+grep -n "<footer" components/footer-dark.tsx
+```
+Expected: `<footer className="footer-dark border-t"` — so `footer.footer-dark` is correct. Confirmed 2026-08-11. If it has changed, update every probe; a null `footerHeight` silently drops rows from evidence.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add scripts/lib/probe-shared.ts
+git commit -m "Add shared probe primitives so five probes agree on one launcher"
+```
+
+---
+
+### Task 2: Measure P1 — does `closing-cta` survive to maximum scroll?
+
+The fact that can invalidate spec §4. `components/footer-dark.tsx` stacks a masthead, tagline, 44px social row, hairline, and **three link columns that stack vertically below 768px** because `.tg-grid` is one column there. P1 failing at 360–390 is expected, not hypothetical.
+
+**Files:**
+- Create: `scripts/probe-p1.ts`
+
+**Interfaces:**
+- Consumes: `scripts/lib/probe-shared.ts`.
+- Produces: `.audit/p1.json` — rows of `{ route, viewport, theme, footerHeight, viewportHeight, ctaCount, ctaIntersectingAtMaxScroll, launcherPresented, atBottom }`.
+
+- [ ] **Step 1: Build and serve production**
+
+```bash
+bun run build
+```
+Expected: exit 0. Then in a second shell:
+```bash
+npx next start -p 3210
+```
+Confirm:
 ```bash
 curl -s http://localhost:3210/ | grep -o 'href="[^"]*\.css[^"]*"' | head -1
 ```
-Then `curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3210<that href>` — expected `200`. If not 200, kill by port and restart; do not proceed.
+and that that href returns 200. Do not proceed otherwise.
 
-- [ ] **Step 2: Write the P1 probe**
-
-Create `scripts/probe-p1.ts`:
+- [ ] **Step 2: Write the probe**
 
 ```ts
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { INIT_SCRIPT, VPS, DARK_VPS, ALL_ROUTES, CLOSING_CTA_ROUTES, settleToBottom } from './lib/probe-shared.ts';
 
 const BASE = process.env.AUDIT_BASE ?? 'http://localhost:3210';
 
-/* The three narrow viewports the spec names, plus the two the launcher
-   overlaps were originally found at. Labels match audit-mobile.ts's VIEWPORTS. */
-const VPS = [
-  { label: 'narrow', width: 360, height: 800 },
-  { label: 'se', width: 375, height: 667 },
-  { label: 'standard', width: 390, height: 844 },
-  { label: 'large-phone', width: 414, height: 896 },
-  { label: 'landscape', width: 844, height: 390 },
-];
-
-/* /contact is the non-degenerate route (no closing-cta). The rest are a
-   representative slice of the 7 that carry one, including both dynamic
-   segments, since page height differs and page height is what pushes the
-   CTA out of view. */
-const ROUTES = [
-  '/contact',
-  '/',
-  '/work',
-  '/work/field-photo-reports',
-  '/solutions/ai-voice-agents',
-  '/process',
-  '/privacy',
-];
-
 const browser = await chromium.launch();
-const rows: unknown[] = [];
+const rows: any[] = [];
 
 for (const vp of VPS) {
-  const ctx = await browser.newContext({
-    viewport: { width: vp.width, height: vp.height },
-    isMobile: vp.width < 768,
-    hasTouch: vp.width < 768,
-    deviceScaleFactor: 2,
-  });
-  const page = await ctx.newPage();
+  const themes: ('light' | 'dark')[] = (DARK_VPS as readonly string[]).includes(vp.label)
+    ? ['light', 'dark']
+    : ['light'];
 
-  for (const route of ROUTES) {
-    await page.goto(BASE + route, { waitUntil: 'networkidle' });
-    // The launcher only exists past 0.85 x innerHeight, so it must be
-    // scrolled into existence before anything about it can be read.
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    // The IntersectionObserver and the .tg-yield transition both need a beat.
-    await page.waitForTimeout(500);
-
-    const row = await page.evaluate(() => {
-      const footer = document.querySelector('footer.footer-dark');
-      const cta = document.querySelector('[data-primary-cta]');
-      const launcher = [...document.querySelectorAll('button')].find((b) =>
-        (b.textContent || '').includes('Ask about your project'),
-      );
-
-      const inView = (el: Element | null) => {
-        if (!el) return null;
-        const r = el.getBoundingClientRect();
-        return r.bottom > 0 && r.top < window.innerHeight && r.width > 0 && r.height > 0;
-      };
-
-      const cs = launcher ? getComputedStyle(launcher) : null;
-      const opacity = cs ? Number(cs.opacity) : null;
-
-      return {
-        footerHeight: footer ? Math.round(footer.getBoundingClientRect().height) : null,
-        viewportHeight: window.innerHeight,
-        ctaPresent: !!cta,
-        ctaIntersectingAtMaxScroll: inView(cta),
-        launcherOpacity: opacity,
-        launcherPointerEvents: cs ? cs.pointerEvents : null,
-        launcherAriaHidden: launcher ? launcher.getAttribute('aria-hidden') : null,
-        // The single derived field the rest of the plan keys off.
-        launcherPresented: opacity !== null && opacity > 0.5 && cs!.pointerEvents !== 'none',
-        scrollY: Math.round(window.scrollY),
-        maxScrollY: Math.round(document.documentElement.scrollHeight - window.innerHeight),
-      };
+  for (const theme of themes) {
+    const ctx = await browser.newContext({
+      viewport: { width: vp.width, height: vp.height },
+      isMobile: vp.width < 768,
+      hasTouch: vp.width < 768,
+      deviceScaleFactor: vp.dsf,
+      colorScheme: theme,
     });
+    await ctx.addInitScript({ content: INIT_SCRIPT });
+    const page = await ctx.newPage();
 
-    rows.push({ route, viewport: vp.label, ...row });
-    console.log(
-      `p1 ${vp.label.padEnd(12)} ${route.padEnd(30)} footer=${row.footerHeight} vh=${row.viewportHeight} ctaInView=${row.ctaIntersectingAtMaxScroll} launcherPresented=${row.launcherPresented}`,
-    );
+    for (const route of ALL_ROUTES) {
+      // 'networkidle' is deprecated and flaky; 'load' plus the settle loop is
+      // stronger, because what matters is scrollHeight being stable, not the
+      // network being quiet.
+      await page.goto(BASE + route, { waitUntil: 'load' });
+      const settle = await settleToBottom(page);
+
+      const row = await page.evaluate(() => {
+        const t = (window as any).__tg;
+        const footer = document.querySelector('footer.footer-dark');
+        const fab = t.findFab();
+
+        /* EVERY data-primary-cta, not the first. Home carries two — the hero
+           CTA and closing-cta — and querySelector returns the hero, which is
+           far out of view at maximum scroll. Reading that as "P1 fails" would
+           fabricate the exact result this probe exists to detect. */
+        const ctas = [...document.querySelectorAll('[data-primary-cta]')];
+
+        return {
+          footerHeight: footer ? Math.round(footer.getBoundingClientRect().height) : null,
+          viewportHeight: window.innerHeight,
+          ctaCount: ctas.length,
+          ctaIntersectingAtMaxScroll: ctas.length ? ctas.some((c) => t.inView(c)) : null,
+          ...t.presentedState(fab),
+        };
+      });
+
+      rows.push({ route, viewport: vp.label, theme, ...settle, ...row });
+      console.log(
+        `p1 ${vp.label.padEnd(12)} ${theme.padEnd(5)} ${route.padEnd(30)} footer=${row.footerHeight} vh=${row.viewportHeight} ctas=${row.ctaCount} ctaInView=${row.ctaIntersectingAtMaxScroll} presented=${row.launcherPresented} atBottom=${settle.atBottom}`,
+      );
+    }
+    await ctx.close();
   }
-  await ctx.close();
 }
 
 await browser.close();
 await mkdir('.audit', { recursive: true });
 await writeFile('.audit/p1.json', JSON.stringify(rows, null, 2));
+
+/* Self-check: every closing-cta route must report at least one CTA. A zero
+   means the route list or the selector is wrong, and no P1 verdict from this
+   run is trustworthy. */
+const bad = rows.filter(
+  (r) => (CLOSING_CTA_ROUTES as readonly string[]).includes(r.route) && !(r.ctaCount > 0),
+);
+const notAtBottom = rows.filter((r) => !r.atBottom);
+console.log('SELF-CHECK ctaCount==0 on closing-cta routes:', bad.length);
+console.log('SELF-CHECK rows not at bottom:', notAtBottom.length);
+if (bad.length || notAtBottom.length) console.log('DO NOT TRUST THIS RUN');
 console.log('done: p1');
 ```
 
@@ -160,125 +289,74 @@ console.log('done: p1');
 node --experimental-strip-types scripts/probe-p1.ts
 ```
 
-Expected: 35 rows, no errors. Every row must have a non-null `footerHeight` and `launcherOpacity` — a null means the selector missed and the row is not evidence.
+Expected: 56 rows (5 viewports + 2 dark repeats = 7 contexts × 8 routes). Both self-checks must print `0`. If either does not, **stop** — the run is not evidence.
 
-- [ ] **Step 4: Read the result and record the verdict**
+- [ ] **Step 4: Read the P1 verdict**
 
-Two things to extract, and write both into the run notes before moving on:
+1. **P1 per route × viewport × theme.** On the 7 `closing-cta` routes, `ctaIntersectingAtMaxScroll === true` → P1 holds there. Any `false` → **P1 fails there**, and footer/prev-nav at that viewport are expected `static`.
+2. **`/contact` sanity.** `ctaCount` may be > 0 (the form's buttons) but `ctaIntersectingAtMaxScroll` should be `false`, and `launcherPresented` therefore `true`. That confirms `/contact` as the non-degenerate route.
+3. **Footer vs viewport.** Compare `footerHeight` to `viewportHeight` at 360 / 375 / 390. This is the mechanism behind any P1 failure and belongs in the report as a number, not an inference.
 
-1. **P1 per route × viewport.** `ctaIntersectingAtMaxScroll === true` everywhere → P1 holds, spec §4's no-feeder decision stands. Any `false` where `ctaPresent === true` → **P1 fails there**, and Task 5's footer/prev-nav verdict at that viewport is expected to be `static`.
-2. **`/contact` sanity.** `ctaPresent` may be `true` (the form's buttons) but `ctaIntersectingAtMaxScroll` should be `false` — the form is near the top. If so, `launcherPresented` must be `true`, and `/contact` is confirmed as the non-degenerate route the spec claims.
+**If `launcherPresented` is `false` on `/contact` at maximum scroll, stop and report** — something other than `data-primary-cta` is yielding the launcher and spec §2 needs revisiting.
 
-**If `launcherPresented` is `false` on `/contact` at maximum scroll, stop and report.** That would mean something other than `data-primary-cta` is yielding the launcher, and the spec's §2 reasoning needs revisiting before any probe is built.
-
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit (script only — `.audit/` is gitignored)**
 
 ```bash
-git add scripts/probe-p1.ts .audit/p1.json
+git add scripts/probe-p1.ts
 git commit -m "Measure P1: is closing-cta still in view at maximum scroll
 
-The spec's no-feeder decision assumes it is. footer-dark stacks its three
-link columns below 768px, so this is measured rather than assumed."
+Reads every [data-primary-cta], not the first: home carries two and the
+hero one is far out of view at the bottom, which would have fabricated a
+P1 failure. Production build, settled scroll height, light + dark."
 ```
+
+**GATE — stop here and report the P1 numbers to the user before Task 3.** If P1 fails at 360–390, Tasks 3–7 change from a documentation pass into a mechanism decision, and that decision is the user's.
 
 ---
 
-### Task 2: Measure the `/contact` non-degenerate max-scroll case
+### Task 3: Measure the `/contact` non-degenerate max-scroll case
 
-Task 1 establishes whether the launcher is *presented* on `/contact` at maximum scroll. This task establishes what, if anything, *overlaps* it there — the reading that makes Prompt 10's empty result real evidence for the footer class rather than a degenerate one.
+What, if anything, overlaps the launcher on the one route where it is presented at the bottom.
 
 **Files:**
-- Create: `scripts/probe-contact-bottom.ts` (throwaway; deleted in Task 6)
+- Create: `scripts/probe-contact-bottom.ts`
 
 **Interfaces:**
-- Consumes: `.audit/p1.json` (for `launcherPresented` on `/contact`).
-- Produces: `.audit/contact-bottom.json` — `{ viewport, launcherPresented, overlaps: [{ selector, text, coveredFraction, topmostAtOverlapCentre }] }`.
+- Consumes: `scripts/lib/probe-shared.ts`, `.audit/p1.json`.
+- Produces: `.audit/contact-bottom.json` — `{ viewport, theme, launcherPresented, overlaps: [{ selector, text, coveredFraction, topmostAtOverlapCentre, inFooter }] }`.
 
 - [ ] **Step 1: Write the probe**
 
-Create `scripts/probe-contact-bottom.ts`:
+Same context/theme loop as Task 2, `/contact` only. After `settleToBottom`:
 
 ```ts
-import { chromium } from 'playwright';
-import { mkdir, writeFile } from 'node:fs/promises';
+      const row = await page.evaluate(() => {
+        const t = (window as any).__tg;
+        const fab = t.findFab();
+        if (!fab) return { launcherPresented: false, reason: 'launcher not found', overlaps: [] };
 
-const BASE = process.env.AUDIT_BASE ?? 'http://localhost:3210';
-const VPS = [
-  { label: 'narrow', width: 360, height: 800 },
-  { label: 'se', width: 375, height: 667 },
-  { label: 'standard', width: 390, height: 844 },
-  { label: 'large-phone', width: 414, height: 896 },
-  { label: 'landscape', width: 844, height: 390 },
-];
+        const state = t.presentedState(fab);
+        const fr = fab.getBoundingClientRect();
+        const overlaps: any[] = [];
 
-const browser = await chromium.launch();
-const rows: unknown[] = [];
-
-for (const vp of VPS) {
-  const ctx = await browser.newContext({
-    viewport: { width: vp.width, height: vp.height },
-    isMobile: vp.width < 768,
-    hasTouch: vp.width < 768,
-    deviceScaleFactor: 2,
-  });
-  const page = await ctx.newPage();
-  await page.goto(BASE + '/contact', { waitUntil: 'networkidle' });
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await page.waitForTimeout(500);
-
-  const row = await page.evaluate(() => {
-    const launcher = [...document.querySelectorAll('button')].find((b) =>
-      (b.textContent || '').includes('Ask about your project'),
-    );
-    if (!launcher) return { launcherPresented: false, reason: 'launcher not found', overlaps: [] };
-
-    const cs = getComputedStyle(launcher);
-    const presented = Number(cs.opacity) > 0.5 && cs.pointerEvents !== 'none';
-    const fr = launcher.getBoundingClientRect();
-
-    const sel = (el: Element) => {
-      const id = el.id ? `#${el.id}` : '';
-      const cls = typeof el.className === 'string' && el.className
-        ? '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.')
-        : '';
-      return `${el.tagName.toLowerCase()}${id}${cls}`;
-    };
-
-    const INTERACTIVE = 'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
-    const overlaps: unknown[] = [];
-
-    for (const el of document.querySelectorAll(INTERACTIVE)) {
-      if (el === launcher || launcher.contains(el) || el.contains(launcher)) continue;
-      const er = el.getBoundingClientRect();
-      if (er.width === 0 || er.height === 0) continue;
-      const w = Math.min(fr.right, er.right) - Math.max(fr.left, er.left);
-      const h = Math.min(fr.bottom, er.bottom) - Math.max(fr.top, er.top);
-      if (w <= 0 || h <= 0) continue;
-      const cx = (Math.max(fr.left, er.left) + Math.min(fr.right, er.right)) / 2;
-      const cy = (Math.max(fr.top, er.top) + Math.min(fr.bottom, er.bottom)) / 2;
-      const hit = document.elementFromPoint(cx, cy);
-      overlaps.push({
-        selector: sel(el),
-        text: (el.textContent || '').trim().slice(0, 44),
-        coveredFraction: +((w * h) / (er.width * er.height)).toFixed(3),
-        topmostAtOverlapCentre: hit ? sel(hit) : null,
-        // Is the covered element inside the footer? That is the class this
-        // measurement is evidence about.
-        inFooter: !!el.closest('footer.footer-dark'),
+        for (const el of document.querySelectorAll(t.INTERACTIVE)) {
+          if (el === fab || fab.contains(el) || el.contains(fab)) continue;
+          const er = el.getBoundingClientRect();
+          if (er.width === 0 || er.height === 0) continue;
+          const area = t.overlapArea(fr, er);
+          if (area <= 0) continue;
+          const cx = (Math.max(fr.left, er.left) + Math.min(fr.right, er.right)) / 2;
+          const cy = (Math.max(fr.top, er.top) + Math.min(fr.bottom, er.bottom)) / 2;
+          overlaps.push({
+            selector: t.sel(el),
+            text: (el.textContent || '').trim().slice(0, 44),
+            coveredFraction: +(area / (er.width * er.height)).toFixed(3),
+            topmostAtOverlapCentre: t.sel(document.elementFromPoint(cx, cy)),
+            inFooter: !!el.closest('footer.footer-dark'),
+          });
+        }
+        return { ...state, overlaps };
       });
-    }
-    return { launcherPresented: presented, launcherOpacity: Number(cs.opacity), overlaps };
-  });
-
-  rows.push({ viewport: vp.label, ...row });
-  console.log(`contact-bottom ${vp.label.padEnd(12)} presented=${row.launcherPresented} overlaps=${row.overlaps.length}`);
-  await ctx.close();
-}
-
-await browser.close();
-await mkdir('.audit', { recursive: true });
-await writeFile('.audit/contact-bottom.json', JSON.stringify(rows, null, 2));
-console.log('done: contact-bottom');
 ```
 
 - [ ] **Step 2: Run it**
@@ -287,193 +365,218 @@ console.log('done: contact-bottom');
 node --experimental-strip-types scripts/probe-contact-bottom.ts
 ```
 
-Expected: 5 rows.
-
 - [ ] **Step 3: Record the verdict**
 
-- `launcherPresented === true` **and** `overlaps` empty at a viewport → the footer class is genuinely transient there, and Prompt 10's empty reading was real evidence.
-- `launcherPresented === true` **and** `overlaps` non-empty with `inFooter: true` → **the footer class is static at that viewport.** Spec §4's no-feeder decision falls. Report it; do not pick a mechanism yet.
-- `launcherPresented === false` → contradicts Task 1; stop and reconcile.
+- `launcherPresented === true` and `overlaps` empty → the footer class is genuinely transient there, and Prompt 10's empty reading was real evidence.
+- `launcherPresented === true` and an overlap with `inFooter: true` → **the footer class is static there.** Spec §4 falls. Report; do not pick a mechanism.
+- `launcherPresented === false` → contradicts Task 2; stop and reconcile.
 
-**Gate:** if Tasks 1 and 2 together show P1 failing anywhere, spec §4 is void as written. Report to the user with the numbers and get a direction before building the probe in Task 3 — the probe's shape does not change, but what the pass *delivers* does (a mechanism question, not a documentation one).
+**Because this is a production build, `topmostAtOverlapCentre` is uncontaminated by the Next dev indicator.** If any value looks like a dev-tools element, the wrong server is being measured — stop.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add scripts/probe-contact-bottom.ts .audit/contact-bottom.json
-git commit -m "Measure /contact at maximum scroll — the non-degenerate case
-
-The one route with no closing-cta, so the launcher is presented at the
-bottom and the max-scroll reading is real rather than structural."
+git add scripts/probe-contact-bottom.ts
+git commit -m "Measure /contact at maximum scroll — the non-degenerate case"
 ```
 
 ---
 
-### Task 3: Add the yielded-state field to the existing occlusion phase
+### Task 4: Extract the verdict rule into one tested pure function
 
-The existing occlusion loop (`scripts/audit-mobile.ts:486-516`) intersects rects without consulting whether the launcher is presented. This adds that field without changing what the loop counts, so the frozen historical numbers stay reproducible.
+**This is what makes the positive control mean anything.** If Task 5 computes its own two-line rule and Task 6 uses a different one, the control proves the intersection maths can fire and proves nothing about the discriminator.
 
 **Files:**
-- Modify: `scripts/audit-mobile.ts:486-516` (mid-scroll loop) and `:521-548` (max-scroll block)
+- Create: `lib/overlap-verdict.ts`
+- Create: `lib/overlap-verdict.test.ts`
 
 **Interfaces:**
-- Consumes: nothing from Tasks 1–2 in code; the `launcherPresented` definition is copied verbatim from Task 1's probe (`opacity > 0.5 && pointerEvents !== 'none'`) so the two agree.
-- Produces: every entry in `occlusion.overlaps` and `occlusion.overlapsAtMaxScroll` gains `launcherPresented: boolean` and `launcherOpacity: number`. Task 5 filters on these.
+- Produces:
+  ```ts
+  export interface Sample { scrollY: number; launcherPresented: boolean; coveredFraction: number; }
+  export type Verdict = 'static' | 'transient' | 'none';
+  export function admittedSamples(samples: Sample[]): Sample[];
+  export function verdictFor(samples: Sample[], maxScrollY: number): Verdict;
+  export function rollUp(perViewport: Verdict[]): Verdict | 'partial';
+  ```
+  Consumed by Tasks 5 and 6, unchanged.
 
-- [ ] **Step 1: Add the helper inside the `occlusion` evaluate block**
+- [ ] **Step 1: Write the failing tests**
 
-In `scripts/audit-mobile.ts`, immediately after `const findFab = () => …` (line ~477), add:
-
-```ts
-    /* An overlap only counts if the launcher is actually presented. The old
-       probe intersected rects regardless, so pairs sampled mid-fade or fully
-       yielded were counted at full rect area — which is why "0 at maximum
-       scroll" could never fail on a route ending in closing-cta. */
-    const presentedState = (fab: Element) => {
-      const cs = getComputedStyle(fab);
-      const opacity = Number(cs.opacity);
-      return { launcherOpacity: opacity, launcherPresented: opacity > 0.5 && cs.pointerEvents !== 'none' };
-    };
-```
-
-- [ ] **Step 2: Record it in the mid-scroll loop**
-
-In the `if (!prev || area > prev.overlapArea)` block (line ~504), add the two fields to the object literal, after `atScrollY`:
+Follow `lib/validation.test.ts`'s existing Vitest shape.
 
 ```ts
-            atScrollY: Math.round(window.scrollY),
-            ...presentedState(fab),
+import { describe, it, expect } from 'vitest';
+import { admittedSamples, verdictFor, rollUp } from './overlap-verdict';
+
+const s = (scrollY: number, launcherPresented: boolean, coveredFraction: number) => ({
+  scrollY, launcherPresented, coveredFraction,
+});
+
+describe('admittedSamples', () => {
+  it('drops samples where the launcher is not presented', () => {
+    expect(admittedSamples([s(0, false, 0.9), s(100, true, 0.5)])).toEqual([s(100, true, 0.5)]);
+  });
+  it('drops samples with no overlap even when presented', () => {
+    expect(admittedSamples([s(0, true, 0)])).toEqual([]);
+  });
+});
+
+describe('verdictFor', () => {
+  it('is none when nothing is admitted', () => {
+    expect(verdictFor([s(0, false, 0.9)], 1000)).toBe('none');
+  });
+  it('is static when an admitted overlap survives to maximum scroll', () => {
+    expect(verdictFor([s(1000, true, 0.6)], 1000)).toBe('static');
+  });
+  it('is transient when every admitted overlap has a clearing position', () => {
+    expect(verdictFor([s(400, true, 0.6), s(800, true, 0)], 1000)).toBe('transient');
+  });
+  it('is static when the launcher is yielded at max scroll but overlap persists elsewhere with no clearing sample', () => {
+    // Only one admitted sample and no sample clears it -> cannot prove transient.
+    expect(verdictFor([s(400, true, 0.6)], 1000)).toBe('static');
+  });
+});
+
+describe('rollUp', () => {
+  it('is partial when viewports disagree', () => {
+    expect(rollUp(['static', 'transient'])).toBe('partial');
+  });
+  it('collapses agreement', () => {
+    expect(rollUp(['transient', 'transient'])).toBe('transient');
+  });
+  it('ignores none when something else is present', () => {
+    expect(rollUp(['none', 'transient'])).toBe('transient');
+  });
+});
 ```
 
-- [ ] **Step 3: Record it in the max-scroll block**
+- [ ] **Step 2: Run to verify they fail**
 
-In the `atBottom.push({ … })` call (line ~532), add after `coveredFraction`:
+```bash
+bun run test
+```
+Expected: FAIL, module not found.
+
+- [ ] **Step 3: Implement**
 
 ```ts
-          ...presentedState(fabB),
+export interface Sample {
+  scrollY: number;
+  launcherPresented: boolean;
+  coveredFraction: number;
+}
+export type Verdict = 'static' | 'transient' | 'none';
+
+/** An overlap only counts where the launcher is opaque and hit-testable. */
+export function admittedSamples(samples: Sample[]): Sample[] {
+  return samples.filter((x) => x.launcherPresented && x.coveredFraction > 0);
+}
+
+/**
+ * `transient` REQUIRES positive evidence of a clearing scroll position. A
+ * single admitted sample with nothing clearing it cannot be called transient —
+ * that is the assumption the original partition made.
+ */
+export function verdictFor(samples: Sample[], maxScrollY: number): Verdict {
+  const admitted = admittedSamples(samples);
+  if (admitted.length === 0) return 'none';
+  const atMax = admitted.some((x) => Math.abs(x.scrollY - maxScrollY) <= 2);
+  if (atMax) return 'static';
+  const clears = samples.some((x) => x.coveredFraction === 0 || !x.launcherPresented);
+  return clears ? 'transient' : 'static';
+}
+
+export function rollUp(perViewport: Verdict[]): Verdict | 'partial' {
+  const real = perViewport.filter((v) => v !== 'none');
+  if (real.length === 0) return 'none';
+  const unique = [...new Set(real)];
+  return unique.length === 1 ? unique[0] : 'partial';
+}
 ```
 
-- [ ] **Step 4: Run one phase and confirm the field appears**
+- [ ] **Step 4: Run to verify they pass**
 
 ```bash
-node --experimental-strip-types scripts/audit-mobile.ts sweep
+bun run test
 ```
-Let it run to completion, then:
-```bash
-node -e "const d=require('./.audit/sweep.json');const o=d.flatMap(r=>r.occlusion.overlaps);console.log('overlaps',o.length,'withField',o.filter(x=>'launcherPresented' in x).length,'presented',o.filter(x=>x.launcherPresented).length)"
-```
+Expected: PASS, and the existing 73 validation cases still pass.
 
-Expected: `withField` equals `overlaps` — every entry carries the field. `presented` will be lower than `overlaps`; that gap is the inflation the spec describes.
-
-- [ ] **Step 5: Confirm the frozen numbers still reproduce**
+- [ ] **Step 5: Commit**
 
 ```bash
-node -e "const d=require('./.audit/sweep.json');const o=d.flatMap(r=>r.occlusion.overlaps);console.log('pairs',o.length,'above25',o.filter(x=>x.coveredFraction>0.25).length,'worst',Math.max(...o.map(x=>x.coveredFraction)))"
-```
+git add lib/overlap-verdict.ts lib/overlap-verdict.test.ts
+git commit -m "Extract the overlap verdict rule into one tested pure function
 
-The counting logic was not changed, so these should land near the frozen 140 / 45 / 1.000. **They will not match exactly** — this is a dev build and Prompt 11's was a different build; record the actual numbers rather than asserting parity. If they differ by more than a few pairs, say so in the report rather than absorbing it.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add scripts/audit-mobile.ts .audit/sweep.json
-git commit -m "Record the launcher's presented state alongside every overlap
-
-The occlusion probe intersected rects without asking whether the launcher
-was opaque and hit-testable, so a yielded launcher still counted overlaps
-at full rect area. Counting logic unchanged; the frozen baseline still
-reproduces."
+The control and the class partition must run the same rule, or the control
+proves the intersection maths fires and nothing about the discriminator."
 ```
 
 ---
 
-### Task 4: The positive control — prove the probe can emit `static`
+### Task 5: The positive control — prove the discriminator can emit `static`
 
-Spec §7. A discriminator that has never emitted `static` has not been shown able to. **No verdict from Task 5 may be reported until this passes.**
+Spec §7. **No verdict from Task 6 may be reported until this passes.**
 
 **Files:**
-- Create: `scripts/probe-control.ts` (throwaway; deleted in Task 6)
-- Read only: `components/concierge/concierge-bus.ts`, `components/faq-accordion.tsx`
+- Create: `scripts/probe-control.ts`
 
 **Interfaces:**
-- Consumes: the `launcherPresented` definition from Task 3.
-- Produces: `.audit/control.json` — `{ suppressionDisabled: true, verdict: 'static' | 'transient', pair: {…} }`.
+- Consumes: `lib/overlap-verdict.ts` (**`verdictFor`, called directly — not reimplemented**), `scripts/lib/probe-shared.ts`.
+- Produces: `.audit/control.json` — `{ suppressionDisabled: true, verdict, samples }`.
 
-- [ ] **Step 1: Write the control probe**
+- [ ] **Step 1: Write the control**
 
-The suppression is disabled *in the page*, not in source — no shipped file is edited. `useSuppressLauncher` is a module-scoped `Set` behind `useSyncExternalStore`, so it cannot be reached from the page. Instead the control reproduces D-02's **geometry** directly: expand an FAQ row, then force the launcher back to presented by overriding `.tg-yield`'s opacity with an injected `!important` rule — which is what the suppression would otherwise have removed.
-
-Create `scripts/probe-control.ts`:
+It collects `Sample[]` from D-02's geometry and passes them to the **real** `verdictFor`. The suppression is overridden in-page (the hook's `Set` is module-scoped and unreachable), so `.tg-yield` is forced back to presented — which is what the shipped suppression would otherwise have removed.
 
 ```ts
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { INIT_SCRIPT } from './lib/probe-shared.ts';
+import { verdictFor, type Sample } from '../lib/overlap-verdict.ts';
 
 const BASE = process.env.AUDIT_BASE ?? 'http://localhost:3210';
-
 const browser = await chromium.launch();
 const ctx = await browser.newContext({
-  viewport: { width: 390, height: 844 },
-  isMobile: true,
-  hasTouch: true,
-  deviceScaleFactor: 3,
+  viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3,
 });
+await ctx.addInitScript({ content: INIT_SCRIPT });
 const page = await ctx.newPage();
-await page.goto(BASE + '/contact', { waitUntil: 'networkidle' });
-
-// Reproduce D-02's pre-fix state: an expanded FAQ row with the launcher
-// presented over it. The shipped suppression removes the launcher here, so
-// the control overrides it — an inline rule needs !important to beat
-// .tg-yield's own declaration.
-await page.addStyleTag({
-  content: `.tg-yield { opacity: 1 !important; pointer-events: auto !important; }`,
-});
+await page.goto(BASE + '/contact', { waitUntil: 'load' });
+await page.addStyleTag({ content: `.tg-yield { opacity: 1 !important; pointer-events: auto !important; }` });
 
 const triggers = page.locator('button[aria-expanded]');
-const count = await triggers.count();
-if (count === 0) throw new Error('No FAQ accordion triggers found — control cannot run.');
+if ((await triggers.count()) === 0) throw new Error('No FAQ triggers — control cannot run.');
 await triggers.nth(0).scrollIntoViewIfNeeded();
 await triggers.nth(0).click();
 await page.waitForTimeout(400);
 
-const result = await page.evaluate(() => {
-  const launcher = [...document.querySelectorAll('button')].find((b) =>
-    (b.textContent || '').includes('Ask about your project'),
-  );
-  if (!launcher) return { verdict: 'error', reason: 'launcher not found' };
-
-  const cs = getComputedStyle(launcher);
-  const presented = Number(cs.opacity) > 0.5 && cs.pointerEvents !== 'none';
-  const fr = launcher.getBoundingClientRect();
-
+const { samples, maxScrollY } = await page.evaluate(() => {
+  const t = (window as any).__tg;
+  const fab = t.findFab();
   const expanded = document.querySelector('button[aria-expanded="true"]');
-  const panelId = expanded?.getAttribute('aria-controls');
-  const panel = panelId ? document.getElementById(panelId) : null;
-  if (!panel) return { verdict: 'error', reason: 'expanded panel not found', presented };
-
+  const panel = expanded ? document.getElementById(expanded.getAttribute('aria-controls') || '') : null;
+  if (!fab || !panel) return { samples: [], maxScrollY: 0 };
+  const fr = fab.getBoundingClientRect();
   const er = panel.getBoundingClientRect();
-  const w = Math.min(fr.right, er.right) - Math.max(fr.left, er.left);
-  const h = Math.min(fr.bottom, er.bottom) - Math.max(fr.top, er.top);
-  const area = w > 0 && h > 0 ? w * h : 0;
-
+  const area = t.overlapArea(fr, er);
+  const maxScrollY = Math.round(document.documentElement.scrollHeight - window.innerHeight);
   return {
-    verdict: presented && area > 0 ? 'static' : 'transient',
-    presented,
-    launcherOpacity: Number(cs.opacity),
-    overlapArea: Math.round(area),
-    coveredFraction: er.width && er.height ? +(area / (er.width * er.height)).toFixed(3) : 0,
-    panelRect: { top: Math.round(er.top), bottom: Math.round(er.bottom) },
-    launcherRect: { top: Math.round(fr.top), bottom: Math.round(fr.bottom) },
+    samples: [{
+      scrollY: Math.round(window.scrollY),
+      ...t.presentedState(fab),
+      coveredFraction: er.width && er.height ? +(area / (er.width * er.height)).toFixed(3) : 0,
+    }],
+    maxScrollY,
   };
 });
 
+// The control's whole point: run the REAL rule, not a local one.
+const verdict = verdictFor(samples as Sample[], maxScrollY);
 await browser.close();
 await mkdir('.audit', { recursive: true });
-await writeFile(
-  '.audit/control.json',
-  JSON.stringify({ suppressionDisabled: true, viewport: 'standard 390x844', ...result }, null, 2),
-);
-console.log('control verdict:', JSON.stringify(result));
+await writeFile('.audit/control.json', JSON.stringify({ suppressionDisabled: true, verdict, samples, maxScrollY }, null, 2));
+console.log('control verdict:', verdict);
 ```
 
 - [ ] **Step 2: Run it**
@@ -482,165 +585,132 @@ console.log('control verdict:', JSON.stringify(result));
 node --experimental-strip-types scripts/probe-control.ts
 ```
 
-**Expected: `verdict: "static"`.**
+**Expected: `static`.**
 
-- [ ] **Step 3: Gate on the result**
+- [ ] **Step 3: Gate**
 
-- `static` → the discriminator can emit both verdicts. Proceed to Task 5.
-- `transient` or `error` → **stop.** The probe cannot detect the one overlap already known to be static. Fix the probe and re-run; do not run Task 5, and do not report any class verdict.
+- `static` → proceed to Task 6.
+- anything else → **stop.** The discriminator cannot detect the one overlap already known to be static. Fix and re-run; report no class verdict.
 
 - [ ] **Step 4: Confirm nothing shipped was modified**
 
 ```bash
 git status --short components/
 ```
-Expected: empty. The control overrides styles in the page only; if any component file is dirty, revert it — the suppression channel must be measured in its shipped state by Task 5.
+Expected: empty.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add scripts/probe-control.ts .audit/control.json
-git commit -m "Positive control: the probe emits static on D-02's geometry
-
-A discriminator that has never emitted static has not been shown able to.
-Suppression is overridden in-page for the control only; no component file
-is touched, and control.json records that it was disabled."
+git add scripts/probe-control.ts
+git commit -m "Positive control: the real verdict function emits static on D-02"
 ```
 
 ---
 
-### Task 5: Partition the four classes
+### Task 6: Partition the four classes, as an `audit-mobile.ts` phase
+
+Spec §6 asks for a re-runnable result, so this is a named phase, not a throwaway.
 
 **Files:**
-- Create: `scripts/probe-classes.ts` (throwaway; deleted in Task 6)
+- Modify: `scripts/audit-mobile.ts` — add `phaseClasses`, register `classes` in `main()`, and add the presented-state fields to the existing occlusion phase
 
 **Interfaces:**
-- Consumes: `.audit/p1.json`, `.audit/contact-bottom.json`, `.audit/control.json`, and the `launcherPresented` field added in Task 3.
-- Produces: `.audit/classes.json` — per class: `{ class, admittedPairs, peakCoveredFraction, verdict: 'transient' | 'static' | 'partial', evidence }`.
+- Consumes: `lib/overlap-verdict.ts`, `scripts/lib/probe-shared.ts`.
+- Produces: `.audit/classes.json`.
 
-- [ ] **Step 1: Define the four classes by selector, not by route**
+- [ ] **Step 1: Add the presented-state field to the existing occlusion phase**
 
-Spec §6 requires selector-driven discovery. The selectors:
+After `const findFab = …` (line ~477) add `presentedState` (copy from `probe-shared.ts`'s `INIT_SCRIPT`), then spread `...presentedState(fab)` into the mid-scroll object literal (after `atScrollY`, line ~512) and `...presentedState(fabB)` into `atBottom.push({…})` (after `coveredFraction`, line ~538). **Counting logic is not changed** — the frozen baseline must stay reproducible.
 
-| Class | Selector |
-| --- | --- |
-| meta-rail | `[data-meta-rail] a[href]` — confirm the attribute exists in `app/work/[slug]/page.tsx`'s `MetaRail`; if it does not, use the rail's actual container class and record which was used |
-| inline `link-underline` | `a.link-underline:not(footer a)` |
-| prev/next nav | the prev/next container in `app/work/[slug]/page.tsx` — read the file and record the selector used |
-| footer | `footer.footer-dark a[href]` |
-
-**Read `app/work/[slug]/page.tsx` and `components/footer-dark.tsx` first and write the four real selectors into the script.** Do not guess. If a selector matches zero elements on every route, that is a finding to report, not a class to silently drop.
-
-- [ ] **Step 2: Write the class probe**
-
-It reuses Task 1's viewport list and Task 2's overlap maths. For each class × route × viewport it scrolls in steps of `max(200, 0.6 * innerHeight)` to the bottom, and at each step records overlaps **only where `launcherPresented` is true**. Then:
-
-```
-verdict = 'static'    if an admitted overlap exists at maximum scroll
-        = 'transient' if every admitted overlap has a reachable scroll
-                      position where it is absent
-        = 'partial'   if the two differ across viewports
-```
-
-The `partial` case is mandatory, not optional — CLAUDE.md forbids summarising a partially resolved class as resolved.
-
-Record for every `transient` verdict **the scroll position that clears it**, as evidence. A transient verdict with no clearing position recorded is not reportable.
-
-- [ ] **Step 3: Run it**
+- [ ] **Step 2: Read the four class selectors from source — do not guess**
 
 ```bash
-node --experimental-strip-types scripts/probe-classes.ts
+grep -n "MetaRail\|prev\|next" "app/work/[slug]/page.tsx" | head -30
+grep -n "link-underline" components/*.tsx app/**/*.tsx | head -20
 ```
 
-- [ ] **Step 4: Cross-check against the row's stated counts**
+Write the four real selectors into the phase. Footer is `footer.footer-dark a[href]` (verified Task 1 Step 3). If any selector matches zero elements on every route, that is a **finding to report**, not a class to drop silently.
 
-The row attributes 38 pairs to these classes (12 meta-rail + 11 inline + 9 prev/next + 6 footer). Compare `admittedPairs` against it. **A large shortfall is expected** — the frozen count admitted overlaps regardless of launcher state — but report the two numbers side by side rather than only the new one.
+- [ ] **Step 3: Implement `phaseClasses` with two-stage scroll sampling**
 
-- [ ] **Step 5: Commit**
+Coarse pass at `max(200, 0.6 * innerHeight)`, then — **within one coarse step either side of any detected peak — refine at 100px.** At 360×800 the coarse step is 480px, far too wide to tell "peaks then clears" from "plateau," which is the transient verdict's entire basis.
+
+At every sample record `{ scrollY, launcherPresented, coveredFraction }` per element. Then per class × route × viewport call `verdictFor(samples, maxScrollY)`, and across viewports call `rollUp(...)`. Record, for every `transient`, **the scroll position that clears it** — a transient verdict with no clearing position recorded is not reportable.
+
+- [ ] **Step 4: Run both phases**
 
 ```bash
-git add scripts/probe-classes.ts .audit/classes.json
-git commit -m "Partition the four classes on the yielded-state discriminator"
+node --experimental-strip-types scripts/audit-mobile.ts sweep
+node --experimental-strip-types scripts/audit-mobile.ts classes
+```
+
+- [ ] **Step 5: Check the frozen baseline still reproduces**
+
+```bash
+node -e "const d=require('./.audit/sweep.json');const o=d.flatMap(r=>r.occlusion.overlaps);console.log('pairs',o.length,'above25',o.filter(x=>x.coveredFraction>0.25).length,'worst',Math.max(...o.map(x=>x.coveredFraction)),'presented',o.filter(x=>x.launcherPresented).length)"
+```
+
+This is a production build, so the comparison against the frozen 140 / 45 / 100.0% is legitimate. **Report the actual numbers.** If they differ materially, say so plainly — do not pre-excuse a mismatch.
+
+- [ ] **Step 6: Cross-check against the row's stated counts**
+
+The row attributes 38 pairs (12 + 11 + 9 + 6). Report `admittedPairs` **and** 38 side by side. A large shortfall is expected — the frozen count admitted overlaps regardless of launcher state.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add scripts/audit-mobile.ts
+git commit -m "Add the classes phase and record the launcher's presented state"
 ```
 
 ---
 
-### Task 6: Update the three documents
-
-Spec §8. All three carry the stale claim; updating one leaves the others quoting the old number.
+### Task 7: Update the three documents
 
 **Files:**
-- Modify: `docs/PROGRESS.md` — the Known Gaps row
-- Modify: `docs/DESIGN.md:747`
-- Modify: `docs/MOBILE-AUDIT.md:57`
-- Delete: `scripts/probe-p1.ts`, `scripts/probe-contact-bottom.ts`, `scripts/probe-control.ts`, `scripts/probe-classes.ts`
+- Modify: `docs/PROGRESS.md` (Known Gaps row), `docs/DESIGN.md:747`, `docs/MOBILE-AUDIT.md:57`
+- Delete: `scripts/probe-p1.ts`, `scripts/probe-contact-bottom.ts`, `scripts/probe-control.ts` (their results are transcribed; the re-runnable deliverable is the `classes` phase)
 
-- [ ] **Step 1: Fold the probes into the harness or delete them**
-
-The four throwaway scripts were scaffolding. Either fold the class probe into `scripts/audit-mobile.ts` as a named phase (preferred — spec §6 asks for a re-runnable result) or delete all four. **Do not leave them loose in `scripts/`.** Whichever is chosen, say which in the report.
-
-- [ ] **Step 2: Add the erratum to `docs/DESIGN.md:747`**
-
-Leave *"All 143 remain transient — 0 at maximum scroll"* **unedited**. Append a dated erratum beneath it naming the degeneracy, the 7-of-8 route scope, and the new baseline by name.
-
-- [ ] **Step 3: Add the erratum to `docs/MOBILE-AUDIT.md:57`**
-
-Same treatment — the M-06/M-15 banner's *"**0 at maximum scroll**, unchanged"* is not edited. This file's own convention (*"the row below it is not edited"*) is the precedent.
-
-- [ ] **Step 4: Rewrite the `docs/PROGRESS.md` Known Gaps row**
-
-In the order spec §8 fixes: the original partition's basis was invalid on the 7 `closing-cta` routes and why; `/contact` as the non-degenerate case and what it showed for the footer; the replacement discriminator; the P1 result; the per-class verdicts; that `data-primary-cta` was not widened; what remains open.
-
-Also record in the Prompt 14 row and/or the harness notes that **the Playwright blocker was a browser install, fixed by `playwright install chromium --with-deps` and `playwright install chromium-headless-shell`** — and that `docs/PROGRESS.md:1182`'s Bun-stdio mechanism is **unverified**: post-reinstall, node works and Bun still times out, which is consistent with it but does not establish it.
-
-- [ ] **Step 5: Verify the build and lint still pass**
+- [ ] **Step 1: Erratum on `docs/DESIGN.md:747`** — leave *"All 143 remain transient — 0 at maximum scroll"* unedited; append a dated erratum naming the degeneracy, the 7-of-8 scope, and the new baseline.
+- [ ] **Step 2: Erratum on `docs/MOBILE-AUDIT.md:57`** — same treatment; this file's own *"the row below it is not edited"* is the precedent.
+- [ ] **Step 3: Rewrite the `docs/PROGRESS.md` Known Gaps row** in spec §8's fixed order: invalid basis and why → `/contact` as the non-degenerate case → replacement discriminator → P1 result → per-class verdicts → `data-primary-cta` not widened → what remains open.
+- [ ] **Step 4: Record the Playwright fix** — browser reinstall (`playwright install chromium --with-deps`, `playwright install chromium-headless-shell`). **`docs/PROGRESS.md:1182`'s Bun-stdio mechanism stays flagged unverified:** post-reinstall node works and Bun still times out, consistent with it but not establishing it.
+- [ ] **Step 5: Verify**
 
 ```bash
 bun run lint
-```
-Expected: 0 errors, 1 known warning (`contact-form.tsx:92`).
-
-If `scripts/audit-mobile.ts` was modified in Task 3 and kept, also:
-```bash
+bun run test
 bun run build
 ```
-Expected: passes, 45 routes prerendered, zero type errors.
+Expected: 0 lint errors (1 known warning at `contact-form.tsx:92`), all tests pass, build passes.
 
-- [ ] **Step 6: Commit**
-
-```bash
-git add docs/ scripts/
-git commit -m "Re-partition the four launcher-overlap classes on a valid discriminator"
-```
-
-- [ ] **Step 7: Kill the dev server**
+- [ ] **Step 6: Commit, then kill the server by port**
 
 ```bash
+git add docs/ scripts/ && git commit -m "Re-partition the four launcher-overlap classes on a valid discriminator"
 netstat -ano | grep ":3210" | grep LISTENING
 ```
-Then `taskkill //PID <pid> //F` for each. Confirm `curl http://localhost:3210/` fails.
 
 ---
 
 ## Self-Review
 
-**Spec coverage:**
-
 | Spec section | Task |
 | --- | --- |
-| §2 — degeneracy on 7 of 8 routes; `/contact` non-degenerate | Tasks 1, 2 |
-| §3 — replacement discriminator | Task 3 (field), Task 5 (verdict logic) |
-| §4 — P1 measured before the conclusion | Task 1, gate at Task 2 Step 3 |
-| §5 — both outcomes written in advance | Task 1 Step 4, Task 2 Step 3 |
-| §6 — node runner, selector-driven routes, ordering | Global Constraints, Task 5 Step 1, Tasks 1–2 first |
-| §7 — positive control with a blocking fail condition | Task 4 |
-| §8 — deliverables, three documents, freeze | Task 6 |
-| §9 — risks | Gates in Tasks 2 and 4; dev-vs-prod noted at Task 3 Step 5 |
+| §2 — degeneracy on 7 of 8 routes; `/contact` non-degenerate | Tasks 2, 3 |
+| §3 — replacement discriminator | Task 4 (rule), Task 6 (application) |
+| §4 — P1 measured before the conclusion | Task 2, gate after Step 5 |
+| §5 — both outcomes written in advance | Task 2 Step 4 |
+| §6 — node runner, production build, selector-driven, phase not throwaway | Global Constraints, Task 6 Steps 2–3 |
+| §7 — positive control on the real rule | Tasks 4, 5 |
+| §8 — deliverables, three documents, freeze | Task 7 |
+| §9 — risks | Gates at Task 2 Step 5, Task 3 Step 3, Task 5 Step 3 |
 
-**Known gaps in this plan, stated rather than hidden:**
+**Known gaps, stated rather than hidden:**
 
-1. **Task 5 Step 2 does not contain the full probe source.** It specifies the algorithm, the verdict rule, and the evidence requirement, but the selectors must be read from source first (Step 1) and the script written against them. Writing fabricated selectors into the plan would be worse than this gap — it is exactly the error the spec is about. The implementer writes it; the rule it must implement is fully specified.
-2. **Spec §9's production-build re-confirmation is not its own task.** It is conditional — it only fires if a P1 result lands near the boundary at 360–390. Noted at Task 3 Step 5 and Task 1 Step 4 rather than given a task that may never run.
-3. **Task 4's control overrides `.tg-yield` in the page rather than disabling `useSuppressLauncher`.** The hook's `Set` is module-scoped and unreachable from the page. This reproduces D-02's geometry faithfully but is not literally the pre-fix code path; `control.json` records it, and Task 4 Step 4 confirms no component file was touched.
+1. **Task 6 Step 3 specifies the sampling algorithm but not full source.** The four selectors must be read from source first (Step 2); writing fabricated selectors into a plan is the error the spec is about.
+2. **Task 5's control overrides `.tg-yield` in the page** rather than disabling `useSuppressLauncher`, whose `Set` is module-scoped and unreachable. It reproduces D-02's geometry faithfully but is not literally the pre-fix code path; `control.json` records `suppressionDisabled: true`, and Step 4 confirms no component file was touched.
+3. **`verdictFor`'s `transient` branch requires positive evidence of clearing.** A single admitted sample with nothing clearing it returns `static`, deliberately — assuming transience without a clearing position is the original error. This will read as conservative; that is intended, and any resulting `static` is re-checked by hand before it reaches a document.
 
-**Type consistency:** `launcherPresented` is defined once (`opacity > 0.5 && pointerEvents !== 'none'`) and used identically in Tasks 1, 2, 3, 4 and 5. `.audit/` filenames are distinct per task and each is read by name where consumed.
+**Type consistency:** `Sample`, `Verdict`, `verdictFor`, `rollUp`, `admittedSamples` are defined once in `lib/overlap-verdict.ts` and imported by Tasks 5 and 6. `launcherPresented` is defined once in `INIT_SCRIPT` and consumed by Tasks 2, 3, 5, 6. `.audit/` filenames are distinct per task and never `git add`ed.
