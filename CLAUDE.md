@@ -36,6 +36,8 @@ Skills do not load themselves. Invoke the one that matches **before** starting, 
 
 **The user is not a designer and cannot brief you in design vocabulary. Do not ask them to.** Bring options they can react to; that is what `brainstorming` and `frontend-design` are for. Asking the user to describe what they want in jargon they don't have is how this project ended up with one motion idea and a spec nobody designed.
 
+**Two tools, two vocabularies.** The user also runs a separate Claude.ai Project for early-stage conversations, with its own Workflow Gates — Discovery / Blueprint / Prompt-pack. That is unrelated to the Build Phases in `docs/STATUS.md`; if a prompt arrives referencing a "blueprint" or a decision "from Discovery," it's the output of that other tool — treat it as a direction already decided, not an instruction to re-run brainstorming here. The reverse also holds: an aesthetic decision belongs here, not there — Claude.ai's Discovery gate is text-only and can't render an option to react to, which is the entire reason `frontend-design` exists.
+
 ## Reading the docs — don't read them all
 
 **Default: read nothing from `docs/` and start work.** The rules below plus the code are enough for most tasks.

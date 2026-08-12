@@ -17,9 +17,18 @@ Last updated: 2026-08-12.
 
 ## The plan
 
-| Phase | What | State |
+*Called **Build Phase** to disambiguate from the separate Claude.ai project's
+Workflow Gates (Discovery / Blueprint / Prompt-pack) — different tool,
+different numbering. A Build Phase is execution; a Workflow Gate produces the
+words-shaped direction a Build Phase might start from. Aesthetic decisions
+(this list's Phase 1, Phase 2) skip the Discovery gate entirely — it's
+text-only and can't render an option to react to, which is the whole reason
+`frontend-design` exists. Words-shaped work (Phase 3) is a legitimate fit for
+Claude.ai first.*
+
+| Build Phase | What | State |
 | --- | --- | --- |
-| **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **In progress 2026-08-12** |
+| **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
 | **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | Next |
 | **2** | Concierge UX/UI redo (absorbs D-04) | After 1 |
 | **3** | Copy: privacy policy, 8 detail narratives, FAQ review | After 1 |
