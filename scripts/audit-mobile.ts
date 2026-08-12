@@ -476,6 +476,19 @@ async function sweepRoute(page: Page, route: string, vp: VP) {
         (b.textContent || '').includes('Ask about your project'),
       ) || null;
 
+    /* An overlap only counts if the launcher is actually presented. This probe
+       intersected rects regardless, so pairs sampled while the launcher was
+       mid-fade or fully yielded were counted at full rect area. Recorded, not
+       filtered — the frozen 143/44/99.6% baseline must stay reproducible. */
+    const presentedState = (fab: Element) => {
+      const cs = getComputedStyle(fab);
+      const opacity = Number(cs.opacity);
+      return {
+        launcherOpacity: opacity,
+        launcherPresented: opacity > 0.5 && cs.pointerEvents !== 'none',
+      };
+    };
+
     const docH = document.documentElement.scrollHeight;
     const vh = window.innerHeight;
     const step = Math.max(200, Math.round(vh * 0.6));
@@ -510,6 +523,7 @@ async function sweepRoute(page: Page, route: string, vp: VP) {
             overlapArea: area,
             coveredFraction: +(area / Math.max(1, er.w * er.h)).toFixed(3),
             atScrollY: Math.round(window.scrollY),
+            ...presentedState(fab),
           };
         }
       }
@@ -536,6 +550,7 @@ async function sweepRoute(page: Page, route: string, vp: VP) {
           fabRect: fr,
           overlapArea: area,
           coveredFraction: +(area / Math.max(1, er.w * er.h)).toFixed(3),
+          ...presentedState(fabB),
           // Is the FAB actually the topmost thing over the covered area?
           topmostAtOverlapCentre: (() => {
             const cx = (Math.max(fr.left, er.left) + Math.min(fr.right, er.right)) / 2;
@@ -1660,6 +1675,139 @@ async function phaseShots(browser: Browser) {
 
 /* -------------------------------------------------------------------- main */
 
+/* ---------------------------------------------------------------- classes
+   The launcher-overlap re-partition. Samples each of the four non-CTA classes
+   across the scroll range, admits an overlap ONLY where the launcher is
+   presented, and runs the shared verdict rule from `lib/overlap-verdict.ts` —
+   the same function the positive control exercises.
+
+   Selectors are read from source, never guessed:
+     meta-rail   `aside a[href]`                        app/work/[slug]/page.tsx:56
+     prev/next   `nav[aria-label="More work"] a[href]`  app/work/[slug]/page.tsx:274
+     inline      `a.link-underline` minus the three containers above
+     footer      `footer.footer-dark a[href]`           components/footer-dark.tsx:65
+---------------------------------------------------------------------------- */
+const CLASS_SELECTORS = {
+  'meta-rail': 'aside a[href]',
+  'prev-next': 'nav[aria-label="More work"] a[href]',
+  'inline-link-underline': 'a.link-underline',
+  footer: 'footer.footer-dark a[href]',
+} as const;
+
+async function phaseClasses(browser: Browser) {
+  const out: Record<string, unknown>[] = [];
+
+  for (const vp of VIEWPORTS) {
+    const ctx = await browser.newContext({ ...descriptorFor(vp), colorScheme: 'light' });
+    const page = await ctx.newPage();
+
+    for (const route of ROUTES) {
+      await load(page, BASE + route);
+
+      const samples = await page.evaluate(async (SEL) => {
+        const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+        const findFab = () =>
+          [...document.querySelectorAll('button')].find((b) =>
+            (b.textContent || '').includes('Ask about your project'),
+          ) || null;
+        const presented = (fab: Element) => {
+          const cs = getComputedStyle(fab);
+          return Number(cs.opacity) > 0.5 && cs.pointerEvents !== 'none';
+        };
+        const area = (a: DOMRect, b: DOMRect) => {
+          const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+          const h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+          return w > 0 && h > 0 ? w * h : 0;
+        };
+        const inClass = (el: Element, cls: string) => {
+          if (cls !== 'inline-link-underline') return el.matches(SEL[cls]);
+          // Inline links are link-underline anchors that are NOT in the other
+          // three containers, or the classes would double-count.
+          return (
+            el.matches('a.link-underline') &&
+            !el.closest('aside') &&
+            !el.closest('nav[aria-label="More work"]') &&
+            !el.closest('footer.footer-dark')
+          );
+        };
+
+        const classes = Object.keys(SEL);
+        const byClass: Record<string, { scrollY: number; launcherPresented: boolean; coveredFraction: number }[]> =
+          Object.fromEntries(classes.map((c) => [c, []]));
+        const counts: Record<string, number> = Object.fromEntries(classes.map((c) => [c, 0]));
+
+        const docH = document.documentElement.scrollHeight;
+        const vh = window.innerHeight;
+        const maxScrollY = Math.max(0, docH - vh);
+
+        // Coarse pass, then refine at 100px around any position that produced
+        // an admitted overlap. 0.6 x innerHeight is 480px at 360x800 — far too
+        // wide to tell "peaks then clears" from "plateau", which is the whole
+        // basis of a transient verdict.
+        const coarse = Math.max(200, Math.round(vh * 0.6));
+        const positions = new Set<number>();
+        for (let y = 0; y <= maxScrollY; y += coarse) positions.add(y);
+        positions.add(maxScrollY);
+
+        const sampleAt = async (y: number) => {
+          window.scrollTo(0, y);
+          await sleep(140);
+          const fab = findFab();
+          if (!fab) return false;
+          const isPresented = presented(fab);
+          const fr = fab.getBoundingClientRect();
+          let anyAdmitted = false;
+
+          for (const cls of classes) {
+            for (const el of document.querySelectorAll('a[href]')) {
+              if (!inClass(el, cls)) continue;
+              const er = el.getBoundingClientRect();
+              if (er.width === 0 || er.height === 0) continue;
+              const a = area(fr, er);
+              const frac = a > 0 ? +(a / (er.width * er.height)).toFixed(3) : 0;
+              byClass[cls].push({
+                scrollY: Math.round(window.scrollY),
+                launcherPresented: isPresented,
+                coveredFraction: frac,
+              });
+              if (frac > 0 && isPresented) {
+                anyAdmitted = true;
+                counts[cls] += 1;
+              }
+            }
+          }
+          return anyAdmitted;
+        };
+
+        const peaks: number[] = [];
+        for (const y of [...positions].sort((a, b) => a - b)) {
+          if (await sampleAt(y)) peaks.push(y);
+        }
+        // Refinement pass at 100px either side of every peak.
+        for (const p of peaks) {
+          for (let y = Math.max(0, p - coarse); y <= Math.min(maxScrollY, p + coarse); y += 100) {
+            await sampleAt(y);
+          }
+        }
+
+        window.scrollTo(0, 0);
+        return { byClass, counts, maxScrollY, elementCounts: Object.fromEntries(
+          classes.map((c) => [c, [...document.querySelectorAll('a[href]')].filter((el) => inClass(el, c)).length]),
+        ) };
+      }, CLASS_SELECTORS as unknown as Record<string, string>);
+
+      out.push({ route, viewport: vp.label, ...samples });
+      const admitted = Object.entries(samples.counts as Record<string, number>)
+        .filter(([, n]) => n > 0)
+        .map(([c, n]) => `${c}=${n}`)
+        .join(' ');
+      console.log(`classes ${vp.label.padEnd(12)} ${route.padEnd(30)} ${admitted || '-'}`);
+    }
+    await ctx.close();
+  }
+  return out;
+}
+
 async function main() {
   const phase = process.argv[2] ?? 'all';
   await mkdir(OUT, { recursive: true });
@@ -1686,6 +1834,7 @@ async function main() {
   if (phase === 'all' || phase === 'prod') await write('prod', await phaseProd(browser));
   if (phase === 'all' || phase === 'taps') await write('taps', await phaseTaps(browser));
   if (phase === 'shots') await write('shots', await phaseShots(browser));
+  if (phase === 'all' || phase === 'classes') await write('classes', await phaseClasses(browser));
 
   await browser.close();
   console.log('done:', phase);

@@ -55,6 +55,24 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > | **M-03** panel overshoots the top edge, `blocking` | **Resolved** (Prompt 10, 2026-08-09) | `top: -119.0` at 844×390 → **sheet mode, `top: 0`, `overflowsViewportTop: false`**. Panel bound to `max-height: calc(100dvh - 48px)`; **no top overflow at any of the 8 viewports**, close control on-screen at all 8. **No `blocking` finding remains open** |
 > | **M-14** 32px close control | **Resolved** (Prompt 10) | 32.0 × 32.0 → **44.0 × 44.0 at all 8 viewports**, grown by padding; the `✕` glyph stays at **16px** |
 > | **M-06 / M-15** launcher size + CTA occlusion | **Resolved** (Prompt 10) | Launcher unchanged at 234 × 50 **by decision** — it now *yields*, going to `opacity: 0` / `pointer-events: none` / `aria-hidden` / out of the tab order while a `data-primary-cta` element is in view. Full 162-row sweep re-run: **primary-CTA overlaps 174 → 0** (worst case was 81.1%). **Across all interactive elements 174 → 143, 44 still >25%, worst 99.6%** — five non-CTA element classes the rule deliberately does not cover, itemised in DESIGN.md §8 and tracked as a new gap in PROGRESS.md. **0 at maximum scroll**, unchanged |
+
+> **Erratum (2026-08-11), banner-level — the row above is not edited.** *"0 at
+> maximum scroll"* is a correct measurement, but the transience it was cited for
+> rested on a false premise: that `closing-cta` yields the launcher at the bottom
+> of every page. It does not. `footer-dark` is **956px** against mobile viewports
+> of 667–896 and pushes `closing-cta` off-screen first — measured across 56
+> route × viewport rows, `closing-cta` intersects at maximum scroll on **0 / 56**
+> and the launcher is presented on **56 / 56**. A probe across all 8 routes then
+> found **0 overlap pairs at maximum scroll** with the launcher live, so the
+> conclusion holds on evidence rather than on the withdrawn argument.
+>
+> **The frozen 174 → 143 / 44 / 99.6% figures are not rebaselined.** A
+> production-build re-run of the same phase on 2026-08-11 reads **135 / 31 /
+> 0.996**, published beside them as a separate baseline.
+>
+> **The re-partition is incomplete:** footer is **transient**; meta-rail,
+> prev/next and inline `link-underline` are **unresolved** (two probes
+> disagree). Tracked in PROGRESS.md, not closed here.
 > | **M-19** launcher animates under `reduce` | **Resolved** (Prompt 10) | **H-4 confirmed first**, then fixed by removing the entrance rather than pinning it. See §7 H-4 |
 > | ~~**M-05, M-09 – M-13**~~ | **Resolved** (Prompt 11) | See the seven rows below — this row is the pre-Prompt-11 state and is kept so the batch's history reads straight |
 > | **M-04** `closing-cta` + `/contact`, **sub-767 rows** | **Resolved** (Prompt 11, 2026-08-09) | Both rows stack below 766px with the separators **not rendered** (`display: none`, 0×0 rect) — no dot terminates a line at 360 / 375 / 390 / 414. Both still render **one line, 21.7px, with both 3×3 dots** at 767, 768 and 844. `/contact`'s stack stays left-anchored: all three facts at `left: 24.0` |

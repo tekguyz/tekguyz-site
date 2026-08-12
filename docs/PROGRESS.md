@@ -1731,7 +1731,7 @@ as obvious, it is still open.*
 | ~~**Dialog keyboard and focus management is unmeasured, not known-broken.**~~ **Closed 2026-08-09 (Prompt 10).** Baseline established and measured at all 8 viewports (`scripts/audit-concierge.ts geometry`): Escape closes in every mode, focus moves into the panel on open and back to the launcher on close in every mode, and sheet mode additionally traps Tab, sets `aria-modal="true"` and locks body scroll. Non-modal mode does none of those three and the page still scrolls behind — verified with a real wheel event, because `overflow: hidden` never stops a scripted `window.scrollBy` and the programmatic probe reports every working lock as broken | Stating it as a defect would have been inventing a measurement. What it turned out to be: Escape already worked and focus-on-open already worked; **focus return on close did not exist at all** | Closed |
 | ~~**H-4 (M-19)**~~ **CONFIRMED and closed 2026-08-09 (Prompt 10).** The MutationObserver-armed rAF sampler caught the launcher animating under `reduce` on 6 of 6 route/viewport combinations — `opacity` through 15–17 intermediate values, `transform` `matrix(1,0,0,1,0,8)` → `none` through 16, over ~240ms from DOM insertion. `reduce` and `no-preference` traces are indistinguishable. The entrance was **removed**, not pinned: the yield rule that replaces it is opacity-only and instant under `reduce` | Filed `polish` in Prompt 7 and deliberately not upgraded without the right measurement — which was the correct call, since the measurement inverted the reading | Closed. **The `.tg-seq` half was re-tested by Prompt 11 (2026-08-09) rather than left on the earlier reading — the pin holds.** All 12 `.tg-seq` elements on `/` are constant at `opacity: 1` / `transform: none` / `translate: none` over 69–90 armed frames at two viewports, while the same sampler under `no-preference` reads 28–32 opacity values and full `matrix()` ramps on the same elements. Motion writes `transform` here, so `transform: none !important` is sufficient and **no `translate` pin was added** |
 | ~~**`/` throws a hydration mismatch (React #418)**~~ **Resolved 2026-08-10 (Prompt 12), `fbb37a6`** — server and first client render emit a fixed `at HH:MM UTC` stamp and the relative string is taken only post-hydration. **Re-confirmed 2026-08-10 (Prompt 13): a fresh load of `/` and `/contact` logs no hydration warning.** This row was left reading "Unassigned" for a prompt after the fix landed; the diagnosis below is kept because it is what the fix was measured against. *Diagnosed 2026-08-09 by Prompt 10, in passing.* `relativeTime(result.checkedAt)` in `components/status-line.tsx` renders a **relative** timestamp, baked into the prerendered HTML at build time and recomputed on the client, so the two texts diverge by however long the deploy has been live. **Pre-existing, not a Prompt 10 regression — the identical error reproduces on `https://tekguyz.com`** | It violates the Definition of Done's "no hydration warnings", which means that line has been passing on an unchecked assumption. Found only because `home-hero.tsx` was touched for the `data-primary-cta` tag | **Closed** (2026-08-10, `fbb37a6`; re-confirmed by Prompt 13). This cell read **"Unassigned"** for a prompt after the fix had already landed, describing the three-way choice — absolute timestamp, defer to an effect, or `suppressHydrationWarning` — as still open. **It was decided: the absolute server stamp.** The other two were rejected for stated reasons (an effect flashes the signature component empty; `suppressHydrationWarning` hides the message and leaves two trees in place), and both are now hard rules in CLAUDE.md. The diagnosis in the cells to the left is kept as what the fix was measured against |
-| **44 launcher overlaps above 25% remain on non-CTA elements** — *opened 2026-08-09 by Prompt 10's own re-measurement.* The yield rule took primary-CTA overlaps from 174 to **0**, which is the acceptance criterion it was written against. Measured across *every* interactive element the sweep still finds **143 pairs, 44 above 25%, worst 99.6%**, in five classes: `/work/[slug]` meta-rail links (12), inline `link-underline` text links (11), prev/next case-study nav links (9), footer links (6), `/contact` FAQ accordion triggers (6) | **Not fixed by widening `data-primary-cta`, and Prompt 10 was instructed to name it rather than silently widen.** An observer keyed to every CTA-styled element flickers the launcher on any scroll-heavy route, which is worse than a transient overlap on a secondary link. **All 143 are transient — 0 at maximum scroll** | **Nobody, yet.** It needs a human decision on whether a transient overlap of a secondary link is a defect at all. If it is, the mechanism is a different one — an occlusion-aware offset, not more observer targets. **Re-measured after Prompt 11 as an observation only, with nothing changed: 143 → 140 pairs, 44 → 45 above 25%, worst 99.6% → 100.0%, primary-CTA overlaps still 0.** Effectively unmoved, which is expected — the tap-target fix grows hit areas by overlay and overlay area is not in the sweep's rects. **Decided 2026-08-10: not closed, and not reopened as a sweep.** The 44 pairs are to be **re-partitioned** into *transient-during-scroll* (accepted, documented) and *static-after-user-action* (fixed through the D-02 suppression channel). **D-02 proved the original partition was drawn wrong** — "all 143 are transient" did not survive contact with an expanded accordion. **The mechanism for the static half now exists** (Prompt 13, 2026-08-10): the shared suppression channel in `concierge-bus.ts`, which covers the **6 `/contact` FAQ accordion trigger pairs** — the one class that is static-after-user-action — and the nav drawer, which the sweep never counted because it only exists after a tap. **The other four classes are untouched and unre-measured by that pass**: meta-rail links (12), inline `link-underline` text links (11), prev/next case-study nav (9), footer links (6). Any of them that turns out to be static rather than transient feeds the same channel; none of them is widened into the observer |
+| **44 launcher overlaps above 25% remain on non-CTA elements** — *opened 2026-08-09 by Prompt 10's own re-measurement.* The yield rule took primary-CTA overlaps from 174 to **0**, which is the acceptance criterion it was written against. Measured across *every* interactive element the sweep still finds **143 pairs, 44 above 25%, worst 99.6%**, in five classes: `/work/[slug]` meta-rail links (12), inline `link-underline` text links (11), prev/next case-study nav links (9), footer links (6), `/contact` FAQ accordion triggers (6) | **Not fixed by widening `data-primary-cta`, and Prompt 10 was instructed to name it rather than silently widen.** An observer keyed to every CTA-styled element flickers the launcher on any scroll-heavy route, which is worse than a transient overlap on a secondary link. **All 143 are transient — 0 at maximum scroll** | **Nobody, yet.** It needs a human decision on whether a transient overlap of a secondary link is a defect at all. If it is, the mechanism is a different one — an occlusion-aware offset, not more observer targets. **Re-measured after Prompt 11 as an observation only, with nothing changed: 143 → 140 pairs, 44 → 45 above 25%, worst 99.6% → 100.0%, primary-CTA overlaps still 0.** Effectively unmoved, which is expected — the tap-target fix grows hit areas by overlay and overlay area is not in the sweep's rects. **Decided 2026-08-10: not closed, and not reopened as a sweep.** The 44 pairs are to be **re-partitioned** into *transient-during-scroll* (accepted, documented) and *static-after-user-action* (fixed through the D-02 suppression channel). **D-02 proved the original partition was drawn wrong** — "all 143 are transient" did not survive contact with an expanded accordion. **The mechanism for the static half now exists** (Prompt 13, 2026-08-10): the shared suppression channel in `concierge-bus.ts`, which covers the **6 `/contact` FAQ accordion trigger pairs** — the one class that is static-after-user-action — and the nav drawer, which the sweep never counted because it only exists after a tap. **The other four classes are untouched and unre-measured by that pass**: meta-rail links (12), inline `link-underline` text links (11), prev/next case-study nav (9), footer links (6). Any of them that turns out to be static rather than transient feeds the same channel; none of them is widened into the observer **Re-partition attempted 2026-08-11 (Prompt 15). Result: 1 of 4 classes resolved, 3 unresolved — see the block below. Not closed.** |
 | ~~**M-16 is PARTIAL, never resolved — its remaining orphan lines**~~ **Resolved 2026-08-11 — by item 4 of *Decisions still open* resolving against the column, which is one of the two exits this row named.** The remaining half was, in the audit's own words, "case-study headlines still orphan in a now-deliberate 249px column". **The column is gone**: case-study rows stack in the 768–1023 band, and the text half measures 688.8px at 768 and 764.8px at 844. **Measured at both widths M-16 was filed against — 4 of 4 headlines set on one line, so there is no wrap left to orphan**, and no copy changed. The earlier half (`Four ways we help.` L4-in-144px → L1 in 704px) was already resolved by Prompt 8. *Kept as the history: this row was **twice** summarised as more resolved than it was, which is why it was worded to refuse the word "resolved" until something measurable changed. Something measurable changed* | It belonged to no fix pass while the column was deliberate: there was no layout defect under it and the copy was locked. **What moved was the column, not the copy** — the 249px placement stopped being deliberate once it measured 30.2 characters per line | **Closed.** The copy review this row offered as its other exit is **not needed and was not done** — no headline was rewritten. Re-open only if a future `/work` headline wraps at 768; the check is the character-rect line count in DESIGN.md §8, not `Range.getClientRects()`, which reports a rect per element boundary and miscounts this headline because it wraps a `<Link>` |
 | Hero video loop (`sarah-demo.mp4`) | Static image ships first; video is a post-launch enhancement | A new recording of the real dashboard exists |
 | Live iframe embeds (`embeddable` flags) | Needs `frame-ancestors` CSP added per demo app first | Ready to do the CSP work — one prompt per app, then flip flags |
@@ -1762,6 +1762,84 @@ as obvious, it is still open.*
 | `[NEEDS REAL DATA]` — Field Photo Reports outcome | Never filled, per the hard rule | If a real, verifiable number exists |
 | GBP review permalink | Still open; testimonial links to the GBP listing instead | When the direct review URL is available |
 | `lockup-master.svg` wordmark still a `<text>` element | Pre-existing; the site renders the lockup as JSX so it's unaffected, but exported assets are | Before handing the SVG to any external vendor |
+
+
+### The 2026-08-11 re-partition attempt (Prompt 15) — 1 of 4 resolved
+
+**Read this before trusting any transient/static claim about the four classes.**
+
+**The premise the whole pass was built on was wrong, and measurement caught it.**
+The pass opened by arguing that `overlapsAtMaxScroll` was a degenerate test:
+every route ends in `closing-cta`, `closing-cta` carries `data-primary-cta`, so
+at maximum scroll the launcher is already yielded and the probe intersects rects
+against a launcher nobody can be obstructed by. That argument was written up,
+reviewed twice, and corrected once (it is 7 routes, not 8 — `/contact` has no
+closing CTA). **It is false.** `footer-dark` measures **956px** against mobile
+viewports of 667–896 and pushes `closing-cta` off-screen before the bottom is
+reached.
+
+**P1, measured (`scripts/probe-p1.ts`, production build, 56 route × viewport
+rows, light + dark):**
+
+| Field | Result |
+| --- | --- |
+| `closing-cta` intersecting the viewport at maximum scroll | **0 / 56** |
+| Launcher presented at maximum scroll (`opacity` > 0.5, `pointer-events: auto`) | **56 / 56** |
+| `footer-dark` height > viewport height | **56 / 56** |
+
+So `overlapsAtMaxScroll` was **never degenerate**, Prompt 10's empty reading was
+a real measurement all along, and `/contact` is not uniquely non-degenerate —
+all 8 routes are.
+
+**The bottom of the page is clean, measured directly.**
+`scripts/probe-bottom.ts` across all 8 routes × 5 viewports (light + dark at two
+of them): **0 overlap pairs at maximum scroll, on 56 / 56 rows, with the
+launcher presented on every one.** No static-at-rest case exists at the bottom,
+so **no suppression feeder was needed and none was added.**
+`data-primary-cta` was not widened and no observer target was added.
+
+**Verdicts — and only one of them is reportable:**
+
+| Class | Verdict |
+| --- | --- |
+| Footer links | **Transient.** 48 admitted samples, all on `/contact` (the one route with no `closing-cta` above the footer to yield the launcher), across 6 viewports. Clears at maximum scroll — corroborated independently by `probe-bottom`'s 0 pairs. |
+| Meta-rail links | **UNRESOLVED — two probes disagree.** |
+| Prev/next nav | **UNRESOLVED — two probes disagree.** |
+| Inline `link-underline` | **UNRESOLVED — two probes disagree.** |
+
+**The disagreement, stated rather than resolved.** The new `classes` phase in
+`scripts/audit-mobile.ts` reports **0** rect intersections for meta-rail and
+prev/next across 770 samples each. The `sweep` phase's occlusion probe, run at
+the same time on the same build, reports **21** meta-rail and **14** prev/next
+pairs with `launcherPresented: true`. A hand-written debug probe at 390×844 on
+`/work/field-photo-reports` found a real rail overlap at `scrollY 1518` — with
+the launcher **yielded**, so correctly inadmissible — but that overlap does not
+appear in the `classes` output either, which means **the `classes` phase is
+under-recording and its zeros are not evidence.** The bug was not found.
+
+**Nothing was closed on the strength of a number two probes disagree about.**
+The three classes stay exactly as open as they were, and the cheap reading —
+"three classes came back clean" — is the one this row exists to refuse.
+
+**What is nonetheless established and does not depend on the disagreement:**
+the bottom-of-page case is clean on all 8 routes (a direct measurement, not the
+`classes` phase); the degeneracy thesis is dead; and the mechanism question is
+moot for now, since there is no static case to feed a channel.
+
+**Also settled by this pass:** the harness runs. `bun run build` passes and
+`node --experimental-strip-types scripts/audit-mobile.ts <phase>` drives
+Playwright end to end. **The fix was reinstalling the browsers**
+(`playwright install chromium --with-deps`, `playwright install
+chromium-headless-shell`) — Prompt 14's "browser launch fails on this machine"
+was a missing/incomplete headless-shell install. **The Bun-stdio explanation at
+`docs/PROGRESS.md:1182` remains UNVERIFIED:** post-reinstall, node works and Bun
+still times out at 60s, which is consistent with it but does not establish it.
+
+**Revisit when:** someone fixes the `classes` phase's under-recording, re-runs
+`audit-mobile.ts classes`, and gets it to agree with `sweep` on the meta-rail and
+prev/next pair counts. The verdict rule itself is tested
+(`lib/overlap-verdict.test.ts`, 17 cases) and passed a positive control against
+D-02's geometry, so the rule is not what is in doubt — the sampling is.
 
 ## Device pass — 2026-08-09 (Pixel 9A): the D- register
 

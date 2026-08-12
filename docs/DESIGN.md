@@ -747,6 +747,32 @@ fix: it would flicker the launcher on every scroll-heavy route, which is worse
 than a transient overlap on a secondary link. **All 143 remain transient — 0 at
 maximum scroll**, unchanged from before.
 
+> **Erratum (2026-08-11) — the paragraph above is not edited; its reasoning is.**
+> *"0 at maximum scroll"* was read as evidence of transience on the strength of
+> an argument that `closing-cta` yields the launcher at the bottom of the page.
+> **That argument is false and is withdrawn.** `footer-dark` measures **956px**
+> against mobile viewports of 667–896, so it pushes `closing-cta` off-screen
+> before the bottom is reached: measured 2026-08-11 across 56 route × viewport
+> rows, `closing-cta` intersects the viewport at maximum scroll on **0 / 56**
+> and the launcher is fully presented (`pointer-events: auto`, no
+> `aria-hidden`) on **56 / 56**.
+>
+> The reading survives, on better grounds than it had: a probe across all 8
+> routes finds **0 overlap pairs at maximum scroll** with the launcher live on
+> every row. So the bottom of the page is clean by measurement, not by a
+> terminal yield that does not exist.
+>
+> **The frozen figures — 143 / 44 / 99.6%, and Prompt 11's re-read of
+> 140 / 45 / 100.0% — stand and are not rebaselined.** The 2026-08-11
+> production-build re-run of the same phase reads **135 pairs / 31 above 25% /
+> worst 0.996**, published as a separate baseline, not as a correction. The two
+> are different builds at different times and are not comparable.
+>
+> **The per-class partition this erratum was written to carry is INCOMPLETE.**
+> Only the footer class has a verdict (**transient**, corroborated by two
+> independent probes). Meta-rail, prev/next and inline `link-underline` are
+> **unresolved** — two probes disagree about them. See `docs/PROGRESS.md`.
+
 **The launcher carries no entrance animation.** Its Motion entrance
 (`opacity 0→1` + `y 8→0`, 240ms) ran **unsuppressed under `reduce`** — H-4
 confirmed by sampling from the instant of DOM insertion (M-19). Its replacement
