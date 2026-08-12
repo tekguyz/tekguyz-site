@@ -769,9 +769,11 @@ maximum scroll**, unchanged from before.
 > are different builds at different times and are not comparable.
 >
 > **The per-class partition this erratum was written to carry is INCOMPLETE.**
-> Only the footer class has a verdict (**transient**, corroborated by two
-> independent probes). Meta-rail, prev/next and inline `link-underline` are
-> **unresolved** — two probes disagree about them. See `docs/PROGRESS.md`.
+> **0 of 4 classes are resolved.** `audit-mobile.ts classes` fails its own
+> cross-phase guard against `sweep` on all four, so no transient/static verdict
+> is reportable — including the footer, which an earlier version of this
+> erratum recorded as transient. What stands is only the bottom-of-page
+> measurement above. See `docs/PROGRESS.md`.
 
 **The launcher carries no entrance animation.** Its Motion entrance
 (`opacity 0→1` + `y 8→0`, 240ms) ran **unsuppressed under `reduce`** — H-4

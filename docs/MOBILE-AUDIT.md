@@ -70,9 +70,10 @@ pass.** No finding row states a cause; everything inferred is quarantined in
 > production-build re-run of the same phase on 2026-08-11 reads **135 / 31 /
 > 0.996**, published beside them as a separate baseline.
 >
-> **The re-partition is incomplete:** footer is **transient**; meta-rail,
-> prev/next and inline `link-underline` are **unresolved** (two probes
-> disagree). Tracked in PROGRESS.md, not closed here.
+> **The re-partition is incomplete: 0 of 4 classes resolved.**
+> `audit-mobile.ts classes` exits non-zero against the `sweep` phase on all
+> four, footer included. Only the bottom-of-page result above stands. Tracked
+> in PROGRESS.md, not closed here.
 > | **M-19** launcher animates under `reduce` | **Resolved** (Prompt 10) | **H-4 confirmed first**, then fixed by removing the entrance rather than pinning it. See §7 H-4 |
 > | ~~**M-05, M-09 – M-13**~~ | **Resolved** (Prompt 11) | See the seven rows below — this row is the pre-Prompt-11 state and is kept so the batch's history reads straight |
 > | **M-04** `closing-cta` + `/contact`, **sub-767 rows** | **Resolved** (Prompt 11, 2026-08-09) | Both rows stack below 766px with the separators **not rendered** (`display: none`, 0×0 rect) — no dot terminates a line at 360 / 375 / 390 / 414. Both still render **one line, 21.7px, with both 3×3 dots** at 767, 768 and 844. `/contact`'s stack stays left-anchored: all three facts at `left: 24.0` |

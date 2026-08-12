@@ -1802,10 +1802,39 @@ so **no suppression feeder was needed and none was added.**
 
 | Class | Verdict |
 | --- | --- |
-| Footer links | **Transient.** 48 admitted samples, all on `/contact` (the one route with no `closing-cta` above the footer to yield the launcher), across 6 viewports. Clears at maximum scroll — corroborated independently by `probe-bottom`'s 0 pairs. |
-| Meta-rail links | **UNRESOLVED — two probes disagree.** |
-| Prev/next nav | **UNRESOLVED — two probes disagree.** |
-| Inline `link-underline` | **UNRESOLVED — two probes disagree.** |
+| Footer links | **UNRESOLVED as a transient/static verdict.** The `classes` phase read it transient (48 admitted samples, all `/contact`, 6 viewports), but that phase now fails its own cross-phase guard, so its footer numbers are under the same cloud as the rest. |
+| Meta-rail links | **UNRESOLVED.** |
+| Prev/next nav | **UNRESOLVED.** |
+| Inline `link-underline` | **UNRESOLVED.** |
+
+**Corrected 2026-08-11, same day:** this table first read *"Footer: Transient"*
+against three unresolved classes, i.e. 1 of 4 resolved. **That was wrong and is
+withdrawn.** The guard described below fails on the footer class too. What
+survives is narrower and is not a class verdict: **the bottom-of-page case is
+clean on all 8 routes**, measured directly by `probe-bottom` — 0 overlap pairs
+at maximum scroll with the launcher presented on 56/56 rows. That is a
+measurement of one scroll position, not of the footer class across the scroll
+range. **0 of 4 classes are resolved.**
+
+**A code-level guard now enforces this, because doc discipline is one `/clear`
+from gone.** `audit-mobile.ts classes` diffs its own per-class element counts
+against the `sweep` phase's for the same class and **exits non-zero** when they
+disagree, printing `DO NOT read verdicts from classes.json`. It also refuses to
+pass vacuously if `sweep` has not been run. As of 2026-08-11 it **fails**:
+`meta-rail` classes=0 / sweep=21, `prev-next` classes=0 / sweep=16,
+`inline-link-underline` 7 / 16, `footer` 112 / 11.
+
+**Caveat on the guard, stated so nobody trusts it further than it goes:** the
+two phases count on different bases — `sweep` dedupes by selector per row and
+keeps the max; `classes` counts distinct href+text per row and sums. The
+magnitudes are therefore not normalised and the guard currently reduces to *any
+disagreement fails*. That is correct today, since there is real disagreement,
+and it fails **closed**. But it must be normalised before it can ever legitimately
+pass, or it becomes an alarm people learn to ignore. A second, internal
+cross-check (selector traversal vs `INTERACTIVE` traversal, same scroll
+position) **passes** on 126/126 rows — so the two traversals agree with each
+other while both miss what `sweep` finds, which points at the **scroll grid**,
+not the traversal.
 
 **The disagreement, stated rather than resolved.** The new `classes` phase in
 `scripts/audit-mobile.ts` reports **0** rect intersections for meta-rail and
@@ -1815,7 +1844,15 @@ pairs with `launcherPresented: true`. A hand-written debug probe at 390×844 on
 `/work/field-photo-reports` found a real rail overlap at `scrollY 1518` — with
 the launcher **yielded**, so correctly inadmissible — but that overlap does not
 appear in the `classes` output either, which means **the `classes` phase is
-under-recording and its zeros are not evidence.** The bug was not found.
+under-recording and its zeros are not evidence.**
+
+**Most likely cause, not yet proven:** the coarse sampling grid
+(`max(200, 0.6 x innerHeight)`, so 506px at 390x844) steps *over* the window in
+which an element passes under the launcher, and the refinement pass only
+triggers around positions that already produced an admitted overlap — so a peak
+the coarse pass never detects can never be refined. The debug hit at
+`scrollY 1518` sits exactly on a coarse boundary at that viewport. **The bug was
+not fixed.**
 
 **Nothing was closed on the strength of a number two probes disagree about.**
 The three classes stay exactly as open as they were, and the cheap reading —
@@ -1835,9 +1872,10 @@ was a missing/incomplete headless-shell install. **The Bun-stdio explanation at
 `docs/PROGRESS.md:1182` remains UNVERIFIED:** post-reinstall, node works and Bun
 still times out at 60s, which is consistent with it but does not establish it.
 
-**Revisit when:** someone fixes the `classes` phase's under-recording, re-runs
-`audit-mobile.ts classes`, and gets it to agree with `sweep` on the meta-rail and
-prev/next pair counts. The verdict rule itself is tested
+**Revisit when:** someone normalises the two phases onto one counting basis,
+fixes the sampling grid (a peak-triggered refinement cannot find a peak the
+coarse pass missed — the refinement needs to be unconditional, or the grid
+fine enough not to need one), and gets `audit-mobile.ts classes` to exit 0. The verdict rule itself is tested
 (`lib/overlap-verdict.test.ts`, 17 cases) and passed a positive control against
 D-02's geometry, so the rule is not what is in doubt — the sampling is.
 

@@ -480,6 +480,17 @@ async function sweepRoute(page: Page, route: string, vp: VP) {
        intersected rects regardless, so pairs sampled while the launcher was
        mid-fade or fully yielded were counted at full rect area. Recorded, not
        filtered — the frozen 143/44/99.6% baseline must stay reproducible. */
+    /* Attribute each overlap to one of the four re-partition classes, so the
+       `classes` phase can diff its own counts against this phase's for the
+       same class. Both phases must agree on which elements overlap at all. */
+    const tgClassOf = (el: Element) => {
+      if (el.closest('footer.footer-dark')) return 'footer';
+      if (el.closest('nav[aria-label="More work"]')) return 'prev-next';
+      if (el.closest('aside')) return 'meta-rail';
+      if (el.matches('a.link-underline')) return 'inline-link-underline';
+      return null;
+    };
+
     const presentedState = (fab: Element) => {
       const cs = getComputedStyle(fab);
       const opacity = Number(cs.opacity);
@@ -523,6 +534,7 @@ async function sweepRoute(page: Page, route: string, vp: VP) {
             overlapArea: area,
             coveredFraction: +(area / Math.max(1, er.w * er.h)).toFixed(3),
             atScrollY: Math.round(window.scrollY),
+            tgClass: tgClassOf(el),
             ...presentedState(fab),
           };
         }
@@ -1735,6 +1747,15 @@ async function phaseClasses(browser: Browser) {
         const byClass: Record<string, { scrollY: number; launcherPresented: boolean; coveredFraction: number }[]> =
           Object.fromEntries(classes.map((c) => [c, []]));
         const counts: Record<string, number> = Object.fromEntries(classes.map((c) => [c, 0]));
+        const rawCounts: Record<string, number> = Object.fromEntries(classes.map((c) => [c, 0]));
+        /* Distinct elements that EVER overlapped, per class. This is the
+           metric comparable with the sweep phase, which dedupes by selector
+           and keeps the max — a per-sample count is not. */
+        const distinct: Record<string, Set<string>> = Object.fromEntries(classes.map((c) => [c, new Set<string>()]));
+        const keyOf = (el: Element) => {
+          const a = el as HTMLAnchorElement;
+          return (a.getAttribute('href') || '') + '|' + (el.textContent || '').trim().slice(0, 30);
+        };
 
         const docH = document.documentElement.scrollHeight;
         const vh = window.innerHeight;
@@ -1749,6 +1770,25 @@ async function phaseClasses(browser: Browser) {
         for (let y = 0; y <= maxScrollY; y += coarse) positions.add(y);
         positions.add(maxScrollY);
 
+        /* CROSS-CHECK, and it is load-bearing rather than diagnostic.
+           The class counts above come from `a[href]` + `Element.matches`. This
+           second count walks the same INTERACTIVE set the occlusion phase
+           walks and attributes each overlapping element by `closest`. Two
+           different traversals over the same page must agree. When they did
+           not, the class counts silently read 0 and three classes were nearly
+           reported clean on the strength of it. Disagreement now fails the
+           run rather than producing a number. */
+        const INTERACTIVE =
+          'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
+        const crossCounts: Record<string, number> = Object.fromEntries(classes.map((c) => [c, 0]));
+        const classOf = (el: Element) => {
+          if (el.closest('footer.footer-dark')) return 'footer';
+          if (el.closest('nav[aria-label="More work"]')) return 'prev-next';
+          if (el.closest('aside')) return 'meta-rail';
+          if (el.matches('a.link-underline')) return 'inline-link-underline';
+          return null;
+        };
+
         const sampleAt = async (y: number) => {
           window.scrollTo(0, y);
           await sleep(140);
@@ -1757,6 +1797,16 @@ async function phaseClasses(browser: Browser) {
           const isPresented = presented(fab);
           const fr = fab.getBoundingClientRect();
           let anyAdmitted = false;
+
+          // Cross-check traversal, run at the same scroll position.
+          for (const el of document.querySelectorAll(INTERACTIVE)) {
+            if (el === fab || fab.contains(el) || el.contains(fab)) continue;
+            const cls = classOf(el);
+            if (!cls) continue;
+            const er = el.getBoundingClientRect();
+            if (er.width === 0 || er.height === 0) continue;
+            if (area(fr, er) > 0) crossCounts[cls] += 1;
+          }
 
           for (const cls of classes) {
             for (const el of document.querySelectorAll('a[href]')) {
@@ -1770,6 +1820,13 @@ async function phaseClasses(browser: Browser) {
                 launcherPresented: isPresented,
                 coveredFraction: frac,
               });
+              // `raw` counts every intersection regardless of the launcher's
+              // state, so it is comparable with the cross-check traversal.
+              // `counts` is the admitted subset the verdict rule consumes.
+              if (frac > 0) {
+                rawCounts[cls] += 1;
+                distinct[cls].add(keyOf(el));
+              }
               if (frac > 0 && isPresented) {
                 anyAdmitted = true;
                 counts[cls] += 1;
@@ -1791,7 +1848,11 @@ async function phaseClasses(browser: Browser) {
         }
 
         window.scrollTo(0, 0);
-        return { byClass, counts, maxScrollY, elementCounts: Object.fromEntries(
+        const mismatches = classes
+          .filter((c) => rawCounts[c] !== crossCounts[c])
+          .map((c) => ({ cls: c, selectorTraversal: rawCounts[c], interactiveTraversal: crossCounts[c] }));
+        const distinctCounts = Object.fromEntries(classes.map((c) => [c, distinct[c].size]));
+        return { byClass, counts, rawCounts, crossCounts, mismatches, distinctCounts, maxScrollY, elementCounts: Object.fromEntries(
           classes.map((c) => [c, [...document.querySelectorAll('a[href]')].filter((el) => inClass(el, c)).length]),
         ) };
       }, CLASS_SELECTORS as unknown as Record<string, string>);
@@ -1801,9 +1862,81 @@ async function phaseClasses(browser: Browser) {
         .filter(([, n]) => n > 0)
         .map(([c, n]) => `${c}=${n}`)
         .join(' ');
-      console.log(`classes ${vp.label.padEnd(12)} ${route.padEnd(30)} ${admitted || '-'}`);
+      const mm = (samples.mismatches as { cls: string; selectorTraversal: number; interactiveTraversal: number }[]) ?? [];
+      if (mm.length) {
+        for (const m of mm) {
+          console.log(
+            `  !! MISMATCH ${vp.label}/${route} ${m.cls}: selector=${m.selectorTraversal} interactive=${m.interactiveTraversal}`,
+          );
+        }
+      }
+      console.log(`classes ${vp.label.padEnd(12)} ${route.padEnd(30)} ${admitted || '-'}${mm.length ? '  [MISMATCH]' : ''}`);
     }
     await ctx.close();
+  }
+
+  /* Hard-fail rather than return a number two traversals disagree about. The
+     verdict rule is tested and the control passes; the sampling is what has
+     been wrong, and a silent 0 from a broken traversal reads exactly like a
+     clean class. */
+  /* THE GUARD THAT MATTERS: diff this phase's per-class element counts against
+     the sweep phase's for the same class. The two phases sample on different
+     scroll grids, and a grid that steps over an overlap window produces a
+     silent 0 that reads exactly like a clean class — which is what nearly
+     happened to meta-rail, prev/next and inline link-underline on 2026-08-11.
+     Requires `sweep` to have been run first; says so rather than passing
+     vacuously if it has not. */
+  try {
+    const { readFileSync } = await import('node:fs');
+    const sweep = JSON.parse(readFileSync(`${OUT}/sweep.json`, 'utf8')) as {
+      route: string;
+      viewport: string;
+      occlusion: { overlaps: { tgClass: string | null }[] };
+    }[];
+    const sweepByClass: Record<string, number> = {};
+    for (const r of sweep) {
+      for (const o of r.occlusion.overlaps) {
+        if (!o.tgClass) continue;
+        sweepByClass[o.tgClass] = (sweepByClass[o.tgClass] ?? 0) + 1;
+      }
+    }
+    const mineByClass: Record<string, number> = {};
+    for (const r of out) {
+      const dc = (r.distinctCounts ?? {}) as Record<string, number>;
+      for (const [c, n] of Object.entries(dc)) mineByClass[c] = (mineByClass[c] ?? 0) + n;
+    }
+    const names = [...new Set([...Object.keys(sweepByClass), ...Object.keys(mineByClass)])];
+    const disagree = names.filter((c) => (sweepByClass[c] ?? 0) !== (mineByClass[c] ?? 0));
+    console.log('');
+    console.log('cross-phase check (classes vs sweep), distinct overlapping elements:');
+    for (const c of names) {
+      const a = mineByClass[c] ?? 0;
+      const b = sweepByClass[c] ?? 0;
+      console.log(`  ${c.padEnd(24)} classes=${String(a).padStart(4)}  sweep=${String(b).padStart(4)}  ${a === b ? 'ok' : '<-- DISAGREE'}`);
+    }
+    if (disagree.length) {
+      console.log('');
+      console.log(`*** CLASSES PHASE FAILED: ${disagree.join(', ')} disagree with the sweep phase.`);
+      console.log('*** A zero here is NOT a clean class — it is very likely a scroll grid that');
+      console.log('*** stepped over the overlap window. DO NOT read verdicts from classes.json.');
+      (globalThis as { process?: { exitCode?: number } }).process!.exitCode = 1;
+    }
+  } catch {
+    console.log('');
+    console.log('*** CROSS-PHASE CHECK SKIPPED: .audit/sweep.json not found.');
+    console.log('*** Run `sweep` before `classes`, or no class verdict is reportable.');
+    (globalThis as { process?: { exitCode?: number } }).process!.exitCode = 1;
+  }
+
+  const bad = out.filter((r) => ((r.mismatches as unknown[]) ?? []).length > 0);
+  if (bad.length) {
+    console.log('');
+    console.log(`*** CLASSES PHASE FAILED: ${bad.length} of ${out.length} route/viewport rows disagree`);
+    console.log('*** The two traversals must agree before any class verdict is reportable.');
+    console.log('*** Wrote .audit/classes.json for diagnosis; DO NOT read verdicts from it.');
+    (globalThis as { process?: { exitCode?: number } }).process!.exitCode = 1;
+  } else {
+    console.log(`classes cross-check OK: ${out.length} rows, both traversals agree`);
   }
   return out;
 }
