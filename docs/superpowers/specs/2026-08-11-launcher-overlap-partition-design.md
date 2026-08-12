@@ -22,51 +22,58 @@ The row also records why the partition has to be redone rather than trusted:
 D-02 disproved the original claim that *"all 143 are transient"* by producing a
 static overlap from an expanded accordion. The partition was drawn once, wrongly.
 
-## 2. The finding that invalidates the original discriminator — on 7 of 8 routes
+## 2. The degeneracy thesis was WRONG — measured and withdrawn
 
-**`overlapsAtMaxScroll` is degenerate on every route that ends in `closing-cta`,
-which is 7 of the 8 route patterns. On those routes its emptiness is not
-evidence. On `/contact` it is.**
+**This section previously claimed `overlapsAtMaxScroll` was degenerate on the 7
+`closing-cta` routes. P1 disproved it. The claim is withdrawn.**
 
 `scripts/audit-mobile.ts:517-548` measures overlaps a second time at maximum
 scroll, on the stated reasoning that at the bottom of the document there is
 nowhere left to scroll an overlap out from under a fixed launcher. Prompt 10
 read that field as empty and concluded all 143 pairs were transient.
 
-`components/closing-cta.tsx:98` is one of the two `[data-primary-cta]` elements
-the launcher's IntersectionObserver watches. Where that element is in view at
-maximum scroll, **the launcher is already yielded** — `opacity: 0`,
-`pointer-events: none`, `aria-hidden="true"`, `tabIndex={-1}` — and the probe
-intersects rectangles against a launcher that is not presented. The test cannot
-fail there regardless of what sits under the launcher's corner.
+The withdrawn argument ran: `components/closing-cta.tsx:98` is a
+`[data-primary-cta]` element, so where it is in view at maximum scroll the
+launcher is yielded, and the probe intersects rectangles against a launcher that
+is not presented. **The premise is false — `closing-cta` is not in view at
+maximum scroll on any route.**
 
-**`<ClosingCta />` renders on exactly 7 route patterns** — `/`, `/privacy`,
-`/process`, `/solutions`, `/solutions/[slug]`, `/work`, `/work/[slug]` —
-measured by direct grep for the JSX element, 2026-08-11. **`/contact` has none:**
-the design export has no closing CTA there because the page itself is the ask
-(`docs/PROGRESS.md:1538`). An earlier draft of this spec asserted "every route's
-bottom carries `closing-cta`" on the strength of a filename grep that matched
-two prose comments in `app/contact/page.tsx`; that assertion was false and is
-corrected here.
+### The measurement (`scripts/probe-p1.ts`, 2026-08-11, production build)
 
-**`/contact` is therefore the non-degenerate case, and it is the strongest one
-available for the footer class.** Its only `[data-primary-cta]` elements are the
-form's step and submit buttons (`components/contact-form.tsx:294,412`), which sit
-near the top of the page. If they are out of view at maximum scroll, the launcher
-is *presented* there, and Prompt 10's empty max-scroll reading on `/contact` is a
-real measurement rather than a degenerate one.
+56 rows: 5 viewports (360×800, 375×667, 390×844, 414×896, 844×390) plus dark at
+narrow and standard, × 8 routes.
 
-That result generalises to the footer on every route, and the reason is
-geometric: at maximum scroll the document's bottom edge aligns with the
-viewport's, `footer-dark` is the last element on every route, and its height is
-route-independent. **The bottom band of the viewport at maximum scroll is the
-same on all 18 routes.** What differs is only whether `closing-cta` is *also* in
-view and yielding the launcher.
+| Field | Result |
+| --- | --- |
+| `closing-cta` intersecting at maximum scroll | **0 / 56** |
+| Launcher **presented** at maximum scroll | **56 / 56** |
+| `footer-dark` height > viewport height | **56 / 56** |
+| `pointer-events` | `auto` on every row |
+| `aria-hidden` | `null` on every row |
 
-The degeneracy still matters for the other three classes, and for the footer at
-viewports where §4's precondition fails. It is the same class of error as D-02,
-one level up: a partition resting on a check that structurally cannot produce the
-other answer.
+**`footer-dark` measures 956px** at 360/375/390/414 — against viewports of 800,
+667, 844 and 896. It exceeds all four. At 844×390 the columns unstack and it
+drops to 500px, still over 390. Its three link columns stack vertically below
+768px because `.tg-grid` is one column there, on top of a masthead, tagline,
+44px social row and hairline.
+
+So the footer pushes `closing-cta` off-screen before the bottom is reached, the
+observer releases, and **the launcher is fully live at maximum scroll on all 8
+routes at all 5 viewports.**
+
+### What follows
+
+- **`overlapsAtMaxScroll` was never degenerate.** Prompt 10's empty reading is a
+  real measurement, on every route.
+- **`/contact` is not uniquely non-degenerate.** All 8 routes are. §3's probe
+  therefore runs across all 8, not `/contact` alone.
+- **The `<ClosingCta />` route count stands** — exactly 7 patterns, `/contact`
+  excepted (`docs/PROGRESS.md:1538`), verified by grep for the JSX element. That
+  fact is correct; the inference drawn from it was not.
+
+The lesson is the one this document was already about, turned on its author: the
+degeneracy thesis was an argument from source reading, and it survived two
+review passes before a measurement touched it.
 
 A second, smaller defect in the same probe: the mid-scroll loop
 (`audit-mobile.ts:486-516`) also intersects rects without consulting the
@@ -99,49 +106,49 @@ evidence.
 `components/concierge/concierge-bus.ts` admits *"discrete booleans set by a user
 action"* that *"carry none of the flicker risk"* of a widened observer.
 
-**Provisional decision: those criteria stand unchanged and no scroll-bottom
-feeder is added — conditional on P1 below, which is unmeasured.**
+**The no-feeder decision's premise is GONE. P1 failed on 56 of 56 rows.**
 
-The reasoning is not that the wording binds us. It is that the bottom of the
-document is the one place a permanent-at-rest overlap could live, and on the 7
-`closing-cta` routes it is already covered by the terminal yield that CTA
-produces. Adding a scroll-derived feeder would reintroduce precisely the flicker
-risk the two-channel split exists to prevent, to solve a case already solved.
-
-**That argument rests on an unmeasured precondition, and is void without it:**
+The withdrawn argument was that the bottom of the document is the one place a
+permanent-at-rest overlap could live, and that `closing-cta`'s terminal yield
+already covered it. There is no terminal yield: §2 measures the launcher live at
+maximum scroll on all 8 routes at all 5 viewports.
 
 > **P1 — `[data-primary-cta]` is intersecting the viewport at maximum scroll.**
+> **Result: FALSE on 56/56 rows.** `footer-dark` (956px) exceeds every mobile
+> viewport, so `closing-cta` is off-screen before the bottom is reached.
 
-If `footer-dark` is taller than the viewport, `closing-cta` is pushed out of view
-at maximum scroll, the observer releases, **the launcher is re-presented, and
-footer and prev/next overlaps can persist at rest** — the exact case this section
-would otherwise declare impossible. `footer-dark` stacks a masthead, a tagline, a
-link column, a social row that wraps at narrow widths, and a divider; at 360, 375
-and 390 its height against those viewports is not obviously smaller. **This is
-the failure mode the no-feeder decision must survive, not an edge case appended
-to it.**
+Whether a feeder is needed is therefore **an open question decided by §3's
+measurement**, not by this argument. If nothing overlaps the live launcher at
+maximum scroll, no feeder is needed and the classes are transient on evidence
+rather than on a false premise. If something does, it is a static-at-rest
+overlap with no user action behind it.
 
-So `[data-primary-cta]` intersection state at maximum scroll becomes **a measured
-field, recorded per route × viewport**, alongside the launcher's own presented
-state. §4's conclusion is drawn *after* that field is read, never asserted ahead
-of it.
+### The mechanism, if one is needed
 
-- **If P1 holds at every route × viewport:** the no-feeder decision stands as
-  argued.
-- **If P1 fails anywhere:** that route × viewport pair is a genuine
-  static-at-rest case with no user action behind it — the case the delegated
-  question anticipated. It is **named individually in the report and the row and
-  left open for a decision**, not absorbed into a mechanism chosen before the
-  data existed. Pre-committing a fix to an unmeasured case is how the original
-  partition went wrong; so is pre-committing a *refusal* to fix one.
+Decided in advance so the choice is not retro-fitted to the data:
 
-`data-primary-cta` is not widened under any outcome.
+1. **Default — extend the existing `concierge-bus` suppression channel**, the
+   same pattern D-02 shipped, keyed on the launcher's **presented-state read**.
+   It reuses `useSuppressLauncher`'s counted `Set`, so overlapping suppressors
+   still release correctly, and it adds no observer target and no scroll
+   listener.
+2. **An occlusion-aware offset, or accepting the overlap**, only if the
+   suppression channel genuinely does not fit — and **the reason is stated
+   before either is implemented**, never after.
+
+**Two hard rules bound every outcome:**
+
+- **`data-primary-cta` is never widened and no new IntersectionObserver target
+  is ever added.** Not as a fix, not as a proposal.
+- **A new scroll listener is not the mechanism.** The presented-state read is
+  already available from the existing observer's own output.
 
 ## 5. Expected outcome, stated in advance
 
-All four classes are expected to land **transient, accepted** — the same verdict
-the row currently carries, reached through a valid discriminator instead of an
-invalid one. Meta-rail and inline `link-underline` are mid-page by construction;
+**Superseded by the P1 result (§2).** This section predicted all four classes
+transient on the strength of the degeneracy thesis, which is withdrawn. The
+prediction now has no supporting argument and is recorded only as what was
+expected before measurement. §3's probe decides the classes. Meta-rail and inline `link-underline` are mid-page by construction;
 prev/next nav and the footer sit below the closing CTA and are expected to be
 reached only while the launcher is yielded.
 
