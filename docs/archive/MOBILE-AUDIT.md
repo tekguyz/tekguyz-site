@@ -1,4 +1,17 @@
-# Mobile & Motion Audit — measured inventory
+# Mobile & Motion Audit — measured inventory (ARCHIVE)
+
+> **RETIRED 2026-08-12. Its queue is closed** — 19 findings resolved, and the
+> launcher-overlap item it spawned was closed by decision on 2026-08-12 (a
+> transient overlap of a secondary link is not a defect). Kept as the record of
+> what was measured and what the fixes were checked against.
+>
+> **The harness is not retired.** `scripts/audit-mobile.ts` and
+> `scripts/audit-concierge.ts` are live and re-runnable; §9 of this file is how
+> to run them. §8 — the four things the audit could not reach — is the only part
+> still describing open work, and it is carried in `docs/STATUS.md`.
+>
+> One probe was removed from `audit-mobile.ts` on 2026-08-12: the concierge
+> disclaimer it asserted (§4.6) no longer exists.
 
 *Prompt 7, 2026-08-08. **Measurement only. Nothing on the site was changed by this
 pass.** No finding row states a cause; everything inferred is quarantined in

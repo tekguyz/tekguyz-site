@@ -13,7 +13,7 @@
  * pipe on Windows (see audit-mobile.ts's header).
  *
  * Phases:
- *   m19       MOBILE-AUDIT.md §7 H-4 confirm-or-kill. A MutationObserver arms a
+ *   m19       docs/archive/MOBILE-AUDIT.md §7 H-4 confirm-or-kill. A MutationObserver arms a
  *             requestAnimationFrame loop that samples the launcher's computed
  *             opacity/transform from the instant it enters the DOM, under
  *             `reducedMotion: 'reduce'`. Constant through that window kills H-4.

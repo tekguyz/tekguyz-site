@@ -384,7 +384,7 @@ Never gate color logic on `useTheme()` or mount state when a CSS `dark:` variant
 enough to build from: every `.tg-grid` child kept its 12-column placement while the
 grid narrowed to 8 tracks, so placements reaching past line 9 manufactured **four
 implicit tracks** and squeezed headlines into ~144px. Measured, fixed and recorded
-in PROGRESS.md's Prompt 8 section. These are the shipped spans — grid **line**
+in docs/archive/HISTORY.md's Prompt 8 section. These are the shipped spans — grid **line**
 numbers, matching the code.
 
 Derivation rule, for anything added later: **scale the 12-track span by 8/12 and
@@ -773,7 +773,7 @@ maximum scroll**, unchanged from before.
 > cross-phase guard against `sweep` on all four, so no transient/static verdict
 > is reportable — including the footer, which an earlier version of this
 > erratum recorded as transient. What stands is only the bottom-of-page
-> measurement above. See `docs/PROGRESS.md`.
+> measurement above. See `docs/archive/HISTORY.md`.
 
 **The launcher carries no entrance animation.** Its Motion entrance
 (`opacity 0→1` + `y 8→0`, 240ms) ran **unsuppressed under `reduce`** — H-4

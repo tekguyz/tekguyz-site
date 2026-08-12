@@ -31,7 +31,7 @@ import { site } from '@/lib/site';
  * disclaimer never scrolls away.
  *
  * Three things here are bounded by the VIEWPORT, never by content, and each one
- * cost a measured defect (docs/MOBILE-AUDIT.md):
+ * cost a measured defect (docs/archive/MOBILE-AUDIT.md):
  *
  *   Panel height.  `max-height: calc(100dvh - 48px)`. The panel used to size
  *     from content while anchored `bottom: 24px`, so at 844x390 it grew upward
@@ -476,16 +476,13 @@ export function Concierge() {
               </div>
             </div>
 
-            {/* The disclaimer never scrolls away. Cap-reached is the one state
-                that removes the input: there, the handoff IS the action. */}
-            <div className="flex-none border-t border-border p-4">
-              <p
-                className={capReached ? 'text-[0.75rem] leading-[1.5] text-secondary' : 'mb-[14px] text-[0.75rem] leading-[1.5] text-secondary'}
-                style={{ textWrap: 'pretty' }}
-              >
-                A starting sketch, not a quote.
-              </p>
-              {!capReached && (
+            {/* Cap-reached is the one state that removes the input: there, the
+                handoff IS the action, and the footer has nothing left to hold —
+                so the whole bordered strip goes with it rather than shipping an
+                empty 33px rule. (It used to hold the disclaimer, removed
+                2026-08-12 on the user's instruction; see docs/COPY.md.) */}
+            {!capReached && (
+              <div className="flex-none border-t border-border p-4">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -516,8 +513,8 @@ export function Concierge() {
                     Send
                   </button>
                 </form>
-              )}
-            </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

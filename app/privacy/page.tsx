@@ -13,7 +13,7 @@ export const metadata = buildMetadata({
 /**
  * Ships as written in COPY.md, which reproduces the currently-live policy.
  *
- * KNOWN GAP, surfaced in PROGRESS.md and the build summary: this text predates
+ * KNOWN GAP, surfaced in docs/archive/HISTORY.md and the build summary: this text predates
  * three data flows the rebuild introduces and does NOT yet cover them —
  *   1. the AI concierge (conversations go to Google for processing, and details
  *      shared there may be captured as a lead exactly like a form submission),

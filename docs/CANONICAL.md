@@ -108,10 +108,32 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
 
 ## 5. Content gaps
 
-1. **The verified testimonial isn't on the site.** Playbook §11 has a specific, credible testimonial naming 3CX, Twilio, and Zoho CRM. It appears nowhere in the copy deck. Real social proof sitting unused while the site relies entirely on self-description. Homepage, after Featured Work, marked up as `Review` schema. **Getting a name and company attached roughly doubles its weight** — an anonymous quote is worth far less.
-2. **No FAQ.** Pre-qualifies leads, targets long-tail queries, earns `FAQPage` schema. Cover: how pricing works, typical timeline, whether you serve businesses outside South Florida (yes — nationwide remote, and that's stated nowhere obvious), what happens post-launch, whether you work on existing systems or only new builds.
-3. **Eight detail narratives need writing.** Case studies have compressed Challenge/Approach/Outcome material; projects have one description line each.
-4. **Footer location drift.** Copy deck says "Pompano Beach, FL"; everything else says "South Florida." Live site appears already corrected — confirm, then fix the deck so it stops seeding drift.
+> **Three of these four were measured on 2026-08-12 and were already built.**
+> They had been open in this section for the life of the project and were quoted
+> back to the user as current blockers. Corrected below rather than deleted, so
+> the failure stays visible: **this section asserted state it had not measured.**
+
+1. ~~**The verified testimonial isn't on the site.**~~ **False — measured
+   2026-08-12.** It ships in `components/testimonial.tsx`, rendered on the
+   homepage (`app/page.tsx`) and on `/work/[slug]`, sourced from
+   `content/process.ts`, marked up as `Review` schema, attributed "Joe M. ·
+   Verified Google review" with a cross-link to the build being described. It has
+   been there since the master build. **What is actually open is its mobile
+   treatment** — it occupies ~500px of a 360px-wide viewport; that is a Phase 1
+   density item, tracked in `docs/STATUS.md`.
+2. ~~**No FAQ.**~~ **False — measured 2026-08-12.** `content/faq.ts` carries six
+   items, verbatim from `docs/COPY.md`, rendered at the bottom of `/contact` and
+   feeding the `FAQPage` JSON-LD from the *same strings* (SEO.md forbids a
+   paraphrased second version). They cover every topic this row asked for:
+   pricing, timeline, nationwide-remote, working with existing systems, what
+   happens post-launch, and whether the demos are real.
+3. **Eight detail narratives need writing.** — **still open.** Case studies have
+   compressed Challenge/Approach/Outcome material; projects have one description
+   line each. Lives in `content/work.ts`; renders at `/work/[slug]`. Phase 3.
+4. ~~**Footer location drift.**~~ **Resolved before this row was last read.**
+   `docs/COPY.md:69` corrected it to "South Florida," and code agrees everywhere
+   — `lib/site.ts:15`, `lib/seo.ts:85`/`:105`, `content/faq.ts:23`. No
+   "Pompano Beach" string exists in the repo outside this section's own history.
 
 ---
 
@@ -229,7 +251,7 @@ Building on what's already live (canonicals, robots, sitemap, ProfessionalServic
 
 **Steps 1–6 are complete, and step 7's domain half is done.** The site is built,
 audited against the approved Claude Design export, verified against live
-integrations, committed, and **deployed to production**. `docs/PROGRESS.md` is
+integrations, committed, and **deployed to production**. `docs/archive/HISTORY.md` is
 the running record of what each prompt covered — read that, not this list, for
 current status.
 

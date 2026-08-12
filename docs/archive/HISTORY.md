@@ -1,6 +1,21 @@
-# TEKGUYZ Website — Progress & Known Gaps
+# TEKGUYZ Website — Build History (ARCHIVE)
 
-*Becomes `/docs/PROGRESS.md`. Updated at the end of each build session, not read in full at the start of a small one — see CLAUDE.md's scoped-reading rule. This is where "what's already done" lives, so a new session (or a `/clear`) doesn't have to re-derive it from chat memory.*
+> **ARCHIVE. Do not read current state from this file.** It was `docs/PROGRESS.md`
+> until 2026-08-12, when it was split: open items moved to **`docs/STATUS.md`**,
+> which is now the only live status document. What remains here is the record of
+> how each decision was reached — incidents, mechanisms, and the reasoning behind
+> the hard rules in CLAUDE.md. That part is still valuable and is why the file is
+> kept.
+>
+> **It contains claims that are false.** The blocker table and the Known Gaps
+> table asserted state instead of measuring it, and on 2026-08-12 three of those
+> assertions were measured and found already resolved — the testimonial (shipped
+> in `components/testimonial.tsx` since the master build), GBP Services (live for
+> months), and the footer location drift (fixed in `COPY.md:69`). All three had
+> been repeated back to the user as current blockers. The same file was wrong
+> twice about the mobile queue and once about the Vercel topology.
+>
+> **Read this file for *why*. Read `docs/STATUS.md` for *what*.**
 
 ---
 

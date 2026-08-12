@@ -16,7 +16,7 @@ import {
 import { DEFAULT_DETAILS_PLACEHOLDER } from '../content/solutions';
 
 /**
- * The regression suite PROGRESS.md's Pass 3 claimed ("25 unit cases pass") and
+ * The regression suite docs/archive/HISTORY.md's Pass 3 claimed ("25 unit cases pass") and
  * the repo never actually had. These rules are shared by the client schema in
  * components/contact-form.tsx and the server schema in app/actions/contact.ts,
  * so a silent loosening here reaches the CRM — which is exactly how the two
@@ -58,7 +58,7 @@ describe('isPlausibleWebsite', () => {
     expect(isPlausibleWebsite('https://tekguyz.com:8443/pricing')).toBe(true);
   });
 
-  // The documented garbage input from PROGRESS.md. Two @-signs make the last
+  // The documented garbage input from docs/archive/HISTORY.md. Two @-signs make the last
   // one the authority delimiter, so `aedD@DWDD` parses as credentials and
   // `#33uyz.com` as a hostname — which is why it looked like a valid URL.
   it('rejects the documented garbage input via the credentials check', () => {
@@ -123,7 +123,7 @@ describe('isPlausiblePhone', () => {
     expect(isPlausiblePhone(value)).toBe(true);
   });
 
-  // The documented garbage input from PROGRESS.md: a 19-digit run.
+  // The documented garbage input from docs/archive/HISTORY.md: a 19-digit run.
   it('rejects the documented 19-digit garbage input', () => {
     expect(isPlausiblePhone('4353535353535353535')).toBe(false);
   });

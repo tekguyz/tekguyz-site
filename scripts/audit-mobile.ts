@@ -2,7 +2,7 @@
  * Mobile & motion audit harness — Prompt 7.
  *
  * MEASURES ONLY. It changes nothing about the site. Everything it emits is a
- * number plus the call that produced it, so `docs/MOBILE-AUDIT.md` can be
+ * number plus the call that produced it, so `docs/archive/MOBILE-AUDIT.md` can be
  * re-derived byte-for-byte by re-running this against the same commit.
  *
  * RUN IT LIKE THIS, and only like this:
@@ -864,9 +864,6 @@ async function measurePanel(page: Page) {
     const input = panel.querySelector('input#concierge-input') as HTMLElement | null;
     const send = panel.querySelector('button[type="submit"]') as HTMLElement | null;
     const close = panel.querySelector('button[aria-label="Close"]') as HTMLElement | null;
-    const disclaimer = [...panel.querySelectorAll('p')].find((p) =>
-      (p.textContent || '').includes('starting sketch'),
-    ) as HTMLElement | undefined;
     const fabNow = [...document.querySelectorAll('button')].find((b) =>
       (b.textContent || '').includes('Ask about your project'),
     ) as HTMLElement | undefined;
@@ -922,15 +919,6 @@ async function measurePanel(page: Page) {
       input: input ? { rect: a.rect(input), box: a.box(input), distanceToPanelBottom: +(pr.bottom - input.getBoundingClientRect().bottom).toFixed(1), distanceToViewportBottom: +(window.innerHeight - input.getBoundingClientRect().bottom).toFixed(1) } : null,
       sendButton: send ? { rect: a.rect(send), box: a.box(send) } : null,
       closeAffordance: close ? { text: a.txt(close, 10), ariaLabel: close.getAttribute('aria-label'), rect: a.rect(close), box: a.box(close) } : null,
-      disclaimer: disclaimer
-        ? {
-            text: (disclaimer.textContent || '').replace(/\s+/g, ' ').trim(),
-            rect: a.rect(disclaimer),
-            box: a.box(disclaimer),
-            containerWidth: +(disclaimer.parentElement as HTMLElement).getBoundingClientRect().width.toFixed(1),
-            lines: a.lines(disclaimer),
-          }
-        : null,
       fabStillVisible: !!(fabNow && a.visible(fabNow)),
       fabRectWhileOpen: fabNow ? a.rect(fabNow) : null,
       fabZIndex: fabNow ? getComputedStyle(fabNow).zIndex : null,
@@ -1222,7 +1210,7 @@ async function animationWalk(page: Page, route: string) {
  * The /process progress fill and readout, sampled at real scroll offsets.
  *
  * The rail is `.tg-pin hidden lg:block`, so it does not render at ANY viewport
- * in the mobile matrix. Resolving PROGRESS.md's open question ("does the fill
+ * in the mobile matrix. Resolving docs/archive/HISTORY.md's open question ("does the fill
  * advance with scroll, motion on") therefore has to happen at a >=1024px width;
  * measuring it at 390px would only re-measure `display: none`.
  *
@@ -1427,7 +1415,7 @@ async function phaseMotion(browser: Browser) {
     await off.close();
   }
 
-  // The /process rail is `hidden lg:block`. PROGRESS.md's open question about
+  // The /process rail is `hidden lg:block`. docs/archive/HISTORY.md's open question about
   // the fill advancing can only be answered above that breakpoint, so it gets
   // its own desktop context with motion on — stated as such in the report
   // rather than filed under a mobile viewport where it renders `display:none`.

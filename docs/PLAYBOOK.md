@@ -218,11 +218,3 @@ Full ready-to-paste copy (Description, Services, Posts, Q&A) lives in TEKGUYZ-Li
 6. **Photos** — refresh every 2–4 weeks once the current Monochrome & Ink asset set is ready (Section 13); not a one-time upload.
 7. Technical SEO — **Resolved July 2026.** Title-duplication bug fixed and confirmed live (verified directly on tekguyz.com). robots.ts, sitemap.ts, canonical URLs on all 5 pages, and JSON-LD ProfessionalService schema all shipped as specified. Two minor, non-blocking items left on the table if ever worth a pass: the root layout's fallback description string is now dead code (every page defines its own, so it's never actually served) — harmless, just noise; and sitemap.ts stamps every route's lastModified with request-time new Date() rather than real content dates, which is valid but a weaker freshness signal to Google than it could be (the Privacy page already displays a real "Last Updated" date on-page that could be reused there).
 
-## Internal Notes (not for client-facing use)
-
-- Google Business Profile hours are incorrect — **Resolved July 2026.** Confirmed Mon–Fri, 9AM–5PM live on GBP, LinkedIn, and Facebook.
-- GBP service model doesn't reflect the real remote-delivery business — **Resolved.** Confirmed intentional: GBP is a Service Area Business, no public address, service area covers South Florida plus nationwide remote delivery. Matches the real business model.
-- **Phone number** — not yet available. Revisit Section 9 and the Pomelli Business Details tab once a number exists.
-- **GBP share link** — still needs a one-time check that the two differently-formatted share links resolve to the same live profile (see Section 9 footnote).
-- **Footer location — Resolved.** "South Florida" everywhere, including the footer's Get In Touch column. The "Pompano Beach, FL" string was a leftover in the old copy deck; Copy Deck v2 corrects it and the rebuild ships it correctly.
-- **Pomelli field limits are real and unforgiving** — overview caps at 305 characters (measured from Pomelli's own original auto-generated value). Any future rewrite of that field needs a character count check before pasting in, not after.

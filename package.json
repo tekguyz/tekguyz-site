@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "bun run scripts/generate-icons.ts && bun run scripts/check-media.ts",
+    "prebuild": "vitest run && bun run scripts/generate-icons.ts && bun run scripts/check-media.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

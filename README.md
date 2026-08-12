@@ -4,7 +4,7 @@ The tekguyz.com site. Next.js 16 (App Router) · TypeScript · Tailwind v4 · Bu
 
 **Read `CLAUDE.md` first.** The authority order for every decision is
 `docs/CANONICAL.md` > `docs/DESIGN.md` > `docs/COPY.md` > `docs/SEO.md`, and
-`docs/PROGRESS.md` records what's already built and what's deliberately deferred.
+`docs/archive/HISTORY.md` records what's already built and what's deliberately deferred.
 
 ## Getting started
 
