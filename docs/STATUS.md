@@ -12,7 +12,9 @@ drift (fixed in `COPY.md:69`). All three had been quoted back to the user as
 current state. Assert nothing here you have not just measured.*
 
 Last updated: 2026-08-12 (Build Phase 1 shipped; Build Phase 2 partly shipped —
-D-04 geometry and the concierge panel's presence motion).
+D-04 geometry, the concierge panel's presence motion, and two device-reported
+fixes. A same-day production outage, caused by this work and self-resolved, is
+recorded below — read it before the next push to `master`.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -263,6 +265,43 @@ reveals (arguably correct) · `lockup-master.svg` wordmark is still a `<text>`
 element (matters only if the SVG goes to an external vendor).
 
 ---
+
+## Incident 2026-08-12 — production build failed for ~4 minutes
+
+**`master` broke in production the moment `docs/TOKENS.md` first shipped as a
+build-time dependency, and nothing local could have caught it.**
+
+Pushing the four Build Phase 1/2 commits (ending `b7c328c`) triggered a Vercel
+deployment that failed `prebuild`: `ENOENT: no such file or directory, open
+'docs/TOKENS.md'`. Measured via `get_deployment_build_logs`, not guessed.
+
+**Cause:** `.vercelignore` has excluded `docs/` since 2026-08-06 (`833e7f5`),
+correctly at the time — pure documentation, nothing read it at build time.
+Build Phase 1 (`0cebef9`) added `check:design` as a `prebuild` gate that reads
+`docs/TOKENS.md` by a plain relative path, and `0cebef9` had never actually
+reached production before this session's push — so this exact combination had
+never been exercised on Vercel. `bun run build` passed locally every time
+because `.vercelignore` only governs what a git-connected Vercel deploy
+uploads to the build container; a local build reads straight off disk and
+never sees it. **Every green local build before now was real and gave no
+signal of this** — it is structurally unable to.
+
+**Fix (`8f7a413`):** removed the `docs/` line from `.vercelignore`. Reproduced
+the exact failure locally first (hid `docs/`, ran `check-design.ts`, got the
+identical `ENOENT`) before trusting the diagnosis. `scripts/verify.ts` and
+`scripts/audit.ts` stay ignored — real dev-only tooling, nothing at build time
+reads them.
+
+**Confirmed resolved, not inferred:** `list_deployments` → `dpl_DttFF1cxmxGB…`
+`READY`, aliased to both `tekguyz.com` and `www.tekguyz.com`
+(`get_deployment`), and `curl -o /dev/null -w '%{http_code}' https://tekguyz.com`
+→ `200`. Outage window: push-to-`READY`, under 4 minutes.
+
+**The general lesson, not just this file:** `.vercelignore` (and anything else
+that changes what reaches the build container) is a second surface a
+build-time dependency can silently violate, and `bun run build` cannot see it.
+Written into `CLAUDE.md`'s hard rules so a future `prebuild` addition checks
+against it before shipping.
 
 ## Decided 2026-08-12 — do not reopen
 
