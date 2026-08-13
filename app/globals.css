@@ -101,7 +101,13 @@
   --tg-surface: #1a1a1c;
   --tg-border: #2a2a2c;
   --tg-border-strong: #3a3a3e;
-  --tg-secondary: #9ca3af;
+  /* muted-dark, not muted-soft. This read #9ca3af — a value TOKENS.md retired
+     as a text colour — which made the band a second, undocumented exception to
+     that retirement with no mechanism behind it. The violet tag literal below
+     IS mechanically justified (token resolution would be wrong there); this
+     was not. Contrast drops 7.5:1 → 4.53:1 on #111111, still AA for the 14px
+     body it carries, and it now matches .footer-dark's secondary exactly. */
+  --tg-secondary: var(--tg-muted-dark);
   --tg-accent-blue-on-bg: #5380e4;
   --tg-accent-violet-on-bg: #8377e2;
   --tg-accent-amber-on-bg: #f2a93c;
@@ -118,7 +124,7 @@
   --tg-bg: #101010;
   --tg-fg: #f5f5f5;
   --tg-border: #2a2a2c;
-  --tg-secondary: #747c8b;
+  --tg-secondary: var(--tg-muted-dark);
   background-color: #101010;
   color: #f5f5f5;
 }

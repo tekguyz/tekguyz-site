@@ -55,7 +55,6 @@ export function Frame({
   alt,
   ratio = '16/10',
   priority = false,
-  onInk = false,
   viewTransitionName,
   className,
 }: {
@@ -65,7 +64,6 @@ export function Frame({
   alt: string;
   ratio?: '16/10' | '16/9';
   priority?: boolean;
-  onInk?: boolean;
   viewTransitionName?: string;
   className?: string;
 }) {
@@ -84,7 +82,7 @@ export function Frame({
       style={{
         aspectRatio: ratio,
         background: 'var(--tg-surface)',
-        borderColor: onInk ? '#2A2A2C' : 'var(--tg-border)',
+        borderColor: 'var(--tg-border)',
         ...(viewTransitionName ? { viewTransitionName } : {}),
       }}
     >
@@ -131,24 +129,22 @@ export function Frame({
 export function FrameMeta({
   status,
   url,
-  onInk = false,
   className,
 }: {
   status: StatusResult;
   url: string;
-  onInk?: boolean;
   className?: string;
 }) {
   return (
     <div className={cn('mt-3 flex flex-wrap items-center gap-x-5 gap-y-3', className)}>
-      <StatusLine result={status} onInk={onInk} />
+      <StatusLine result={status} />
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
         data-uline
         className="tap-44 link-underline text-[14.5px] font-semibold"
-        style={{ color: onInk ? '#F5F5F5' : 'var(--tg-fg)' }}
+        style={{ color: 'var(--tg-fg)' }}
       >
         Open it in a new tab
       </a>
@@ -159,29 +155,27 @@ export function FrameMeta({
 /** The "How it's built" block — hairline-separated, capped at 60ch. */
 export function BuildNarrative({
   children,
-  onInk = false,
   className,
   maxWidth = '60ch',
 }: {
   children: React.ReactNode;
-  onInk?: boolean;
   className?: string;
   maxWidth?: string;
 }) {
   return (
     <div
       className={cn('mt-7 border-t pt-6', className)}
-      style={{ maxWidth, borderTopColor: onInk ? '#2A2A2C' : 'var(--tg-border)' }}
+      style={{ maxWidth, borderTopColor: 'var(--tg-border)' }}
     >
       <p
         className="mb-[10px] text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
-        style={{ color: onInk ? '#9CA3AF' : 'var(--tg-secondary)' }}
+        style={{ color: 'var(--tg-secondary)' }}
       >
         How it&rsquo;s built
       </p>
       <p
         className="text-[0.875rem] leading-[1.55]"
-        style={{ color: onInk ? '#9CA3AF' : 'var(--tg-secondary)' }}
+        style={{ color: 'var(--tg-secondary)' }}
       >
         {children}
       </p>

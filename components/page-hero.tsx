@@ -74,14 +74,15 @@ export function SectionHead({
   eyebrow,
   headline,
   description,
-  onInk = false,
 }: {
   eyebrow: string;
   headline: string;
   description?: string;
-  onInk?: boolean;
 }) {
-  const dim = onInk ? '#9CA3AF' : 'var(--tg-secondary)';
+  // Read from the scope. `.ink-band` redeclares both tokens at its own root,
+  // so a dark-surface branch here would only re-derive what the cascade
+  // already knows — and the hex it used to carry had drifted from it.
+  const dim = 'var(--tg-secondary)';
   return (
     <div className="tg-container tg-grid">
       <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
@@ -93,7 +94,7 @@ export function SectionHead({
         </p>
         <h2
           className="text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]"
-          style={{ color: onInk ? '#F5F5F5' : 'var(--tg-fg)' }}
+          style={{ color: 'var(--tg-fg)' }}
         >
           {headline}
         </h2>

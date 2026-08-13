@@ -6,8 +6,8 @@ import { accentForSolution } from '@/config/solutions';
 import { site } from '@/lib/site';
 
 /**
- * Always dark regardless of the toggle, separated by a persistent 1px #2A2A2C
- * top border.
+ * Always dark regardless of the toggle, separated by a persistent 1px top
+ * border in the scope's own `--tg-border`.
  *
  * Structure per the export: masthead (40px top padding, 40px mark + 26px
  * wordmark + tagline left, 44x44 social row right) -> hairline -> 3-column nav
@@ -17,7 +17,11 @@ import { site } from '@/lib/site';
  * repeated tagline — Privacy already lives in the Company column, and the
  * reference render's duplicate was wrong.
  *
- * Column headings and the copyright use muted-dark, never a bare hex.
+ * EVERY colour here reads the `.footer-dark` scope root in globals.css — which
+ * is what the previous version of this line CLAIMED while the file carried four
+ * bare hexes. Two of them (#9CA3AF for the tagline, location, hours and the
+ * social row) had drifted off the scope's own `--tg-secondary`, so the footer
+ * shipped two different secondary greys; it is now the one muted-dark.
  */
 
 const SOCIALS = [
@@ -58,7 +62,7 @@ const SOCIALS = [
   },
 ];
 
-const HAIRLINE = '#2A2A2C';
+const HAIRLINE = 'var(--tg-border)';
 
 export function FooterDark() {
   return (
@@ -80,10 +84,10 @@ export function FooterDark() {
           <div className="flex items-start gap-4">
             <ConnectedNodes size={40} stroke={HAIRLINE} />
             <div>
-              <p className="text-[26px] leading-[1.1] font-extrabold tracking-[-0.03em] text-[#F5F5F5]">
+              <p className="text-fg text-[26px] leading-[1.1] font-extrabold tracking-[-0.03em]">
                 TEKGUYZ
               </p>
-              <p className="mt-[10px] text-[0.875rem] leading-[1.55] text-[#9CA3AF]">
+              <p className="text-secondary mt-[10px] text-[0.875rem] leading-[1.55]">
                 We build tech that actually works.
               </p>
             </div>
@@ -98,7 +102,7 @@ export function FooterDark() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="flex h-11 w-11 items-center justify-center text-[#9CA3AF] transition-colors duration-[120ms] hover:text-[#F5F5F5] focus-visible:text-[#F5F5F5]"
+                className="text-secondary hover:text-fg focus-visible:text-fg flex h-11 w-11 items-center justify-center transition-colors duration-[120ms]"
               >
                 <svg
                   width="20"
@@ -147,7 +151,7 @@ export function FooterDark() {
               DESIGN.md §4 is explicit that this row must not inherit
               section-level spacing. 22px is the tightest value that works. */}
           <div className="[grid-column:1/5] max-lg:[grid-column:1/4]">
-            <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
+            <p className="text-secondary mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">
               Solutions
             </p>
             <div className="flex flex-col items-start gap-[22px]">
@@ -155,7 +159,7 @@ export function FooterDark() {
                 <Link
                   key={s.slug}
                   href={`/solutions/${s.slug}`}
-                  className="tap-44 flex items-center gap-3 text-[0.875rem] text-[#F5F5F5]"
+                  className="tap-44 text-fg flex items-center gap-3 text-[0.875rem]"
                 >
                   {/* Dots use the real accent from config/solutions.ts and
                       never theme-swap — the footer is dark either way. */}
@@ -171,7 +175,7 @@ export function FooterDark() {
           </div>
 
           <div className="[grid-column:5/9] max-lg:[grid-column:4/6]">
-            <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
+            <p className="text-secondary mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">
               Company
             </p>
             <div className="flex flex-col items-start gap-[22px]">
@@ -184,7 +188,7 @@ export function FooterDark() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="tap-44 link-underline text-[0.875rem] text-[#F5F5F5]"
+                  className="tap-44 link-underline text-fg text-[0.875rem]"
                 >
                   {l.label}
                 </Link>
@@ -193,25 +197,25 @@ export function FooterDark() {
           </div>
 
           <div className="[grid-column:9/13] max-lg:[grid-column:6/9]">
-            <p className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-[#747C8B] uppercase">
+            <p className="text-secondary mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">
               Get In Touch
             </p>
             <div className="flex flex-col items-start gap-[22px] tabular-nums">
               <a
                 href={`mailto:${site.publicEmail}`}
-                className="tap-44 link-underline text-[0.875rem] text-[#F5F5F5]"
+                className="tap-44 link-underline text-fg text-[0.875rem]"
               >
                 {site.publicEmail}
               </a>
-              <span className="text-[0.875rem] text-[#9CA3AF]">{site.location}</span>
-              <span className="text-[0.875rem] text-[#9CA3AF]">{site.hours}</span>
+              <span className="text-secondary text-[0.875rem]">{site.location}</span>
+              <span className="text-secondary text-[0.875rem]">{site.hours}</span>
             </div>
           </div>
         </div>
 
         {/* Bottom bar — copyright only. Nothing else belongs here. */}
         <div className="mt-14 border-t py-6" style={{ borderTopColor: HAIRLINE }}>
-          <p className="text-[0.875rem] tabular-nums text-[#747C8B]">
+          <p className="text-secondary text-[0.875rem] tabular-nums">
             &copy; {new Date().getFullYear()} TEKGUYZ. Built by TEKGUYZ.
           </p>
         </div>

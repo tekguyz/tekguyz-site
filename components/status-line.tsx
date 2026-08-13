@@ -32,16 +32,16 @@ function absoluteTime(from: number): string {
  * loses the ink weight entirely — a HEAD request timing out is not a failure
  * state for the visitor, so it doesn't get emphasis or an error color.
  *
- * `onInk` covers the home ink band and any other surface that stays dark in
- * both themes, where the theme-aware tokens would resolve to light-mode values.
+ * Colours are read from the scope, never re-derived. A surface that stays dark
+ * in both themes (`.ink-band`, `.footer-dark`) redeclares `--tg-fg` and
+ * `--tg-secondary` at its own root, so this component needs no `onInk` branch
+ * and never names a hex — the two used to disagree, and the literal won.
  */
 export function StatusLine({
   result,
-  onInk = false,
   className,
 }: {
   result: StatusResult;
-  onInk?: boolean;
   className?: string;
 }) {
   const live = result.status === 'live';
@@ -53,8 +53,8 @@ export function StatusLine({
   const hydrated = useSyncExternalStore(subscribeNever, () => true, () => false);
   const stamp = hydrated ? relativeTime(result.checkedAt) : absoluteTime(result.checkedAt);
 
-  const fg = onInk ? '#F5F5F5' : 'var(--tg-fg)';
-  const dim = onInk ? '#9CA3AF' : 'var(--tg-secondary)';
+  const fg = 'var(--tg-fg)';
+  const dim = 'var(--tg-secondary)';
 
   return (
     <p

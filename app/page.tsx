@@ -110,7 +110,6 @@ export default async function HomePage() {
           eyebrow="Our Work"
           headline="Two we're proud of."
           description="Both are running right now. Open either one and use it yourself."
-          onInk
         />
         {featured.map((entry, i) => (
           <BandRow key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
@@ -162,18 +161,18 @@ function BandRow({
     >
       <SolutionTag solution={entry.solution} label={entry.tag} onInk />
       <h3
-        className="mt-6 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em] text-[#F5F5F5]"
+        className="text-fg mt-6 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
         style={{ textWrap: 'pretty' }}
       >
         {entry.headline}
       </h3>
-      <PullQuote solution={entry.solution} size="band" onInk className="mt-10">
+      <PullQuote solution={entry.solution} size="band" className="mt-10">
         {entry.pullQuote}
       </PullQuote>
-      <StatusLine result={status} onInk className="mt-10" />
+      <StatusLine result={status} className="mt-10" />
       <Link
         href={`/work/${entry.slug}`}
-        className="tap-44 link-underline mt-[22px] inline-block text-[14.5px] font-semibold text-[#F5F5F5]"
+        className="tap-44 link-underline text-fg mt-[22px] inline-block text-[14.5px] font-semibold"
       >
         Read the full story →
       </Link>
@@ -190,7 +189,7 @@ function BandRow({
     >
       <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
         <div>
-          <Frame poster={entry.poster} alt={entry.alt} onInk />
+          <Frame poster={entry.poster} alt={entry.alt} />
         </div>
       </ViewTransition>
     </div>
@@ -211,7 +210,7 @@ function BandRow({
     // its image and row 1 opened with the next one.
     <article
       data-reveal-index={index}
-      className={`reveal tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-16 md:mt-24 border-b border-[#2A2A2C] pb-16 md:pb-24' : 'pt-16 md:pt-24'}`}
+      className={`reveal tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-16 md:mt-24 border-b border-border pb-16 md:pb-24' : 'pt-16 md:pt-24'}`}
     >
       {text}
       {media}

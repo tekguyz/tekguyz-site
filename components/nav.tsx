@@ -101,7 +101,11 @@ export function Nav() {
           borderBottomColor: 'var(--tg-nav-border)',
           backdropFilter: 'blur(var(--tg-nav-blur))',
           WebkitBackdropFilter: 'blur(var(--tg-nav-blur))',
-          transition: 'background-color 240ms, border-color 240ms, backdrop-filter 240ms',
+          // --dur-base, not a literal. 240ms was correct only by coincidence:
+          // nothing tied it to the token, so a change to the state duration
+          // would have left the nav behind silently.
+          transition:
+            'background-color var(--dur-base), border-color var(--dur-base), backdrop-filter var(--dur-base)',
         }}
       />
 

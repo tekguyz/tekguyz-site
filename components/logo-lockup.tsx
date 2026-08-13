@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils';
  * redrawn approximation.
  *
  * `stroke` is a prop because the connectors are context-dependent: the theme
- * hairline in the nav, a fixed #2A2A2C in the always-dark footer, and
- * currentColor at 40% inside the concierge launcher (where the mark sits on the
- * ink fill and has no hairline token to read).
+ * hairline in the nav, the `.footer-dark` scope's own `--tg-border` in the
+ * always-dark footer, and currentColor at 40% inside the concierge launcher
+ * (where the mark sits on the ink fill and has no hairline token to read).
  */
 export function ConnectedNodes({
   size = 26,

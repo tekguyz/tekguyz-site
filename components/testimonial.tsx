@@ -10,16 +10,25 @@ import { site } from '@/lib/site';
  * marks, and ends in verifiable attribution plus a cross-link to the build
  * being described.
  *
- * Export values: #111111 card, 16px radius, 72px/64px padding. A 72px Geist
- * quote glyph at #2A2A2C sits above the quote at 0.6 line-height. Attribution
- * row is separated by 56px + a 32px-padded #2A2A2C rule and wraps.
+ * Export values: ink card, 16px radius, 72px/64px padding. A 72px Geist quote
+ * glyph on the hairline sits above the quote at 0.6 line-height. Attribution
+ * row is separated by 56px + a 32px-padded hairline rule and wraps.
+ *
+ * IT CARRIES `.ink-band`, and that is what makes the colours readable rather
+ * than a coincidence. This is a permanently-dark card sitting on a canvas page
+ * in light mode, so it is the one shape that CANNOT just read `--tg-fg` — the
+ * page root resolves that to #101010, invisible on the card. It used to solve
+ * that with four literal hexes; the scope root already solves it for the home
+ * band, and its ink is the same #111111 this card was hardcoding, so it now
+ * consumes that instead of re-deriving it. `.ink-band` is unlayered and paints
+ * the background itself, which is why the `bg-*` utility is gone too.
  *
  * Marked up as Review schema — no reviewRating, since no numeric score exists.
  */
 export function Testimonial({ contextSlug }: { contextSlug: string }) {
   return (
     <div
-      className="rounded-[16px] bg-[#111111]"
+      className="ink-band rounded-[16px]"
       style={{ padding: 'var(--pad-container)' }}
     >
       {/* The glyph clamps WITH the quote instead of against it. 72px beside a
@@ -29,7 +38,7 @@ export function Testimonial({ contextSlug }: { contextSlug: string }) {
           composition moves. */}
       <span
         aria-hidden
-        className="mb-1.5 block text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.6] font-bold text-[#2A2A2C] sm:mb-3"
+        className="text-border mb-1.5 block text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.6] font-bold sm:mb-3"
       >
         &ldquo;
       </span>
@@ -41,7 +50,7 @@ export function Testimonial({ contextSlug }: { contextSlug: string }) {
            it would start to matter is ~700px, where releasing it hands the
            quote a 650px measure. It is a reading-measure decision, not a
            desktop artefact. */
-        className="max-w-[34ch] text-[clamp(1.3125rem,2.6vw,2.125rem)] leading-[1.26] font-semibold tracking-[-0.025em] text-[#F5F5F5] sm:leading-[1.22]"
+        className="text-fg max-w-[34ch] text-[clamp(1.3125rem,2.6vw,2.125rem)] leading-[1.26] font-semibold tracking-[-0.025em] sm:leading-[1.22]"
         style={{ textWrap: 'pretty' }}
       >
         {testimonial.body}
@@ -59,14 +68,14 @@ export function Testimonial({ contextSlug }: { contextSlug: string }) {
           groups, 10px inside them) rather than inherited from whatever the
           wrap happened to do. */}
       <div
-        className="flex flex-col gap-6 border-t border-[#2A2A2C] pt-5 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-8 sm:pt-8"
+        className="border-border flex flex-col gap-6 border-t pt-5 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-8 sm:pt-8"
         style={{ marginTop: 'var(--gap-group)' }}
       >
         <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 sm:gap-4">
-          <span className="text-[1rem] font-semibold text-[#F5F5F5] sm:text-[1.0625rem]">
+          <span className="text-fg text-[1rem] font-semibold sm:text-[1.0625rem]">
             {testimonial.author}
           </span>
-          <span className="text-[0.8125rem] text-[#9CA3AF] sm:text-[0.875rem]">
+          <span className="text-secondary text-[0.8125rem] sm:text-[0.875rem]">
             {testimonial.source}
           </span>
         </div>
@@ -86,13 +95,13 @@ export function Testimonial({ contextSlug }: { contextSlug: string }) {
           href={site.gbp}
           target="_blank"
           rel="noopener noreferrer"
-          className="tap-44 link-underline self-start text-[14px] font-semibold text-[#F5F5F5] sm:text-[14.5px]"
+          className="tap-44 link-underline text-fg self-start text-[14px] font-semibold sm:text-[14.5px]"
         >
           Read it on Google →
         </a>
         <Link
           href={`/work/${contextSlug}`}
-          className="tap-44 link-underline self-start text-[0.8125rem] text-[#9CA3AF] sm:text-[0.875rem]"
+          className="tap-44 link-underline text-secondary self-start text-[0.8125rem] sm:text-[0.875rem]"
         >
           This is the work he&rsquo;s describing →
         </Link>

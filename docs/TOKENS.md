@@ -78,8 +78,10 @@ violet `#8377e2` 5.17 on `#101010`; amber and teal pass as their plain accent.
 ```
 
 Rendered: hero 40→72px · display 32→56px · **subhead 24→36px** · title 22→28px ·
-body 17px · small 14px · caption 12px. Geist throughout; Geist Mono in three
-places only (`status-line` timestamps, Process numerals, tag labels).
+body 17px · small 14px · caption 12px. Geist throughout; Geist Mono in two
+places only (`status-line`, which sets it on the whole line, and the concierge's
+inline code span). Process numerals and tag labels are Geist Sans — the doc
+claimed mono for both until it was measured on 2026-08-13.
 
 **`--text-subhead` is the item-level heading step, added 2026-08-13.** Section
 heads own `display`; the things listed under one own `subhead`. It exists because

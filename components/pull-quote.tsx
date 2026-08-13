@@ -17,13 +17,11 @@ export function PullQuote({
   children,
   solution,
   size = 'display',
-  onInk = false,
   className,
 }: {
   children: React.ReactNode;
   solution: SolutionSlug;
   size?: 'display' | 'band';
-  onInk?: boolean;
   className?: string;
 }) {
   const a = accentForSolution(solution);
@@ -38,7 +36,7 @@ export function PullQuote({
       )}
       style={{
         borderLeft: `2px solid ${a.dot}`,
-        color: onInk ? '#F5F5F5' : 'var(--tg-fg)',
+        color: 'var(--tg-fg)',
         textWrap: 'pretty',
       }}
     >
