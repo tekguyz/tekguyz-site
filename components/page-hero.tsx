@@ -62,6 +62,13 @@ export function PageHero({
 /**
  * The in-page section head: eyebrow + display headline on cols 1-7, description
  * bottom-aligned on cols 8-13.
+ *
+ * The description is a section LEDE, not body copy — `--text-title`, one step
+ * under the head it sits beside. It shipped at `--text-body`/secondary, which is
+ * byte-identical to the treatment `solution-row` gives each row's hook, so the
+ * section's own sentence and one item's sentence read as the same kind of thing
+ * in the same column band. Register, not just size: the head states, the lede
+ * expands, the rows list. DESIGN.md §2.
  */
 export function SectionHead({
   eyebrow,
@@ -93,7 +100,10 @@ export function SectionHead({
       </div>
       {description && (
         <div className="flex items-end [grid-column:8/13] max-lg:[grid-column:1/-1]">
-          <p className="text-[length:var(--text-body)]" style={{ color: dim }}>
+          <p
+            className="text-[length:var(--text-title)] leading-[1.35] tracking-[-0.01em]"
+            style={{ color: dim, textWrap: 'pretty' }}
+          >
             {description}
           </p>
         </div>

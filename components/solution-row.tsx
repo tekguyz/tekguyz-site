@@ -5,12 +5,19 @@ import type { Solution } from '@/content/solutions';
 /**
  * Full-width row, hairline top border, 48px vertical padding.
  *
- * Export layout: accent dot (10px) + display-size title on cols 1-6 with a 22px
- * gap; hook + arrow on cols 7-13, space-between. On hover the row's hairline
- * darkens to border-strong and both the title and the arrow shift 4px right.
+ * Export layout: accent dot (10px) + title on cols 1-6 with a 22px gap; hook +
+ * arrow on cols 7-13, space-between. On hover the row's hairline darkens to
+ * border-strong and both the title and the arrow shift 4px right.
  *
  * No icons — the dot is the icon. No card fill, no box. The four-identical-cards
  * grid is a named anti-pattern and this is what replaces it.
+ *
+ * The title is `--text-subhead`, a step DOWN from the export's `--text-display`.
+ * A row title and the `SectionHead` above it were the same size token separated
+ * only by ~100 weight units, which is a difference you can find in a type table
+ * and not one you can see at a glance. Section level owns `display`; item level
+ * owns `subhead`. This is shared with /solutions, where the same step keeps the
+ * rows under, not level with, the `--text-hero` page head. DESIGN.md §2, §4.6.
  */
 export function SolutionRow({
   solution,
@@ -40,7 +47,7 @@ export function SolutionRow({
         <AccentDot solution={solution.slug} />
         <span
           data-shift
-          className="hover-shift inline-block text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]"
+          className="hover-shift inline-block text-[length:var(--text-subhead)] leading-[1.1] font-semibold tracking-[-0.025em]"
         >
           {solution.name}
         </span>
@@ -49,7 +56,11 @@ export function SolutionRow({
       <div
         className="flex items-center justify-between gap-8 [grid-column:7/13] max-lg:[grid-column:5/9]"
       >
-        <p className="max-w-[46ch] text-[length:var(--text-body)] text-secondary">
+        {/* `--text-sm`, not `--text-body`: the hook is item-level supporting
+            text and it sits in the same column band as the section's lede. At
+            body size the two were the same treatment twice and the band read as
+            one flat column of secondary sentences. */}
+        <p className="max-w-[52ch] text-[length:var(--text-sm)] leading-[1.55] text-secondary">
           {solution.hook}
         </p>
         <span

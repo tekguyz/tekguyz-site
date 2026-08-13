@@ -207,7 +207,8 @@ split.
 | --- | --- | --- | --- | --- |
 | Hero h1 | `--text-hero` | 700 Geist | 0.95 | −0.045em |
 | Section head | `--text-display` | 700 Geist | 1.05 | −0.03em |
-| Solution row title | `--text-display` | 600 Geist | 1.1 | −0.025em |
+| Section lede (`SectionHead` description) | `--text-title` | 400 Geist | 1.35 | −0.01em |
+| Solution row title | `--text-subhead` | 600 Geist | 1.1 | −0.025em |
 | Card / detail title | `--text-title` | 600 Geist | 1.2 | −0.02em |
 | Body | `--text-body` | 400 Geist | 1.6 | 0 |
 | Small / meta | `--text-sm` | 400 Geist | 1.55 | 0 |
@@ -215,6 +216,12 @@ split.
 | Button | 14.5px | 600 Geist | 1.0 | 0 |
 
 Hierarchy comes from weight and size, never from switching families. All numerals in status lines, timestamps, and any figures use `font-variant-numeric: tabular-nums`.
+
+**[decided 2026-08-13, Wave 2] Weight alone is not a size step, and this table said otherwise for the life of the project.** Section head and Solution row title were both `--text-display`, separated by 700 vs 600. That difference is findable in this table and invisible on the page — at 56px, a 100-unit weight step reads as a rendering artefact, not as a level. `--text-subhead` (24→36px, `TOKENS.md`) is the item-level heading step that resolves it: **section level owns `display`, the things listed under a section own `subhead`.** The same rule fixed the other half of the collision one row down — `SectionHead`'s description and `solution-row`'s hook were both `--text-body`/secondary in the same column band, so the sentence describing a *section* and the sentence describing *one item in it* were the same object. The lede moves up to `--text-title`, the hook moves down to `--text-sm`. Four levels, four steps, no two of them decided by weight.
+
+> **[decided 2026-08-13] Rejected: closing the row title to `--text-title`** and using the existing scale rather than adding a step. It separates cleanly from the head, and it also drops the four rows to the same size as a case-study card title — the rows are the whole of `/solutions` and the largest thing on that page below its `h1`, and flattening them to card weight buys a token we did not have to spend. **Rejected with it: leaving the sizes alone and widening the weight gap to 800/500.** Geist at 800 is the wordmark's fixed brand treatment; borrowing it for a section head puts brand weight on running page furniture.
+
+> **[decided 2026-08-13] The export is overridden here, deliberately.** `TEKGUYZ Site.dc.html` sets the row title at display scale. It also never renders a `SectionHead` directly above four rows — `/solutions` in the export is one long page with inline sections, the layout CANONICAL §4 reversed. The collision is a product of the reversal, so it is a decision made after the export and CANONICAL governs it.
 
 ---
 
@@ -399,6 +406,13 @@ export in the same file and a different component: eyebrow + `--text-display`
 headline on cols 1–6, description bottom-aligned on 7–12, with an `onInk`
 variant. It is the in-page section head, not a page hero.
 
+**[decided 2026-08-13, Wave 2] The description is a section *lede*,
+`--text-title`/400, not `--text-body`.** At body/secondary it was the identical
+treatment `solution-row` gives each row's hook, in the identical column band, so
+the sentence about the section and the sentence about one item in it were the
+same object rendered twice. §2 has the full ladder. Three call sites, all on
+home, all changed together — this component is not forked per section.
+
 ### 4.4 `proof-line`
 
 **[decided v2.5, D-09]** CANONICAL §98 fixes the content and says "one sentence,
@@ -415,7 +429,7 @@ apart** (`gap-x-5`), wrapping to a stack:
 
 - *Eight live builds.* — `--text-title`, weight 600, −0.02em, **ink**.
 - *Open any of them right now.* — `--text-body`, weight 600, **ink**,
-  `link-underline`, `tap-44`, → `/work`.
+  `tg-rule tg-rule-rest`, `tap-44`, → `/work`.
 
 > **This document was wrong.** It specified `tap-24` on the link. The code uses
 > `tap-44`, deliberately and with the reason recorded at the call site: the 24px
@@ -429,6 +443,39 @@ nothing at rest** — it grows from 0% on hover and focus — so the only action
 element on the site's proof band had no rest-state affordance *and* was the
 lighter half of its own sentence. Muting the invitation inverts the hierarchy:
 the claim is what you read, the invitation is what you click.
+
+**[decided 2026-08-13, Wave 2] The affordance half is now fixed too.** v2.5
+corrected the colour and left the sentence above standing as a description of a
+live defect — a link that only exists once you are already on it, which is no
+affordance at all for touch (no hover) or for anyone scanning the band. The link
+drops `link-underline` for **`tg-rule tg-rule-rest`**: §6.2's state primitive
+drawn to **0.34 at rest**, completing to 1 on hover and focus. It is a third
+position on the one gesture, not a fourth mechanism — the contact form's step
+rail already draws the same bar partway (0.5 → 1); the only new idea is that here
+a partial draw is a *rest state* rather than a progress readout. Under
+`prefers-reduced-motion` the bar is simply present at rest, which is the one
+thing `link-underline` could never be.
+
+> **The partial value is a class, `.tg-rule-rest` at (0,1,0), never an inline
+> `--tg-rule-scale`.** The variable is set on the element and inherits, so an
+> inline value beats every selector in §6.2 and would pin the bar at 0.34
+> *through hover* — the same property of the primitive the form's rail relies on,
+> turned into a bug. The form can be inline precisely because nothing on that
+> rail ever hovers. `.tg-rule:hover` / `:focus-visible` at (0,2,0) beat the class
+> on specificity, not source order.
+
+> **[decided 2026-08-13] Rejected: a static 1px underline at rest thickening on
+> hover.** It is the conventional answer and it would have put a second underline
+> mechanism on the site next to `.tg-rule`, which is the exact failure §6.2
+> exists to prevent. **Rejected with it: promoting the link to a button.** The
+> band is specified as one sentence with no card; a filled control inside it is a
+> card by another name, and the closing CTA is the page's single strongest ask.
+
+> **This does not transfer to §4.5's concierge link.** That rejection stands on
+> its own reasoning — the link sits 16px under an ink-filled button that supplies
+> its band's affordance in full, and giving it a drawn rest-state bar moves it
+> toward co-equal with the primary ask. The proof line's invitation is the only
+> actionable element on its band; that is the whole difference.
 
 **[decided v2.5] Rejected: promoting the whole line to `--text-display`.** It
 would put three display-scale elements inside one scroll — the hero `h1` above
@@ -568,13 +615,23 @@ those three facts render identically in both places by rule.
 ### 4.6 `solution-row`
 
 **[measured 2026-08-12 `components/solution-row.tsx`]** Full-width row, hairline
-top border, **48px vertical padding** (`py-12`). 10px accent dot + `--text-display`
-title on cols 1–5 with a 22px gap; hook (capped 46ch) + arrow on cols 7–12,
-space-between. Hover darkens the hairline to `border-strong` and shifts title and
-arrow 4px right; the row also draws `.tg-rule` (§6.2).
+top border, **48px vertical padding** (`py-12`). 10px accent dot + `--text-subhead`
+title on cols 1–5 with a 22px gap; hook (`--text-sm`, capped 52ch) + arrow on
+cols 7–12, space-between. Hover darkens the hairline to `border-strong` and
+shifts title and arrow 4px right; the row also draws `.tg-rule` (§6.2).
 
 **[decided v2.2] No icons — the dot is the icon. No card fill, no box.** The
 four-identical-cards grid is the named anti-pattern this replaces.
+
+**[decided 2026-08-13, Wave 2] Title `--text-display` → `--text-subhead`, hook
+`--text-body` → `--text-sm`.** Full reasoning in §2. **This component is shared
+with `/solutions`, and it stays one component** — the standing convention is that
+a shared component reads identically on every route it appears on, not that it
+forks into a home variant. The step also improves `/solutions`, where four rows
+at `display` sat one notch under a `--text-hero` `h1` with nothing between them;
+at `subhead` the page reads head → list instead of head → four more heads. The
+hook's measure widens 46ch → 52ch because 14px text needs more characters to
+hold the same optical line length.
 
 ### 4.7 `case-study-row` and `build-narrative`
 
@@ -866,6 +923,80 @@ everywhere else, at 18px.
 **[decided v2.1] Launcher visibility is locked, not optional**: it must never sit
 over the hero, where it competes with the hero's own CTAs and reads as a bug. The
 mechanism is §6/§8's yield rule, not a scroll threshold.
+
+**[decided 2026-08-13] The launcher is sized per breakpoint, and it was not
+before.** One desktop size shipped to every width: `px-6 py-4` with the full
+label, **234 × 50**. Measured on a 412px viewport (Pixel 9A) that is **57% of the
+screen width, 63% of it occupied**, landing on the Process teaser's body copy.
+Below 768px it is now `px-4 py-[13px]` with the label **"Ask us"** — **107 × 44**,
+26%. Desktop is unchanged, because 234px against 1440 is 16% and was never the
+problem.
+
+- **`py-[13px]` is an exact number, not a round one.** 13 + the 18px mark + 13 is
+  **44px** — §8's tap floor precisely. Nothing above the floor is doing work, and
+  the pill needs no `.tap-44` overlay because it clears the floor natively.
+- **The label swap is two spans and a CSS `hidden`, never `matchMedia`.** A JS
+  width check renders the wrong string on the server and hydrates into a
+  mismatch. `display: none` also takes the inactive string out of the
+  accessibility tree, so a screen reader reads exactly one.
+- **No `aria-label` pinning the long string at every width.** The accessible name
+  would then be "Ask about your project" while the visible label reads "Ask us",
+  and WCAG 2.5.3 requires the name to contain the visible text. The visible text
+  is the name.
+
+> **[measured 2026-08-13] The launcher does not use `button.tsx` and never has.**
+> Its 24 × 16 is a *fifth* padding, matching none of §4.1's four, and it
+> hand-copies the radius, transition and `active:scale` that `base` already
+> provides. Not refactored here — the launcher needs the fixed positioning, the
+> yield ref and the `aria-hidden`/`pointer-events` state that the shared
+> component does not carry — but it is off-scale and this records it.
+
+**[decided 2026-08-13] The launcher carries a 1px hairline, `rgb(255 255 255 /
+0.25)`, and the alpha is the mechanism.** In light mode the pill is ink and the
+page is not — except over `.ink-band` and the footer, where an ink pill on an ink
+surface disappeared completely. It is `position: fixed`, so it is not a DOM
+descendant of the band and cannot inherit the band's `--tg-cta-*` overrides.
+Border colour composites over the element's own background (`background-clip` is
+`border-box`), so one declaration covers every case: on the ink pill it resolves
+to ~`#4C4C4C`, darker than a light page so the edge looks unchanged, lighter than
+the band so the pill reads as a shape again. In dark mode the pill inverts to
+`#F5F5F5` and the same value resolves to ~`#F7F7F7` — invisible, correctly, since
+a near-white pill needs no help. Padding drops 1px per side so the outer box is
+byte-identical: 12+18+12+2 = 44, 15+18+15+2 = 50.
+
+> **§3's no-shadow rule did not decide this, and would not have.** A drop shadow
+> is a dark halo; around a dark pill on a dark band it adds no edge at all. The
+> hairline is the fix on its merits. Worth noting because that rule is marked
+> `[decided, standing]` with no incident behind it and no `HISTORY.md` entry —
+> unlike the cascade rules, it is an aesthetic position, not a lesson.
+
+**[decided 2026-08-13] Replies are attributed; the visitor's turn is not.** The
+reply had no fill, no alignment and no container, so a long one arrived as an
+unbroken slab with no visible owner — the panel's own header was the only thing
+naming the speaker, and it scrolls out of mind. Every reply, **the opener
+included**, now opens with `ReplyLabel`: the site's eyebrow treatment (caption /
+700 / 0.1em / uppercase / secondary) carrying `ConnectedNodes` at 14px. The
+visitor's turn stays unlabelled — a right-aligned filled bubble already says
+"you", and captioning both sides turns a three-line exchange into a transcript.
+The label is **real text, never `aria-hidden`**: the list is `aria-live="polite"`,
+so a screen reader announces who is speaking before what they said.
+
+> **[decided 2026-08-13] Rejected: an avatar circle per turn.** Two columns of
+> chrome down a 420px panel to carry what one 12px line carries, and it would
+> have needed a second mark for the visitor that no part of the brand supplies.
+
+> **[decided 2026-08-13] Rejected: a mark-only circular launcher** at small
+> widths. Smallest possible footprint (13%) and it discards the words, which are
+> what make the control get tapped; a bare icon circle bottom-right is also the
+> most generic pattern available and stops looking like this site. **Rejected: a
+> vertical edge rail.** Rotated text is slower to read and an edge tab sits next
+> to §6.6's banned "dev portfolio" aesthetic — and it still occupies edge space,
+> to beat a footprint two attribute changes already fix. **Rejected: widening the
+> yield observer** so the launcher hides over more content — §8 already records
+> that widening that target set makes it flicker on scroll-heavy routes. **Not
+> attempted: docking it to a bottom bar.** It is the only option that stops the
+> launcher covering anything at all, and a permanent bar reads far louder than
+> the quiet secondary path §4.5 specifies this to be.
 
 **Presence — how the panel arrives and leaves (Build Phase 2)**
 
@@ -1249,8 +1380,18 @@ wayfinding-bearing declaration on a utility sort applies to hand-written CSS too
 **[measured]** It is `::after`, and there is no third option: `.tap-44` /
 `.tap-24` own `::before` site-wide and the nav links carry both.
 
+**[decided 2026-08-13, Wave 2] A third position: `.tg-rule-rest`, (0,1,0),
+`--tg-rule-scale: 0.34`.** The bar sits partly drawn at rest and completes on
+hover/focus — the primitive's partial-draw channel used as a *rest state* rather
+than as the progress readout the contact form's rail uses it for. One consumer:
+the `proof-line` link (§4.4), which had no rest-state affordance at all. It is a
+class rather than an inline value on purpose; §4.4 records why, and the reason is
+the same property the rail depends on. `.tg-rule:hover` at (0,2,0) beats it on
+specificity, so hover still completes the draw.
+
 **Currently applied to** `nav.tsx` links, `solution-row.tsx`,
-`faq-accordion.tsx` rows. **[decided]** Not applied to `project-card` (it lifts;
+`faq-accordion.tsx` rows, the `proof-line` link. **[decided]** Not applied to
+`project-card` (it lifts;
 two signals for one hover is noise), the footer link columns (a drawn bar on 14
 links is wallpaper), or `case-study-row` (not an interactive row).
 
@@ -1356,6 +1497,27 @@ check to the user.
 
 *Converted 2026-08-12. Four claims, all four measured, none wrong — this is the
 one section of the four that survived intact.*
+
+**[decided 2026-08-13] The browser's own chrome is themed too**, via
+`components/theme-color.tsx` — Chrome's Android address bar, Safari's iOS
+toolbars, the PWA title bar. `#ffffff` light, `#101010` dark: the page background,
+because the nav is transparent at scroll 0 and the canvas is what actually sits
+under the browser's chrome.
+
+> **The documented two-tag `media="(prefers-color-scheme: …)"` form is wrong for
+> this site, and that is a direct consequence of the paragraph below.** Those tags
+> track the OPERATING SYSTEM. With `enableSystem={false}` a visitor whose phone is
+> in dark mode and who has left the site in light mode would get a black address
+> bar over a white page. The tag has to follow `resolvedTheme`, which exists only
+> in JS — which is also the documented exception to `theme-toggle.tsx`'s rule
+> against gating on `useTheme()`, since that rule's escape hatch is "when a CSS
+> `dark:` variant would do" and no CSS variant can reach a `<meta>` tag.
+
+> **[known] One frame of white chrome for a returning dark-mode visitor.** The
+> server-rendered `viewport.themeColor` is light, because light is what a
+> first-time visitor gets; the effect corrects it after hydration. Closing that
+> gap needs a second blocking inline script beside next-themes' own, which is not
+> worth it for one frame of address-bar colour.
 
 **[measured 2026-08-12 `components/theme-provider.tsx`] Manual toggle only** —
 `next-themes` with `attribute="class"`, `defaultTheme="light"`,

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Analytics } from '@vercel/analytics/next';
@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeColorMeta } from '@/components/theme-color';
 import { Nav } from '@/components/nav';
 import { FooterDark } from '@/components/footer-dark';
 import { Concierge } from '@/components/concierge/concierge';
@@ -33,6 +34,23 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
 };
 
+/**
+ * The value in the SERVER-RENDERED html, and deliberately the light one with no
+ * `prefers-color-scheme` arm: `defaultTheme` is light and `enableSystem` is
+ * false, so light is what a first-time visitor gets regardless of their OS. A
+ * dark arm here would paint the browser chrome dark for an OS-dark visitor who
+ * is looking at the light site.
+ *
+ * `ThemeColorMeta` overwrites this after hydration for a returning visitor whose
+ * stored theme is dark. That leaves one frame of white chrome on their first
+ * paint — the same class of flash next-themes' own blocking script exists to
+ * prevent for the page, which cannot be reached from here without inlining a
+ * second script of our own.
+ */
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -44,6 +62,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body>
         <ThemeProvider>
+          {/* Inside the provider — it reads `resolvedTheme` from that context. */}
+          <ThemeColorMeta />
           <a
             href="#main"
             className="sr-only rounded-[8px] bg-cta-bg px-4 py-3 text-cta-fg focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[100]"

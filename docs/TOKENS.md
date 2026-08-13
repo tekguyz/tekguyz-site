@@ -70,15 +70,23 @@ violet `#8377e2` 5.17 on `#101010`; amber and teal pass as their plain accent.
 ```css
 --text-hero: clamp(2.5rem, 6vw, 4.5rem);
 --text-display: clamp(2rem, 4.5vw, 3.5rem);
+--text-subhead: clamp(1.5rem, 3vw, 2.25rem);
 --text-title: clamp(1.375rem, 2vw, 1.75rem);
 --text-body: 1.0625rem;
 --text-sm: 0.875rem;
 --text-caption: 0.75rem;
 ```
 
-Rendered: hero 40→72px · display 32→56px · title 22→28px · body 17px · small
-14px · caption 12px. Geist throughout; Geist Mono in three places only
-(`status-line` timestamps, Process numerals, tag labels).
+Rendered: hero 40→72px · display 32→56px · **subhead 24→36px** · title 22→28px ·
+body 17px · small 14px · caption 12px. Geist throughout; Geist Mono in three
+places only (`status-line` timestamps, Process numerals, tag labels).
+
+**`--text-subhead` is the item-level heading step, added 2026-08-13.** Section
+heads own `display`; the things listed under one own `subhead`. It exists because
+`SectionHead`'s `h2` and `solution-row`'s title were both `--text-display` and
+differed by weight alone (700 vs 600) — a distinction that is legible in this
+table and not on the page. Its only consumer today is `solution-row`. Reason in
+`DESIGN.md` §2 and §4.6.
 
 **The 72px ceiling is governed by a constraint, not by the number**: the hero
 headline must wrap to no more than 3 lines on desktop with the CTA row inside

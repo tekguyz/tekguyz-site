@@ -118,6 +118,32 @@ const SHEET_INSET = {
   left: 'env(safe-area-inset-left, 0px)',
 } as const;
 
+/**
+ * Who is speaking, on every reply — the opener included.
+ *
+ * The visitor's turn is deliberately NOT labelled: a right-aligned filled bubble
+ * already says "you", and captioning both sides turns a three-line exchange into
+ * a transcript. The reply had no fill, no alignment and no container, so a long
+ * one arrived as an unbroken slab of text with no visible owner — which is the
+ * defect this closes.
+ *
+ * Not a new style: this is the site's eyebrow treatment (caption / 700 / 0.1em /
+ * uppercase / secondary) carrying `ConnectedNodes`, the same mark as the panel
+ * header and the launcher.
+ *
+ * Real text, never `aria-hidden`. The list is `aria-live="polite"`, so a screen
+ * reader announces the speaker before what they said — the same job the label
+ * does visually, which is exactly when a label should not be hidden.
+ */
+function ReplyLabel() {
+  return (
+    <p className="mb-[10px] flex items-center gap-2 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+      <ConnectedNodes size={14} stroke="currentColor" strokeOpacity={0.55} />
+      TEKGUYZ
+    </p>
+  );
+}
+
 const DEFAULT_OPENER =
   "Tell me what's slowing your business down and I'll tell you what we'd build for it. I can also pass your details straight to the team.";
 
@@ -461,12 +487,48 @@ export function Concierge() {
         aria-hidden={launcherVisible ? undefined : true}
         tabIndex={launcherVisible ? 0 : -1}
         style={{ ...INSET, opacity: launcherVisible ? 1 : 0 }}
-        className={`tg-yield fixed z-[80] flex cursor-pointer items-center gap-[10px] rounded-[8px] bg-cta-bg px-6 py-4 text-[14.5px] leading-none font-semibold text-cta-fg hover:bg-cta-hover active:scale-[0.98] ${
+        /* Padding is mobile-first and the two values are not the same decision.
+           `py-[13px]` + the 18px mark = EXACTLY the 44px tap floor, which is the
+           reason for the odd number: nothing above the floor is doing work.
+           Desktop keeps 24x16, where the pill is 16% of a 1440 viewport.
+
+           Measured 2026-08-13 on a 412px viewport (Pixel 9A): the one desktop
+           size shipped to every width made this 234x50 — 57% of the screen,
+           landing on the Process teaser's body copy. 48px of that was padding.
+           The launcher does not use `button.tsx` and never has; its 24x16 is a
+           fifth padding that exists nowhere in that scale.
+
+           The padding is 1px short of those numbers on every side because the
+           HAIRLINE adds it back: 12+18+12+2 = 44, 15+18+15+2 = 50. Identical
+           outer box to before the border existed.
+
+           That border is `rgb(255 255 255 / 0.25)`, and the alpha is the whole
+           trick. Border colour composites over the element's own background
+           (background-clip is border-box), so on the ink pill it resolves to
+           ~#4C4C4C: DARKER than a light page, so the pill's edge looks exactly
+           as it always did, and lighter than the ink band, so the pill stops
+           disappearing into it in light mode. In dark mode the pill inverts to
+           #F5F5F5 and the same declaration resolves to ~#F7F7F7 — invisible,
+           which is correct, because a near-white pill needs no help.
+
+           A shadow would not have worked here even if §3 allowed one: a dark
+           halo around a dark pill on a dark band adds no edge. */
+        className={`tg-yield fixed z-[80] flex cursor-pointer items-center gap-[10px] rounded-[8px] border border-[rgb(255_255_255_/_0.25)] bg-cta-bg px-[15px] py-[12px] text-[14.5px] leading-none font-semibold text-cta-fg hover:bg-cta-hover active:scale-[0.98] md:px-[23px] md:py-[15px] ${
           launcherVisible ? '' : 'pointer-events-none'
         }`}
       >
         <ConnectedNodes size={18} stroke="currentColor" strokeOpacity={0.4} />
-        Ask about your project
+        {/* Two spans, swapped by CSS — never `matchMedia`, which renders the
+            wrong string on the server and hydrates into a mismatch. `hidden` is
+            `display:none`, so the inactive string leaves the accessibility tree
+            with it and a screen reader reads exactly one.
+
+            Deliberately NO `aria-label` pinning the long string at every width:
+            the accessible name would then be "Ask about your project" while the
+            visible label reads "Ask us", and WCAG 2.5.3 requires the name to
+            contain the visible text. The visible text IS the name. */}
+        <span className="md:hidden">Ask us</span>
+        <span className="hidden md:inline">Ask about your project</span>
       </button>
 
       <AnimatePresence>
@@ -528,9 +590,17 @@ export function Concierge() {
               ref={scrollRef}
               className="flex min-h-0 flex-col gap-5 overflow-y-auto px-4 py-5 [flex:1_1_440px]"
             >
-              <p className="text-[0.875rem] leading-[1.55]" style={{ textWrap: 'pretty' }}>
-                {opener}
-              </p>
+              {/* The opener is a reply like any other to the reader, even though
+                  it never goes through `messages` and carries no `data-msg` —
+                  it is not a turn the scroll anchor should ever target. Without
+                  the label it would be the one unattributed reply in the panel,
+                  and it is the first thing anyone reads. */}
+              <div>
+                <ReplyLabel />
+                <p className="text-[0.875rem] leading-[1.55]" style={{ textWrap: 'pretty' }}>
+                  {opener}
+                </p>
+              </div>
 
               {showChips && (
                 <div className="flex flex-col items-start gap-2">
@@ -574,6 +644,7 @@ export function Concierge() {
                     </p>
                   ) : (
                     <div key={i} data-msg>
+                      <ReplyLabel />
                       <Markdown text={m.content} />
                     </div>
                   ),

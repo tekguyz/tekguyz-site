@@ -59,7 +59,8 @@ export default async function HomePage() {
           the invitation is the click, and it is INK, not `muted`. It shipped
           muted, and `link-underline` grows from 0% — it draws nothing at rest —
           so the only actionable element on the proof band had no rest-state
-          affordance and was the lighter half of its own sentence. */}
+          affordance and was the lighter half of its own sentence. v2.5 fixed
+          the colour; the affordance is fixed below with `tg-rule-rest`. */}
       <section className="border-y border-border">
         <div className="tg-container flex flex-wrap items-baseline gap-x-5 gap-y-2 py-9">
           <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
@@ -69,10 +70,18 @@ export default async function HomePage() {
               prose, and this one is no longer inside the sentence's `<p>` —
               it's its own element on its own baseline, and it stacks onto its
               own line below 768. Nothing interactive is adjacent, so the
-              overlay has nothing to collide with. */}
+              overlay has nothing to collide with.
+
+              `tg-rule tg-rule-rest`, NOT `link-underline`: v2.5 fixed the
+              colour half of this defect and left the affordance half open. The
+              site's one state primitive already draws partway, so the rest
+              state is a position on the gesture the visitor learns everywhere
+              else — 34% at rest, completing to 100% on hover and focus — not a
+              second underline mechanism. tap-44 owns ::before, tg-rule ::after;
+              one pseudo per job, no collision. */}
           <Link
             href="/work"
-            className="tap-44 link-underline text-[length:var(--text-body)] font-semibold"
+            className="tap-44 tg-rule tg-rule-rest text-[length:var(--text-body)] font-semibold"
           >
             Open any of them right now.
           </Link>

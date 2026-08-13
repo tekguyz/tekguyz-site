@@ -158,6 +158,7 @@
   /* DESIGN.md §2 — type scale. */
   --text-hero: clamp(2.5rem, 6vw, 4.5rem);
   --text-display: clamp(2rem, 4.5vw, 3.5rem);
+  --text-subhead: clamp(1.5rem, 3vw, 2.25rem);
   --text-title: clamp(1.375rem, 2vw, 1.75rem);
   --text-body: 1.0625rem;
   --text-sm: 0.875rem;
@@ -767,6 +768,25 @@
 }
 .tg-rule[data-on='true'] {
   --tg-rule-scale: 1;
+}
+
+/* A THIRD position on the same one gesture, not a fourth mechanism: the bar
+   sits partly drawn at rest and completes on hover/focus. This is what the
+   contact form's step rail already does (0.5 -> 1); the only new thing is that
+   here the partial value is a REST STATE rather than a progress readout.
+
+   It exists because `.link-underline` grows from 0% — it draws nothing at rest —
+   which is fine for a link sitting under an ink-filled button, and a real defect
+   for one that is the only actionable element on its band (DESIGN.md §4.4).
+
+   (0,1,0), so `.tg-rule:hover` / `:focus-visible` at (0,2,0) beat it on
+   SPECIFICITY, not source order. This is also why it is a class and not an
+   inline `--tg-rule-scale`: the variable is set on the element and inherits, so
+   an inline value would beat every selector below it and pin the bar at 0.34
+   through hover. The form's rail can be inline precisely because nothing there
+   ever hovers. */
+.tg-rule-rest {
+  --tg-rule-scale: 0.34;
 }
 .tg-rule[data-on='true']::after {
   background: var(--tg-fg);

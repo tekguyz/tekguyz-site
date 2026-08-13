@@ -533,9 +533,22 @@ ERROR: Something didn't go through. Try again, or email us directly at hello@tek
 ## Concierge microcopy
 
 LAUNCHER: Ask about your project
+LAUNCHER (below 768px): Ask us
+SPEAKER LABEL (above every reply, the opener included): TEKGUYZ
 OPENER: Tell me what's slowing your business down and I'll tell you what we'd build for it. I can also pass your details straight to the team.
 INPUT PLACEHOLDER: Describe what you're dealing with…
 DISCLAIMER: *(none — deleted 2026-08-12)*
+
+*(**The mobile launcher string was drafted 2026-08-13, not transcribed** — it is
+new copy written from `PLAYBOOK.md` §4, chosen by the user from three options.
+Sentence case follows the rule above: the launcher opens a conversation in place
+rather than committing to a navigation. It exists because the one desktop size
+shipped to every width made the launcher **57% of a 412px screen**, measured on a
+Pixel 9A, sitting on the Process teaser's body copy. Length IS the width budget
+here — "What should we build?" reads better and measures 157px against the
+current label's 158px, so it fixes nothing. **Rejected: "Ask a builder"**, which
+lands the direct-to-builder pillar and is false — a Gemini concierge answers, as
+the privacy copy states.)*
 
 *(**The slot is closed, not empty.** The disclaimer was removed from the panel on
 the user's instruction on 2026-08-12 and is not to be re-added or re-drafted.
