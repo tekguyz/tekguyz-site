@@ -27,8 +27,9 @@ checked.** Three kinds, and they are not interchangeable:
 
 **Every token now lives in [`TOKENS.md`](TOKENS.md), where it is enforced** —
 `bun run check:design` runs on every `prebuild` and fails the build when that
-file and `app/globals.css` disagree, naming the token and both values. **40
-tokens are under test**: colour, type, radius, container, motion, density.
+file and `app/globals.css` disagree, naming the token and both values. **38
+tokens are under test** — measured 2026-08-12 by running it; this line said 40
+— covering colour, type, radius, container, motion and density.
 
 That split is the actual fix for what went wrong here. This document was 89KB
 doing two jobs at once, and a reader could not tell a measured fact from an
@@ -49,12 +50,17 @@ entire point; a second copy is a second thing to drift.
 | --- | --- |
 | All token values | Moved to `TOKENS.md`, **enforced** |
 | §6 motion, §8.0 density | Rewritten with provenance |
-| §4 components, §5 status-line, §7 dark mode, §9 do/don't | **Still the old single voice.** Treat with suspicion until converted. |
+| §4 components, §5 status-line, §7 dark mode, §9 do/don't | **Converted 2026-08-12.** Every claim measured; 14 were wrong and are named at the point they were wrong. |
+| §0–§3 mandate, icons, colour, type, layout | **Not converted.** Still the old single voice; treat with suspicion. §1's ratios are real (v2.3 audit) but not machine-checked. |
 
-That remainder is genuine work, not a formatting pass: each claim has to be
-measured against the code before it can be marked, and §4 alone is 60+ claims
-across 15 components. **Prose is not checkable by the guard and never will be** —
-"the status block sits beneath the frame" has no token to compare against.
+**Prose is not checkable by the guard and never will be** — "the status block
+sits beneath the frame" has no token to compare against. That is why the marker
+exists: it records who checked, against what, and when.
+
+**A date on `[decided]` that reads `v2.2`–`v2.5` is a changelog version, not a
+calendar date.** Those decisions predate this convention and their real dates
+are not recoverable from the repo. The version is the most specific honest
+provenance available; do not upgrade one to a date by guessing.
 
 ## Changelog (v2.5 → v2.6)
 
@@ -268,121 +274,705 @@ changes shape.
 
 ## 4. Components
 
-**`button-primary`** — ink bg, white text, radius 8px, 14×24px padding. Hover #242424. Press adds `scale(0.98)`. Dark mode inversion, explicit values: `text-primary-dark` (#F5F5F5) fill, `bg-dark` (#101010) text — it should be the brightest element on a dark page, not a darker shade of the background it sits on. No accent ever fills a button.
+*Converted to the provenance convention 2026-08-12. Every value below was read
+out of the file named beside it on that date. Fourteen claims did not survive
+contact with the code; each is called out where it stood rather than quietly
+corrected, because a silent reconciliation is how this document earned its
+reputation in the first place.*
 
-**`button-secondary`** — transparent, ink text, 1px hairline border, radius 8px.
+**Values are not repeated here when `TOKENS.md` already carries them** — a
+radius, a duration, a colour or a type step is named, not printed.
 
-**`nav`** — sticky. Transparent, no fill, no border at scroll position 0. Past 24px scroll: canvas (or `bg-dark`) at 80% opacity, `backdrop-blur(12px)`, hairline border-bottom fading in over **240ms** (`--dur-base`; measured in the shipped stylesheet — this doc previously said 200ms, which no surface ever implemented). `logo-lockup` left (icon + wordmark, no tagline). Links center-right — Solutions / Work / Process / Contact, `--text-sm`, weight 500. Active-page indicator: 2px ink underline beneath the current page's link, width matching the link, no accent color. **Theme toggle is now an icon** (sun/moon or equivalent single glyph that swaps on click) — styled per the Icon Policy above, not a text label anymore. Primary CTA "Let's Talk" right-aligned, standard `button-primary` — must not wrap at any supported width. Mobile: hamburger, full-screen drawer, Solutions expands inline to the four accent-dot anchors.
+### 4.1 Buttons
 
-**`page-hero`** — top-of-page treatment for every inner route, including both `/solutions` (the index) and `/solutions/[slug]` (each detail page, headline drawn from that solution's own copy, not the generic page-hero pattern used elsewhere) — see COPY.md and CANONICAL.md for the index-plus-detail reversal. Also `/work`, `/process`, `/contact`. Eyebrow (`--text-caption`) above a headline at `--text-display` (not hero scale) above a one-line description at `--text-body`, `muted`, capped around 60ch. No media. **Does carry the `flourish-mark`**, above the eyebrow — the same stale "home-only" claim corrected in the `flourish-mark` entry below; the export shows the dots on every route's first section and that is what ships. Top padding matches standard section rhythm.
+**[measured 2026-08-12 `components/button.tsx`]** There are **four** sizes, not
+one, and they are not interchangeable:
 
-**`proof-line`** — the homepage band between the hero and Solutions, CANONICAL §98. That section fixes the content and says "one sentence, no card"; this is the treatment, which it never gave.
-
-Full-bleed band, **hairline top and bottom, no fill, no radius, no inset** — which is what "no card" means here in positive terms, not merely as a prohibition. **36px vertical padding**, its own value: the band is a rule-to-rule beat between two sections, not a section, and 128px must not leak into it. Left-anchored in `tg-container` like everything else outside the closing CTA.
-
-**The two clauses are two elements at two scales, baseline-aligned on one row**, 20px apart, wrapping to a stack below the container's break:
-
-- *Eight live builds.* — `--text-title`, weight 600, −0.02em, **ink**. This is the claim and the anchor.
-- *Open any of them right now.* — `--text-body`, weight 600, **ink**, `link-underline`, `tap-24`, → `/work`.
-
-The defect this replaces is worth stating, because it will look like a small thing next time: the whole sentence rendered at 28px with the link half in `muted`. **`link-underline` draws nothing at rest** — it grows from 0% on hover and focus — so the only actionable element on the site's proof band had *no rest-state affordance at all* and was the lighter of the two halves. Muting the invitation inverts the hierarchy: the claim is what you read, the invitation is what you click, and de-emphasising the second one is backwards. Both halves are now ink; the size step, not colour, carries the hierarchy, which is the same rule §2 states for everything else.
-
-**Rejected: promoting the whole line to `--text-display`** so it reads as a statement band. It would have put three display-scale elements inside one scroll — the hero h1 above it and the "What We Do" section head below — and the proof line is a supporting fact, not a third headline. **Also rejected: an accent dot before the sentence.** The four accents mean *solution line*; this sentence is about all eight builds across all four, so no accent is correct for it and one would have to be picked arbitrarily.
-
-**`closing-cta`** — centered, the one section permitted to be. Deliberately more compact than a standard section, not equal to one: **40px top / 48px bottom, 32px top on mobile**, and see §3 for the section boundary above it, which is where the ~200px of dead space actually lived. Headline at `--text-display`, max-width 760px. Trust lines in `--text-sm`, `muted`, one single line separated by mid-dots. No proof line. **`button-primary--large`, a documented one-off size exception**: 18×32px padding, ~16px text — the only button on the site that deviates from the standard size. Earned deliberately: this is the page's single most important remaining ask, and the standard button size was reading as underweighted against the headline stacked above it, which was the actual cause of the "still doesn't work" complaint — not the padding, which was already correct. **Beneath the button, one small secondary link**: "Or ask our AI what we'd build for you" — `--text-sm`, `muted`, no button styling, opens the concierge panel. A lower-commitment alternate path, not a competing CTA — this is the only place the concierge gets a second entry point beyond its own persistent launcher, and it stays deliberately quiet so it doesn't dilute the primary ask. On scroll into view, replays the hero's load sequence **timing** (headline → subhead → trust lines → button, see §6) once — **no second set of flourish dots**; the one-per-page rule is absolute and wins over the echo. The signature stripe directly above it uses the same full-bleed treatment as every other instance.
-
-**Internal rhythm — 24 · 48 · 24 · 16, and the numbers are the hierarchy.** The band previously ran 24 / 32 / 36 between its four elements: a near-linear ramp, in which every gap reads the same, nothing groups, and a centered stack with nothing grouping it reads flat. That was the whole of the complaint — the elements were all correct.
-
-There are two groups here, and the spacing is what says so:
-
-| From → to | Gap | Why |
+| Size | Padding | Used by |
 | --- | --- | --- |
-| headline → subhead | **24px** | One step. They are one statement; the subhead completes the headline. |
-| subhead → trust line | **48px** | Two steps — the only break inside the band, and the register change from *statement* to *what you get*. |
-| trust line → button | **24px** | One step. The trust facts belong to the ask they precede, not to the statement. |
-| button → concierge link | **16px** | Half a step. The link is subordinate to the button, and the gap says so without shrinking or greying anything further. |
+| `nav` | 14 × 24px | the only button size in the nav bar |
+| `default` | 15 × 24px | hero primary, sticky-rail CTA, cap-reached handoff |
+| `form` | 15 × 28px | Continue / Send Inquiry inside the form card |
+| `large` | 18 × 32px, 16px text | `closing-cta` only |
 
-One step for a pair, two for the break, half for the subordinate. Everything stays on the 4px scale in §3, nothing is centered differently, and no fill, border, card or divider was added — **the fix is entirely in the gaps**, which is the only way it could be, since the flatness was never in the elements.
+> **This document was wrong.** Its `button-primary` entry printed "14×24px
+> padding" as *the* button geometry. That is the nav size. Quoting it as the
+> site's button size is how `default`, `form` and `large` become invisible to
+> anyone reading the doc instead of the file.
 
-**Rejected: moving the trust line below the button**, so the order became headline → subhead → CTA → trust. It is a real improvement in the abstract — the ask arrives 68px sooner and the microcopy supports the button it sits under — and it was rejected anyway, for two reasons. It reorders content this document had already specified as "beneath the subhead", which is a content decision wearing a spacing costume; and it separates the concierge link from the button it is an alternative to, which is the one adjacency the entry above says to protect. The load sequence's `trust` beat (0.48s) would also have had to be re-timed past `cta` (0.6s) to stop the block animating out of visual order, which is a second change to pay for the first. Grouping by gap gets the hierarchy without any of that.
+**[measured 2026-08-12 `button.tsx`, `app/globals.css:47`]** Primary is
+`--tg-cta-bg` / `--tg-cta-fg` / `--tg-cta-hover`, which invert wholesale by
+theme — ink on white in light, `#F5F5F5` on `#101010` in dark. Secondary is
+transparent with a 1px hairline and ink text.
 
-**Rejected: dropping the trust line to `--text-caption`** so the centered stack tapers by measure as well as by weight. It would work, and it would also mean changing `/contact`'s trust facts to match — those three facts render identically in both places by rule, and splitting them is exactly the kind of drift that rule exists to prevent.
+**[decided v2.2, standing] No accent ever fills a button.** The four accents
+mean *solution line*; a filled button would assign one arbitrarily.
 
-**`solution-row`** *(replaces `solution-card`)* — full-width row, hairline top border, 48px vertical padding. Accent dot (10px) + display-size title on the left, one-line hook + arrow on the right. Hover: title shifts 4px right, arrow shifts 4px right, hairline darkens to `border-strong`. No icons — the dot is the icon. No card fill, no box.
+**[decided v2.2]** Secondary is 14 × 24 against primary's 15 × 24 so a primary
+and a secondary side by side in the hero end up the same painted height — the
+primary's extra 1px per side pays for the border the secondary carries.
 
-**`case-study-row`** — full-width alternating row on the ink band (home) or standard background (`/work` index). Solution tag, title, Challenge/Approach/Outcome as three labeled beats, pull-quote, `LiveFrame`, status line. Substantial by design — and see `build-narrative` below, since this component's media column needs it wherever the full-length version appears.
+**[decided 2026-08-12, D-10] The line height rides ON the font-size utility
+(`text-[14.5px]/[1]`), never on a separate `leading-none`.** `cn()` is
+tailwind-merge and Tailwind's `text-*` utilities set line-height too, so a later
+font-size class is treated as conflicting and the earlier `leading-*` is dropped
+before it reaches the DOM. That shipped a 23.2px line box on a 14.5px button —
+8.7px taller than the export, on every button on the site.
 
-**`build-narrative`** — the "How it's built" block from COPY.md. **Applies everywhere the full-length `case-study-row` appears — both the standalone `/work/[slug]` detail pages and the `/work` index itself.** (The index was missed in the previous pass; it shows the identical full-length content and had the identical empty-space problem.) Sits directly beneath the `LiveFrame`'s status-line and caption in the media column. `--text-sm`, `muted`, capped around 60ch. Exists specifically to balance the two-column layout — the media column should read as intentionally composed, not trail off into empty space beside a taller text column. If it's still visibly shorter with this included, the text column needs tightening, not the media column padded to match.
+### 4.2 `nav`
 
-**`project-card`** — compact, `surface-card` fill, radius 12px, 24px padding. Tag, title, one description, status line. No image, ever — deliberately removed, don't reintroduce. The size gap from case studies is intentional signal.
+**[measured 2026-08-12 `components/nav.tsx`, `globals.css:58–93`]** Sticky,
+76px tall. At scroll 0 the fill layer is fully transparent and the border is
+transparent. Past 24px of scroll `data-scrolled='true'` switches
+`--tg-nav-bg` to **82% opacity**, `--tg-nav-blur` to **14px**, and the border to
+opaque hairline.
 
-**`LiveFrame`** — the deferred-embed container. Props: `poster`, `url`, `embeddable: boolean`, `alt`. **Two locked ratios, context-dependent**: compact contexts (case-study-row, project-card, detail pages) stay **16:10**, no exceptions. **Hero uses 16:9**, its own separate ratio — matches standard screen-capture dimensions (1600×900) and eliminates the crop-vs-letterbox tension that comes from forcing a 16:9-native capture into a 16:10 container. `object-fit: cover` in both cases; with the hero's ratio now matching its actual source captures, cover and contain produce the same result, which is the point. Every poster is a real screenshot of the actual production application — never a sandboxed device emulator, simulator, or "demo mode" illustration standing in for the real UI.
+> **This document was wrong, twice on the same line.** It said 80% opacity and
+> `backdrop-blur(12px)`. Neither number is in the stylesheet. This is the third
+> time this entry has printed a value no surface implemented — the first was the
+> 200ms border fade, corrected in v2.5.
 
-**Hero is a distinct context from the compact card contexts** — the same underlying screenshot doesn't have to be the same crop, or even the same file, in both places. A dense multi-panel dashboard can read fine at card size and feel cluttered blown up large in the hero. It's legitimate for a case study to have: a tighter, simpler hero crop (or, if available, a short looped video with a matching static poster for `prefers-reduced-motion` and slow connections — the previous build had exactly this for the AI Voice Receptionist hero: a video loop plus a same-dimension fallback poster, separate from the still used in the compact card contexts) and a separate, more detail-dense still for the compact `case-study-row`/detail-page contexts. Don't force one asset to serve both jobs if it isn't reading well in one of them.
+**[measured 2026-08-12 `nav.tsx:104`]** The scrolled state transitions over
+240ms. **The value is hardcoded in an inline style, not `var(--dur-base)`** —
+it currently agrees with the token by coincidence, not by reference, and
+`check:design` cannot see it. Logged in `STATUS.md`.
 
-**The container — plate, not panel.** The ratios and `object-fit` above were specified and the box around them was not, so the compact contexts inherited a generic card and read as one. Four values, and the reasoning matters more than any of them:
+**[decided 2026-08-12] The `<header>` carries no border of its own.** In
+Tailwind v4 preflight an unqualified `border-b` resolves to `currentColor` — a
+permanent ink/white line painted onto the signature stripe at every scroll
+position. The one specified hairline lives on the absolutely-positioned fill
+layer so it can fade in with the scrolled state.
 
-- **Padding: 0. The media meets the border, always.** This is the load-bearing one. `aspect-ratio` governs the *outer* box, so any padding is subtracted from the media — the frame keeps its 16:10 and the screenshot inside it silently stops being 16:10. Padding also produces exactly the mat of dead space that made the frame read as chrome around an asset instead of the asset itself. There is no value of this other than zero. If a frame looks like it has space around its media, that space is the container's, because `cover` crops and can never letterbox.
-- **Fill: `--tg-surface`,** theme-aware, never a literal `#FFFFFF`. Under `cover` the fill is *never visible once the poster paints* — which is the point: it is a loading and failure state, not a design surface, and its only job is to not punch a white rectangle into a dark page for the frames it takes to decode. On the home ink band `--tg-surface` already resolves to `#1A1A1C` through `.ink-band`, so the same declaration is correct in both places without a branch.
-- **Radius 12px, 1px hairline** (`--tg-border`; `#2A2A2C` on ink). Unchanged, and deliberately so — 12px is §3's card/media radius and the export's value. **Rejected: dropping to 4px or 0** so the frame reads as a plate rather than a card. It would not have fixed anything — the card read came from the mat, not the corner — and it would have broken the export for no gain.
-- **The status block sits BENEATH the frame, never inside it.** Inside means an overlay on the screenshot, and every one of these posters is a real production UI whose own header lives at the top of the crop; covering it with our chrome is the same lie as drawing fake browser chrome around it, which the list below already bans. Beneath, it is a **caption attached to the frame**: 12px below (not 18px — 12 reads as *belonging to* the frame above, 18 reads as the next block), left-anchored to the frame's left edge, status and the demo link on one wrapping row **20px apart**.
+**[measured 2026-08-12 `nav.tsx:139`]** Links are **14.5px, weight 500**.
 
-That row was `justify-between`, which on a 803px detail-page frame threw "Live · checked 4 minutes ago" and "Open it in a new tab" to opposite corners — two labels in two places rather than one caption saying *this is running, go look*. It is left-anchored now, and with **no mid-dot separator**: `status-line` already owns a `·` internally, and a second separator on the same line would put two different dot devices at two different weights inside one caption.
+> **This document was wrong.** It said `--text-sm`, which is 14px. The nav does
+> not use the type scale here; the export's value is 14.5px and that is what
+> ships.
 
-**The hero is not this.** `tg-hero-frame` is a surface-filled panel with 32px padding that bleeds off the right viewport edge — specified, deliberate, and the reason the compact contexts' gap went unnoticed for so long. **Do not port the panel down to card scale.** At 373px tall a 32px mat is most of what you see, and the panel's whole argument is the bleed, which no compact context has.
+**[measured 2026-08-12 `nav.tsx:139`, `globals.css:671–705`]** The active-page
+indicator is `.tg-rule` — 2px, ink, drawn from the left, never an accent — with
+`[data-navlink]::after { bottom: -10px }` hanging it below the link box. It is no
+longer a private nav rule; see §6.2 for why the nav consumes the site primitive
+instead of owning a second copy.
 
-- `embeddable: false` (all entries at launch): renders poster at its context's locked ratio, 1px hairline border, radius 12px, surface fill, plus "Open it in a new tab."
-- `embeddable: true` (later): renders click-to-activate iframe in the same frame, same dimensions, zero layout change.
-- No fake browser chrome drawn around it — the real product's own UI is what makes it credible.
-- Mobile: poster + link regardless of flag.
-- Keyboard-operable. 2x source assets.
+**[measured 2026-08-12 `nav.tsx:200–209`]** Mobile is a hamburger and a
+full-screen drawer; Solutions expands inline to the four accent-dot entries,
+which are **four routes** (`/solutions/[slug]`).
 
-**`status-line`** — see §5.
+> **This document was wrong.** It called them "the four accent-dot anchors."
+> CANONICAL reversed the single anchored page to an index-plus-detail structure;
+> this line was left behind.
 
-**`pull-quote`** — `--text-display` in Geist 600, max-width 22ch, no quotation marks (the copy is a stated outcome, not dialogue), 2px left border in that build's accent, 24px left padding. The only place accent touches anything larger than a dot or tag.
+**[measured 2026-08-12 `nav.tsx:145`, `theme-toggle.tsx`]** The theme toggle is
+an icon (38 × 38, sun/moon), not a text label.
 
-**`numeral-device`** — Process steps only. `--text-hero` size, accent at 8% opacity, positioned *behind* the step title. Nothing else on the site gets numbers.
+### 4.3 `page-hero`
 
-**`flourish-mark`** — four dots, order blue→violet→amber→teal, **once per page, on every route** — near the hero headline on Home, and inside `page-hero` (above the eyebrow) on every inner route. This line previously read "Home only"; that was the stale half. The Pass 2 audit found the dots rendering on every route's first section, which matches the approved Claude Design export, and the export is ground truth (CANONICAL's authority order). The rendering was correct and is unchanged — **this doc was wrong.** What is absolute is the *once per page* half: the closing-CTA echo replays the hero's load-sequence timing and deliberately gets no second set of dots.
+**[measured 2026-08-12 `components/page-hero.tsx`]** Every inner route: signature
+stripe, then a section with `flourish-mark` → eyebrow (`--text-caption`, 0.1em,
+uppercase) → headline, on cols 1–8, with the one-line description bottom-aligned
+on cols 9–12. Padding is **96px top / 104px bottom**, its own value.
 
-**`logo-lockup`** — Connected Nodes icon (four accent circles, top blue / right violet / bottom amber / left teal, joined by hairline connectors that theme-swap via `var(--color-border)`) + wordmark. Header: icon + wordmark. Footer: icon + wordmark + tagline, hairline divider. Wordmark uses `text-primary` so it resolves in both themes with no JS. Never wraps itself in a `<Link>`.
+**[measured 2026-08-12 `page-hero.tsx:40`] The headline is `--text-hero`, not
+`--text-display`.**
 
-**AI concierge** — launcher and header must use the actual `icon-master.svg` asset (the diamond-arranged Connected Nodes mark), rendered exactly as it appears everywhere else on the site. Not an invented simplified icon (a plain 2×2 grid of colored dots has appeared in its place and is wrong) — there is one brand mark, and every instance of it is the same file, not a redrawn approximation.
+> **This document was wrong.** It said "`--text-display` (not hero scale)", with
+> the parenthetical making it look deliberate. The export puts the inner-route
+> headline at hero scale and that is what ships. The component's own header
+> comment has flagged the disagreement for as long as the file has existed.
 
-**Launcher visibility, locked, not optional**: hidden on initial load, fades in only once the visitor scrolls past the hero section. Never visible overlapping the hero — it competes with the hero's own CTAs and reads as a bug, not a feature, when it does. This was previously only stated in conversation and never written down, which is exactly how it ended up shipping wrong in a reference render — it's a real requirement now, not a suggestion.
+> **This document was wrong.** It also said "top padding matches standard
+> section rhythm." Section rhythm is 128/80; this is 96/104. Deleted rather than
+> corrected into a rule, because 96/104 is the export's composition value and
+> nothing derives from it.
+
+**Deleted, unsourceable:** "description … capped around 60ch." There is no
+`max-width` or `ch` cap on the description in `page-hero.tsx`; its measure comes
+from the 4-track grid placement. A cap nobody can find in the code is a value
+nobody checked.
+
+**[measured 2026-08-12 `page-hero.tsx:35`]** It carries `flourish-mark`, above
+the eyebrow, on every inner route. See §4.11.
+
+**[measured 2026-08-12 `page-hero.tsx:66–103`]** `SectionHead` is a second
+export in the same file and a different component: eyebrow + `--text-display`
+headline on cols 1–6, description bottom-aligned on 7–12, with an `onInk`
+variant. It is the in-page section head, not a page hero.
+
+### 4.4 `proof-line`
+
+**[decided v2.5, D-09]** CANONICAL §98 fixes the content and says "one sentence,
+no card" and stops there. This is the treatment it never gave.
+
+**[measured 2026-08-12 `app/page.tsx:62–79`]** Full-bleed band, hairline top and
+bottom, no fill, no radius, no inset — that is what "no card" means in positive
+terms. **36px vertical padding** (`py-9`), its own value: the band is a
+rule-to-rule beat between two sections, not a section, and 128px must not leak
+into it. Left-anchored in `tg-container`.
+
+**[measured 2026-08-12]** Two clauses, baseline-aligned on one row, **20px
+apart** (`gap-x-5`), wrapping to a stack:
+
+- *Eight live builds.* — `--text-title`, weight 600, −0.02em, **ink**.
+- *Open any of them right now.* — `--text-body`, weight 600, **ink**,
+  `link-underline`, `tap-44`, → `/work`.
+
+> **This document was wrong.** It specified `tap-24` on the link. The code uses
+> `tap-44`, deliberately and with the reason recorded at the call site: the 24px
+> tier is for links inline in running prose, and this one is its own element on
+> its own baseline that stacks onto its own line below 768px. The code is right
+> and this line has been corrected to match it.
+
+**[decided v2.5] Both halves are ink; the size step carries the hierarchy.** It
+shipped as one 28px line with the link half in `muted`. **`link-underline` draws
+nothing at rest** — it grows from 0% on hover and focus — so the only actionable
+element on the site's proof band had no rest-state affordance *and* was the
+lighter half of its own sentence. Muting the invitation inverts the hierarchy:
+the claim is what you read, the invitation is what you click.
+
+**[decided v2.5] Rejected: promoting the whole line to `--text-display`.** It
+would put three display-scale elements inside one scroll — the hero `h1` above
+and the "What We Do" head below — and the proof line is a supporting fact, not a
+third headline. **Rejected with it: an accent dot before the sentence.** The four
+accents mean *solution line*; this sentence is about all eight builds across all
+four, so no accent is correct and one would have to be picked arbitrarily.
+
+### 4.5 `closing-cta`
+
+**[decided v2.2, re-decided v2.4] Centered — the one section permitted to be**,
+and deliberately more compact than a standard section rather than equal to one.
+
+**[measured 2026-08-12 `components/closing-cta.tsx:47`]** `pt-8 pb-12 md:pt-10`
+— **32px top below 768px, 40px top at and above it, 48px bottom.** Max-width
+760px. See §3 for the section boundary *above* it, which is where the ~200px of
+dead space actually lived.
+
+**[measured 2026-08-12 `closing-cta.tsx`] Internal rhythm — 24 · 48 · 24 · 16.**
+Verified as `mt-6` / `mt-12` / `mt-6` / `gap-4`.
+
+| From → to | Gap | Why **[decided v2.5, D-12]** |
+| --- | --- | --- |
+| headline → subhead | 24px | One step. One statement; the subhead completes the headline. |
+| subhead → trust line | 48px | Two steps — the only break inside the band, and the register change from *statement* to *what you get*. |
+| trust line → button | 24px | One step. The trust facts belong to the ask they precede. |
+| button → concierge link | 16px | Half a step. The link is subordinate, and the gap says so without shrinking or greying anything. |
+
+The band previously ran 24 / 32 / 36: a near-linear ramp in which every gap reads
+the same, so nothing groups and a centered stack with nothing grouping it reads
+flat. **The elements were all correct; the fix is entirely in the gaps.**
+
+**[measured 2026-08-12 `closing-cta.tsx:84–90`]** The trust facts are `--text-sm`
+in `secondary`, separated by 3px `muted-soft` dots — **and below 766px the row
+becomes a deliberate stack with the dots not rendered at all.**
+
+> **This document was wrong.** It said "one single line separated by mid-dots"
+> with no qualifier. Below the wrap point the line breaks *after* each fact, so
+> every dot terminated a line instead of separating two visible items — a
+> separator with nothing after it reads as a typo. The 766px query is the
+> measured threshold, not a breakpoint guess: the row is one line at 767 and
+> wrapped at every viewport below it. The dots are `aria-hidden`, so dropping
+> them costs nothing semantically.
+
+**[decided v2.4] `button-primary--large` is the site's one documented size
+exception**: 18 × 32px, ~16px text. Earned deliberately — this is the page's
+single most important remaining ask, and the standard size was reading as
+underweighted against the headline stacked above it. That, not the padding, was
+the cause of the "still doesn't work" complaint.
+
+**[measured 2026-08-12 `closing-cta.tsx:101–107`]** Beneath the button, one
+`--text-sm` `secondary` text link opening the concierge — no button styling.
+**[decided v2.4]** A lower-commitment alternate path, not a competing CTA. It is
+the concierge's only second entry point beyond its persistent launcher, and it
+stays quiet so it does not dilute the primary ask.
+
+**[measured 2026-08-12 `closing-cta.tsx:46`, `load-sequence.tsx`]** On scroll
+into view the band replays the hero's load-sequence **timing** once
+(`trigger="inView"`), with **no second set of flourish dots** — the once-per-page
+rule wins over the echo.
+
+**[decided v2.5] Rejected: moving the trust line below the button.** A real
+improvement in the abstract — the ask arrives 68px sooner and the microcopy
+supports the button it sits under — and rejected anyway. It reorders content
+already specified as "beneath the subhead", which is a content decision wearing a
+spacing costume; it separates the concierge link from the button it is an
+alternative to; and the load sequence's `trust` beat would have had to be
+re-timed past `cta` to stop the block animating out of visual order.
+
+**[decided v2.5] Rejected: dropping the trust line to `--text-caption`.** It
+would work, and it would also mean changing `/contact`'s trust facts to match —
+those three facts render identically in both places by rule.
+
+### 4.6 `solution-row`
+
+**[measured 2026-08-12 `components/solution-row.tsx`]** Full-width row, hairline
+top border, **48px vertical padding** (`py-12`). 10px accent dot + `--text-display`
+title on cols 1–5 with a 22px gap; hook (capped 46ch) + arrow on cols 7–12,
+space-between. Hover darkens the hairline to `border-strong` and shifts title and
+arrow 4px right; the row also draws `.tg-rule` (§6.2).
+
+**[decided v2.2] No icons — the dot is the icon. No card fill, no box.** The
+four-identical-cards grid is the named anti-pattern this replaces.
+
+### 4.7 `case-study-row` and `build-narrative`
+
+**[measured 2026-08-12 `components/case-study-row.tsx`]** The `/work` index row
+carries: solution tag → title (`--text-title`) → **one paragraph, `entry.approach`**
+→ pull-quote → "Read the full story" link, against a media column of `Frame` →
+`FrameMeta` → the "Try it" note → `BuildNarrative`. 80px vertical padding,
+hairline between rows.
+
+> **This document was wrong, and it is the largest error found in this pass.**
+> The entry claimed "Challenge/Approach/Outcome as three labeled beats" for this
+> component. **Those three beats exist only on `/work/[slug]`**
+> (`app/work/[slug]/page.tsx:172–192`, `180px 1fr` label-and-body rows separated
+> by hairlines). The index row renders the `approach` field alone and has never
+> rendered the other two. Anyone placing content by this entry would have
+> written a `challenge` and an `outcome` that the index silently drops.
+
+**[decided v2.5] The alternation is `grid-column` only, both halves pinned to
+`grid-row: 1`; DOM order is reading order — text, then media — on every row.**
+Below 768px the grid is one column and source order is the entire layout, so
+alternating the DOM put two posters back to back, and on `/work` it opened odd
+rows with a poster, a status line and "How it's built" for a project the visitor
+had not been introduced to yet. The pin is what makes the column-only alternation
+possible: with sparse auto-flow, an item whose column-start sits behind the
+placement cursor drops to the next row.
+
+**[measured 2026-08-12 `case-study-row.tsx:121`]** The row also carries
+`.tg-stack-md`, which stacks it to one full-width column in the 768–1023 band —
+the 8-track split starved both halves at once. The `max-lg:` placements beneath
+it are inert at every current width and **kept deliberately** as safe
+degradation; a fallback that is currently inert is not the same as a value that
+never applied.
+
+**`build-narrative`** — **[measured 2026-08-12 `live-frame.tsx:125–155`]** the
+"How it's built" block: hairline top border, uppercase caption label,
+`--text-sm` in `secondary`, capped at 60ch (62ch on the detail pages, passed in).
+It sits directly beneath the frame's status line and caption.
+
+**[decided v2.2]** It exists to balance the two-column layout — the media column
+should read as intentionally composed, not trail off into empty space beside a
+taller text column. If it is still visibly shorter with this included, the text
+column needs tightening, not the media column padding.
+
+**[measured 2026-08-12]** It renders on both `/work/[slug]` and the `/work`
+index. **Note the qualifier the old entry did not carry:** the index is *not* the
+"full-length" version — it is missing Challenge and Outcome, per the correction
+above.
+
+### 4.8 `project-card`
+
+**[measured 2026-08-12 `components/project-card.tsx`]** Compact: `--tg-surface`
+fill, 1px hairline, 12px radius, 24px padding. Tag (tight variant) → title
+(`--text-title`) → one `--text-sm` description → status line → a non-interactive
+"Read the full story →" affordance.
+
+The affordance is `aria-hidden` and **not** a `<Link>`: the whole card is already
+one, and nesting an anchor inside an anchor is invalid HTML that browsers recover
+from by un-nesting, splitting one card into two tab stops. **[decided]**
+Deliberately not a second "open the live demo" link — the demo is one click
+further in, and two competing actions on a compact card is the exact ambiguity
+this tier avoids.
+
+**[decided v2.1, standing] No image, ever.** The size and weight gap from
+`case-study-row` is intentional signal about the depth of the build. **This
+governs the card only** — a project's own detail page does carry its frame.
+
+### 4.9 `LiveFrame`
+
+**[measured 2026-08-12 `components/live-frame.tsx`] There is no `LiveFrame`
+component and no `embeddable` prop.** The file exports three: `Frame` (poster,
+alt, ratio, priority, onInk, viewTransitionName, className), `FrameMeta`
+(status, url, onInk) and `BuildNarrative`.
+
+> **This document was wrong.** It printed an API — "Props: `poster`, `url`,
+> `embeddable: boolean`, `alt`" — that has never existed in this shape. The
+> deferred-embed behaviour the `embeddable` flag was to carry is real but
+> unbuilt; it survives as prose in the file header and as the entry below,
+> marked as a target rather than a prop.
+
+**[decided v2.4] Two locked ratios, context-dependent.** Compact contexts
+(`case-study-row`, detail pages) stay **16:10**, no exceptions. **The hero uses
+16:9**, its own ratio — it matches standard screen-capture dimensions and
+eliminates the crop-vs-letterbox tension of forcing a 16:9-native capture into a
+16:10 container. **[measured 2026-08-12]** `Frame` defaults to `16/10`;
+`home-hero.tsx:92` passes `ratio="16/9"`.
+
+**[measured 2026-08-12 `live-frame.tsx:73`]** `object-fit: cover` with
+`object-position: top` — a dashboard screenshot cropped from the bottom keeps its
+header and primary content.
+
+**[decided v2.2, PLAYBOOK §12] Every poster is a real screenshot of the actual
+production application** — never a sandboxed emulator, simulator, or "demo mode"
+illustration. `bun run check:media` guards this on `prebuild`.
+
+**The container — plate, not panel. [decided v2.5, D-11]** The ratios and
+`object-fit` were specified and the box around them was not, so the compact
+contexts inherited a generic card and read as one. Four values, and the reasoning
+matters more than any of them:
+
+- **Padding: 0. The media meets the border, always. [measured 2026-08-12
+  `live-frame.tsx:59` — `p-0`]** This is the load-bearing one. `aspect-ratio`
+  governs the *outer* box, so any padding is subtracted from the media: the frame
+  keeps its 16:10 and the screenshot inside it silently stops being 16:10.
+  Padding also produces exactly the mat of dead space that made the frame read as
+  chrome around an asset instead of the asset. There is no value of this other
+  than zero. **If a frame looks like it has space around its media, that space is
+  the container's** — `cover` crops and can never letterbox.
+- **Fill: `--tg-surface`, theme-aware, never a literal `#FFFFFF`. [measured
+  2026-08-12 `live-frame.tsx:62`]** Under `cover` the fill is never visible once
+  the poster paints — it is a loading and failure state, not a design surface,
+  and its only job is to not punch a white rectangle into a dark page for the
+  frames it takes to decode. Inside `.ink-band` the same token already resolves
+  to `#1A1A1C`, so one declaration is correct in both places without a branch.
+- **Radius 12px, 1px hairline. [measured 2026-08-12 `live-frame.tsx:59,63`]**
+  12px is §3's card/media radius and the export's value. **[decided v2.5]
+  Rejected: dropping to 4px or 0** so the frame reads as a plate rather than a
+  card. The card read came from the mat, not the corner, so it would have fixed
+  nothing and broken the export for no gain.
+- **The status block sits BENEATH the frame, never inside it. [decided v2.5]**
+  Inside means an overlay on the screenshot, and every poster is a real
+  production UI whose own header lives at the top of the crop; covering it with
+  our chrome is the same lie as drawing fake browser chrome around it.
+
+**[measured 2026-08-12 `live-frame.tsx:108`]** `FrameMeta` is **12px below the
+frame** (`mt-3`), left-anchored, status and demo link on one wrapping row **20px
+apart** (`gap-x-5`). 12px reads as *belonging to* the frame above; 18px reads as
+the next block starting.
+
+**[decided v2.5]** That row was `justify-between`, which on an 803px detail-page
+frame threw "Live · checked 4 minutes ago" and "Open it in a new tab" to opposite
+corners — two labels in two places rather than one caption saying *this is
+running, go look*. **No mid-dot separator either**: `status-line` already owns a
+`·` internally, and a second separator on the same line puts two dot devices at
+two weights inside one caption.
+
+**The hero is not this. [measured 2026-08-12 `home-hero.tsx:90`,
+`globals.css` `.tg-hero-frame`]** `tg-hero-frame` is a surface-filled panel with
+32px padding that bleeds off the right viewport edge — specified, deliberate, and
+the reason the compact contexts' gap went unnoticed for so long. **Do not port
+the panel down to card scale.** At 373px tall a 32px mat is most of what you see,
+and the panel's whole argument is the bleed, which no compact context has.
+
+**[export] Deferred embed, unbuilt.** `embeddable: true` renders a
+click-to-activate iframe in the same frame at the same dimensions, so there is
+zero layout change; mobile stays poster + link regardless. It requires
+`frame-ancestors https://tekguyz.com` on each demo app first. Every entry is
+effectively `false` today.
+
+**[decided v2.1, standing] No fake browser chrome** drawn around it — the real
+product's own UI is what makes it credible.
+
+**[decided v2.2] Hero and compact card are distinct contexts.** The same
+screenshot does not have to be the same crop, or the same file, in both. A dense
+multi-panel dashboard can read fine at card size and feel cluttered blown up
+large. Don't force one asset to serve both jobs if it is not reading well in one.
+
+**Deleted, unsourceable:** "2x source assets." Nothing in `public/media/` or
+`live-frame.tsx` carries a 2x variant; `next/image` generates the srcset from a
+single source. **Deleted, redundant:** "Keyboard-operable." The frame has one
+interactive element, an `<a>`; the site-wide keyboard requirement lives in
+CLAUDE.md's definition of done and does not need a per-component restatement.
+
+### 4.10 `pull-quote`
+
+**[measured 2026-08-12 `components/pull-quote.tsx`]** Geist 600, −0.03em, 2px
+left border in that build's accent, 24px left padding, max-width 22ch, no
+quotation marks. **Two sizes**: `display` (`--text-display`) on canvas contexts,
+and a tighter `band` size — `clamp(1.75rem, 3.4vw, 2.75rem)` — for the home ink
+band, where the quote sits in a narrower column.
+
+> **This document was incomplete.** It described one size. The `band` variant has
+> shipped for as long as the ink band has.
+
+**[decided v2.1]** No quotation marks because the copy is a stated outcome, not
+dialogue. The testimonial is the opposite case — someone else's words — and does
+carry them.
+
+**[decided v2.1, standing]** The only place accent touches anything larger than a
+dot or a tag.
+
+### 4.11 `numeral-device` and `flourish-mark`
+
+**`numeral-device` — [measured 2026-08-12 `components/process-steps.tsx:140`]**
+`--text-hero`, the step's accent at **8% opacity**, absolutely positioned behind
+the step title, `pointer-events-none`, `select-none`, tabular numerals.
+**[decided v2.1, standing]** `/process` only. Nothing else on the site gets
+numbers.
+
+**`flourish-mark` — [measured 2026-08-12 `components/flourish-mark.tsx`,
+`page-hero.tsx:35`, `home-hero.tsx:50`, `app/work/[slug]/page.tsx:156`]** Four
+9px dots, 9px apart, order blue → violet → amber → teal. **Once per page, on
+every route** — near the hero headline on Home, inside `page-hero` above the
+eyebrow on every inner route.
+
+> **This document was wrong and has been corrected once already** (v2.5). The
+> "home only" claim survives in **§9's Do list**, which is corrected in this same
+> pass. If you find a third copy, the rendering is not what is wrong.
+
+**[decided, absolute]** The *once per page* half stands: the closing-CTA echo
+replays the load-sequence timing and gets no second set of dots.
+
+### 4.12 `logo-lockup`
+
+**[measured 2026-08-12 `components/logo-lockup.tsx`]** The file exports one
+thing, `ConnectedNodes`: an SVG at `viewBox 0 0 64 64`, four `r=8` circles (top
+blue, right violet, bottom amber, left teal) joined by `stroke-width: 3`
+connectors. The connector colour is a **prop**, defaulting to
+`var(--tg-border-strong)` — the theme hairline in the nav, a fixed `#2A2A2C` in
+the always-dark footer, `currentColor` at 40% inside the concierge launcher.
+
+> **This document was wrong, twice.** It said the connectors "theme-swap via
+> `var(--color-border)`" — the default is `--tg-border-strong`, and it is
+> overridden at two of the three call sites. It also said "Wordmark uses
+> `text-primary` so it resolves in both themes with no JS": **there is no
+> `text-primary` class anywhere in the repo.** The nav wordmark inherits colour;
+> the footer wordmark hardcodes `#F5F5F5`. The stated outcome is right and the
+> stated mechanism is fiction.
+
+**[measured 2026-08-12]** There is no composed lockup component. The header
+(`nav.tsx:114`) and footer (`footer-dark.tsx:80`) each assemble mark + wordmark
+themselves — header without a tagline, footer with one.
+
+**[decided, standing] The mark never wraps itself in a `<Link>`.** Call sites do
+the linking; `ConnectedNodes` stays a pure mark, which is what lets the footer
+use it inside a non-link masthead.
+
+### 4.13 AI concierge
+
+**[measured 2026-08-12 `components/concierge/concierge.tsx:335,358`]** The
+launcher and panel header render `ConnectedNodes` — the same JSX mark used
+everywhere else, at 18px.
+
+> **This document was wrong about the mechanism, right about the intent.** It
+> required "the actual `icon-master.svg` asset." Nothing on the site reads that
+> file at runtime — it is the `prebuild` favicon source only. The requirement
+> that matters is that this is the *same geometry*, never an invented simplified
+> icon, and the shared component is a stronger guarantee of that than a shared
+> file path would be.
+
+**[decided v2.1] Launcher visibility is locked, not optional**: it must never sit
+over the hero, where it competes with the hero's own CTAs and reads as a bug. The
+mechanism is §6/§8's yield rule, not a scroll threshold.
+
+**Presence — how the panel arrives and leaves (Build Phase 2)**
+
+**[decided 2026-08-12, from three built options]** §6.1 named this panel a
+*presence* surface and deferred it. This is the decision that closes that defer.
+
+> **This document implied the panel had no motion. It had the wrong motion.**
+> Phase 1 shipped `opacity: 0 → 1` plus a 12px rise on hardcoded `0.24` /
+> `[0.16, 1, 0.3, 1]` — the **entrance** layer's recipe, the one for an element
+> scrolling into view for the first time, applied to a surface that is summoned
+> and dismissed. Phase 2 replaced it; it did not fit motion to a bare panel.
+
+**[measured 2026-08-12 `components/concierge/panel-motion.ts`, `concierge.tsx`]**
+Each mode moves from where that surface actually comes from:
+
+| Mode | Geometry | In | Out |
+| --- | --- | --- | --- |
+| Desktop | `scale` 0.96 → 1 + opacity, origin `100% 100%` | `--dur-base` · `--ease-entrance` | `--dur-fast` · `--ease-hover` |
+| Sheet | `translate` `100%` → 0, **no fade** | `--dur-state` · `--ease-entrance` | `--dur-base` · `--ease-hover` |
+
+**The desktop origin is the argument, not a detail.** The panel and the launcher
+are both anchored right/bottom 24px, so `100% 100%` is *the launcher's own
+corner* — the panel unfolds out of the control that was pressed. No translate
+with it: a corner-anchored scale already says "from here," and a slide would be
+a second statement about one origin. **[measured]** `transform-origin` reads
+`420px 640px` on the shipped panel, which is that corner exactly.
+
+**The sheet does not fade, and that is deliberate.** An opaque full-screen
+surface that fades shows the page through itself mid-flight, which reads as
+unfinished rather than as arriving. It translates and stays opaque.
+
+**[decided] Asymmetric: out is one duration step shorter than in, on
+`--ease-hover` rather than `--ease-entrance`.** Arriving is the considered
+moment; leaving is not. Once the visitor has hit close the decision is already
+made, and replaying the arrival backwards makes them wait for it. Settling into
+place, versus getting out of the way.
+
+**[decided] No overshoot**, per the standing v2.2 rule in §6.1. Not reopened for
+this panel — "presence may carry more weight" is exactly the argument that would
+reach for a spring here, so `panel-motion.test.ts` asserts both easings hold
+their control points within [0,1] and fails the build if one is swapped for a
+curve that can exceed 1.
+
+**[measured 2026-08-12, user, Pixel 9A] The motion is confirmed good on a real
+device.** Local verification could only ever prove wiring — this machine matches
+`reduce` machine-wide, so nothing here saw the scale or the slide run. The
+motion-enabled check was the user's and it passed.
+
+**[measured] Under `reduce`, the geometry *and* the duration both go to zero** —
+the panel appears and disappears. Not a fast version of the transition: none of
+it, the same floor §6.7 holds every other entrance to. Zero duration also lets
+`AnimatePresence` unmount immediately instead of holding an invisible panel for
+the length of an exit.
+
+**Why the numbers live in a `.ts` file and not here.** Motion's JS API cannot
+read a CSS custom property, so `panel-motion.ts` mirrors `--dur-*` / `--ease-*`
+as literals. That is the exact trap `nav.tsx:104` is on the STATUS board for — a
+value agreeing with its token by coincidence rather than by reference. So it is
+pinned: `panel-motion.test.ts` parses `app/globals.css` and fails `prebuild` on
+drift. **Do not print those values in this document** — the token names above
+are the reference, per the one-source-per-number split.
 
 **Conversation UI:**
-- **No avatars, either side.** Visitor messages get a `surface-card` fill; assistant replies are plain text on the panel background, so the exchange reads as a document rather than a chat-bubble stack. Avatars would fight that and add a second visual voice the site doesn't otherwise have.
-- **Three suggestion chips on the empty state**, drawn from the real solution lines — e.g. "We're missing after-hours calls," "Everything lives in spreadsheets," "I'm not sure what I need." They remove the blank-input problem, which is the single biggest drop-off point in any chat UI. Chips disappear permanently after the first message; they're an opener, not a persistent menu.
-- **Route-aware opener.** The panel receives the current pathname. On a `/work/[slug]` page it opens with a line referencing that build; elsewhere it uses the default opener from COPY.md. Cheap to implement, and it makes the assistant feel like part of the page instead of a widget bolted onto it.
-- **Lead capture stays conversational, never a form.** The existing `capture_lead` tool collects name, email, project type, and a summary — the assistant asks for these one at a time as the conversation warrants, never as a wall of fields. If a visitor volunteers everything in one message, capture it in one step and don't re-ask.
-- **Captured state**: the four-segment stripe resolves to a single `success` dot with the confirmation copy from COPY.md. The input stays enabled — a captured lead may still have questions, and disabling the input at the moment someone converts is exactly the wrong signal. (The cap-reached state is the one exception: there, the handoff *is* the action, so the input goes away.)
 
+- **[decided v2.2] No avatars, either side.** **[measured 2026-08-12
+  `concierge.tsx:414`]** Visitor messages get a `--tg-surface` fill at 12px
+  radius, `max-w-[85%]`, self-end; assistant replies are plain text on the panel
+  background, so the exchange reads as a document rather than a chat-bubble
+  stack. Avatars would fight that and add a second visual voice.
+- **[measured 2026-08-12 `concierge.tsx:88–92,314`] Three suggestion chips on the
+  empty state**, drawn from the real solution lines. `showChips` is
+  `messages.length === 0 && !busy`, so they disappear on the first message and do
+  not return. **[decided v2.2]** They remove the blank-input problem; they are an
+  opener, not a persistent menu.
+- **[measured 2026-08-12 `concierge.tsx:100,127,292`] Route-aware opener.** The
+  panel reads `usePathname()` and looks up the entry when the path starts with
+  `/work/`; the pathname also goes to the API with every turn.
+- **[decided v2.1] Lead capture stays conversational, never a form.** The
+  `capture_lead` tool collects name, email, project type and a summary, asked one
+  at a time as the conversation warrants. If a visitor volunteers everything in
+  one message, capture it in one step and don't re-ask.
+- **[measured 2026-08-12 `concierge.tsx:428–434,504,510`] Captured state**: the
+  stripe resolves to a single `--tg-success` dot with the confirmation copy, and
+  **the input stays enabled** (only `busy` and an empty field disable it) — a
+  captured lead may still have questions, and disabling input at the moment
+  someone converts is exactly the wrong signal. Cap-reached is the one exception:
+  there the handoff *is* the action, so the input goes away.
+  **Reopened 2026-08-12 — do not quote the paragraph above as settled.** After
+  using the panel on a Pixel 9A the user asked that the concierge **close itself
+  once it has captured the lead**, which is the stronger form of the move this
+  entry argues against. Real device use is evidence the original reasoning did
+  not have. Logged in `STATUS.md`; unresolved, and deliberately not implemented
+  as a bug fix, because reversing a `[decided]` entry is a design decision.
 
-**"Thinking" indicator, revised**: not the plain muted dot described in earlier versions. Instead, a thin (3px) bar using the same four equal segments as the signature stripe — blue → violet → amber → teal, same fixed order — with a slow shimmer: opacity sweeping left to right across the four segments, 1200ms loop. Resolves to nothing (segments disappear) once the reply arrives. `prefers-reduced-motion` falls back to a static four-segment bar, no shimmer.
+**"Thinking" indicator — [measured 2026-08-12
+`components/concierge/thinking-stripe.tsx`]** A **72 × 3px four-column grid,
+inline beside the word "Thinking" with a 10px gap**. Segments hold at low opacity
+and flash, staggered **120ms** apart on a **1200ms** loop — the stagger is what
+reads as a sweep with no gradient involved. `prefers-reduced-motion` falls back
+to a static four-segment bar (`globals.css:1010`), never a spinner.
 
-**This is the one functional, moving use of the site's four-color system, and it stays that way.** It's earned here specifically because the AI is genuinely doing work in that moment — the signal means something. **Do not extend this pattern anywhere else** — not around a button, not as a page-load flourish, not as ambient decoration. A four-color moment that shows up in more than one place stops being a signature and starts being wallpaper, which is exactly the failure mode the rest of this system has been built to avoid. Still four discrete segments, never a blended gradient — the system's no-gradients rule doesn't need an exception for this; the shimmer is motion on an existing component, not a new visual language.
+> **This document was imprecise in a way that would mislead a rebuild.** It
+> described "a thin (3px) bar … opacity sweeping left to right," which reads as
+> a full-width progress bar. It is a small typographic device beside a word, and
+> it is 72px wide.
 
-**`footer-dark`** — always dark regardless of toggle, always `bg-dark`, separated by a persistent 1px `border-dark` top border. Structure: masthead (lockup + tagline left, social row right) → hairline divider → 3-column nav → bottom bar → signature stripe. **The copyright bar and column headings currently hardcode `#6B7280`** (the light-mode `muted` value) regardless of theme — that's the same failure flagged in §1. Once `muted-dark` is set, these reference it instead of a bare hex.
-- **Masthead padding: tighten further than the previous 64/48 attempt** — that wasn't enough. Target roughly 40px top / 32px bottom, and treat this as a starting point to adjust visually once built, not a value to accept unquestioned if it still looks heavy next to the rest of the footer's density.
-- **Social row: icons now** — LinkedIn / Instagram / Facebook / GitHub, icon-only, no text label, styled per the Icon Policy above (single consistent stroke weight, monochrome, not brand-colored).
-- Solutions column dots use real accent colors from `config/solutions.ts`.
+**[decided v2.4, standing] This is the one functional, moving use of the site's
+four-colour system, and it stays that way.** It is earned here because the AI is
+genuinely doing work in that moment — the signal means something. **Do not extend
+it anywhere else**: not around a button, not as a page-load flourish, not as
+ambient decoration. A four-colour moment in more than one place stops being a
+signature and becomes wallpaper. Still four discrete segments, never a blended
+gradient.
+
+### 4.14 `footer-dark`
+
+**[measured 2026-08-12 `components/footer-dark.tsx`, `globals.css:115`]** Always
+dark regardless of the toggle (`.footer-dark` sets its own `--tg-bg`, `--tg-fg`,
+`--tg-border`, `--tg-secondary`), separated by a persistent 1px `#2A2A2C` top
+border. Structure: masthead → hairline divider → 3-column nav on the 12-col grid
+(1–4 / 5–8 / 9–12) → bottom bar → signature stripe.
+
+**[measured 2026-08-12 `footer-dark.tsx:66,127`]** Masthead padding is **40px
+top**, and the divider that closes it is 32px below the masthead content — the
+"roughly 40/32" target of the v2.2 entry, reached. The 64/48 attempt before it
+was not enough. **[decided v2.2]** This row must not inherit section-level
+spacing.
+
+**[measured 2026-08-12 `footer-dark.tsx:93–121`]** Social row: LinkedIn /
+Instagram / Facebook / GitHub, icon-only, 44 × 44 hit boxes, 20px glyphs, one
+stroke set at 1.75 — monochrome, never brand-coloured.
+
+**[measured 2026-08-12 `footer-dark.tsx:165`]** Solutions column dots are 6px and
+read the real accent from `config/solutions.ts`.
+
+**[measured 2026-08-12 `footer-dark.tsx:153,177,199`] Link column gap is 22px**,
+and that is a layout decision, not styling: the links are 22.4px tall, so a 44px
+`tap-44` target needs 10.8px above and below, and at the previous 12px gap two
+vertically adjacent targets overlapped by 9.6px — resolved by source order, so a
+tap on `Process` could land on `Work`. 21.6 against 22.0 leaves 0.4px of
+clearance. See §8.
+
+> **This document was wrong, and stale in a way that hid a live defect.** It said
+> the copyright bar and column headings "currently hardcode `#6B7280`" and should
+> reference `muted-dark` "once it is set." `#6B7280` is gone from the repo
+> entirely — but the replacement is the literal `#747C8B`, still a bare hex, and
+> `.footer-dark` already defines `--tg-secondary` as exactly that value. The
+> colour is now correct and the mechanism the entry asked for was never
+> delivered. Logged in `STATUS.md`; not fixed here.
+
+### 4.15 Components with no entry in this section
+
+**[measured 2026-08-12]** Stated so nobody reads §4's silence as a prohibition.
+These ship and are specified nowhere here: `testimonial.tsx`, `faq-accordion.tsx`
+(§6.3 covers its motion only), `contact-form.tsx` (§6.3, same), `solution-tag.tsx`,
+and `MetaRail` in `app/work/[slug]/page.tsx`. `signature-stripe.tsx` is specified
+in §3; `reveal.tsx` and `load-sequence.tsx` in §6.
+
+Writing an entry for any of them is real design work — see CLAUDE.md's skill
+table — not a documentation pass.
 
 ---
 
 ## 5. `status-line` — the signature component
 
-Replaces the decorative "LIVE" badge everywhere.
+*Converted 2026-08-12.*
 
-**Verified:** 6px `success` dot · `Live` in ink 600 · `· checked 14 minutes ago` in `muted`, tabular numerals.
-**Unreachable:** 6px `muted-soft` dot (no pulse) · `Temporarily unreachable` in `muted` · timestamp.
+**[decided v2.1, standing]** Replaces the decorative "LIVE" badge everywhere.
 
-- Small caps, `--text-sm`, 0.04em tracking.
-- Dot pulses only in the verified state: opacity 1→0.4→1, 1600ms. `prefers-reduced-motion` → static at 0.85, no animation.
-- Appears on every build card, detail page, and the hero.
-- Data from a server-side HEAD request per demo URL, `next: { revalidate: 3600 }`, 3s timeout, `Promise.allSettled`. Never a client-side fetch to eight origins.
+**[measured 2026-08-12 `components/status-line.tsx`]** Two states, structured
+differently on purpose:
 
-**Why this is the signature:** every competitor's LIVE badge is a graphic asserting a fact. This one measures it. "Proof Over Claims" as a component.
+| State | Renders |
+| --- | --- |
+| **Verified** | 6px `--tg-success` dot, pulsing · `Live` in `fg` at weight 600 · `· checked <stamp>` in `secondary` |
+| **Unreachable** | 6px `--tg-muted-soft` dot, no pulse · one single `secondary` string: `Temporarily unreachable · checked <stamp>` |
+
+**[decided v2.1]** An unreachable demo loses the ink weight entirely. A HEAD
+request timing out is not a failure state for the visitor, so it gets no emphasis
+and no error colour.
+
+**[measured 2026-08-12 `status-line.tsx:62`] The line is Geist Mono**, 0.875rem,
+line-height 1.55, 0.04em tracking, tabular numerals, 8px gap.
+
+> **This document was wrong.** It said "Small caps." There is no
+> `font-variant: small-caps` anywhere in the repo. The uppercase-ish read it was
+> describing comes from the mono face and the 0.04em tracking.
+
+> **`TOKENS.md`'s type note is also wrong here, and it is not in this pass's
+> scope to fix.** It says Geist Mono appears in three places — "status-line
+> timestamps, Process numerals, tag labels." Measured: mono ships in exactly two,
+> `status-line` (the **whole line**, not just the timestamp) and the concierge's
+> inline code span. Process numerals and tag labels carry no mono class. Logged
+> in `STATUS.md`.
+
+**[measured 2026-08-12 `globals.css:563–575,997`]** The dot pulses only in the
+verified state: opacity 1 → 0.4 → 1 over 1600ms, infinite.
+`prefers-reduced-motion` kills the animation and holds it at 0.85.
+
+**[measured 2026-08-12 `lib/status.ts:22–48`]** Data is a server-side `HEAD`
+request per demo URL: `next: { revalidate: 3600 }`, `AbortSignal.timeout(3000)`,
+`Promise.allSettled`. **[decided v2.1]** Never a client-side fetch to eight
+origins, and never `Promise.all` — one hang must not block the page.
+
+**[measured 2026-08-12 `status-line.tsx:16–54`] The stamp is absolute on the
+server and relative only after hydration.** `absoluteTime` builds `at HH:MM UTC`
+from `getUTC*` — never `Intl` or `toLocale*`, which is the same mismatch one
+layer down — and `useSyncExternalStore` with constant snapshots swaps in
+`relativeTime` after mount. **[decided]** Both easy fixes are wrong: deferring to
+an effect flashes the signature component empty, and `suppressHydrationWarning`
+hides the message while leaving two trees in place.
+
+**[measured 2026-08-12]** It appears on `project-card`, both `/work` tiers, the
+detail pages, and the hero — via `FrameMeta` in every framed context, and
+directly in `home-hero.tsx:95` and `project-card.tsx:51`.
+
+**[decided v2.1] Why this is the signature:** every competitor's LIVE badge is a
+graphic asserting a fact. This one measures it. "Proof Over Claims" as a
+component.
 
 ---
 
@@ -428,7 +1018,19 @@ site-wide. It is the framework default dressed as a choice.
 **[decided 2026-08-12]** The two surfaces that genuinely *arrive and leave* —
 the concierge panel and the nav drawer — are the documented exception and may
 carry more weight than a row toggle. Presence is a different problem from state.
-Phase 2 owns the concierge; do not pre-empt it here.
+
+**[decided 2026-08-12] The concierge panel's presence recipe is now specified in
+§4.13 and shipped** (Build Phase 2). "May carry more weight" cashed out as a
+mode-specific origin — a corner scale on desktop, an edge translate in sheet —
+not as a longer or heavier curve. Both still use `--ease-entrance` in, and both
+leave *faster* than they arrive.
+
+**The nav drawer is still deferred, and this sentence is the whole of its
+spec.** It was deliberately left out of Phase 2 rather than absorbed into it:
+the drawer is a different surface with a different origin and its own focus
+contract, and the concierge's recipe is not portable to it by inspection. **Do
+not copy §4.13's table onto the drawer** — that is the shortcut this note exists
+to prevent.
 
 ### 6.2 `.tg-rule` — the state primitive
 
@@ -564,13 +1166,48 @@ check to the user.
 
 ## 7. Dark mode
 
-Manual toggle only — `next-themes`, `attribute="class"`, `defaultTheme="light"`, `enableSystem={false}`. Light is what every new visitor sees.
+*Converted 2026-08-12. Four claims, all four measured, none wrong — this is the
+one section of the four that survived intact.*
 
-The full-bleed Featured Work band stays ink in both themes. In dark mode it's distinguished from the page by a hairline, not a fill change — the page background is already near-black, so a fill-color contrast isn't available; the hairline is the only signal left, and that's intentional.
+**[measured 2026-08-12 `components/theme-provider.tsx`] Manual toggle only** —
+`next-themes` with `attribute="class"`, `defaultTheme="light"`,
+`enableSystem={false}`. It also passes `disableTransitionOnChange`, which the old
+entry did not mention; §6.3 has the reasoning for why theme change is not
+transitioned.
 
-Every primary button must actually invert — see §4. Dark mode should still have real bright elements: `text-primary-dark` for headlines and primary text, and the primary CTA as the single brightest thing on the page.
+**[decided v2.1] Light is what every new visitor sees.** The site never
+auto-switches off the OS preference.
 
-Never gate color logic on `useTheme()` or mount state when a CSS `dark:` variant or `currentColor` solves it.
+**[measured 2026-08-12 `app/page.tsx:97`, `globals.css:98–113`] The full-bleed
+Featured Work band stays ink in both themes.** `.ink-band` sets its own
+`--tg-bg`, `--tg-fg`, `--tg-surface`, `--tg-border`, `--tg-secondary` and the CTA
+triple to fixed literals, so nothing inside it theme-swaps. **[decided v2.3]** In
+dark mode it is distinguished from the page by a hairline, not a fill change: the
+page background is already near-black, so fill contrast is not available and the
+hairline is the only signal left.
+
+**[measured 2026-08-12 `globals.css:71–73`] Every primary button actually
+inverts.** `--tg-cta-bg` → `--tg-text-primary-dark`, `--tg-cta-fg` →
+`--tg-bg-dark`. **[decided v2.3]** Dark mode must have real bright elements — the
+primary CTA is the single brightest thing on a dark page, not a darker shade of
+the background it sits on.
+
+**[decided v2.3, standing] Never gate colour logic on `useTheme()` or mount state
+when a CSS `dark:` variant or `currentColor` solves it.** **[measured 2026-08-12
+`components/theme-toggle.tsx`]** The toggle holds to this precisely: both glyphs
+are always in the DOM and the `dark:` variant hides one; the accessible name is
+two `sr-only` spans with the inactive one at `display: none`; `resolvedTheme` is
+read **only inside the click handler**, where it runs long after mount and cannot
+desynchronise the markup. The earlier `mounted`-flag version fired a second
+render on every mount for a value CSS already knew — next-themes puts `.dark` on
+`<html>` before paint — and tripped `react-hooks/set-state-in-effect`.
+
+**[measured 2026-08-12 `globals.css:104`] One open discrepancy, contrast-safe.**
+`.ink-band` sets `--tg-secondary: #9ca3af`, which is `muted-soft` — a value
+`TOKENS.md` retires as a text colour and permits only for dots and the concierge
+indicator. On `#111111` it computes to **7.43:1**, so this is a rule being broken
+silently rather than an accessibility failure. Logged in `STATUS.md`;
+resolving it is a §1 decision, not a §7 one.
 
 ---
 
@@ -940,6 +1577,8 @@ a bottom-anchored fixed element is the defect; a viewport bound is the fix.
 **`dvh` vs `svh` vs `vh` cannot be distinguished in the audit harness** —
 headless Chromium has no collapsing URL bar, and all three probe identical — so
 this choice is confirmed on a real device or not at all.
+**[measured 2026-08-12, user, Pixel 9A] Confirmed on device, portrait and
+landscape.** `dvh` is correct and this line is no longer an open question.
 
 **The list floor is a flex basis + `min-height: 0`, never a `min-height`** — now
 `flex: 1 1 440px`, previously `flex: 1 1 300px`; the rule is the property, not
@@ -1080,6 +1719,66 @@ Fixed-position elements take `env()` insets; nothing else does.
 
 ## 9. Do / Don't
 
-**Do:** ink for every primary CTA · accent mapping in shared config only · real product in every `LiveFrame` · one `flourish-mark` per page, home only · left-anchor everything but the closing CTA · keep case-study and project components visibly different in weight · light as default · show a current-page indicator in nav · give dark mode real bright elements, not a uniformly dark page · use icons for the footer social row and theme toggle, styled to match the site's own line weight · verify text-on-tint contrast across every badge/status/success/error surface, in both themes, before shipping · let `closing-cta`'s button be the one documented size exception on the site.
+*Converted 2026-08-12. **This list is `[decided, standing]` in its entirety** —
+it is a summary of rules argued for elsewhere in this document, so each line
+points at the section that carries its reason rather than restating it. One
+entry was factually wrong and is corrected below.*
 
-**Don't:** tint a button with accent · add a 5th accent · add icons to solution rows · use cyberpunk/terminal aesthetics or monospace body type · auto-switch dark mode · use any banned motion effect · center-align section content outside `closing-cta` · interleave case studies and projects on `/work` · put an image on `project-card` · pad the inside of a `LiveFrame` or overlay its status block on the poster · mute the actionable half of the proof line · use a sandbox/emulator illustration in a `LiveFrame` where a real screenshot is available · use a generic imported social-icon or theme-toggle icon set without restyling it to match · let the closing CTA or footer masthead inherit full section-level spacing · use a blended gradient anywhere, including the concierge's thinking indicator · extend the four-color moving treatment beyond the concierge's thinking state · reproduce the current site's layout.
+**A line here is never the authority.** If a Do/Don't disagrees with the section
+it points at, the section wins and this list gets fixed — which is exactly what
+happened to the `flourish-mark` entry.
+
+**Do**
+
+- Ink for every primary CTA — §4.1
+- Accent mapping in `config/solutions.ts` only — §1
+- Real production UI in every frame — §4.9
+- **One `flourish-mark` per page, on every route** — §4.11
+
+  > **This list was wrong.** It read "one `flourish-mark` per page, **home
+  > only**." §4 corrected the same error in v2.5 and this copy was missed, which
+  > is how a corrected claim survives: it lives in two places and only one gets
+  > fixed. Measured 2026-08-12 — the dots render on Home, every `page-hero`
+  > route, and `/work/[slug]`. The *once per page* half is the part that is
+  > absolute.
+
+- Left-anchor everything but the closing CTA — §3
+- Keep case-study and project components visibly different in weight — §4.7, §4.8
+- Light as default — §7
+- Show a current-page indicator in the nav — §4.2, §6.2
+- Give dark mode real bright elements, not a uniformly dark page — §7
+- Use icons for the footer social row and the theme toggle, styled to the site's
+  own line weight — Icon policy, §4.14
+- Verify text-on-tint contrast across every badge / status / success / error
+  surface, in both themes, before shipping — §1
+- Let `closing-cta`'s button be the one documented size exception — §4.5
+
+**Don't**
+
+- Tint a button with an accent, or add a 5th accent — §1, §4.1
+- Add icons to solution rows — §4.6
+- Use cyberpunk / terminal aesthetics, or monospace body type — §0, §6.6
+
+  *Not a ban on monospace itself: `status-line` is Geist Mono by design (§5), as
+  is the concierge's inline code span. The rule is about body copy.*
+
+- Auto-switch dark mode — §7
+- Use any banned motion effect — §6.6, and read what that list is actually
+  rejecting before treating it as a cap on motion
+- Center-align section content outside `closing-cta` — §3
+- Interleave case studies and projects on `/work` — §4.7, §4.8
+- Put an image on `project-card` — §4.8. **The card only**; a project's own
+  detail page does carry its frame.
+- Pad the inside of a frame, or overlay its status block on the poster — §4.9
+- Mute the actionable half of the proof line — §4.4
+- Use a sandbox / emulator / demo-mode illustration where a real screenshot
+  exists — §4.9, PLAYBOOK §12
+- Use a generic imported social-icon or theme-toggle icon set without restyling
+  it — Icon policy
+- Let the closing CTA or the footer masthead inherit full section-level spacing —
+  §4.5, §4.14
+- Use a blended gradient anywhere, including the concierge's thinking indicator —
+  §4.13
+- Extend the four-colour moving treatment beyond the concierge's thinking state —
+  §4.13
+- Reproduce the current site's layout — §0

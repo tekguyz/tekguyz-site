@@ -11,6 +11,7 @@ import {
   CONCIERGE_OPEN_EVENT,
   useLauncherSuppressed,
 } from '@/components/concierge/concierge-bus';
+import { PANEL_DUR, PANEL_EASE } from '@/components/concierge/panel-motion';
 import { getWork } from '@/content/work';
 import { site } from '@/lib/site';
 
@@ -22,9 +23,9 @@ import { site } from '@/lib/site';
  *   launcher  fixed right/bottom 24px · padding 16px 24px · radius 8px (the
  *             same radius as every other button on the site, NOT a pill) ·
  *             18px mark with currentColor connectors at 40%
- *   panel     380px · radius 16px · one hairline · no shadow ·
- *             header 56px · body padding 20px 16px, gap 20px, min-height 300px
- *             footer padding 16px, disclaimer above a 44px input + Send button
+ *   panel     420 x 640 (D-04) · radius 16px · one hairline · no shadow ·
+ *             header 56px · body padding 20px 16px, gap 20px, list floor
+ *             `flex: 1 1 440px` · footer padding 16px, a 44px input + Send
  *
  * Replies are plain text on the canvas; only the visitor's own words get a
  * surface fill, so the panel reads as a document rather than a chat toy. The
@@ -38,9 +39,11 @@ import { site } from '@/lib/site';
  *     and put its own close button 119px above the top edge (M-03, blocking).
  *     A future longer message list scrolls INSIDE the list; the panel never
  *     grows past this bound again.
- *   Sheet threshold.  `(max-height: 560px)` — height, never width. The blocking
- *     case is a phone held sideways, which is *wider* than 768px, so a
- *     width-keyed threshold misses it entirely.
+ *   Sheet threshold.  `(max-height: 560px)` OR `(max-width: 767px)`. The height
+ *     arm is load-bearing and never comes out: the blocking case is a phone
+ *     held sideways, which is *wider* than 768px, so a width-keyed threshold
+ *     misses it entirely. The width arm is additive, for the tall portrait
+ *     phone that clears 560px and still wants a sheet.
  *   Launcher visibility.  Hidden on initial load; fades in past the hero; and
  *     yields to whichever primary CTA is on screen (M-06 + M-15). Opacity only.
  *
@@ -58,8 +61,20 @@ import { site } from '@/lib/site';
  */
 const PRIMARY_CTA_SELECTOR = '[data-primary-cta]';
 
-/** Sheet threshold. Derived in DESIGN.md §8: 485 + 24 + 24 = 533, rounded up. */
-const SHEET_QUERY = '(max-height: 560px)';
+/**
+ * Sheet threshold — an OR of two conditions, and the height arm is the
+ * load-bearing one (D-04).
+ *
+ * `(max-height: 560px)` is derived in DESIGN.md §8: 485 + 24 + 24 = 533,
+ * rounded up. It closes M-03, whose blocking case is 844x390 — a phone held
+ * sideways, which is *wider* than 768px and therefore invisible to a
+ * width-keyed threshold. It does not get removed.
+ *
+ * `(max-width: 767px)` is ADDITIVE, not a reversal: a tall portrait phone
+ * clears 560px of height and still wants a sheet, a case the height arm
+ * legitimately does not cover.
+ */
+const SHEET_QUERY = '(max-height: 560px), (max-width: 767px)';
 
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -245,7 +260,7 @@ export function Concierge() {
      bottom and short exchanges behave exactly as before.
 
      This is not a sizing fix — the panel's viewport bound and the list's
-     `flex: 1 1 300px` floor are deliberate (M-03), and a longer reply is
+     `flex: 1 1 440px` floor are deliberate (M-03), and a longer reply is
      supposed to scroll inside the list rather than grow it. */
   useEffect(() => {
     const list = scrollRef.current;
@@ -313,6 +328,42 @@ export function Concierge() {
 
   const showChips = messages.length === 0 && !busy;
 
+  /* Presence, per mode — the recipe and its reasoning are in panel-motion.ts.
+     Arriving and leaving are asymmetric: in on `--ease-entrance` because the
+     panel is settling into place, out one duration shorter on `--ease-hover`
+     because the visitor has already decided and should not have to watch the
+     entrance run backwards.
+
+     Under `reduce` the geometry AND the duration both go to zero, so the panel
+     appears and disappears. That is not a fast version of the transition — it
+     is none of it, which is the same floor every other entrance on this site
+     holds to. Zero duration also lets AnimatePresence unmount immediately
+     rather than holding an invisible panel for the length of an exit. */
+  const presence = reduceMotion
+    ? {
+        initial: { opacity: 1 },
+        animate: { opacity: 1 },
+        exit: { opacity: 1, transition: { duration: 0 } },
+        transition: { duration: 0 },
+      }
+    : sheet
+      ? {
+          initial: { y: '100%' },
+          animate: { y: 0 },
+          exit: { y: '100%', transition: { duration: PANEL_DUR.base, ease: PANEL_EASE.hover } },
+          transition: { duration: PANEL_DUR.state, ease: PANEL_EASE.entrance },
+        }
+      : {
+          initial: { opacity: 0, scale: 0.96 },
+          animate: { opacity: 1, scale: 1 },
+          exit: {
+            opacity: 0,
+            scale: 0.96,
+            transition: { duration: PANEL_DUR.fast, ease: PANEL_EASE.hover },
+          },
+          transition: { duration: PANEL_DUR.base, ease: PANEL_EASE.entrance },
+        };
+
   /* Yielded, not unmounted: focus return on close needs the launcher to still
      be there, and an element that disappears from the DOM cannot transition.
      Two yield inputs, composed: the geometric one (a primary CTA on screen) and
@@ -343,15 +394,21 @@ export function Concierge() {
             role="dialog"
             aria-label="Ask about your project"
             aria-modal={sheet ? true : undefined}
-            initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
-            transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.16, 1, 0.3, 1] }}
-            style={sheet ? SHEET_INSET : INSET}
+            {...presence}
+            /* The desktop panel scales from its own bottom-right corner, which
+               is the launcher's corner — both are anchored right/bottom 24px,
+               so the two coincide and the panel unfolds out of the control that
+               opened it. The sheet needs no origin: it translates. */
+            style={sheet ? SHEET_INSET : { ...INSET, transformOrigin: '100% 100%' }}
             className={
               sheet
                 ? 'fixed z-[80] flex flex-col overflow-hidden bg-bg'
-                : 'fixed z-[80] flex max-h-[calc(100dvh-48px)] w-[380px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[16px] border border-border bg-bg'
+                : /* 420 x 640 is the D-04 PREFERENCE; `max-height` still wins.
+                     `height` gives the panel its considered size when the
+                     viewport has room, and yields to the bound when it does
+                     not — which is the whole point of expressing it as a
+                     preference rather than a floor. */
+                  'fixed z-[80] flex h-[640px] max-h-[calc(100dvh-48px)] w-[420px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[16px] border border-border bg-bg'
             }
           >
             <div className="flex h-14 flex-none items-center gap-[10px] border-b border-border px-4">
@@ -372,14 +429,17 @@ export function Concierge() {
               </button>
             </div>
 
-            {/* `flex: 1 1 300px` + `min-height: 0`, NOT `min-h-[300px]`. The
-                300px floor is a preference that yields: when the panel hits its
+            {/* `flex: 1 1 440px` + `min-height: 0`, NOT `min-h-[440px]` (D-04).
+                The floor is a preference that yields: when the panel hits its
                 viewport bound the list compresses and scrolls inside itself,
-                rather than pushing the panel past the top edge. In sheet mode
-                the same declaration grows it to fill the screen. */}
+                rather than pushing the panel past the top edge. A hard
+                min-height cannot yield — it would hold the floor and the panel
+                would clip it against its own `overflow: hidden`, the same
+                defect one layer down. In sheet mode the same declaration grows
+                it to fill the screen. */}
             <div
               ref={scrollRef}
-              className="flex min-h-0 flex-col gap-5 overflow-y-auto px-4 py-5 [flex:1_1_300px]"
+              className="flex min-h-0 flex-col gap-5 overflow-y-auto px-4 py-5 [flex:1_1_440px]"
             >
               <p className="text-[0.875rem] leading-[1.55]" style={{ textWrap: 'pretty' }}>
                 {opener}
@@ -392,7 +452,16 @@ export function Concierge() {
                       key={chip}
                       type="button"
                       onClick={() => send(chip)}
-                      className="cursor-pointer rounded-[8px] border border-border px-3 py-2 text-left text-[0.875rem] text-secondary transition-colors duration-[240ms] hover:border-border-strong hover:text-fg"
+                      /* `tap-44`: the painted chip is 40px tall (`py-2` on a
+                         14px line), 4px under the tier-1 floor. The pseudo
+                         expands the hit box to 44 without touching the box you
+                         see — "expand, never resize", §8. The 8px `gap-2`
+                         above survives it: two expanded boxes each grow 2px
+                         toward each other, leaving 4px of clearance, so this
+                         creates none of the source-order adjacency overlaps
+                         the footer column hit at 12px. Invisible to
+                         `phaseTaps`, which never opens the panel. */
+                      className="tap-44 cursor-pointer rounded-[8px] border border-border px-3 py-2 text-left text-[0.875rem] text-secondary transition-colors duration-[240ms] hover:border-border-strong hover:text-fg"
                     >
                       {chip}
                     </button>

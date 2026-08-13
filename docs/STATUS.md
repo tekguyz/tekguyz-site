@@ -11,7 +11,8 @@ build), GBP Services (live in the user's GBP for months), and the footer locatio
 drift (fixed in `COPY.md:69`). All three had been quoted back to the user as
 current state. Assert nothing here you have not just measured.*
 
-Last updated: 2026-08-12 (Build Phase 1 shipped).
+Last updated: 2026-08-12 (Build Phase 1 shipped; Build Phase 2 partly shipped —
+D-04 geometry and the concierge panel's presence motion).
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -40,15 +41,18 @@ Claude.ai first.*
 | --- | --- | --- |
 | **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
 | **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see below |
-| **2** | Concierge UX/UI redo (absorbs D-04) | After 1 |
+| **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see below |
 | **3** | Copy: privacy policy, 8 detail narratives, FAQ review | After 1 |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
 | **5** | Refactor: `concierge.tsx` 526 lines, `contact-form.tsx` 440, `actions/contact.ts` 423 | Last |
 
-**Phase 1 is the real work.** DESIGN.md was assembled ad-hoc, the Claude Design
-export was never fully implemented, and `frontend-design` has never been invoked
-on this project. The site has exactly **one motion idea** — fade in + rise 8px —
-applied everywhere (`motion` is imported in 2 files; everything else is CSS).
+**Phase 1 was the real work.** DESIGN.md was assembled ad-hoc, the Claude Design
+export was never fully implemented, and `frontend-design` had never been invoked
+on this project. The site had exactly **one motion idea** — fade in + rise 8px —
+applied everywhere. *Past tense as of 2026-08-12:* Phase 1 added the state layer
+(`.tg-rule`, `.tg-collapse`, `.tg-mark`) and Phase 2 added the presence layer
+(DESIGN.md §4.13). The three layers §6 names — entrance, state, feedback — plus
+presence now all exist.
 
 ---
 
@@ -63,9 +67,16 @@ applied everywhere (`motion` is imported in 2 files; everything else is CSS).
 
 | Item | Phase |
 | --- | --- |
-| **DESIGN.md §4 components, §5 status-line, §7 dark mode, §9 do/don't still read in the old single voice**, where a measured fact and an untested aspiration look identical on the page. §2.1, §3.1, §6 and §8.0 are converted and enforced. §1's colours carry real measured ratios from the v2.3 audit but are not machine-checked yet — the palette is in `:root` and could join the guard. **§4 alone is 60+ claims across 15 components**, each needing measurement before it can be marked, which is why this is its own piece of work | 1 |
+| **DESIGN.md §0–§3 still read in the old single voice** — the mandate, icon policy, colour, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. §1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard | 1 |
+| **`footer-dark.tsx` hardcodes `#747C8B` / `#9CA3AF` / `#F5F5F5` as bare hex** at 9 call sites, while `.footer-dark` in `globals.css:115` already defines `--tg-secondary` as exactly `#747C8B` and the scope sets `--tg-fg`. The file's own header comment says "never a bare hex." The old DESIGN.md §4 entry recorded this as `#6B7280` and asked for `muted-dark` "once it is set" — the colour was fixed, the mechanism never was. Measured 2026-08-12; `#6B7280` no longer appears anywhere in the repo | any |
+| **`nav.tsx:104` hardcodes `240ms` in an inline `transition` string** rather than `var(--dur-base)`. It agrees with the token today by coincidence, not by reference, and `check:design` cannot see an inline style — so the token could move and the nav would silently keep the old value. Measured 2026-08-12 | any |
+| **`.ink-band` sets `--tg-secondary: #9ca3af`** (`globals.css:104`), which is `muted-soft` — retired as a text colour by `TOKENS.md`, valid only for dots and the concierge indicator. Not an accessibility failure: it computes to 7.43:1 on `#111111`. It is the rule being broken silently, which is the part worth deciding rather than leaving. Measured 2026-08-12 | any |
+| **`TOKENS.md`'s type section claims Geist Mono ships in three places** — "status-line timestamps, Process numerals, tag labels." Measured 2026-08-12: mono appears in exactly two, `status-line.tsx:62` (the whole line, not just the timestamp) and `concierge/markdown.tsx:73`. Process numerals and tag labels carry no mono class. Prose, so `check:design` does not catch it | any |
 | Density scale adopted by `testimonial.tsx` only — but see the note below on what the density problem actually turned out to be | 1 |
-| Concierge UX/UI, incl. D-04 panel geometry (specified in DESIGN.md, never built) | 2 |
+| **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
+| **The soft keyboard opens the moment the concierge is opened on a phone.** Reported by the user on a Pixel 9A, 2026-08-12; called "very annoying." Cause is measured, not guessed: on open, focus moves to `#concierge-input` (verified — `document.activeElement` is `concierge-input` at every viewport), and focusing a text input is what raises the keyboard. In sheet mode the keyboard then eats a large share of a panel that is already viewport-bound. **The fix is not "stop moving focus"** — DESIGN.md §8's dialog baseline requires focus to enter the panel on open, and sheet mode is `aria-modal`. It is *what* receives focus: the panel container (`tabIndex={-1}`) or the close control satisfies the baseline without putting a caret in a text field. Needs deciding, then one small change | 2 |
+| **The concierge should close itself once it has captured the lead.** Reported by the user, same device pass. **This reverses a written decision and must not be implemented as a bug fix.** DESIGN.md §4.13 records, `[measured 2026-08-12 concierge.tsx:428–434,504,510]`, that at captured state "the input **stays enabled** — a captured lead may still have questions, and disabling input at the moment someone converts is exactly the wrong signal." Auto-closing is the stronger form of the same move. The user has now used it on a real phone, which is evidence the old reasoning did not have; the open questions are whether it closes on a delay or immediately, whether the conversation survives a reopen, and whether cap-reached (where the handoff *is* the action) behaves differently. Wants `brainstorming` before code | 2 |
+| **`phaseTaps` in `scripts/audit-mobile.ts` never opens the concierge panel**, so the panel's own controls have never been in the site-wide `tierFail=0` number. Found 2026-08-12 by probing by hand: the three suggestion chips were 40px against a 44px tier — real, pre-existing, and invisible to the sweep. Chips fixed; **the harness blind spot is not**. A panel-open pass belongs in `phaseTaps`, probing the panel's own controls only (an open overlay legitimately covers page content, so a naive sweep with it open would report that as `overlaps`, the same false-positive the launcher already needed an exemption for) | any |
 | Privacy page rewrite — current text omits the CRM forward, the Gemini concierge, the 90-day Upstash lead archive, and the phone field | 3 |
 | 8 detail narratives → `content/work.ts`, render at `/work/[slug]` | 3 |
 | FAQ review — `content/faq.ts`, 6 items, feeds the `FAQPage` JSON-LD from the same strings | 3 |
@@ -145,6 +156,82 @@ but nothing here saw an animation run.
 **Observed, pre-existing, not a regression:** `/work` reports `multiline=2` at
 narrow widths — two case-study titles (`h3 > a.tap-44`) wrap to two lines.
 `tierFail` and `overlaps` are both 0, so no tap actually fails.
+
+## Build Phase 2 — partly shipped 2026-08-12
+
+*D-04 geometry and the panel's presence motion. The wider "concierge UX/UI redo"
+is **not** closed by this — see the Open — code row.*
+
+**D-04 geometry, built as specified and measured on the shipped build** (desktop
+1440×900):
+
+| | Spec | Measured |
+| --- | --- | --- |
+| Desktop panel | 420 × 640 | `420px` × `640px` |
+| Viewport bound | `calc(100dvh - 48px)` | `852px` at 900 tall — and it **wins**: the list compresses 440 → 417.6 rather than the panel growing |
+| Message-list floor | `flex: 1 1 440px` + `min-height: 0` | `1 1 440px`, `min-height: 0px` — not a hard min-height |
+
+**Sheet threshold is now `(max-height: 560px)` OR `(max-width: 767px)`, and both
+arms were measured separately** — the point of the pair is that neither alone is
+enough:
+
+| Case | Height arm | Width arm | Result |
+| --- | --- | --- | --- |
+| **844 × 390** — phone held sideways (M-03) | **true** | false | Sheet. A width-only threshold misses this entirely; this is why the height arm does not come out |
+| **390 × 844** — tall portrait phone | false | **true** | Sheet. The case the height arm legitimately cannot cover |
+
+Both engaged `aria-modal="true"`, body `overflow: hidden`, and focus inside the
+panel. At 1440×900 the non-modal contract holds: **no `aria-modal`, no scroll
+lock**, focus still moved to the input, Escape still closed, and focus returned
+to the launcher.
+
+**Presence motion — specified in DESIGN.md §4.13, recipe in
+`components/concierge/panel-motion.ts`.** Chosen from three built options; the
+desktop panel scales from `100% 100%`, which is the launcher's own corner
+(`transform-origin` measured at `420px 640px`). Out is one duration step shorter
+than in, on `--ease-hover`. **Phase 1 did not leave this panel motionless** — it
+left it on the *entrance* recipe (`opacity` + 12px rise, hardcoded `0.24` /
+`[0.16, 1, 0.3, 1]`), which is the wrong layer for a summoned surface. Phase 2
+replaced it.
+
+**`panel-motion.test.ts` is the guard that makes the mirror safe.** Motion's JS
+API cannot read a CSS custom property, so the durations and easings are
+literals — the exact `nav.tsx:104` trap. The test parses `app/globals.css`,
+asserts every `--dur-*` / `--ease-*` it mirrors (including that `--ease-entrance`
+agrees across **both** its declarations), and asserts neither easing can
+overshoot. 90 → **97 tests**, and `prebuild` runs them.
+
+**One real defect found and fixed, and it was not in the new work.** The three
+suggestion chips were **40px tall against a 44px tier** — pre-existing, and
+invisible to `phaseTaps`, which never opens the panel. Fixed with `tap-44`
+(pseudo expansion): painted box still 40px, hit box 44px, `tierMiss` empty on
+all three. The 8px `gap-2` survives it with **4px of clearance**, so it creates
+none of the source-order adjacency overlaps the footer column hit at 12px.
+
+**Verification state.** `bun run build` passes · **97 tests** · `check:design`
+38 tokens · lint clean but for the known `contact-form.tsx` warning ·
+`audit:mobile taps` **`tierFail=0 overlaps=0` across all 79 route × viewport ×
+theme combinations** (`/work` still reports `multiline` at phone widths — the
+pre-existing wrapped case-study titles, counted separately and not a tap
+failure) · dark mode measured on the panel (`#101010` fill, `#2A2A2C`
+border, `#F5F5F5` input text, **zero** literal-white elements) · no console
+errors.
+
+**Both device checks came back clean — confirmed by the user, Pixel 9A,
+2026-08-12.** Neither was provable on this machine, and both are now closed:
+
+1. **The motion feels right.** This machine matches `prefers-reduced-motion:
+   reduce`, so only wiring was verified here (`transform: none`, duration ~0 —
+   correct, and also why nothing local ever saw the scale or slide run). The
+   motion-enabled path is the user's, and it passed.
+2. **The sheet is correct on a real phone, portrait *and* landscape.** This is
+   the `dvh` / `svh` / `vh` question that headless Chromium cannot answer — no
+   collapsing URL bar, all three probe identical. **`dvh` is confirmed on
+   device**; the 844×390 harness result only ever proved the threshold fired.
+
+**Two findings came out of that same device pass, both real, neither a
+regression from this work.** They are in Open — code and are *not* claimed as
+fixed here.
 
 ## Open — post-launch, deliberately
 
