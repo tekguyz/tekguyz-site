@@ -100,7 +100,7 @@ One per page, description drawn from that page's own COPY.md content. This is ac
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What does a project cost?",
+      "name": "How much does a project cost?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "..."

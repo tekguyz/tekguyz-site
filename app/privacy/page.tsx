@@ -11,41 +11,48 @@ export const metadata = buildMetadata({
 });
 
 /**
- * Ships as written in COPY.md, which reproduces the currently-live policy.
+ * Ships as written in COPY.md. Rewritten 2026-08-12 (Build Phase 3) to cover the
+ * three data flows the previously-live text predated: the AI concierge (Gemini),
+ * forwarding to TEKGUYZ's own CRM, and the optional phone field. Speed Insights
+ * was live and undisclosed; it is now named alongside Web Analytics.
  *
- * KNOWN GAP, surfaced in docs/archive/HISTORY.md and the build summary: this text predates
- * three data flows the rebuild introduces and does NOT yet cover them —
- *   1. the AI concierge (conversations go to Google for processing, and details
- *      shared there may be captured as a lead exactly like a form submission),
- *   2. forwarding to TEKGUYZ's own CRM, not only to an inbox,
- *   3. the new optional phone field.
- * Those need a human legal decision, not drafted text from a build step.
+ * Still needs real legal review before being treated as final — that has not
+ * changed. No cookie-consent or state-specific (CCPA etc.) language, per the
+ * user's call; flagged for the reviewer in COPY.md.
+ *
+ * The 90-day retention sentence describes lib/lead-archive.ts: a backup copy is
+ * written ONLY when internal delivery fails, with a 90-day TTL. If that TTL or
+ * that condition changes, this sentence stops being true.
  */
 
 const SECTIONS: [string, string][] = [
   [
     'Information We Collect',
-    'If you use our contact form, we collect the name, email address, company (optional), area of interest, estimated budget (optional), and project details you provide. We use this only to respond to your inquiry — we don’t sell it, rent it, or share it with third parties for marketing purposes.',
+    'If you use our contact form or talk with our AI concierge, we collect the name, email address, phone number (optional), company (optional), area of interest, estimated budget (optional), and project details you provide. We use this only to respond to your inquiry — we don’t sell it, rent it, or share it with third parties for marketing purposes.',
   ],
   [
-    'Website Analytics',
-    'This site uses Vercel Web Analytics to understand aggregate traffic patterns. It does not use cookies and does not collect personal identifiers — visitors are identified only by a temporary hash that Vercel automatically discards within 24 hours. We cannot use this data to identify you individually.',
+    'The AI Concierge',
+    'If you use the chat assistant on this site, your conversation is sent to Google’s Gemini AI to generate a response. Anything you share there — including contact details — may be captured as an inquiry the same way a contact form submission would be.',
+  ],
+  [
+    'Our CRM',
+    'Inquiries submitted through the contact form or the concierge are forwarded to TEKGUYZ’s own customer relationship system, not only to an inbox, so our team can track and respond to them properly.',
+  ],
+  [
+    'Website Analytics & Performance Monitoring',
+    'This site uses Vercel Web Analytics and Vercel Speed Insights to understand aggregate traffic and page performance. Neither uses cookies or collects personal identifiers — visitors are identified only by a temporary hash that’s automatically discarded within 24 hours. We cannot use this data to identify you individually.',
   ],
   [
     'Third-Party Services',
-    'We use Resend to deliver contact form submissions to our inbox, and Vercel to host this site and run the anonymized analytics described above. Neither service receives more information than described here.',
+    'We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, and Vercel to host this site and run the anonymized analytics and performance monitoring described above. None of these services receive more information than described here.',
   ],
   [
     'Data Retention',
-    'We keep contact form submissions only as long as needed to respond to your inquiry and for reasonable business record-keeping afterward.',
+    'We keep contact and concierge inquiries only as long as needed to respond to you and for reasonable business record-keeping afterward. If our system briefly fails to deliver your inquiry internally, a secure backup copy is kept for up to 90 days so nothing gets lost, then it’s automatically deleted.',
   ],
   [
     'Your Rights',
     `You can ask us to tell you what information we have about you, or to delete it, at any time — email ${site.publicEmail}.`,
-  ],
-  [
-    'Children’s Privacy',
-    'This site is not directed at children under 13, and we do not knowingly collect information from them.',
   ],
   [
     'Changes to This Policy',
@@ -72,7 +79,7 @@ export default function PrivacyPage() {
       <section className="pb-20 md:pb-32">
         <div className="tg-container">
           <p className="text-[0.875rem] text-secondary">
-            <span className="tabular">Last updated: July 13, 2026</span>
+            <span className="tabular">Last updated: August 12, 2026</span>
           </p>
 
           <p className="mt-10 max-w-[68ch] text-[length:var(--text-body)]">

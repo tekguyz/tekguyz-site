@@ -13,8 +13,10 @@ current state. Assert nothing here you have not just measured.*
 
 Last updated: 2026-08-12 (Build Phase 1 shipped; Build Phase 2 partly shipped —
 D-04 geometry, the concierge panel's presence motion, and two device-reported
-fixes. A same-day production outage, caused by this work and self-resolved, is
-recorded below — read it before the next push to `master`.)
+fixes; Build Phase 3 partly shipped — the privacy rewrite and the FAQ rewrite,
+not the 8 detail narratives. A same-day production outage, caused by the Phase 2
+work and self-resolved, is recorded below — read it before the next push to
+`master`.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -23,8 +25,9 @@ recorded below — read it before the next push to `master`.)
 never — it is the record of how we got here and contains claims that are now
 false.)
 
-**Changed 2026-08-12: `CLAUDE.md`, `STATUS.md`, `DESIGN.md`, and `TOKENS.md` is
-new.** Replace the old copies rather than adding — they will contradict.
+**Changed 2026-08-12: `CLAUDE.md`, `STATUS.md`, `DESIGN.md`, `COPY.md`
+(privacy + FAQ rewritten), `SEO.md`, and `TOKENS.md` is new.** Replace the old
+copies rather than adding — they will contradict.
 
 ---
 
@@ -44,7 +47,7 @@ Claude.ai first.*
 | **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
 | **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see below |
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see below |
-| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | After 1 |
+| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Partly shipped 2026-08-12** — privacy rewrite + FAQ rewrite done; 8 detail narratives not started |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
 | **5** | Refactor: `concierge.tsx` 526 lines, `contact-form.tsx` 440, `actions/contact.ts` 423 | Last |
 
@@ -63,7 +66,7 @@ presence now all exist.
 | Item | Note |
 | --- | --- |
 | **Recapture 8 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. `sarah-poster.webp` is the 16:9 hero — leave it. Then `bun run check:media`. Current, all wrong: `field-ops-thumb` 769×754 · `sarah-thumb` 1080×1059 · `shopify-configurator` 1080×1140 · `crunch-wrap-dashboard` 1080×1038 · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 |
-| **Privacy policy — legal review** | Draft written in Phase 3 from measured data flows; review is the user's step, not a blocker on the draft |
+| **Privacy policy — legal review** | Rewritten and shipped 2026-08-12 from measured data flows; **not yet legally reviewed**, and the page has never claimed otherwise. Specific open question for the reviewer: no cookie-consent or state-specific (CCPA etc.) language was added, per the user's call — confirm that's right for the actual traffic and customer base |
 
 ## Open — code
 
@@ -77,9 +80,7 @@ presence now all exist.
 | Density scale adopted by `testimonial.tsx` only — but see the note below on what the density problem actually turned out to be | 1 |
 | **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
 | **`phaseTaps` in `scripts/audit-mobile.ts` never opens the concierge panel**, so the panel's own controls have never been in the site-wide `tierFail=0` number. Found 2026-08-12 by probing by hand: the three suggestion chips were 40px against a 44px tier — real, pre-existing, and invisible to the sweep. Chips fixed; **the harness blind spot is not**. A panel-open pass belongs in `phaseTaps`, probing the panel's own controls only (an open overlay legitimately covers page content, so a naive sweep with it open would report that as `overlaps`, the same false-positive the launcher already needed an exemption for) | any |
-| Privacy page rewrite — current text omits the CRM forward, the Gemini concierge, the 90-day Upstash lead archive, and the phone field | 3 |
 | 8 detail narratives → `content/work.ts`, render at `/work/[slug]` | 3 |
-| FAQ review — `content/faq.ts`, 6 items, feeds the `FAQPage` JSON-LD from the same strings | 3 |
 | 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17% | 4 |
 | D-07 hero media bleeds through card content above 1440px · D-08 hero poster illegible at 360px | 4 |
 | `contact-form.tsx:114` — `react-hooks/incompatible-library` on RHF `watch()`, the **only** lint warning in the repo. Mechanical fix is `useWatch`, but this is the file whose step reconciliation caused the field-contamination bug; wants its own verification pass | 5 |
@@ -255,6 +256,44 @@ measured on the built site, both modes):
 **Two findings came out of that same device pass, both real, neither a
 regression from this work.** They are in Open — code and are *not* claimed as
 fixed here.
+
+## Build Phase 3 — partly shipped 2026-08-12
+
+**Privacy `/privacy` — rewritten, replacing the text live since July 13.** All
+three gaps `COPY.md` had been flagging as "must, before launch" are closed: the
+optional phone field is in the collection list, the AI concierge (Gemini) and
+the CRM forward each have their own section, and Data Retention now states the
+90-day backup path. A fourth, previously unflagged, was found by measurement
+rather than by reading the doc: **Vercel Speed Insights has been mounted in
+`app/layout.tsx:61` and was undisclosed** — the section is now *Website
+Analytics & Performance Monitoring* and covers both. Children's Privacy removed
+per the user's instruction.
+
+The 90-day sentence is a description of `lib/lead-archive.ts` — a backup copy is
+written **only when internal delivery fails**, `TTL_SECONDS = 60 * 60 * 24 * 90`
+(`lib/lead-archive.ts:52`). Both facts were read before the sentence was
+written. Change either and the policy becomes untrue.
+
+**Still not legally reviewed**, and neither the page nor `COPY.md` says
+otherwise. The one open question left for that reviewer is in Open — needs the
+user: no cookie-consent or state-specific (CCPA etc.) language was added.
+
+**FAQ — all 6 rewritten in `content/faq.ts` and `COPY.md` in the same turn**, so
+the `FAQPage` JSON-LD stays the same strings rather than a paraphrased second
+copy (`lib/seo.ts` reads `content/faq.ts` directly, as do
+`components/faq-accordion.tsx` and `lib/concierge/grounding.ts`). Wording
+tightened; **no facts changed**. Q1's *question* changed — "What does a project
+cost?" → "How much does a project cost?" — which is why `docs/SEO.md:103`, which
+prints that exact `name` in its `FAQPage` example, was updated too.
+
+Verified on the built output, not the source: `.next/server/app/privacy.html`
+carries the new date and all three new headings and no "Children"; the new Q1
+string appears in `.next/server/app/contact.html`. `bun run build` passes, 97
+tests pass, lint is unchanged at the one pre-existing `contact-form.tsx`
+warning.
+
+**Not done in this phase: the 8 detail narratives** for `content/work.ts` /
+`/work/[slug]`. That row is still open.
 
 ## Open — post-launch, deliberately
 

@@ -566,20 +566,20 @@ DESCRIPTION: `Tell us what you're working with and what you're trying to fix. Fr
 
 EYEBROW: COMMON QUESTIONS
 
-**What does a project cost?**
-It depends on what you need, and we won't pretend otherwise. What we will do is tell you before you commit to anything: every project starts with a free conversation, you get a flat quote once we both understand the scope, and nothing begins until you've seen that number and agreed to it. No retainers you didn't ask for.
+**How much does a project cost?**
+It depends on what you're building, and we won't pretend otherwise. Every project starts with a free conversation, you get a flat quote once we understand the scope, and nothing begins until you've seen that number and agreed to it. No retainers you didn't ask for.
 
 **How long does a project take?**
-Also scope-dependent — but you'll have a real timeline in the Blueprint step, before any building starts. If something changes mid-build, you hear it from us when it happens, not at the end.
+Also scope-dependent — but you'll have a real timeline before any building starts, laid out in the Blueprint step. If something changes mid-build, you hear it from us when it happens, not at the end.
 
 **Do you work with businesses outside South Florida?**
-Yes. We're based in South Florida and deliver remotely nationwide. Most of our work happens over video calls and shared systems regardless of where the client is.
+Yes. We're based in South Florida and deliver remotely nationwide. Most of our work happens over video calls and shared systems, regardless of where you're located.
 
 **Can you work with the systems we already have?**
-Usually, yes — that's most of what we do. Integrating with the tools you already pay for is almost always cheaper and less disruptive than replacing them. If something genuinely needs replacing, we'll tell you why.
+Usually, yes — that's most of what we do. Integrating with tools you already pay for is almost always cheaper and less disruptive than replacing them. If something genuinely needs replacing, we'll tell you why.
 
 **What happens after launch?**
-We make sure everything works the way it's supposed to and stay available when questions come up. We don't hand over a login and disappear.
+We make sure everything works the way it's supposed to, and we stay available when questions come up. We don't hand over a login and disappear.
 
 **Are the demos on this site real?**
 Every one. They're live applications, not screenshots — we check their status hourly and show you the result. Open any of them and use it yourself.
@@ -610,25 +610,27 @@ hello@tekguyz.com · Mon–Fri, 9am–5pm · South Florida
 
 # PAGE: Privacy `/privacy`
 
-*Ships as currently live at tekguyz.com/privacy — reproduced here so the rebuild has a source and doesn't invent one. Update the LAST UPDATED date if anything changes. Still needs real legal review before being treated as final.*
+*Rewritten 2026-08-12 (Build Phase 3), replacing the text that was live through July. Update the LAST UPDATED date if anything changes. **Still needs real legal review before being treated as final** — that has not changed.*
 
 EYEBROW: LEGAL
 HEADLINE: Privacy Policy
-LAST UPDATED: July 13, 2026
+LAST UPDATED: August 12, 2026
 
 TEKGUYZ ("we," "us") respects your privacy. This page explains what information we collect through this website, why, and how you can reach us about it.
 
-**Information We Collect** — If you use our contact form, we collect the name, email address, company (optional), area of interest, estimated budget (optional), and project details you provide. We use this only to respond to your inquiry — we don't sell it, rent it, or share it with third parties for marketing purposes.
+**Information We Collect** — If you use our contact form or talk with our AI concierge, we collect the name, email address, phone number (optional), company (optional), area of interest, estimated budget (optional), and project details you provide. We use this only to respond to your inquiry — we don't sell it, rent it, or share it with third parties for marketing purposes.
 
-**Website Analytics** — This site uses Vercel Web Analytics to understand aggregate traffic patterns. It does not use cookies and does not collect personal identifiers — visitors are identified only by a temporary hash that Vercel automatically discards within 24 hours. We cannot use this data to identify you individually.
+**The AI Concierge** — If you use the chat assistant on this site, your conversation is sent to Google's Gemini AI to generate a response. Anything you share there — including contact details — may be captured as an inquiry the same way a contact form submission would be.
 
-**Third-Party Services** — We use Resend to deliver contact form submissions to our inbox, and Vercel to host this site and run the anonymized analytics described above. Neither service receives more information than described here.
+**Our CRM** — Inquiries submitted through the contact form or the concierge are forwarded to TEKGUYZ's own customer relationship system, not only to an inbox, so our team can track and respond to them properly.
 
-**Data Retention** — We keep contact form submissions only as long as needed to respond to your inquiry and for reasonable business record-keeping afterward.
+**Website Analytics & Performance Monitoring** — This site uses Vercel Web Analytics and Vercel Speed Insights to understand aggregate traffic and page performance. Neither uses cookies or collects personal identifiers — visitors are identified only by a temporary hash that's automatically discarded within 24 hours. We cannot use this data to identify you individually.
+
+**Third-Party Services** — We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, and Vercel to host this site and run the anonymized analytics and performance monitoring described above. None of these services receive more information than described here.
+
+**Data Retention** — We keep contact and concierge inquiries only as long as needed to respond to you and for reasonable business record-keeping afterward. If our system briefly fails to deliver your inquiry internally, a secure backup copy is kept for up to 90 days so nothing gets lost, then it's automatically deleted.
 
 **Your Rights** — You can ask us to tell you what information we have about you, or to delete it, at any time — email hello@tekguyz.com.
-
-**Children's Privacy** — This site is not directed at children under 13, and we do not knowingly collect information from them.
 
 **Changes to This Policy** — We may update this policy from time to time. The date at the top reflects the most recent revision.
 
@@ -637,10 +639,16 @@ TEKGUYZ ("we," "us") respects your privacy. This page explains what information 
 METADATA — TITLE: `TEKGUYZ | Privacy Policy`
 DESCRIPTION: `What information TEKGUYZ collects through this website, why, and how to reach us about it.`
 
-> **Three additions this policy does NOT yet cover and must, before launch** — the rebuild introduces data flows the current text predates:
-> 1. **The AI concierge.** Conversations are sent to Google (Gemini 3.6 Flash) for processing, and details shared there may be captured as a lead exactly like a form submission. Both facts need stating.
-> 2. **The CRM.** Submissions are forwarded to TEKGUYZ's own CRM system, not only to an inbox.
-> 3. **Phone number**, now an optional form field, isn't in the "Information We Collect" list.
+> **What changed vs. the previously-live version** (all three gaps this section used to flag as open are now closed):
+> 1. **Phone number** added to "Information We Collect".
+> 2. **The AI Concierge** — new section, Gemini disclosure.
+> 3. **Our CRM** — new section, forwarding disclosure.
+> 4. **Website Analytics** renamed **Website Analytics & Performance Monitoring**, now covering Speed Insights, which was live in `app/layout.tsx` and undisclosed.
+> 5. **Third-Party Services** now lists Google/Gemini.
+> 6. **Data Retention** states the 90-day backup path explicitly. That sentence describes `lib/lead-archive.ts` — written only when internal delivery fails, `TTL_SECONDS` = 90 days. Change either and this sentence stops being true.
+> 7. **Children's Privacy** removed, per the user's instruction.
+>
+> **Open for the legal reviewer:** no cookie-consent or state-specific (CCPA etc.) language was added — out of scope per the user's call. Confirm that's right for the actual traffic and customer base.
 
 ---
 
