@@ -13,6 +13,7 @@ import {
   useLauncherSuppressed,
 } from '@/components/concierge/concierge-bus';
 import { PANEL_DUR, PANEL_EASE } from '@/components/concierge/panel-motion';
+import { CONCIERGE_ERROR_REPLY } from '@/lib/concierge/errors';
 import { getWork } from '@/content/work';
 import { site } from '@/lib/site';
 
@@ -425,9 +426,10 @@ export function Concierge() {
         if (data.leadCaptured) setCaptured(true);
         if (data.capReached) setCapReached(true);
       } catch {
-        setError(
-          `Something broke on our end — not yours. Try again in a moment, or email ${site.publicEmail}.`,
-        );
+        // Same sentence the route returns for its own failures — one constant,
+        // because these two had drifted into two different endings for what a
+        // visitor experiences as one failure. See lib/concierge/errors.ts.
+        setError(CONCIERGE_ERROR_REPLY);
       } finally {
         setBusy(false);
       }

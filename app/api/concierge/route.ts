@@ -6,6 +6,7 @@ import {
   type ToolDefinition,
 } from '@/lib/concierge/llm';
 import { buildSystemPrompt, projectTypeOptions } from '@/lib/concierge/system-prompt';
+import { CONCIERGE_ERROR_REPLY } from '@/lib/concierge/errors';
 import { checkConciergeLimit, clientKey } from '@/lib/rate-limit';
 import { sendContactEmail } from '@/app/actions/contact';
 import { site } from '@/lib/site';
@@ -77,7 +78,10 @@ const leadInputSchema = z.object({
 
 const CAP_REPLY = `We've covered a lot — the fastest next step is the contact form at /contact, or email ${site.publicEmail} directly. Either way you'll hear back within one business day.`;
 
-const ERROR_REPLY = `Something broke on our end — not yours. Try again in a moment, or email ${site.publicEmail} and we'll pick it up from there.`;
+/* Shared with the panel, which renders the same sentence when the fetch itself
+   fails. It used to be declared here AND as a literal in `concierge.tsx`, and
+   the two had drifted — see `lib/concierge/errors.ts`. */
+const ERROR_REPLY = CONCIERGE_ERROR_REPLY;
 
 export async function POST(req: Request) {
   try {
