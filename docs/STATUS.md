@@ -74,8 +74,6 @@ presence now all exist.
 | **`TOKENS.md`'s type section claims Geist Mono ships in three places** — "status-line timestamps, Process numerals, tag labels." Measured 2026-08-12: mono appears in exactly two, `status-line.tsx:62` (the whole line, not just the timestamp) and `concierge/markdown.tsx:73`. Process numerals and tag labels carry no mono class. Prose, so `check:design` does not catch it | any |
 | Density scale adopted by `testimonial.tsx` only — but see the note below on what the density problem actually turned out to be | 1 |
 | **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
-| **The soft keyboard opens the moment the concierge is opened on a phone.** Reported by the user on a Pixel 9A, 2026-08-12; called "very annoying." Cause is measured, not guessed: on open, focus moves to `#concierge-input` (verified — `document.activeElement` is `concierge-input` at every viewport), and focusing a text input is what raises the keyboard. In sheet mode the keyboard then eats a large share of a panel that is already viewport-bound. **The fix is not "stop moving focus"** — DESIGN.md §8's dialog baseline requires focus to enter the panel on open, and sheet mode is `aria-modal`. It is *what* receives focus: the panel container (`tabIndex={-1}`) or the close control satisfies the baseline without putting a caret in a text field. Needs deciding, then one small change | 2 |
-| **The concierge should close itself once it has captured the lead.** Reported by the user, same device pass. **This reverses a written decision and must not be implemented as a bug fix.** DESIGN.md §4.13 records, `[measured 2026-08-12 concierge.tsx:428–434,504,510]`, that at captured state "the input **stays enabled** — a captured lead may still have questions, and disabling input at the moment someone converts is exactly the wrong signal." Auto-closing is the stronger form of the same move. The user has now used it on a real phone, which is evidence the old reasoning did not have; the open questions are whether it closes on a delay or immediately, whether the conversation survives a reopen, and whether cap-reached (where the handoff *is* the action) behaves differently. Wants `brainstorming` before code | 2 |
 | **`phaseTaps` in `scripts/audit-mobile.ts` never opens the concierge panel**, so the panel's own controls have never been in the site-wide `tierFail=0` number. Found 2026-08-12 by probing by hand: the three suggestion chips were 40px against a 44px tier — real, pre-existing, and invisible to the sweep. Chips fixed; **the harness blind spot is not**. A panel-open pass belongs in `phaseTaps`, probing the panel's own controls only (an open overlay legitimately covers page content, so a naive sweep with it open would report that as `overlaps`, the same false-positive the launcher already needed an exemption for) | any |
 | Privacy page rewrite — current text omits the CRM forward, the Gemini concierge, the 90-day Upstash lead archive, and the phone field | 3 |
 | 8 detail narratives → `content/work.ts`, render at `/work/[slug]` | 3 |
@@ -210,12 +208,35 @@ none of the source-order adjacency overlaps the footer column hit at 12px.
 
 **Verification state.** `bun run build` passes · **97 tests** · `check:design`
 38 tokens · lint clean but for the known `contact-form.tsx` warning ·
-`audit:mobile taps` **`tierFail=0 overlaps=0` across all 79 route × viewport ×
-theme combinations** (`/work` still reports `multiline` at phone widths — the
-pre-existing wrapped case-study titles, counted separately and not a tap
-failure) · dark mode measured on the panel (`#101010` fill, `#2A2A2C`
+`audit:mobile taps` **`tierFail=0 overlaps=0` across all 162 route × viewport ×
+theme combinations** — 18 routes × 9 combos (7 viewports light, plus dark at
+`narrow` and `standard`). *This figure read 79 when first committed in `73d95e3`:
+the run was piped through `tail`, and the truncated log was counted instead of
+the run. Corrected by re-running to a full log and counting that.* (`/work`
+still reports `multiline` at phone widths — the pre-existing wrapped case-study
+titles, counted separately and not a tap failure) · dark mode measured on the
+panel (`#101010` fill, `#2A2A2C`
 border, `#F5F5F5` input text, **zero** literal-white elements) · no console
 errors.
+
+**Two fixes came out of the user's Pixel 9A pass and are shipped** (both
+measured on the built site, both modes):
+
+- **The soft keyboard no longer opens with the panel.** Sheet mode focuses the
+  dialog container (`tabIndex={-1}`) instead of the input; desktop still focuses
+  the input. §8's focus baseline and `aria-modal` are unaffected — focus still
+  enters the panel, it just doesn't land in a text field. The mode is read
+  through a ref so the effect cannot re-run when an Android keyboard shrinks the
+  viewport past `(max-height: 560px)` and flips `sheet` — that loop would
+  re-focus, dismiss the keyboard, and repeat.
+- **The panel closes itself ~4s after a capture, both modes.** Measured at
+  ~4.0s in each, with the scroll lock released and focus back on the launcher.
+  **Typing after a capture cancels it permanently** — a follow-up typed 1s after
+  capture left the panel open past 7s — which is how §4.13's "a captured lead may
+  still have questions" survives the reversal. Reopening shows the same thread,
+  the confirmation, and the "Keep going if you'd like…" placeholder; **no
+  "welcome back" state was built**, on purpose (DESIGN.md §4.13 has the reason —
+  it would fire inconsistently, since the thread does not survive a reload).
 
 **Both device checks came back clean — confirmed by the user, Pixel 9A,
 2026-08-12.** Neither was provable on this machine, and both are now closed:

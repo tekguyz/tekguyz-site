@@ -76,6 +76,27 @@ const PRIMARY_CTA_SELECTOR = '[data-primary-cta]';
  */
 const SHEET_QUERY = '(max-height: 560px), (max-width: 767px)';
 
+/**
+ * How long the captured confirmation sits on screen before the panel closes
+ * itself (user decision, 2026-08-12, both modes).
+ *
+ * **Not a motion token, and deliberately not in `globals.css`.** Every `--dur-*`
+ * is a transition length — the longest is 500ms — and this is a *dwell*: how
+ * long a human needs to read fourteen words. Borrowing a motion token for it
+ * would tie a reading time to an animation curve, and moving one would silently
+ * move the other.
+ *
+ * 4s is the confirmation ("Details received" + "Done — your details are in.
+ * Expect a reply within one business day.") at a deliberately slow reading pace,
+ * with room to notice it appear first.
+ *
+ * **The dwell is cancellable, and that is what makes auto-close safe** — see
+ * `stayOpen`. Without it this would be an un-adjustable time limit on content
+ * (WCAG 2.2.1) and would contradict §4.13's standing point that a captured lead
+ * may still have questions.
+ */
+const CAPTURE_CLOSE_DWELL = 4000;
+
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
@@ -126,6 +147,10 @@ export function Concierge() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [captured, setCaptured] = useState(false);
+  /** Set once the visitor types after a capture — it permanently cancels the
+   *  auto-close. One-way on purpose: if they re-empty the field, the panel must
+   *  NOT quietly re-arm and close on them mid-thought. */
+  const [stayOpen, setStayOpen] = useState(false);
   const [capReached, setCapReached] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,6 +163,12 @@ export function Concierge() {
    *  when the launcher itself is yielded (opened from the closing-CTA link). */
   const openerRef = useRef<HTMLElement | null>(null);
   const wasOpen = useRef(false);
+  /** `sheet`, readable from the focus effect WITHOUT making it a dependency.
+   *  Depending on it directly is a live bug, not a lint nicety: on Android the
+   *  soft keyboard can shrink the layout viewport past `(max-height: 560px)`,
+   *  which flips `sheet` — and an effect that re-ran there would re-focus the
+   *  panel, dismiss the keyboard, restore the height, and start again. */
+  const sheetRef = useRef(sheet);
 
   const build = pathname.startsWith('/work/') ? getWork(pathname.split('/')[2] ?? '') : undefined;
   const opener = build
@@ -187,7 +218,14 @@ export function Concierge() {
      the server, so the initial `false` cannot cause a hydration mismatch. */
   useEffect(() => {
     const mq = window.matchMedia(SHEET_QUERY);
-    const sync = () => setSheet(mq.matches);
+    /* Ref and state are set in the SAME callback, so they cannot disagree — and
+       `sync()` runs on mount, so the ref is correct before the panel can open.
+       A separate syncing effect would have an ordering question here; this has
+       none. Only the focus effect reads the ref; everything else reads state. */
+    const sync = () => {
+      sheetRef.current = mq.matches;
+      setSheet(mq.matches);
+    };
     sync();
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
@@ -197,12 +235,29 @@ export function Concierge() {
      every mode. If the launcher is yielded — the panel was opened from the
      closing-CTA link, which is on screen and therefore hiding it — focus goes
      back to that link instead; returning it to an `aria-hidden` control would
-     be worse than not returning it. */
+     be worse than not returning it.
+
+     WHAT receives focus is mode-dependent, and that is the fix for the soft
+     keyboard (user, Pixel 9A, 2026-08-12: opening the concierge on a phone
+     raised the keyboard immediately). Focusing a text input is what raises it,
+     and in sheet mode the keyboard then eats a panel that is already bounded by
+     the viewport. So sheet mode focuses the PANEL — §8's dialog baseline says
+     focus must enter the panel on open, not that it must land on a text field,
+     and a container focus is also what makes a screen reader announce the
+     dialog. Above the threshold there is a physical keyboard and no such cost,
+     so the input keeps focus and you can type straight away.
+
+     Deliberately keyed to `sheet`, not to `(pointer: coarse)`: `sheet` is the
+     mode split this component already has, and a second mechanism for one
+     behaviour is the thing to avoid. The trade is a short desktop window
+     (`max-height: 560px`) getting the container focus too — correct for that
+     viewport anyway, since the panel is a sheet there. */
   useEffect(() => {
     if (open) {
       if (!wasOpen.current) openerRef.current = document.activeElement as HTMLElement | null;
       wasOpen.current = true;
-      (inputRef.current ?? closeRef.current)?.focus();
+      if (sheetRef.current) (panelRef.current ?? closeRef.current)?.focus();
+      else (inputRef.current ?? closeRef.current)?.focus();
       return;
     }
     if (!wasOpen.current) return;
@@ -211,6 +266,33 @@ export function Concierge() {
     if (launcher && launcher.getAttribute('aria-hidden') !== 'true') launcher.focus();
     else openerRef.current?.focus?.();
   }, [open]);
+
+  /* Close itself once the lead is captured, in BOTH modes (user decision,
+     2026-08-12, after using it on a Pixel 9A). The lead is in; leaving a panel
+     up — a full-screen sheet on a phone — makes the visitor dismiss something
+     that has finished its job.
+
+     This reverses part of §4.13, which argued the panel should stay because a
+     captured lead may still have questions. That argument is preserved rather
+     than discarded: it lives in the three guards below, not in staying open
+     forever.
+
+       stayOpen  they typed after capturing — they DO have another question, so
+                 the dwell is cancelled for good.
+       busy      a reply is in flight; closing mid-request would drop an answer
+                 the visitor is waiting for.
+       open      re-arming a timer for a panel already shut does nothing useful.
+
+     Closing routes through the normal `open` path, so it is one behaviour, not
+     a second one: the exit animation, the focus return to the launcher, and the
+     scroll-lock cleanup all happen exactly as they do for the ✕ or Escape.
+     Nothing is lost by closing — `messages` and `captured` are untouched, so
+     reopening shows the same thread with the confirmation still in it. */
+  useEffect(() => {
+    if (!open || !captured || stayOpen || busy) return;
+    const t = setTimeout(() => setOpen(false), CAPTURE_CLOSE_DWELL);
+    return () => clearTimeout(t);
+  }, [open, captured, stayOpen, busy]);
 
   /* Body scroll lock — sheet mode only. Above the threshold the page scrolling
      behind the panel is the contract, not a bug. */
@@ -394,6 +476,11 @@ export function Concierge() {
             role="dialog"
             aria-label="Ask about your project"
             aria-modal={sheet ? true : undefined}
+            /* Programmatically focusable, never a tab stop. In sheet mode this
+               is what receives focus on open instead of the input — see the
+               focus effect. `-1` also keeps it out of `FOCUSABLE`, so the trap
+               never counts the panel itself as one of its own stops. */
+            tabIndex={-1}
             {...presence}
             /* The desktop panel scales from its own bottom-right corner, which
                is the launcher's corner — both are anchored right/bottom 24px,
@@ -567,7 +654,17 @@ export function Concierge() {
                     ref={inputRef}
                     type="text"
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      /* Typing after a capture cancels the auto-close for good.
+                         Keyed to typing, never to FOCUS: above the sheet
+                         threshold focus lands in this input the moment the
+                         panel opens, so a focus-keyed cancel would disarm the
+                         dwell on every desktop capture and it would never fire.
+                         Guarded by `captured` so the common case sets no state
+                         it doesn't need to. */
+                      if (captured && !stayOpen) setStayOpen(true);
+                    }}
                     maxLength={2000}
                     placeholder={
                       captured ? "Keep going if you'd like…" : "Describe what you're dealing with…"

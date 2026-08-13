@@ -841,12 +841,42 @@ are the reference, per the one-source-per-number split.
   captured lead may still have questions, and disabling input at the moment
   someone converts is exactly the wrong signal. Cap-reached is the one exception:
   there the handoff *is* the action, so the input goes away.
-  **Reopened 2026-08-12 — do not quote the paragraph above as settled.** After
-  using the panel on a Pixel 9A the user asked that the concierge **close itself
-  once it has captured the lead**, which is the stronger form of the move this
-  entry argues against. Real device use is evidence the original reasoning did
-  not have. Logged in `STATUS.md`; unresolved, and deliberately not implemented
-  as a bug fix, because reversing a `[decided]` entry is a design decision.
+  **[decided 2026-08-12, user] The panel now closes itself ~4s after a capture,
+  in both modes** — reversing the "stays open" half of the paragraph above,
+  after the user used it on a Pixel 9A where the sheet is full-screen and
+  finishing the conversation left a panel to dismiss by hand.
+
+  **The old argument was not discarded, it was moved into a guard.** "A captured
+  lead may still have questions" is now enforced by cancellation rather than by
+  staying open forever: **typing after a capture cancels the dwell permanently**
+  (`stayOpen`), and an in-flight reply (`busy`) suspends it. Both were measured
+  — a follow-up typed 1s after capture left the panel open past 7s.
+
+  **The cancel is keyed to typing, never to focus.** Above the sheet threshold
+  focus lands in the input the moment the panel opens, so a focus-keyed cancel
+  would disarm the dwell on every desktop capture and it would never fire.
+
+  **The dwell is not a motion token and is not in `globals.css`.** Every
+  `--dur-*` is a transition length (longest 500ms); this is a *reading* time.
+  Tying one to the other would move a human's reading budget whenever an easing
+  was retuned. It lives in `concierge.tsx` as `CAPTURE_CLOSE_DWELL`.
+
+  **Closing routes through the normal `open` path**, so the exit animation,
+  the focus return to the launcher and the scroll-lock cleanup are the same
+  behaviour as the ✕ and Escape — not a second one. **[measured]** Sheet mode
+  closed at ~4.0s with `body` `overflow` back to `visible` and focus on the
+  launcher.
+
+  **Nothing is lost by closing, and that is what makes it safe.** `messages` and
+  `captured` are untouched, so reopening shows the same thread with "Details
+  received" still in it and the placeholder still reading "Keep going if you'd
+  like…". **[decided] No "welcome back" state was built**, and that was
+  considered: the thread lives in React state with no `localStorage` or
+  `sessionStorage`, so it survives a panel reopen and client-side navigation but
+  not a reload — a returning-visitor greeting would fire for someone reopening
+  by accident 5 seconds later and *not* for someone genuinely returning the next
+  day. Inconsistent is worse than absent, and prompting the person who just
+  converted for more work is the wrong moment for this brand.
 
 **"Thinking" indicator — [measured 2026-08-12
 `components/concierge/thinking-stripe.tsx`]** A **72 × 3px four-column grid,
@@ -1615,7 +1645,25 @@ break a deliberate site-wide decision (no modals anywhere), not fix an oversight
 
 **Dialog keyboard and focus baseline, both modes.** Escape closes the panel.
 Focus moves into the panel on open and returns to the launcher on close. Sheet
-mode additionally traps Tab for as long as it is open. The one documented
+mode additionally traps Tab for as long as it is open.
+
+**[decided 2026-08-12, user] WHAT receives that focus is mode-dependent, and it
+is a soft-keyboard fix.** Sheet mode focuses the **panel itself**
+(`tabIndex={-1}`); above the threshold the **input** keeps it. Reported on a
+Pixel 9A: opening the concierge raised the keyboard immediately, which on a
+full-screen sheet eats a panel already bounded by the viewport. Focusing a text
+input is what raises the keyboard — so the fix is not "stop moving focus," which
+this baseline requires and `aria-modal` depends on. A container focus satisfies
+the baseline *and* is what makes a screen reader announce the dialog.
+**[measured]** Sheet: `document.activeElement` is the `role="dialog"` element,
+which is excluded from `FOCUSABLE` by its `-1` and so is never one of its own
+tab stops; all five controls remain reachable. Desktop: `#concierge-input`.
+
+**The mode flag is read through a ref in that effect, deliberately.** Making
+`sheet` a dependency is a live bug, not a lint nicety: on Android the soft
+keyboard can shrink the layout viewport past `(max-height: 560px)`, flipping
+`sheet` — and an effect re-running there would re-focus the panel, dismiss the
+keyboard, restore the height, and start again. The one documented
 exception to "returns to the launcher": if the launcher is yielded because the
 panel was opened from the `closing-cta` text link — which is on screen and
 therefore hiding it — focus returns to that link instead. Returning focus to an
