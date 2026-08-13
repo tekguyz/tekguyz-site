@@ -16,9 +16,9 @@ D-04 geometry, the concierge panel's presence motion, and two device-reported
 fixes; **Build Phase 3 shipped** — the privacy rewrite, the FAQ rewrite, and all
 8 detail narratives, measured in `content/work.ts` on 2026-08-13. A production
 outage on 2026-08-12, caused by the Phase 2 work and self-resolved, is recorded
-below — read it before the next push to `master`. **Homepage flow Wave 1 shipped
-2026-08-13** — hero + `closing-cta` reworked as a matched pair; see that section
-and `docs/plans/2026-08-13-homepage-flow.md`.)
+below — read it before the next push to `master`. **Homepage flow Waves 1, 2 and
+3 all shipped 2026-08-13** — the plan in `docs/plans/2026-08-13-homepage-flow.md`
+is complete; see the three sections below.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -95,8 +95,8 @@ presence now all exist.
 
 *Not a Build Phase. This is Wave 1 of the homepage-narrative blueprint from the
 Claude.ai project, recorded verbatim in `docs/plans/2026-08-13-homepage-flow.md`.
-Waves 2 (proof line + "What We Do" hierarchy) and 3 (process teaser) are not
-started. Every figure below was measured on the date.*
+**Waves 2 and 3 have since shipped too — their sections follow this one.** Every
+figure below was measured on the date.*
 
 **The two bookends — hero and `closing-cta` — reworked in one pass so they
 rhyme.** Both were correctly built against DESIGN.md and underweighted for the
@@ -119,6 +119,51 @@ runs `MinAnimate = 0`, so `reduce` matches machine-wide — the reduced-motion h
 is verified and the motion-enabled half is not), and the two recapture defects in
 the row above. **Thin margin to watch:** the hero CTA row clears the fold by
 **18px at 1280 × 720**, down from 24px.
+
+## Homepage flow, Wave 2 — shipped 2026-08-13 (`0663baa`)
+
+*Proof line + "What We Do" hierarchy. Every figure measured on the date.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Proof-line link has a rest state** | Dropped `link-underline` for `tg-rule tg-rule-rest` — the state primitive drawn to **0.34 at rest**, completing to 1 on hover/focus. v2.5 fixed this link's colour and left the affordance open: `link-underline` grows from 0%, so the only actionable element on the band drew nothing until you were already on it, and nothing at all on touch. A third position on one gesture, not a second mechanism. DESIGN.md §4.4 |
+| **`.tg-rule-rest` is a class, never an inline value** | (0,1,0), so `.tg-rule:hover` at (0,2,0) still wins. Inline would inherit to the pseudo and pin the bar at 0.34 *through* hover — the same property the contact form's rail depends on, turned into a bug |
+| **New `--text-subhead` token** | `clamp(1.5rem, 3vw, 2.25rem)`, 24→36px, under `check:design` (39 tokens now). The item-level heading step |
+| **Section head vs. row title** | Both were `--text-display`, separated by weight alone (700 vs 600) — measured **49.5px/700 against 49.5px/600** at 1100px, with row titles wrapping to two lines and reading *heavier* than the head above them. Row title → `--text-subhead`. **Section level owns `display`; items under a section own `subhead`** |
+| **Section lede vs. row hook** | Also identical — `--text-body`/secondary both, in the same column band. Lede → `--text-title`, hook → `--text-sm` (measure 46→52ch). Four levels, no two decided by weight |
+| **`solution-row` is shared with `/solutions`** | Changed once, not forked. Verified that page still reads correctly — four rows at `display` under a `--text-hero` h1 had nothing between them; at `subhead` it reads head → list |
+| **Concierge launcher sized per breakpoint** | Was one desktop size at every width: **234 × 50, 57% of a 412px screen**, landing on the Process teaser's copy. Now `LAUNCHER_PADDING` with the label **"Ask us"** below 768px — **106 × 44**, 26%. `py-[12px]` + the 18px mark + the hairline = exactly §8's 44px tap floor |
+| **Launcher hairline** | `rgb(255 255 255 / 0.25)`. Border colour composites over the element's own background, so one declaration covers both: invisible against a light page, legible against `.ink-band`, where a fixed-position ink pill previously vanished completely. Dark mode resolves it to ~`#F7F7F7` — invisible, correctly |
+| **Concierge replies are attributed** | Every reply, the opener included, opens with a `TEKGUYZ` eyebrow label carrying `ConnectedNodes`. A long reply had no fill, alignment or container and read as an unowned slab. The visitor's turn stays unlabelled — the filled right-aligned bubble already says "you" |
+| **Browser chrome is themed** | `components/theme-color.tsx`, `#ffffff` / `#101010`. The two-tag `prefers-color-scheme` form is wrong here: `enableSystem={false}`, so it would track the OS and give an OS-dark visitor a black address bar over the light site |
+| **`.gitattributes` added** | `* text=auto eol=lf`. `core.autocrlf=true` + no attributes file meant a fresh Windows clone gets CRLF `TOKENS.md`, and `check:design`'s fence regex requires `` ```css\n `` — all five token sections fail at once. Hit during this session from a single `git stash` / `pop`. Vercel was never affected (Linux checkout), which is what made it invisible |
+| **`LAUNCHER_PADDING` exported from `button.tsx`** | The launcher's padding matched none of §4.1's four sizes and lived inline. Now beside them, one source per number. It takes the padding but **not** `base`: `.tg-yield`'s unlayered `transition` shorthand would silently drop everything `base` declares |
+
+**Known, accepted:** a returning dark-mode visitor sees one frame of white browser
+chrome before the effect corrects it — the server-rendered value is light because
+light is what a first-time visitor gets. Closing it needs a second blocking
+inline script beside next-themes' own.
+
+## Homepage flow, Wave 3 — shipped 2026-08-13
+
+*Process teaser. Closes the plan — all three waves are now done.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Extracted to `components/process-teaser.tsx`** | It had never been a component — four lines of inline JSX in `app/page.tsx`, which is why DESIGN.md §4 had nothing to describe |
+| **Differentiated by a progress rail** | `.tg-rule` + `data-on="true"` + inline `--tg-rule-scale` of **0.25 / 0.5 / 0.75 / 1**, drawn along each step's top edge. Left to right on desktop, down the page on mobile: a staircase showing how far through the engagement that step ends. Measured at 1280px: 71 / 141 / 212 / 282px of a 282px cell |
+| **Same object as the contact form's step rail** | No new vocabulary — it reuses the partial-draw channel that exists because the form needed to show a step reached. `data-on` weight, because the transient `border-strong` is one shade off the `border` hairline it is drawn over and would have been invisible |
+| **`.tg-rule.tg-rule-top` at (0,2,0)** | Beats `.tg-rule::after`'s `bottom` on specificity. `[data-navlink]::after` does the same override on source order; that works and is the habit being retired |
+| **`<ol>`, not four `<div>`s** | The rail says "sequence" visually; the list says it to a screen reader. Both now carry the same fact |
+| **No hover state, decided** | These are not links. A hover response on a non-interactive element advertises an affordance that is not there. Never decided either way before, so this is a decision rather than a restoration |
+| **The 80ms stagger was already there** | `reveal` + `data-reveal-index`, resolved as `Math.min(index, 3) * 80`. Neither missing nor added — recorded because it is invisible on this machine and is exactly the kind of thing a session re-ships by accident |
+
+**Reserved systems untouched and re-confirmed:** no numerals (`/process` only),
+no pin (CANONICAL §6, "Used once, which is what makes it register"), no reuse of
+the four solution accents. DESIGN.md §4.17 is new and carries the reasoning.
+
+**Needs the user's eyes:** the rail's entrance under full motion. The bar itself
+is static, so the reduced-motion state is complete and verified.
 
 ## Build Phase 1 — shipped 2026-08-12
 

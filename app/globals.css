@@ -796,6 +796,20 @@
   bottom: -10px;
 }
 
+/* The same bar, drawn along the element's TOP edge instead — the homepage
+   Process teaser, whose steps carry their hairline above the content rather
+   than below it (DESIGN.md §4.17).
+
+   Written `.tg-rule.tg-rule-top` at (0,2,0) rather than `.tg-rule-top` at
+   (0,1,0), so it beats `.tg-rule::after`'s `bottom` on SPECIFICITY. The
+   navlink override above wins on source order instead, which works and is the
+   pattern this file is trying to stop repeating: move either rule and it
+   breaks silently. */
+.tg-rule.tg-rule-top::after {
+  top: -1px;
+  bottom: auto;
+}
+
 /* Text CTAs draw an underline left-to-right via background-size. */
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);

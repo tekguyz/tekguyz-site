@@ -1,0 +1,28 @@
+# Line endings are a BUILD dependency here, not a style preference.
+#
+# `prebuild` runs `check:design`, which parses fenced ```css blocks out of
+# docs/TOKENS.md with a regex requiring "```css\n". With core.autocrlf=true —
+# the default on Windows — a fresh clone checks that file out as CRLF, every
+# fence stops matching, and the build fails with "Type has no ```css block" on
+# all five token sections at once. That happened on 2026-08-13 from nothing more
+# than a `git stash` / `stash pop` round trip.
+#
+# Vercel is unaffected (Linux checkout, LF), which is exactly what makes this
+# the dangerous kind of bug: it only ever breaks a developer machine, and it
+# breaks it at prebuild rather than anywhere near the change that caused it.
+#
+# `text=auto eol=lf` normalises to LF in the repo AND in the working tree, so
+# the guard's assumption holds on every platform.
+* text=auto eol=lf
+
+# Binary — never touch these.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.avif binary
+*.mp4 binary
+*.pdf binary

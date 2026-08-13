@@ -15,6 +15,11 @@ import { cn } from '@/lib/utils';
  * sitting side by side in the hero end up the same visual height (the primary's
  * extra 1px per side compensates for the border the secondary carries).
  *
+ * A fifth padding exists and is exported rather than hidden: `LAUNCHER_PADDING`,
+ * the concierge launcher, the only responsive entry in the scale. It lived
+ * inline in `concierge.tsx` and matched none of the four above, which is how it
+ * shipped a desktop size to a 412px screen. See `DESIGN.md` §4.13.
+ *
  * Dark mode inverts wholesale via --tg-cta-*: #F5F5F5 fill on #101010 text, so
  * the primary is the brightest element on a dark page. No accent ever fills a
  * button.
@@ -54,6 +59,26 @@ const sizes = {
   form: 'px-7 py-[15px]',
   large: 'px-8 py-[18px] text-[16px]/[1]',
 } as const;
+
+/**
+ * The concierge launcher's padding — the fifth size, kept out of `sizes` on
+ * purpose so nobody can pass `size="launcher"` to a `Button`. It is not a
+ * general size: it belongs to one fixed-position control.
+ *
+ * 1px short on every side because that control carries a hairline the four
+ * above do not, so the outer box lands on 44px (mobile, exactly §8's tap floor)
+ * and 50px (desktop).
+ *
+ * **The launcher takes this string and NOT `base`, and that is a cascade fact
+ * rather than laziness.** `base` declares
+ * `transition-[background-color,border-color,transform]`, and the launcher
+ * carries `.tg-yield`, whose `transition` shorthand is UNLAYERED in
+ * `globals.css` — it beats any layered utility regardless of source order and
+ * would silently drop everything `base` declared. Composing the two looks
+ * correct in the JSX and quietly disables the transitions. So the launcher
+ * shares the value that matters (padding) and keeps its own transition.
+ */
+export const LAUNCHER_PADDING = 'px-[15px] py-[12px] md:px-[23px] md:py-[15px]';
 
 type Variant = keyof typeof variants;
 type Size = keyof typeof sizes;

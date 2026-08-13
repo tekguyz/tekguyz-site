@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ConnectedNodes } from '@/components/logo-lockup';
+import { LAUNCHER_PADDING } from '@/components/button';
 import { ThinkingStripe } from '@/components/concierge/thinking-stripe';
 import { Markdown } from '@/components/concierge/markdown';
 import {
@@ -498,9 +499,12 @@ export function Concierge() {
            The launcher does not use `button.tsx` and never has; its 24x16 is a
            fifth padding that exists nowhere in that scale.
 
-           The padding is 1px short of those numbers on every side because the
-           HAIRLINE adds it back: 12+18+12+2 = 44, 15+18+15+2 = 50. Identical
-           outer box to before the border existed.
+           The padding now lives in `button.tsx` as `LAUNCHER_PADDING`, beside
+           the four sizes it is not one of — one source per number. It is 1px
+           short on every side because the HAIRLINE adds it back: 12+18+12+2 =
+           44, 15+18+15+2 = 50. Identical outer box to before the border
+           existed. That file records why this control takes the padding but
+           not `base`.
 
            That border is `rgb(255 255 255 / 0.25)`, and the alpha is the whole
            trick. Border colour composites over the element's own background
@@ -513,7 +517,7 @@ export function Concierge() {
 
            A shadow would not have worked here even if §3 allowed one: a dark
            halo around a dark pill on a dark band adds no edge. */
-        className={`tg-yield fixed z-[80] flex cursor-pointer items-center gap-[10px] rounded-[8px] border border-[rgb(255_255_255_/_0.25)] bg-cta-bg px-[15px] py-[12px] text-[14.5px] leading-none font-semibold text-cta-fg hover:bg-cta-hover active:scale-[0.98] md:px-[23px] md:py-[15px] ${
+        className={`tg-yield fixed z-[80] flex cursor-pointer items-center gap-[10px] rounded-[8px] border border-[rgb(255_255_255_/_0.25)] bg-cta-bg ${LAUNCHER_PADDING} text-[14.5px] leading-none font-semibold text-cta-fg hover:bg-cta-hover active:scale-[0.98] ${
           launcherVisible ? '' : 'pointer-events-none'
         }`}
       >

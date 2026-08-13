@@ -1,5 +1,11 @@
 # Homepage Flow — Wave Plan (2026-08-13)
 
+> **STATUS: all three waves shipped, 2026-08-13.** Wave 1 hero + closing CTA
+> (`c94695f`), Wave 2 proof line + "What We Do" hierarchy (`0663baa`), Wave 3
+> process teaser. Outcomes are recorded in `docs/STATUS.md` and `docs/DESIGN.md`
+> §4.4, §4.5, §4.9, §4.13, §4.16, §4.17 — **not** in the quoted blocks below,
+> which stay verbatim per the note that follows.
+
 > Recorded verbatim from the originating prompt. This is the reference for
 > Waves 1–3 of the homepage narrative work. Do not edit the quoted blocks
 > below to reflect what shipped — record outcomes in `docs/STATUS.md` and

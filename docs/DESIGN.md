@@ -1236,6 +1236,68 @@ value left in one place.
 
 ---
 
+### 4.17 `process-teaser` — the progress rail
+
+**[shipped 2026-08-13, Wave 3]** The homepage's "How We Work" section. It had no
+entry here because it had no component: four lines of inline JSX in
+`app/page.tsx` beside seven other sections. Now `components/process-teaser.tsx`,
+which is what this entry describes.
+
+**The four steps are differentiated by a progress rail, and it is the same
+object as the contact form's step rail.** `.tg-rule` with `data-on="true"` and a
+partial `--tg-rule-scale` — **0.25 / 0.5 / 0.75 / 1** — so the ink bar above each
+step grows across the row. Read left to right on desktop, or down the page when
+the grid collapses to one column, it is a staircase: how far through the
+engagement you are when that step ends.
+
+**That is real information, which is the test §4 applies to every structural
+device.** The steps are four equal peers in a sequence — nothing in the content
+ranks one above another — so differentiating them on anything *about the step*
+would have been arbitrary. What the section lacked was not variety but sequence.
+The rail encodes position, the one fact that genuinely differs between them.
+
+- **No new vocabulary.** It reuses the site's one state primitive, and
+  specifically the partial-draw channel that exists because `contact-form.tsx`
+  needed to show a step reached (§6.3).
+- **`data-on`, not the transient weight.** `border-strong` would have been
+  invisible here — one shade off the `border` hairline it is drawn over. The
+  form's rail already reads `data-on` as "progress reached" rather than strictly
+  "you are here"; this is that same usage, not a widening of it.
+- **Inline `--tg-rule-scale` is correct here and would be a bug elsewhere.** It
+  beats `.tg-rule:hover`, which is safe only because nothing in this list hovers
+  — the same reasoning the form records for its step header.
+- **The top-edge draw is `.tg-rule.tg-rule-top` at (0,2,0)**, beating
+  `.tg-rule::after`'s `bottom` on specificity. `[data-navlink]::after` does the
+  equivalent override on source order; that works and is the habit this file is
+  trying to stop repeating.
+- **`<ol>`, not four `<div>`s.** The rail says "sequence" visually; the list says
+  it to a screen reader, which gets "list, 4 items" and a position for each.
+
+**[decided 2026-08-13] No hover state.** These are not links. A hover response on
+a non-interactive element advertises an affordance that is not there, and
+`.tg-rule`'s hover weight belongs to things that respond to a click. The
+section's one interactive element is the link beneath it. This had never been
+decided either way, so it is a decision, not a restoration.
+
+**[measured 2026-08-13] The 80ms stagger was already wired here before Wave 3** —
+`reveal` plus `data-reveal-index`, resolved in `reveal.tsx` as
+`Math.min(index, 3) * 80`, matching CANONICAL §6's contract. It was neither
+missing nor added. Recorded because it is invisible on a machine with animations
+off, which is exactly where a session "discovers" it missing and ships a second
+one.
+
+> **Reserved systems, untouched and re-confirmed:** no numerals (`numeral-device`
+> is `/process` only, §4.11), no pin (CANONICAL §6 — "Used once, which is what
+> makes it register"), and none of the four solution accents. Those mean
+> *solution line*; four steps happening to also be four is a coincidence, not a
+> licence.
+
+> **[decided 2026-08-13] Rejected: varying type size or weight per step.** The
+> fastest way to make four things look different, and it would have implied a
+> ranking the content does not have. **Rejected: a connecting line with tick
+> marks between the cards.** Decoration that draws the sequence rather than
+> encoding it, and it breaks entirely when the grid goes to one column.
+
 ## 5. `status-line` — the signature component
 
 *Converted 2026-08-12.*
