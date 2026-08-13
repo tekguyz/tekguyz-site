@@ -6,14 +6,27 @@ import { openConcierge } from '@/components/concierge/concierge-bus';
 import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
 
 /**
- * Centered — the one section permitted to be.
+ * Centered — the one section permitted to be. Still true, and unchanged: this
+ * was NOT un-centered to match the left-anchored hero. Matching would have made
+ * the bookends identical rather than rhyming, and it would have spent the
+ * site's one documented centering exception to do it.
  *
- * Export values: max-width 760px, padding 40px 32px 48px (32px top below 768).
- * Deliberately more compact than a standard 128px section; that spacing leak has
- * happened twice. The top padding used to be 64px, which stacked a second full
- * gap on top of the preceding section's own 128px across a 6px stripe — 202px
- * of dead space, measured on `/`. That half is fixed at the collision, in
- * `globals.css` (`:has(+ .tg-closing)`), NOT here and NOT at the global rhythm.
+ * THE BAND HAS A GROUND — `--tg-surface`, full-bleed, in `globals.css`
+ * (`.tg-closing`). The reasoning lives there because that is where the rule is.
+ * The short version: every gap in here was already measured and argued and the
+ * section still read inert, because the flatness was never in the elements or
+ * their spacing — the block had no edges. The stripe above is now its lid and
+ * the dark footer below is its floor.
+ *
+ * Padding: max-width 760px, 64px 32px 80px (48px top / 64px bottom below 768).
+ * Still deliberately more compact than a standard 128px section; that spacing
+ * leak has happened twice and this is not a third. The top value moved 40 -> 64
+ * ONLY because the ground changed what it measures: it is now the interior of a
+ * visible block, not a gap between two invisible ones. The gap a visitor
+ * actually reads — canvas + stripe, above the band's edge — went DOWN, to 70px
+ * desktop / 46px mobile. The other half of the old 202px is still fixed at the
+ * collision, in `globals.css` (`:has(+ .tg-closing)`), NOT here and NOT at the
+ * global rhythm.
  *
  * INTERNAL RHYTHM — 24 · 48 · 24 · 16, and the numbers are the hierarchy.
  * It ran 24 / 32 / 36: a near-linear ramp in which every gap reads the same,
@@ -34,8 +47,21 @@ import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
  * Merging them into one paragraph was a mistake in an earlier pass.
  *
  * The button is the site's ONE documented size exception: 18px 32px, 16px text.
+ * Re-justified, not inherited: it is alone, terminal, and arrives after the
+ * visitor has read the page, so nothing on screen competes with it and `large`
+ * is earned. The hero's primary deliberately did NOT follow it up — see the
+ * note in `home-hero.tsx` for why a paired ask cannot take this size.
+ *
  * Beneath it, one quiet text link to the concierge — a lower-commitment path,
- * not a competing CTA, and the concierge's only second entry point.
+ * not a competing CTA, and the concierge's only second entry point. It stays
+ * `--text-sm` in `secondary` and it stays `link-underline`. Considered and
+ * rejected: promoting it to ink under the proof-line precedent (a
+ * `link-underline` draws nothing at rest, so a muted one has no rest-state
+ * affordance). The precedent does not transfer — the proof line's invitation
+ * was the ONLY actionable element on its band, whereas this link sits 16px
+ * under a 137x52 ink-filled button that supplies the band's affordance in full.
+ * Promoting it would move it toward co-equal, which is the one thing the
+ * blueprint locks it out of.
  *
  * On scroll into view this replays the hero's load sequence once.
  */
@@ -44,7 +70,7 @@ export function ClosingCta() {
     <section className="tg-closing">
       <SignatureStripe />
       <SequenceRoot trigger="inView">
-        <div className="mx-auto max-w-[760px] px-8 pt-8 pb-12 text-center md:pt-10">
+        <div className="mx-auto max-w-[760px] px-8 pt-12 pb-16 text-center md:pt-16 md:pb-20">
           <SequenceItem role="headline">
             <h2 className="text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
               Let&rsquo;s talk about your business.

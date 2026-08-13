@@ -439,13 +439,56 @@ four, so no accent is correct and one would have to be picked arbitrarily.
 
 ### 4.5 `closing-cta`
 
-**[decided v2.2, re-decided v2.4] Centered — the one section permitted to be**,
-and deliberately more compact than a standard section rather than equal to one.
+**[decided v2.2, re-decided v2.4, re-confirmed 2026-08-13] Centered — the one
+section permitted to be**, and deliberately more compact than a standard section
+rather than equal to one.
 
-**[measured 2026-08-12 `components/closing-cta.tsx:47`]** `pt-8 pb-12 md:pt-10`
-— **32px top below 768px, 40px top at and above it, 48px bottom.** Max-width
-760px. See §3 for the section boundary *above* it, which is where the ~200px of
-dead space actually lived.
+> **[decided 2026-08-13] Rejected: un-centering it to match the hero.** It is
+> the strongest bookend rhyme available and it was still wrong twice over. It
+> makes the two ends structurally *identical* rather than rhyming, which is the
+> opposite of the brief; and it spends the site's one documented centering
+> exception to buy that. §3's "only the closing CTA band is centered" is
+> unchanged. The bookends rhyme through the `--tg-surface` ground and a shared
+> spacing grammar instead — see the ground entry below and `home-hero.tsx`.
+
+**[decided 2026-08-13] The band has a ground: `--tg-surface`, full-bleed.** One
+declaration, `.tg-closing` in `globals.css`. This is the answer to "correctly
+built and visually inert": every gap inside the band had already been measured
+and argued (the rhythm table below) and it still read flat, because **the
+flatness was never in the elements or in their spacing — the block had no
+edges.** With a ground, the signature stripe above stops being a divider between
+two sections and becomes the band's lid, and the permanently-dark footer below
+becomes its floor; the band is bracketed on both sides without adding a single
+element.
+
+`--tg-surface` specifically, because it is the token the **hero's** media panel
+already uses. That is the bookend rhyme, deliberately spent as one token rather
+than a new treatment: the page opens on a surface panel and closes on a surface
+ground. It also needs no dark-mode branch — the token is `#1A1A1C`, a real step
+off both the `#101010` page and the `#101010` footer, so the band separates in
+both themes with no hairline. **[measured 2026-08-13]** light `#F5F5F5`, dark
+`#1A1A1C`.
+
+> **A band, not a box — and that is the whole reason this is permitted.** v2.5
+> rejected adding "fill, border, card or divider" to this component. What it
+> rejected was *boxing the stack*: a bounded object floating on the page, which
+> would fight the centering and shrink the band. This is full-bleed, no radius,
+> no border. The v2.5 rejection stands as written; it does not cover a ground.
+
+**[measured 2026-08-13 `components/closing-cta.tsx`]** `pt-12 pb-16 md:pt-16
+md:pb-20` — **48px top / 64px bottom below 768px, 64px top / 80px bottom at and
+above it.** Max-width 760px. See §3 for the section boundary *above* it, which is
+where the ~200px of dead space actually lived.
+
+**[decided 2026-08-13] The top padding moved 40 → 64 (32 → 48 mobile), and that
+is not a third instance of the spacing leak.** The ground changed what the
+number measures. It is no longer a gap between two invisible blocks; it is the
+interior of a visible one. The gap a visitor actually reads is canvas + stripe,
+above the band's edge, and that **went down** — measured 2026-08-13 on `/`:
+**68px desktop** from the last content to the band edge, against 110px of
+undifferentiated canvas before. Total last-content-to-headline is 138px desktop
+/ 94px mobile, still about one rhythm unit. The invariant in §3 is untouched and
+was re-measured: the preceding section still sheds to 64px desktop / 40px mobile.
 
 **[measured 2026-08-12 `closing-cta.tsx`] Internal rhythm — 24 · 48 · 24 · 16.**
 Verified as `mt-6` / `mt-12` / `mt-6` / `gap-4`.
@@ -473,17 +516,37 @@ becomes a deliberate stack with the dots not rendered at all.**
 > wrapped at every viewport below it. The dots are `aria-hidden`, so dropping
 > them costs nothing semantically.
 
-**[decided v2.4] `button-primary--large` is the site's one documented size
-exception**: 18 × 32px, ~16px text. Earned deliberately — this is the page's
-single most important remaining ask, and the standard size was reading as
-underweighted against the headline stacked above it. That, not the padding, was
-the cause of the "still doesn't work" complaint.
+**[decided v2.4, re-justified 2026-08-13] `button-primary--large` is the site's
+one documented size exception**: 18 × 32px, ~16px text. Earned deliberately —
+this is the page's single most important remaining ask, and the standard size was
+reading as underweighted against the headline stacked above it. That, not the
+padding, was the cause of the "still doesn't work" complaint.
+
+**It stays `large`, and the hero deliberately did NOT follow it up to match.**
+Re-examined 2026-08-13 against the four-size scale in §4.1. This ask is *alone*,
+*terminal*, and arrives after the visitor has read the page, so nothing on
+screen competes with it. The hero's is a **pair** — and §4.1's 14 × 24 secondary
+exists precisely to paint the same height as a 15 × 24 primary, so there is no
+`large` secondary to pair with and bumping one half breaks that compensation.
+Bumping both bookends to `large` "for weight" would also have put *browse* at the
+same volume as *talk to us*, inverting the narrative this band exists to finish.
+**The hero was underweighted in its spacing, not in its button** — see §4.16.
 
 **[measured 2026-08-12 `closing-cta.tsx:101–107`]** Beneath the button, one
 `--text-sm` `secondary` text link opening the concierge — no button styling.
 **[decided v2.4]** A lower-commitment alternate path, not a competing CTA. It is
 the concierge's only second entry point beyond its persistent launcher, and it
 stays quiet so it does not dilute the primary ask.
+
+> **[decided 2026-08-13] Rejected: promoting that link to ink** under the
+> `proof-line` precedent — a `link-underline` grows from 0% and so draws nothing
+> at rest, which means a *muted* one has no rest-state affordance at all. Real
+> defect, and the precedent does not transfer. The proof line's invitation was
+> **the only actionable element on its band**; this link sits 16px beneath a
+> 137 × 52 ink-filled button that supplies the band's affordance in full.
+> Promoting it moves it toward co-equal, which is the one thing this path is
+> specified not to be. Worth revisiting only if the concierge is ever measured
+> as an under-served path.
 
 **[measured 2026-08-12 `closing-cta.tsx:46`, `load-sequence.tsx`]** On scroll
 into view the band replays the hero's load-sequence **timing** once
@@ -653,6 +716,55 @@ two weights inside one caption.
 the reason the compact contexts' gap went unnoticed for so long. **Do not port
 the panel down to card scale.** At 373px tall a 32px mat is most of what you see,
 and the panel's whole argument is the bleed, which no compact context has.
+
+**[shipped 2026-08-13] The hero was doing it to itself below 1024px, and no
+longer does.** The rule directly above was written about compact contexts and
+was being broken by the hero's own mobile branch: that branch kept the surface,
+the border and the 16px radius and merely shrank the padding to 24px — a panel
+at card scale, in the one place the bleed cannot exist. **Measured at 375px
+before the change: panel 327 × 346 wrapping a 278 × 156 poster, 33.2% of the
+panel box empty `--tg-surface`, the poster only 45% of the panel's height.**
+(30.0% at 430px — the defect does not wash out at larger phones.)
+
+**The panel is now desktop-only.** Below 1024px `.tg-hero-frame` drops its
+background, border, radius and padding entirely, and the media is just the
+media — `Frame` already carries the plate treatment specified above, so removing
+the wrapper leaves a correct component rather than a bare image. **[measured
+2026-08-13]** the poster goes 278 → 327px wide at 375px, **+38% area, purely
+from deleting the mat**. The internal `gap` drops 24 → 12px to match `FrameMeta`'s
+beat: inside the desktop panel 24px is right because the panel's own padding
+supplies the containment; with no panel, 24px orphans the status line. Desktop is
+untouched and was re-measured — 32px padding, 136px of bleed past a 1440px
+viewport, poster 819 × 461.
+
+**[shipped 2026-08-13] Art direction below 1024px — `posterMobile`.** The hero
+capture is a four-panel dashboard, and at a ~330px column every panel is an
+illegible smear (this is D-08). `object-position` cannot help: source and frame
+are both 16:9, so there is no overflow to shift, and `cover` only crops the axis
+that overflows. So the hero passes a second file — **not a second capture**, a
+tighter crop of the same real screenshot (`sarah-poster-mobile.webp`, 1038 × 584,
+taken at (12, 316) of `sarah-poster.webp`), showing the Live Conversation Feed
+panel whole: `CALL ACTIVE`, the AI booking an appointment, the customer replying.
+PLAYBOOK §12 is satisfied by construction, and it is 33KB against the source's
+117KB, so mobile also pays less. Guarded at 16:9 by `check:media` alongside the
+other two — a `<picture>` `media` miss is invisible at desktop and breaks only
+the phone.
+
+`Frame`'s `posterMobile` prop is **optional and off for every compact context**,
+which renders exactly the `<Image>` it always did. Where it is set, `Frame`
+switches to `getImageProps` feeding a `<picture>` — Next's documented art-
+direction pattern, and the reason it is not two `<Image>`s toggled with `hidden`
+is that the browser evaluates `media` and fetches **one** variant where the
+toggle would download both on the LCP path.
+
+> **Still open, and it needs a recapture — not code.** The phone mockup in the
+> top-right of `sarah-poster.webp` is **cut mid-sentence at y=0 of the source
+> itself**, so "fully visible" is unreachable at any width, desktop included.
+> Separately, the capture carries a visible **"Demo Mode" badge** in its
+> bottom-right panel — a direct PLAYBOOK §12 violation on the most prominent
+> image on the site. The mobile crop excludes the badge; **desktop still shows
+> it.** STATUS.md's recapture queue currently reads "`sarah-poster.webp` is the
+> 16:9 hero — leave it", which is why neither has been caught.
 
 **[export] Deferred embed, unbuilt.** `embeddable: true` renders a
 click-to-activate iframe in the same frame at the same dimensions, so there is
@@ -944,6 +1056,52 @@ in §3; `reveal.tsx` and `load-sequence.tsx` in §6.
 
 Writing an entry for any of them is real design work — see CLAUDE.md's skill
 table — not a documentation pass.
+
+### 4.16 `home-hero` — internal rhythm
+
+Column spans are §3's; the media panel and its `<1024px` behaviour are §4.9.
+This entry is only the vertical rhythm inside the text column, which had never
+been specified anywhere.
+
+**[shipped 2026-08-13] It ran 36 / 32 / 40 — the identical defect v2.5 found and
+fixed in `closing-cta`, in the section nobody went back to.** A near-linear ramp
+in which every gap reads the same, so nothing groups and the block reads flat.
+The elements were all correct. **[measured 2026-08-13]** the largest gap was
+40px against a smallest of 32px; four elements, evenly spaced, no hierarchy.
+
+Now **24 · 32 · 48/64 · 80**, step = 32:
+
+| From → to | Gap | Why |
+| --- | --- | --- |
+| flourish dots → headline | 24px | Under a step. The dots are the headline's marker, not a peer. |
+| headline → subhead | 32px | One step. They are one statement. |
+| subhead → CTA row | 48px / **64px** ≥768 | The break — statement → ask. |
+| CTA row → media | 80px | The largest break: text block → proof. |
+
+Three groups, not four evenly-spaced elements. **`closing-cta`'s step is 24
+where this one is 32 — the bookends share the grammar and differ in amplitude,
+which is what makes them rhyme rather than match.** The pairing is deliberate:
+these two are the page's first impression and its final ask, and they were
+designed in one pass so that a visitor meets the same spacing logic at both ends.
+
+> **The break is not a clean 2× at both widths, and the reason is budget, not
+> geometry.** 48px is what mobile can pay while keeping the CTA row above the
+> fold. What has to hold everywhere is only that the break is decisively the
+> largest gap inside the text block — 48 against 32 achieves that; the old 40
+> against 32 did not. **[measured 2026-08-13]** the CTA row clears the fold by
+> **18px at 1280 × 720**, the tightest realistic laptop, which is thin: TOKENS.md's
+> standing hero constraint (headline ≤3 lines with the CTA row in the first
+> viewport) is the thing to re-measure if this copy ever changes. `items-center`
+> means the taller media panel drives the row height, so a 24px change in the
+> text column moved the row only 6px.
+
+**[shipped 2026-08-13] The 80px is 24 + 56, and the grid carries no `gap-y-*`.**
+It used to declare `gap-y-14` (56px) and **that class never once applied** —
+`.tg-grid`'s `gap` is unlayered, so it beats a `row-gap` from `@layer utilities`
+regardless of source order. Same silent drop as the case-study rows' `gap-y-12`
+in §8, invisible to the linter and to anyone reading the JSX. The real 56px was
+always `.tg-hero-frame`'s own `margin-top`; the dead class is removed and the
+value left in one place.
 
 ---
 

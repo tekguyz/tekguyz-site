@@ -320,8 +320,18 @@
 
    128px separates two CONTENT sections. What follows here is a full-bleed
    coloured rule, and a rule is already a boundary, so the block that closes
-   into it sheds half its rhythm. With the CTA's 40/32px top padding that leaves
-   110px desktop / 78px mobile in total — one rhythm unit, counted once.
+   into it sheds half its rhythm. With the CTA's 64/48px top padding that leaves
+   134px desktop / 94px mobile in total — one rhythm unit, counted once.
+
+   Those totals were 110/78 while the closing band sat on bare canvas. The band
+   now has a `--tg-surface` ground (below), which changes what the number means:
+   the CTA's own top padding is no longer part of the GAP, it is the interior of
+   a visible block. The gap the eye actually reads is canvas + stripe — 70px
+   desktop, 46px mobile — and it got smaller, not larger, while the band got
+   room to breathe. This is the distinction that makes raising the CTA's padding
+   safe rather than a third recurrence of the spacing leak: a shed rhythm plus a
+   coloured boundary plus interior padding is one gap; two undifferentiated
+   canvas gaps stacked across a 6px rule was the 202px defect.
 
    Fixed HERE, at the collision, not at `--tg-section` and not in seven pages'
    markup. Verified before writing it that all seven routes carrying
@@ -349,6 +359,41 @@
   :where(section, div):has(+ .tg-closing) {
     padding-bottom: 64px;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   The closing band's ground — DESIGN.md §4.5.
+
+   `closing-cta` was correctly built and visually inert: a centered text stack
+   on the same canvas as everything above it, which is to say it read as more
+   page rather than as the page's last word. Every gap inside it had been
+   measured and argued (24 · 48 · 24 · 16) and the flatness was still there,
+   because the flatness was never in the elements or in their spacing — the
+   block had no edges.
+
+   One declaration gives it edges. The signature stripe directly above stops
+   being a divider between two sections and becomes the band's lid; the
+   permanently-dark footer directly below becomes its floor. The band is
+   therefore bracketed on both sides without adding a single element.
+
+   `--tg-surface`, the same token the hero's media panel uses. That is the
+   bookend rhyme, and it is deliberately one token rather than a new treatment:
+   the page opens on a surface panel and closes on a surface ground. It also
+   costs nothing in dark mode, where the token is #1A1A1C — a real step up from
+   the #101010 page and the #101010 footer, so the band separates in both
+   themes without a hairline and without a branch.
+
+   NOT a card, and that distinction is the whole reason this is allowed:
+   DESIGN.md v2.5 rejected adding "fill, border, card or divider" to
+   `closing-cta`, and what it rejected was BOXING THE STACK — a bounded object
+   floating on the page, which would have fought the centering and shrunk the
+   band. This is full-bleed with no radius and no border. A band, not a box.
+
+   On the `<section>`, so it sits behind the stripe (four opaque segments, so
+   the stripe is unaffected) and reaches the viewport edges on all seven routes
+   that carry the component. */
+.tg-closing {
+  background: var(--tg-surface);
 }
 
 /* DESIGN.md §8 — 768–1024px collapses the asymmetric grid to 8 columns. */
@@ -464,15 +509,39 @@
   border-right: none;
 }
 
-/* Under 1024px the bleed is abandoned rather than squeezed — the panel gets its
-   right edge and full radius back and the media stacks below the text. */
+/* Under 1024px there is NO PANEL — not a narrower one.
+
+   The bleed IS the panel's argument, and a 327px column cannot bleed. What this
+   block used to do was keep the surface, the border and the radius and shrink
+   the padding to 24px, which is the exact thing DESIGN.md §4.9 forbids: a panel
+   ported to card scale, where the mat becomes most of what you see. Measured at
+   375px before removal — panel 327x346 wrapping a 278x156 poster, 33.2% of the
+   box empty `--tg-surface`, the poster only 45% of the panel's height.
+
+   So the panel is desktop-only and the media below 1024px is just the media:
+   `Frame` already carries the plate treatment §4.9 specifies everywhere else —
+   12px radius, 1px hairline, zero padding — so removing the wrapper's own
+   surface leaves a correct component rather than a bare image. The poster gains
+   49px of width at 375px (+38% area) purely from deleting the mat.
+
+   `gap` drops 24 -> 12 to match §4.9's `FrameMeta` beat: 12px reads as
+   belonging to the frame above, 18px+ reads as the next block starting. Inside
+   the desktop panel 24px is right, because the panel's own padding is what
+   supplies the containment; with no panel, 24px orphans the status line.
+
+   `margin-top` stays 56px and is now the ONLY declaration behind the 80px
+   text-to-media gap (24 grid + 56). The `gap-y-14` that used to sit on the grid
+   never applied — `.tg-grid`'s `gap` is unlayered and beats a layered
+   `row-gap`, the same silent drop as the case-study rows' `gap-y-12`. */
 @media (max-width: 1023px) {
   .tg-hero-frame {
     margin-right: 0;
     margin-top: 56px;
-    padding: 24px;
-    border-right: 1px solid var(--tg-border);
-    border-radius: 16px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    gap: 12px;
   }
   .tg-hero-poster,
   .tg-hero-poster .tg-hero-img {

@@ -26,6 +26,15 @@ interface WorkBase {
   poster: string;
   /** Optional distinct 16:9 asset for the home hero. */
   heroPoster?: string;
+  /**
+   * Optional 16:9 art-direction crop of `heroPoster` for viewports below
+   * 1024px. Not a second capture — a tighter crop of the same real screenshot,
+   * because a multi-panel dashboard scaled to a ~330px column is an illegible
+   * smear (D-08) and `cover` cannot help: source and frame are both 16:9, so
+   * there is no overflow for `object-position` to shift. Guarded by
+   * `check:media` at 16:9 like the other two.
+   */
+  heroPosterMobile?: string;
   alt: string;
   /**
    * Live-iframe embeds are architected for but not enabled. Flipping this to
@@ -117,6 +126,14 @@ export const work: WorkEntry[] = [
     poster: '/media/sarah-thumb.webp',
     // 1600x900 native — the hero's own 16:9 context, per DESIGN.md LiveFrame.
     heroPoster: '/media/sarah-poster.webp',
+    // 1038x584, cropped from `sarah-poster.webp` at (12, 316) — the Live
+    // Conversation Feed panel, whole, with its own left and right edges intact.
+    // The full four-panel dashboard is unreadable below 1024px; this crop keeps
+    // the one thing the hero has to prove — the AI holding a real booking
+    // conversation, CALL ACTIVE — legible at ~330px. Same capture, so PLAYBOOK
+    // §12 is satisfied by construction, and it is 33KB against the source's
+    // 117KB, so mobile also pays less.
+    heroPosterMobile: '/media/sarah-poster-mobile.webp',
     alt: 'AI Voice Receptionist dashboard showing a customer profile, live conversation feed, and the confirmation email',
     embeddable: false,
     updatedAt: AUTHORED,

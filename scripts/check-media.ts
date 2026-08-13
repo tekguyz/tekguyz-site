@@ -47,8 +47,14 @@ for (const entry of work) {
   // `poster` is the compact context (case-study rows, detail pages) at 16:10.
   // `heroPoster` is the home hero's own 16:9 asset, and is optional — the hero
   // falls back to `poster` when it is absent.
+  // `heroPosterMobile` is the <1024px art-direction crop of `heroPoster`, also
+  // 16:9. It needs guarding for the same reason as the other two and one more:
+  // it is served through a `<picture>` `media` query, so a missing file is
+  // invisible at desktop and only breaks the phone — the exact failure a
+  // developer checking their own screen would never see.
   const checks: Array<[string, string, number]> = [[entry.poster, '16:10', 1.6]];
   if (entry.heroPoster) checks.push([entry.heroPoster, '16:9', 16 / 9]);
+  if (entry.heroPosterMobile) checks.push([entry.heroPosterMobile, '16:9', 16 / 9]);
 
   for (const [path, label, target] of checks) {
     const file = join(PUBLIC, path);

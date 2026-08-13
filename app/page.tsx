@@ -44,6 +44,7 @@ export default async function HomePage() {
 
       <HomeHero
         poster={hero.heroPoster ?? hero.poster}
+        posterMobile={hero.heroPosterMobile}
         url={hero.url}
         alt={hero.alt}
         status={statuses[hero.slug]!}

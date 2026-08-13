@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import Image, { getImageProps } from 'next/image';
 import { StatusLine } from '@/components/status-line';
 import type { StatusResult } from '@/lib/status';
 import { cn } from '@/lib/utils';
@@ -36,9 +36,22 @@ import { cn } from '@/lib/utils';
  * is zero layout change. Mobile stays poster + link regardless of the flag.
  *
  * No fake browser chrome — the real product's own UI is what makes it credible.
+ *
+ * ART DIRECTION (`posterMobile`, optional, off for every compact context).
+ * `object-position` cannot crop here: source and frame are both the same ratio,
+ * so there is no overflow to shift, and `cover` only ever crops the axis that
+ * overflows. A genuinely different crop below 1024px therefore needs a second
+ * file — and `next/image` has no art-direction prop, by design. The documented
+ * answer is `getImageProps` feeding a `<picture>`: the browser evaluates
+ * `media` and fetches ONE variant, where two `<Image>`s toggled by `hidden`
+ * would download both on the LCP path. Absent the prop this renders the plain
+ * `<Image>` it always did, byte for byte.
  */
+const SIZES = '(max-width: 1023px) 100vw, 55vw';
+
 export function Frame({
   poster,
+  posterMobile,
   alt,
   ratio = '16/10',
   priority = false,
@@ -47,6 +60,8 @@ export function Frame({
   className,
 }: {
   poster: string;
+  /** Optional <1024px crop of the same capture. See the note above. */
+  posterMobile?: string;
   alt: string;
   ratio?: '16/10' | '16/9';
   priority?: boolean;
@@ -54,6 +69,15 @@ export function Frame({
   viewTransitionName?: string;
   className?: string;
 }) {
+  const common = { alt, fill: true, sizes: SIZES, priority } as const;
+  // One alt, one crop of one capture: the two variants are the same picture, so
+  // a second alt string would describe the same thing twice and read out twice.
+  const { srcSet: wide } = getImageProps({ ...common, src: poster }).props;
+  const { srcSet: narrow, ...fallback } = getImageProps({
+    ...common,
+    src: posterMobile ?? poster,
+  }).props;
+
   return (
     <div
       className={cn('relative w-full overflow-hidden rounded-[12px] border p-0', className)}
@@ -64,14 +88,25 @@ export function Frame({
         ...(viewTransitionName ? { viewTransitionName } : {}),
       }}
     >
-      <Image
-        src={poster}
-        alt={alt}
-        fill
-        priority={priority}
-        sizes="(max-width: 1023px) 100vw, 55vw"
-        className="object-cover object-top"
-      />
+      {posterMobile ? (
+        <picture>
+          <source media="(min-width: 1024px)" srcSet={wide} sizes={SIZES} />
+          <source srcSet={narrow} sizes={SIZES} />
+          {/* Not an unoptimized <img>: every attribute here comes from
+              getImageProps, so this is next/image's own output with a
+              <picture> wrapped around it to carry the media query. */}
+          <img {...fallback} className="object-cover object-top" alt={alt} />
+        </picture>
+      ) : (
+        <Image
+          src={poster}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes={SIZES}
+          className="object-cover object-top"
+        />
+      )}
     </div>
   );
 }

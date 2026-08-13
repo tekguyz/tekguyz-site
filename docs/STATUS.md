@@ -16,7 +16,9 @@ D-04 geometry, the concierge panel's presence motion, and two device-reported
 fixes; **Build Phase 3 shipped** — the privacy rewrite, the FAQ rewrite, and all
 8 detail narratives, measured in `content/work.ts` on 2026-08-13. A production
 outage on 2026-08-12, caused by the Phase 2 work and self-resolved, is recorded
-below — read it before the next push to `master`.)
+below — read it before the next push to `master`. **Homepage flow Wave 1 shipped
+2026-08-13** — hero + `closing-cta` reworked as a matched pair; see that section
+and `docs/plans/2026-08-13-homepage-flow.md`.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -65,7 +67,8 @@ presence now all exist.
 
 | Item | Note |
 | --- | --- |
-| **Recapture 8 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. `sarah-poster.webp` is the 16:9 hero — leave it. Then `bun run check:media`. Current, all wrong: `field-ops-thumb` 769×754 · `sarah-thumb` 1080×1059 · `shopify-configurator` 1080×1140 · `crunch-wrap-dashboard` 1080×1038 · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 |
+| **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot |
+| **Recapture 8 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. ~~`sarah-poster.webp` is the 16:9 hero — leave it.~~ **Superseded by the row above — it needs recapturing too, for reasons this line was written before anyone had looked at it closely.** Then `bun run check:media`. Current, all wrong: `field-ops-thumb` 769×754 · `sarah-thumb` 1080×1059 · `shopify-configurator` 1080×1140 · `crunch-wrap-dashboard` 1080×1038 · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 |
 | **Privacy policy — legal review** | Rewritten and shipped 2026-08-12 from measured data flows; **not yet legally reviewed**, and the page has never claimed otherwise. Specific open question for the reviewer: no cookie-consent or state-specific (CCPA etc.) language was added, per the user's call — confirm that's right for the actual traffic and customer base |
 
 ## Open — code
@@ -82,10 +85,40 @@ presence now all exist.
 | **`phaseTaps` in `scripts/audit-mobile.ts` never opens the concierge panel**, so the panel's own controls have never been in the site-wide `tierFail=0` number. Found 2026-08-12 by probing by hand: the three suggestion chips were 40px against a 44px tier — real, pre-existing, and invisible to the sweep. Chips fixed; **the harness blind spot is not**. A panel-open pass belongs in `phaseTaps`, probing the panel's own controls only (an open overlay legitimately covers page content, so a naive sweep with it open would report that as `overlaps`, the same false-positive the launcher already needed an exemption for) | any |
 | 8 detail narratives → `content/work.ts`, render at `/work/[slug]` | 3 |
 | 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17% | 4 |
-| D-07 hero media bleeds through card content above 1440px · D-08 hero poster illegible at 360px | 4 |
+| **D-07 hero media bleeds through card content above 1440px.** Untouched — the desktop panel and its 10vw bleed were not changed on 2026-08-13 and were re-measured unchanged (32px padding, 136px past a 1440px viewport) | 4 |
+| **D-08 hero poster illegible — resolved below 1024px only, still open at desktop-narrow.** 2026-08-13 shipped `heroPosterMobile`: a 1038×584 crop of the same real capture, art-directed in via `<picture>`, legible at ~330px (DESIGN.md §4.9). **The full four-panel capture is still what desktop renders**, so any width that shows it small is unimproved. Closing this fully is still the recapture | 4 |
 | `contact-form.tsx:114` — `react-hooks/incompatible-library` on RHF `watch()`, the **only** lint warning in the repo. Mechanical fix is `useWatch`, but this is the file whose step reconciliation caused the field-contamination bug; wants its own verification pass | 5 |
 | `lib/overlap-verdict.ts` + its 8 tests are now orphaned — the launcher-overlap item they were extracted for was closed by decision. Working and passing, so not deleted in a doc pass | 5 |
 | `site.gbp` is a `share.google` shortlink; `COPY.md` records the resolved URL as `maps?cid=…`. Harmless drift, pick one | any |
+
+## Homepage flow, Wave 1 — shipped 2026-08-13
+
+*Not a Build Phase. This is Wave 1 of the homepage-narrative blueprint from the
+Claude.ai project, recorded verbatim in `docs/plans/2026-08-13-homepage-flow.md`.
+Waves 2 (proof line + "What We Do" hierarchy) and 3 (process teaser) are not
+started. Every figure below was measured on the date.*
+
+**The two bookends — hero and `closing-cta` — reworked in one pass so they
+rhyme.** Both were correctly built against DESIGN.md and underweighted for the
+moments they are. The rhyme is deliberately cheap: one shared token
+(`--tg-surface`) and one shared spacing grammar at two amplitudes. No new
+tokens, no new motion, no new library, no accent reused.
+
+| Shipped | Detail |
+| --- | --- |
+| **Hero panel is desktop-only** | Below 1024px `.tg-hero-frame` dropped its background, border, radius and padding. It had been keeping all four and only shrinking the padding to 24px — a panel at card scale, the exact thing DESIGN.md §4.9 forbids, in the one place the bleed cannot exist. Measured at 375px before: **33.2% of the panel box was empty `--tg-surface`** (30.0% at 430px). Poster went 278 → 327px wide, **+38% area**. Desktop re-measured unchanged |
+| **Hero art direction** | `heroPosterMobile` → `sarah-poster-mobile.webp`, 1038×584, a crop of the same real capture at (12, 316). Legible at ~330px; 33KB against the source's 117KB. `Frame` gained an optional `posterMobile` prop using `getImageProps` + `<picture>`, so exactly one variant is fetched. **Off for every compact context**, which renders the identical `<Image>` as before |
+| **Hero rhythm** | 36 / 32 / 40 → **24 · 32 · 48/64 · 80**. The near-linear ramp v2.5 fixed in `closing-cta` and never applied here. DESIGN.md §4.16, new |
+| **`gap-y-14` deleted from the hero grid** | It had **never applied** — `.tg-grid`'s `gap` is unlayered and beats a layered `row-gap`. Same silent drop as the case-study `gap-y-12`. The 56px was always `.tg-hero-frame`'s `margin-top` |
+| **`closing-cta` has a ground** | `--tg-surface`, full-bleed, one declaration. The stripe above becomes its lid, the dark footer its floor. Not a card — v2.5 rejected *boxing the stack*, which this is not. Applies to all seven routes carrying the component |
+| **`closing-cta` padding** | 40/32/48 → **64/48 top, 80/64 bottom**. Safe because the ground changed what the number measures: the canvas gap a visitor actually reads **went down**, 110 → 68px desktop. §3's shed-rhythm invariant re-measured intact (64/40) |
+| **Neither button size changed** | Re-justified rather than bumped. `closing-cta` keeps `large` (alone, terminal). The hero keeps `default` — its ask is a *pair*, and §4.1's 14×24 secondary exists to paint the same height as a 15×24 primary, so there is no `large` secondary to pair with. DESIGN.md §4.1 / §4.5 |
+
+**Needs the user's eyes, not more code:** full-motion behaviour (this machine
+runs `MinAnimate = 0`, so `reduce` matches machine-wide — the reduced-motion half
+is verified and the motion-enabled half is not), and the two recapture defects in
+the row above. **Thin margin to watch:** the hero CTA row clears the fold by
+**18px at 1280 × 720**, down from 24px.
 
 ## Build Phase 1 — shipped 2026-08-12
 
