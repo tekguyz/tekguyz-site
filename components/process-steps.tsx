@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { STRIPE_ORDER, accent } from '@/config/solutions';
 import { processSteps } from '@/content/process';
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 
 /**
  * The ONE pinned moment on the site, /process only.
@@ -37,16 +38,14 @@ import { processSteps } from '@/content/process';
 export function ProcessSteps() {
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
-  const [reduced, setReduced] = useState(false);
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const apply = () => setReduced(mq.matches);
-    apply();
-    mq.addEventListener('change', apply);
-    return () => mq.removeEventListener('change', apply);
-  }, []);
+  /* This file used to carry its own character-identical copy of the query +
+     `change` listener that `load-sequence.tsx` had already named as a hook —
+     the copy existed only because the original was trapped in a component file
+     and could not be imported without importing the load sequence. Shared as of
+     2026-08-13; behaviour is unchanged. */
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     if (reduced) return;

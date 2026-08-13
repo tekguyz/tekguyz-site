@@ -1,7 +1,8 @@
 'use client';
 
 import { motion, type Variants } from 'motion/react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 
 /**
  * The hero load sequence and its closing-CTA echo.
@@ -41,18 +42,12 @@ export type SequenceRole = keyof typeof DELAY;
 const DURATION = 0.5;
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-/** Mount-gated so the first client render always matches the server's. */
-function useReducedAfterMount(): boolean {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const apply = () => setReduced(mq.matches);
-    apply();
-    mq.addEventListener('change', apply);
-    return () => mq.removeEventListener('change', apply);
-  }, []);
-  return reduced;
-}
+/* Mount-gated so the first client render always matches the server's. The hook
+   lived here as `useReducedAfterMount` until 2026-08-13; it now lives in
+   `hooks/use-prefers-reduced-motion.ts` because `process-steps.tsx` carried a
+   character-identical copy of it and the two could drift silently — this machine
+   runs with animations off, so a divergence would never surface visually. The
+   implementation was moved verbatim; see that file's header. */
 
 function variantsFor(role: SequenceRole, instant: boolean): Variants {
   const transition = instant
@@ -102,7 +97,7 @@ export function SequenceItem({
   children: ReactNode;
   className?: string;
 }) {
-  const instant = useReducedAfterMount();
+  const instant = usePrefersReducedMotion();
   return (
     <motion.div
       variants={variantsFor(role, instant)}
@@ -122,7 +117,7 @@ const DOTS = [
 
 /** The flourish dots, staggered 60ms apart, as the sequence's first beat. */
 export function SequenceDots({ className }: { className?: string }) {
-  const instant = useReducedAfterMount();
+  const instant = usePrefersReducedMotion();
 
   return (
     <div aria-hidden className={className} style={{ display: 'flex', gap: '9px' }}>
