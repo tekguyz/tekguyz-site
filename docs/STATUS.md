@@ -18,7 +18,10 @@ fixes; **Build Phase 3 shipped** — the privacy rewrite, the FAQ rewrite, and a
 outage on 2026-08-12, caused by the Phase 2 work and self-resolved, is recorded
 below — read it before the next push to `master`. **Homepage flow Waves 1, 2 and
 3 all shipped 2026-08-13** — the plan in `docs/plans/2026-08-13-homepage-flow.md`
-is complete; see the three sections below.)
+is complete; see the three sections below. **Build Phase 5 was rescoped
+2026-08-13 by measurement** — its line counts were stale and its "split the big
+files" premise did not survive the component audit; two dedup items shipped, and
+three token/sharing decisions are waiting on the user. See the audit section.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -51,7 +54,7 @@ Claude.ai first.*
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see below |
 | **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Partly shipped 2026-08-12** — privacy rewrite + FAQ rewrite done; 8 detail narratives not started |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
-| **5** | Refactor: `concierge.tsx` 526 lines, `contact-form.tsx` 440, `actions/contact.ts` 423 | Last |
+| **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the audit section below. Not "split the big files": `concierge.tsx` **709**, `contact-form.tsx` **428**, `actions/contact.ts` **393** (the old 526/440/423 were stale and no longer measurable). Two of the audit's dedup items are **shipped**; the rest is repetition and coupling, not size | Last — two items shipped 2026-08-13 |
 
 **Phase 1 was the real work.** DESIGN.md was assembled ad-hoc, the Claude Design
 export was never fully implemented, and `frontend-design` had never been invoked
@@ -90,6 +93,69 @@ presence now all exist.
 | `contact-form.tsx:114` — `react-hooks/incompatible-library` on RHF `watch()`, the **only** lint warning in the repo. Mechanical fix is `useWatch`, but this is the file whose step reconciliation caused the field-contamination bug; wants its own verification pass | 5 |
 | `lib/overlap-verdict.ts` + its 8 tests are now orphaned — the launcher-overlap item they were extracted for was closed by decision. Working and passing, so not deleted in a doc pass | 5 |
 | `site.gbp` is a `share.google` shortlink; `COPY.md` records the resolved URL as `maps?cid=…`. Harmless drift, pick one | any |
+
+## Component audit — 2026-08-13, and what it did to Phase 5
+
+*Full report: `docs/audits/2026-08-13-component-audit.md`. All 30 files in
+`components/` read in full, plus `app/actions/contact.ts` and the relevant parts
+of `lib/`. Every figure below was measured on the date.*
+
+**Phase 5's old line counts were stale and its framing was wrong.** The row read
+`concierge.tsx` 526 / `contact-form.tsx` 440 / `actions/contact.ts` 423; measured
+2026-08-13 they are **709 / 428 / 393**. More importantly the premise — big files
+need splitting — did not survive measurement:
+
+- **Only two files in `components/` exceed 300 lines**, and they are the two
+  already scoped. There is no third oversized file.
+- **`concierge.tsx` is not a split candidate on size.** Its 11 effects are
+  mutually coupled by design — `sheetRef` exists specifically to keep sheet mode
+  out of the focus effect's dependencies, guarding a documented Android
+  soft-keyboard loop. At ~51 bytes/line it is roughly double the repo average
+  because it carries its incident history inline.
+- **`contact-form.tsx` is repetition, not size** — eight hand-wired label /
+  control / error triples. Its Zod schema only *looks* duplicated against
+  `actions/contact.ts`; the asymmetry is deliberate and documented on both sides.
+- **`actions/contact.ts` is already decomposed correctly.** No action.
+
+**Shipped 2026-08-13:**
+
+| What | Commit |
+| --- | --- |
+| **One shared `prefers-reduced-motion` hook.** `load-sequence.tsx` named it `useReducedAfterMount`; `process-steps.tsx` carried a character-identical re-inlined copy. Moved verbatim to `hooks/use-prefers-reduced-motion.ts` — same query, same `change` subscription, same mount-gated initial `false`. Establishes `hooks/`, which did not exist. **`reveal.tsx` deliberately not folded in**: its read is a one-shot `.matches` with no listener. Verified with reduce matching — home 12 `.tg-seq` nodes at opacity 1 / transform none, `/process` 4 rail labels at weight 400 with the readout pinned at Step 01 of 04 | `1b30f0a` |
+| **One concierge failure message.** `route.ts`'s `ERROR_REPLY` and `concierge.tsx`'s own literal were two different sentences for one failure — the client's stopped at the email address, the route's went on to "and we'll pick it up from there" — and neither file referenced the other. Both now import `CONCIERGE_ERROR_REPLY` from `lib/concierge/errors.ts`. **The route's wording survives unedited**, being a strict superset; no new copy was written | `f5160c8` |
+
+**Still open from the audit, ranked (full reasoning in the report):**
+
+| Item | Note |
+| --- | --- |
+| **Outcome block written 3×** | `contact-form.tsx:179-192`, `concierge.tsx:659-673`, `concierge.tsx:675-689` — byte-identical wrapper, dot and body; only the token and strings differ. **Blocked on a decision** — see below |
+| **Concierge transport inline in the view** | `concierge.tsx:401-436` holds the endpoint literal, request shape, three response-field assumptions and the fallback copy. The copy half is now fixed; the transport is not. Deliberately left — real seam, but no second consumer yet, so extracting it now would be speculative |
+| **`contact-form.tsx`: 8 hand-wired field triples** | `:256-303`, `:322-418`. **Local** extraction, not a shared component — one file, eight internal uses. The a11y wiring must survive verbatim: conditional `aria-describedby` (`:352`), `aria-invalid` as `true \| undefined`, the wrapped phone `onChange`, and the `key="step-1"`/`key="step-2"` discipline that sits *outside* any field abstraction |
+| **Body scroll lock, two incompatible restores** | `nav.tsx:74-79` clobbers with `''`; `concierge.tsx:326-333` saves and restores `previous`. Adopt the concierge's contract. Not observed failing — the drawer/panel interaction may make it unreachable today |
+| Scroll-position flag ×2 | `nav.tsx:43-48`, `concierge.tsx:205-210`. Thin on its own; only worth doing alongside the scroll lock, same two files |
+| `mailto:` fallback ×5 | Three treatments across `nav`, `footer-dark`, `contact-form`, `concierge`, `app/error.tsx`. Probably leave — the `tap-44`/`tap-24` variance is legitimate, tier depends on neighbour spacing |
+| `process-steps.tsx:51-79` scroll measurement in the view | Genuine coupling, but extraction needs the four step refs passed in, which preserves most of it. Leave |
+
+**Three items are blocked on a user decision and must not be picked up silently:**
+
+1. **`onInk` hardcoded at 50 sites across 9 files** — `#F5F5F5` / `#9CA3AF` /
+   `#2A2A2C` re-derived by ternary. The fix is dark-context tokens, which lands
+   in `TOKENS.md` and the `check:design` guard. **A token decision, not a
+   component refactor.** Overlaps the existing `footer-dark.tsx` row above.
+2. **The eyebrow treatment at 24 sites** — a token or a layered utility, *not* a
+   component: the colour varies per site and a utility would have to be
+   positioned against unlayered rules in `globals.css`.
+3. **Whether the outcome block should be shared at all** between the contact form
+   and the concierge — two surfaces of one design language that may legitimately
+   want to keep the freedom to diverge.
+
+*One correction the audit owes itself: it argued `concierge.tsx` should not be
+split, but conflated "these 11 effects must stay together" with "they must stay
+in this file." Those are different claims. A split that moves the coupled unit
+whole — effects, `sheetRef` and their comments into one hook, render pieces into
+their own files — does not reopen the bug the coupling protects. That is a live
+option for Phase 5, not something the audit ruled out; it was simply out of scope
+on 2026-08-13.*
 
 ## Homepage flow, Wave 1 — shipped 2026-08-13
 
