@@ -290,19 +290,21 @@ Project managers couldn't verify field work without driving to the site. Crew no
 We built a photo-capture system that installers use on their phones in the field. Photos feed straight into structured digital reports, tied to the job and timestamped, so the record exists before anyone leaves the site. Admins see everything from the office in real time.
 
 **THE OUTCOME**
-Fewer return trips, faster dispute resolution, and clients who trust what they're seeing because they can see it. `[NEEDS REAL DATA — add one concrete number here if you have it]`
+Fewer return trips, faster dispute resolution, and invoices that go out the same day instead of waiting on paperwork from the field.
 
-*(**Outcome resolved 2026-08-10 — and the resolution is that the marker stays.**
-**No real number exists**, so `[NEEDS REAL DATA]` is **never filled and never
-rendered**, per the hard rule. Separately, the sentence is **scheduled for a
-reword**: drop the "seeing / what they're seeing" repetition, and add a
-**faster-billing** outcome. **A stated qualitative outcome the client reported is
-permitted; a fabricated figure is not** — that distinction is the whole point,
-and the reword operates entirely on the permitted side of it. **The reword was
-not written in the prompt that recorded this.**)*
+*(**Closed 2026-08-13 — the reword is written and the marker is retired.**
+History: on 2026-08-10 this line ended in `[NEEDS REAL DATA — add one concrete
+number here if you have it]`, and the resolution then was that the marker stays,
+because **no real number exists** and `[NEEDS REAL DATA]` is **never filled and
+never rendered**, per the hard rule. That reasoning still governs — **no figure
+was invented here.** The scheduled reword has now landed: the "seeing / what
+they're seeing" repetition is gone and the **faster-billing** outcome is stated.
+**A stated qualitative outcome the client reported is permitted; a fabricated
+figure is not** — the reword operates entirely on the permitted side of that
+line, which is why the sentence no longer needs a marker to stand.)*
 
 **PULL QUOTE**
-Fewer return trips, faster dispute resolution, and clients who trust what they're seeing.
+Fewer return trips, faster dispute resolution, and invoices that don't wait on paperwork.
 
 **TRY IT**
 The demo has a switcher at the top — toggle between the Admin view and two different Installer accounts to see both sides of the same job.
@@ -667,7 +669,7 @@ DESCRIPTION: `What information TEKGUYZ collects through this website, why, and h
 
 # WRITING GAPS STILL OPEN
 
-1. ~~`[NEEDS REAL DATA]` on the Field Photo Reports outcome~~ **Resolved 2026-08-10 as: the marker stays.** No real number exists, so it is never filled and never rendered. The sentence is scheduled for a reword (drop the "seeing" repetition, add a faster-billing outcome) — **not written yet**. See the section itself.
+1. ~~`[NEEDS REAL DATA]` on the Field Photo Reports outcome~~ **Closed 2026-08-13.** Resolved 2026-08-10 as "the marker stays" — no real number exists, so it is never filled and never rendered — and the scheduled reword (drop the "seeing" repetition, add a faster-billing outcome) **has now been written**, in `docs/COPY.md` and `content/work.ts` in the same commit. The marker is retired because the sentence stands on a qualitative outcome; **still no invented figure**. See the section itself.
 2. ~~GBP review permalink for the testimonial attribution link~~ **Resolved 2026-08-10.** `https://www.google.com/maps?cid=13204262572880001655`, verified that day. Google offers no durable per-review permalink; the profile URL is the stable substitute, by decision.
 2b. ~~**The concierge footer disclaimer is now an open slot** (2026-08-10)~~ **Closed 2026-08-12: the disclaimer is deleted, not replaced.** Removed from the panel on the user's instruction. The slot no longer exists and is not to be re-drafted. See the Concierge microcopy section.
 3. Confirm the Field Photo Reports demo still exposes the admin/installer switcher as described, and that the Bundle Builder sandbox still accepts `1` as the test card — both are stated as fact in copy and would be embarrassing if stale.

@@ -84,13 +84,14 @@ export const work: WorkEntry[] = [
       "Project managers couldn't verify field work without driving to the site. Crew notes came back too messy to share with a client, so any dispute about what was actually done turned into someone's word against someone else's — and usually a return trip to find out.",
     approach:
       'We built a photo-capture system that installers use on their phones in the field. Photos feed straight into structured digital reports, tied to the job and timestamped, so the record exists before anyone leaves the site. Admins see everything from the office in real time.',
-    // COPY.md carries a [NEEDS REAL DATA] marker after this sentence. Per
-    // CLAUDE.md those are never filled, and the marker is never rendered. The
-    // sentence below is COPY.md's own wording and stands without a statistic.
+    // Reworded 2026-08-13, in sync with COPY.md: the "seeing / what they're
+    // seeing" repetition is gone and the faster-billing outcome is stated.
+    // Still no statistic — the [NEEDS REAL DATA] marker was never filled and
+    // is now retired, because a qualitative outcome carries the sentence.
     outcome:
-      "Fewer return trips, faster dispute resolution, and clients who trust what they're seeing because they can see it — with no site visit required to confirm any of it.",
+      'Fewer return trips, faster dispute resolution, and invoices that go out the same day instead of waiting on paperwork from the field.',
     pullQuote:
-      "Fewer return trips, faster dispute resolution, and clients who trust what they're seeing.",
+      "Fewer return trips, faster dispute resolution, and invoices that don't wait on paperwork.",
     tryIt:
       'The demo has a switcher at the top — toggle between the Admin view and two different Installer accounts to see both sides of the same job.',
     howItsBuilt:

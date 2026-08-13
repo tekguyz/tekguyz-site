@@ -127,9 +127,20 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
    paraphrased second version). They cover every topic this row asked for:
    pricing, timeline, nationwide-remote, working with existing systems, what
    happens post-launch, and whether the demos are real.
-3. **Eight detail narratives need writing.** — **still open.** Case studies have
-   compressed Challenge/Approach/Outcome material; projects have one description
-   line each. Lives in `content/work.ts`; renders at `/work/[slug]`. Phase 3.
+3. ~~**Eight detail narratives need writing.**~~ **Resolved 2026-08-13, Build
+   Phase 3.** True when written — case studies carried compressed
+   Challenge/Approach/Outcome material and projects had one description line
+   each. Measured in `content/work.ts` before this row was closed: **all 8
+   entries carry full narrative content, none a stub.** The 4 case studies
+   (`field-photo-reports`, `ai-voice-receptionist`, `bundle-builder`,
+   `ai-audio-file-insights`) each carry `challenge`, `approach`, `outcome`,
+   `pullQuote`, `tryIt` and `howItsBuilt`; the 4 projects (`team-performance`,
+   `meeting-organizer`, `restaurant-menu`, `auto-detailer`) each carry
+   `builtFor`, `summary` and `whatMadeItInteresting`. All verbatim from
+   `docs/COPY.md`; renders at `/work/[slug]`. The one copy defect found in the
+   same pass — Field Photo Reports' Outcome/Pull Quote — was reworded in
+   `content/work.ts` and `COPY.md` in the same commit, with **no invented
+   figure**.
 4. ~~**Footer location drift.**~~ **Resolved before this row was last read.**
    `docs/COPY.md:69` corrected it to "South Florida," and code agrees everywhere
    — `lib/site.ts:15`, `lib/seo.ts:85`/`:105`, `content/faq.ts:23`. No

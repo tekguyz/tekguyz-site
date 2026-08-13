@@ -11,12 +11,12 @@ build), GBP Services (live in the user's GBP for months), and the footer locatio
 drift (fixed in `COPY.md:69`). All three had been quoted back to the user as
 current state. Assert nothing here you have not just measured.*
 
-Last updated: 2026-08-12 (Build Phase 1 shipped; Build Phase 2 partly shipped —
+Last updated: 2026-08-13 (Build Phase 1 shipped; Build Phase 2 partly shipped —
 D-04 geometry, the concierge panel's presence motion, and two device-reported
-fixes; Build Phase 3 partly shipped — the privacy rewrite and the FAQ rewrite,
-not the 8 detail narratives. A same-day production outage, caused by the Phase 2
-work and self-resolved, is recorded below — read it before the next push to
-`master`.)
+fixes; **Build Phase 3 shipped** — the privacy rewrite, the FAQ rewrite, and all
+8 detail narratives, measured in `content/work.ts` on 2026-08-13. A production
+outage on 2026-08-12, caused by the Phase 2 work and self-resolved, is recorded
+below — read it before the next push to `master`.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -257,7 +257,7 @@ measured on the built site, both modes):
 regression from this work.** They are in Open — code and are *not* claimed as
 fixed here.
 
-## Build Phase 3 — partly shipped 2026-08-12
+## Build Phase 3 — shipped 2026-08-13
 
 **Privacy `/privacy` — rewritten, replacing the text live since July 13.** All
 three gaps `COPY.md` had been flagging as "must, before launch" are closed: the
@@ -292,8 +292,26 @@ string appears in `.next/server/app/contact.html`. `bun run build` passes, 97
 tests pass, lint is unchanged at the one pre-existing `contact-form.tsx`
 warning.
 
-**Not done in this phase: the 8 detail narratives** for `content/work.ts` /
-`/work/[slug]`. That row is still open.
+**The 8 detail narratives — done, and measured rather than recalled.**
+`content/work.ts` was read entry by entry on 2026-08-13: all 8 carry full
+narrative content and none is a stub. The 4 case studies
+(`field-photo-reports`, `ai-voice-receptionist`, `bundle-builder`,
+`ai-audio-file-insights`) each carry `challenge`, `approach`, `outcome`,
+`pullQuote`, `tryIt`, `howItsBuilt`; the 4 projects (`team-performance`,
+`meeting-organizer`, `restaurant-menu`, `auto-detailer`) each carry `builtFor`,
+`summary`, `whatMadeItInteresting`. `docs/CANONICAL.md` §5 item 3 is closed with
+the same measurement.
+
+**One copy defect was found in that pass and fixed.** Field Photo Reports'
+Outcome repeated "seeing / what they're seeing" and its faster-billing outcome
+was still unwritten. Outcome now reads *"Fewer return trips, faster dispute
+resolution, and invoices that go out the same day instead of waiting on
+paperwork from the field."*; pull quote *"Fewer return trips, faster dispute
+resolution, and invoices that don't wait on paperwork."* `content/work.ts` and
+`docs/COPY.md` were changed in the same commit so the canonical copy source
+cannot go stale against the code. **No figure was invented** — the retired
+`[NEEDS REAL DATA]` marker's reasoning is preserved in `COPY.md`; the sentence
+now stands on a qualitative outcome, which the hard rule permits.
 
 ## Open — post-launch, deliberately
 
