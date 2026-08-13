@@ -21,7 +21,11 @@ below — read it before the next push to `master`. **Homepage flow Waves 1, 2 a
 is complete; see the three sections below. **Build Phase 5 was rescoped
 2026-08-13 by measurement** — its line counts were stale and its "split the big
 files" premise did not survive the component audit; two dedup items shipped, and
-three token/sharing decisions are waiting on the user. See the audit section.)
+two token/sharing decisions are waiting on the user. See the audit section.
+**The dark-context token audit shipped 2026-08-13, commit `2881076`** — the
+first of the audit's three blocked items resolved into code, leaving two; see
+the "Shipped 2026-08-13" row above. `master` is 4 commits ahead of
+`origin/master`, **unpushed** as of this update.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -52,7 +56,7 @@ Claude.ai first.*
 | **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
 | **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see below |
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see below |
-| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Partly shipped 2026-08-12** — privacy rewrite + FAQ rewrite done; 8 detail narratives not started |
+| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Shipped 2026-08-13** — privacy rewrite, FAQ rewrite, and all 8 detail narratives, see Build Phase 3 below |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
 | **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the audit section below. Not "split the big files": `concierge.tsx` **709**, `contact-form.tsx` **428**, `actions/contact.ts` **393** (the old 526/440/423 were stale and no longer measurable). Two of the audit's dedup items are **shipped**; the rest is repetition and coupling, not size | Last — two items shipped 2026-08-13 |
 
@@ -79,14 +83,9 @@ presence now all exist.
 | Item | Phase |
 | --- | --- |
 | **DESIGN.md §0–§3 still read in the old single voice** — the mandate, icon policy, colour, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. §1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard | 1 |
-| **`footer-dark.tsx` hardcodes `#747C8B` / `#9CA3AF` / `#F5F5F5` as bare hex** at 9 call sites, while `.footer-dark` in `globals.css:115` already defines `--tg-secondary` as exactly `#747C8B` and the scope sets `--tg-fg`. The file's own header comment says "never a bare hex." The old DESIGN.md §4 entry recorded this as `#6B7280` and asked for `muted-dark` "once it is set" — the colour was fixed, the mechanism never was. Measured 2026-08-12; `#6B7280` no longer appears anywhere in the repo | any |
-| **`nav.tsx:104` hardcodes `240ms` in an inline `transition` string** rather than `var(--dur-base)`. It agrees with the token today by coincidence, not by reference, and `check:design` cannot see an inline style — so the token could move and the nav would silently keep the old value. Measured 2026-08-12 | any |
-| **`.ink-band` sets `--tg-secondary: #9ca3af`** (`globals.css:104`), which is `muted-soft` — retired as a text colour by `TOKENS.md`, valid only for dots and the concierge indicator. Not an accessibility failure: it computes to 7.43:1 on `#111111`. It is the rule being broken silently, which is the part worth deciding rather than leaving. Measured 2026-08-12 | any |
-| **`TOKENS.md`'s type section claims Geist Mono ships in three places** — "status-line timestamps, Process numerals, tag labels." Measured 2026-08-12: mono appears in exactly two, `status-line.tsx:62` (the whole line, not just the timestamp) and `concierge/markdown.tsx:73`. Process numerals and tag labels carry no mono class. Prose, so `check:design` does not catch it | any |
 | Density scale adopted by `testimonial.tsx` only — but see the note below on what the density problem actually turned out to be | 1 |
 | **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
 | **`phaseTaps` in `scripts/audit-mobile.ts` never opens the concierge panel**, so the panel's own controls have never been in the site-wide `tierFail=0` number. Found 2026-08-12 by probing by hand: the three suggestion chips were 40px against a 44px tier — real, pre-existing, and invisible to the sweep. Chips fixed; **the harness blind spot is not**. A panel-open pass belongs in `phaseTaps`, probing the panel's own controls only (an open overlay legitimately covers page content, so a naive sweep with it open would report that as `overlaps`, the same false-positive the launcher already needed an exemption for) | any |
-| 8 detail narratives → `content/work.ts`, render at `/work/[slug]` | 3 |
 | 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17% | 4 |
 | **D-07 hero media bleeds through card content above 1440px.** Untouched — the desktop panel and its 10vw bleed were not changed on 2026-08-13 and were re-measured unchanged (32px padding, 136px past a 1440px viewport) | 4 |
 | **D-08 hero poster illegible — resolved below 1024px only, still open at desktop-narrow.** 2026-08-13 shipped `heroPosterMobile`: a 1038×584 crop of the same real capture, art-directed in via `<picture>`, legible at ~330px (DESIGN.md §4.9). **The full four-panel capture is still what desktop renders**, so any width that shows it small is unimproved. Closing this fully is still the recapture | 4 |
@@ -123,6 +122,7 @@ need splitting — did not survive measurement:
 | --- | --- |
 | **One shared `prefers-reduced-motion` hook.** `load-sequence.tsx` named it `useReducedAfterMount`; `process-steps.tsx` carried a character-identical re-inlined copy. Moved verbatim to `hooks/use-prefers-reduced-motion.ts` — same query, same `change` subscription, same mount-gated initial `false`. Establishes `hooks/`, which did not exist. **`reveal.tsx` deliberately not folded in**: its read is a one-shot `.matches` with no listener. Verified with reduce matching — home 12 `.tg-seq` nodes at opacity 1 / transform none, `/process` 4 rail labels at weight 400 with the readout pinned at Step 01 of 04 | `1b30f0a` |
 | **One concierge failure message.** `route.ts`'s `ERROR_REPLY` and `concierge.tsx`'s own literal were two different sentences for one failure — the client's stopped at the email address, the route's went on to "and we'll pick it up from there" — and neither file referenced the other. Both now import `CONCIERGE_ERROR_REPLY` from `lib/concierge/errors.ts`. **The route's wording survives unedited**, being a strict superset; no new copy was written | `f5160c8` |
+| **Dark-context token audit — blocked item 1 resolved.** `footer-dark.tsx`, `live-frame.tsx`, `page-hero.tsx`, `pull-quote.tsx`, `status-line.tsx`, `app/page.tsx` no longer re-derive `--tg-fg`/`--tg-secondary`/`--tg-border` via `onInk` ternaries — the `.ink-band`/`.footer-dark` scope roots are read directly, and every `onInk` prop that existed only to drive that ternary is gone from six components and five call sites. `testimonial.tsx` had no scope root at all (a dark card on a light-mode page) — it now carries `.ink-band` itself rather than hardcoding the same four values. `.ink-band`'s `--tg-secondary` moved off `#9ca3af` (`muted-soft`, retired as a text colour) to `muted-dark`, matching `.footer-dark` and closing the second undocumented exception; contrast on `#111111` goes 7.5:1 → 4.53:1, still AA but the margin is thin — **worth the user's eyes if the band ever darkens further.** `nav.tsx:104` reads `var(--dur-base)` instead of a `240ms` literal that agreed with the token by coincidence. `TOKENS.md`'s mono-usage sentence corrected to the measured two places. New `scripts/check-hex.ts`, wired into `prebuild`, bans the five retired hex values from any `.tsx` outside `globals.css` — exempts comments and Next metadata routes (`opengraph-image`, `manifest`, etc.) that render outside the CSS cascade. Verified by injecting a hex into `pull-quote.tsx` and confirming the guard caught it, then reverting | `2881076` |
 
 **Still open from the audit, ranked (full reasoning in the report):**
 
@@ -136,18 +136,22 @@ need splitting — did not survive measurement:
 | `mailto:` fallback ×5 | Three treatments across `nav`, `footer-dark`, `contact-form`, `concierge`, `app/error.tsx`. Probably leave — the `tap-44`/`tap-24` variance is legitimate, tier depends on neighbour spacing |
 | `process-steps.tsx:51-79` scroll measurement in the view | Genuine coupling, but extraction needs the four step refs passed in, which preserves most of it. Leave |
 
-**Three items are blocked on a user decision and must not be picked up silently:**
+**Two items are blocked on a user decision and must not be picked up silently:**
 
-1. **`onInk` hardcoded at 50 sites across 9 files** — `#F5F5F5` / `#9CA3AF` /
-   `#2A2A2C` re-derived by ternary. The fix is dark-context tokens, which lands
-   in `TOKENS.md` and the `check:design` guard. **A token decision, not a
-   component refactor.** Overlaps the existing `footer-dark.tsx` row above.
-2. **The eyebrow treatment at 24 sites** — a token or a layered utility, *not* a
+1. **The eyebrow treatment at 24 sites** — a token or a layered utility, *not* a
    component: the colour varies per site and a utility would have to be
    positioned against unlayered rules in `globals.css`.
-3. **Whether the outcome block should be shared at all** between the contact form
+2. **Whether the outcome block should be shared at all** between the contact form
    and the concierge — two surfaces of one design language that may legitimately
    want to keep the freedom to diverge.
+
+**Item 1 from this list is now shipped, 2026-08-13** — see the dark-context
+token audit section below. It surfaced two things the write-up above didn't
+anticipate: `testimonial.tsx` had no scope root to read from at all (a dark
+card with no `.ink-band`/`.footer-dark` ancestor), and `footer-dark.tsx`'s own
+literals disagreed with its own scope's `--tg-secondary` — the file carried
+`#9CA3AF` while `.footer-dark` said `#747C8B`, so two different secondary
+greys shipped from one file.
 
 *One correction the audit owes itself: it argued `concierge.tsx` should not be
 split, but conflated "these 11 effects must stay together" with "they must stay
