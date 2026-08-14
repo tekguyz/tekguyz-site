@@ -23,10 +23,14 @@ is complete; see the three sections below. **Build Phase 5 was rescoped
 files" premise did not survive the component audit; two dedup items shipped, and
 two token/sharing decisions are waiting on the user. See the audit section.
 **The dark-context token audit shipped 2026-08-13, commit `2881076`**, and **the
-outcome block was extracted 2026-08-13, commit `09c1339`** — two of the audit's
-three blocked items now resolved into code, leaving one (the eyebrow
-treatment); see the "Shipped 2026-08-13" rows above. `master` is 1 commit ahead
-of `origin/master`, **unpushed** as of this update — measured, not inferred.)
+outcome block was extracted 2026-08-13, commit `09c1339`** — and **the eyebrow
+treatment, the last of the audit's three blocked items, shipped 2026-08-13 as
+`.tg-eyebrow`, commit `a24b01e`. All three are now resolved into code.** A
+five-item close-out pass the same day also cleared the `phaseTaps` panel blind
+spot, the last lint warning, and the `site.gbp` drift, and established that
+`lib/overlap-verdict.ts` was never orphaned — see the "Open — code" table.
+`master` is **5 commits ahead of `origin/master`, unpushed** as of this update —
+measured, not inferred.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -86,13 +90,14 @@ presence now all exist.
 | **DESIGN.md §0–§3 still read in the old single voice** — the mandate, icon policy, colour, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. §1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard | 1 |
 | Density scale adopted by `testimonial.tsx` only — but see the note below on what the density problem actually turned out to be | 1 |
 | **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
-| **`phaseTaps` in `scripts/audit-mobile.ts` never opens the concierge panel**, so the panel's own controls have never been in the site-wide `tierFail=0` number. Found 2026-08-12 by probing by hand: the three suggestion chips were 40px against a 44px tier — real, pre-existing, and invisible to the sweep. Chips fixed; **the harness blind spot is not**. A panel-open pass belongs in `phaseTaps`, probing the panel's own controls only (an open overlay legitimately covers page content, so a naive sweep with it open would report that as `overlaps`, the same false-positive the launcher already needed an exemption for) | any |
+| ~~**`phaseTaps` never opens the concierge panel**~~ **Closed 2026-08-13, commit `ac54202`.** Panel-open pass added per viewport/theme combo: it clicks the real launcher (`concierge.tsx` untouched) and `window.__tapScope` restricts `TAP_PROBE` to the dialog's subtree. The launcher exemption was **widened, not duplicated** — `isOverlay` exempts a thief inside the scoped overlay stealing from a target outside it; overlay-to-overlay theft stays a defect. Two guards against a silent clean zero: a pass that cannot open the panel reports `ran: false` with a reason, and one that probed nothing is flagged `vacuous`. Measured on all 9 combos: `probed=30`, `tierFail=0`, `overlaps=0`, none vacuous — **the chips now hit-test as passing, so the 2026-08-12 fix is covered rather than assumed**. One new bucket, `radiusClipped`, added because the pass's first finding was a false positive — see the row below | — |
+| **`radiusClipped`: the concierge close button loses its four corners to its own `border-radius`.** 44×44, `border-radius: 6px`, no `tap-44` declaration — so its tier box equals its painted box, and `TAP_PROBE`'s corner points (1px inside each edge) sit 7.07px from a 6px arc's centre, outside the shape. `elementFromPoint` honours that, so all four corners return the parent. **Not a tap failure** — ~1% of corner area, not a target a finger can miss — which is why it is classified rather than counted as `tierFail`. Recorded because it is the one thing the new pass found. Fixing it would mean declaring `tap-44` on the button, which is a `concierge.tsx` change and was deliberately out of scope for the harness commit | any |
 | 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17% | 4 |
 | **D-07 hero media bleeds through card content above 1440px.** Untouched — the desktop panel and its 10vw bleed were not changed on 2026-08-13 and were re-measured unchanged (32px padding, 136px past a 1440px viewport) | 4 |
 | **D-08 hero poster illegible — resolved below 1024px only, still open at desktop-narrow.** 2026-08-13 shipped `heroPosterMobile`: a 1038×584 crop of the same real capture, art-directed in via `<picture>`, legible at ~330px (DESIGN.md §4.9). **The full four-panel capture is still what desktop renders**, so any width that shows it small is unimproved. Closing this fully is still the recapture | 4 |
-| `contact-form.tsx:114` — `react-hooks/incompatible-library` on RHF `watch()`, the **only** lint warning in the repo. Mechanical fix is `useWatch`, but this is the file whose step reconciliation caused the field-contamination bug; wants its own verification pass | 5 |
-| `lib/overlap-verdict.ts` + its 8 tests are now orphaned — the launcher-overlap item they were extracted for was closed by decision. Working and passing, so not deleted in a doc pass | 5 |
-| `site.gbp` is a `share.google` shortlink; `COPY.md` records the resolved URL as `maps?cid=…`. Harmless drift, pick one | any |
+| ~~`contact-form.tsx` — `react-hooks/incompatible-library` on RHF `watch()`~~ **Closed 2026-08-13, commit `6a6ee41`.** Now `useWatch`. Un-skipping the React Compiler for the file **surfaced two errors the bailout had been masking**, both pre-existing and both fixed in the same commit: `useRef(Date.now())` (`react-hooks/purity` — the argument is evaluated every render) is now a lazy `useState` initializer, which also resolved `handleSubmit(onSubmit)` reading a ref during render (`react-hooks/refs`), since `onSubmit` closed over it. **Lint is now 0 errors / 0 warnings.** Step reconciliation untouched; verified in-browser that `?interest=` still presets, step 2 renders with every field empty (no contamination), and the placeholder still tracks the interest | — |
+| ~~`lib/overlap-verdict.ts` + its tests are orphaned~~ **This row was wrong — measured 2026-08-13, files kept.** `scripts/probe-control.ts:18` imports `verdictFor` and calls it at `:90`; it is the D-02 positive control and its stated purpose is to run the real rule rather than a local reimplementation, so deleting the module would break it. What *was* wrong is a comment in `audit-mobile.ts` claiming `phaseClasses` "runs the shared verdict rule" — it never imported it, it emits `Sample`-shaped rows for the rule to consume. Comment corrected, commit `fde3441` | — |
+| ~~`site.gbp` is a `share.google` shortlink while `COPY.md` records `maps?cid=…`~~ **Closed 2026-08-13, commit `480bc78`.** Not a coin-flip: COPY.md §2 of "WRITING GAPS STILL OPEN" recorded the `cid` URL as resolved, verified 2026-08-10, **by decision** — the code had drifted from a recorded decision, and COPY.md is the authority for this link. The `cid` is Google's stable place identifier and auditable on sight; a `share.google` link is an external redirector whose target can change or be revoked with no change to this repo. Re-verified 200 on 2026-08-13. One consumer: `components/testimonial.tsx:95` | — |
 
 ## Component audit — 2026-08-13, and what it did to Phase 5
 
@@ -137,11 +142,22 @@ need splitting — did not survive measurement:
 | `mailto:` fallback ×5 | Three treatments across `nav`, `footer-dark`, `contact-form`, `concierge`, `app/error.tsx`. Probably leave — the `tap-44`/`tap-24` variance is legitimate, tier depends on neighbour spacing |
 | `process-steps.tsx:51-79` scroll measurement in the view | Genuine coupling, but extraction needs the four step refs passed in, which preserves most of it. Leave |
 
-**One item is blocked on a user decision and must not be picked up silently:**
+**The audit's last blocked item is now released and shipped:**
 
-1. **The eyebrow treatment at 24 sites** — a token or a layered utility, *not* a
-   component: the colour varies per site and a utility would have to be
-   positioned against unlayered rules in `globals.css`.
+1. ~~**The eyebrow treatment at 24 sites**~~ **Shipped 2026-08-13 as
+   `.tg-eyebrow`, commit `a24b01e`** — the user released it with the approach
+   named: a layered utility, colour routed through the existing accent
+   resolution. It is the **one layered block in `globals.css`**, in
+   `@layer components`, and the layer is the mechanism: Tailwind's import
+   declares `theme, base, components, utilities`, so the rule loses to every
+   call-site utility. That is the required direction — call sites still set
+   colour (`text-secondary`) and margin (`mb-6`, `mb-10`) as utilities, and
+   unlayered it would have beaten `text-secondary` and repainted two thirds of
+   the site's eyebrows. Colour is deliberately **not** in the class; the
+   accent-coloured eyebrows already resolve `a.text` from `config/solutions.ts`,
+   the same `-text` resolution that drives dots and tags, and that path was not
+   touched. Measured after: all 25 elements compute
+   12px / 16.8px / 700 / 1.2px / uppercase with colours unchanged.
 
 *The outcome block was the second blocked item — "should these two surfaces be
 shared at all, given they may want to diverge." The user released it on
