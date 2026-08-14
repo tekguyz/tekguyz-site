@@ -22,10 +22,11 @@ is complete; see the three sections below. **Build Phase 5 was rescoped
 2026-08-13 by measurement** — its line counts were stale and its "split the big
 files" premise did not survive the component audit; two dedup items shipped, and
 two token/sharing decisions are waiting on the user. See the audit section.
-**The dark-context token audit shipped 2026-08-13, commit `2881076`** — the
-first of the audit's three blocked items resolved into code, leaving two; see
-the "Shipped 2026-08-13" row above. `master` is 4 commits ahead of
-`origin/master`, **unpushed** as of this update.)
+**The dark-context token audit shipped 2026-08-13, commit `2881076`**, and **the
+outcome block was extracted 2026-08-13, commit `09c1339`** — two of the audit's
+three blocked items now resolved into code, leaving one (the eyebrow
+treatment); see the "Shipped 2026-08-13" rows above. `master` is 1 commit ahead
+of `origin/master`, **unpushed** as of this update — measured, not inferred.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
