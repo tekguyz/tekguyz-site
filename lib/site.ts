@@ -27,9 +27,19 @@ export const site = {
   /**
    * Google Business Profile listing. COPY.md's testimonial asks for a "Read it
    * on Google" link and marks the direct review permalink as still open, so
-   * this points at the listing rather than the individual review.
+   * this points at the listing rather than the individual review — Google
+   * offers no durable per-review permalink, and the profile URL is the stable
+   * substitute by decision (COPY.md, "WRITING GAPS STILL OPEN" §2).
+   *
+   * The `cid=` form, NOT the `share.google/…` shortlink this used to hold.
+   * COPY.md recorded this exact URL as the resolved one on 2026-08-10 and the
+   * code kept the shortlink, so the two drifted. The cid is Google's stable
+   * place identifier and is auditable on sight; a `share.google` link is an
+   * external redirector whose target can change or be revoked without any
+   * change to this repo, which is the drift class that has bitten this project
+   * before. Re-verified 200 on 2026-08-13.
    */
-  gbp: 'https://share.google/7N09GDWh3d0R1UhEY',
+  gbp: 'https://www.google.com/maps?cid=13204262572880001655',
 } as const;
 
 export type Site = typeof site;
