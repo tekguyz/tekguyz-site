@@ -29,9 +29,18 @@ treatment, the last of the audit's three blocked items, shipped 2026-08-13 as
 five-item close-out pass the same day also cleared the `phaseTaps` panel blind
 spot, the last lint warning, and the `site.gbp` drift, and established that
 `lib/overlap-verdict.ts` was never orphaned — see the "Open — code" table.
-`master` is **6 commits ahead of `origin/master`, unpushed** as of this update —
-measured 2026-08-13 via `git status -sb`, `origin/master` at `432523b`. Not
-inferred.)
+~~`master` is **6 commits ahead of `origin/master`, unpushed**~~ — **corrected
+2026-08-14: it was 7, and then 9.** The line above was written into the commit
+that made it 7, so it was stale the instant it was authored — the same
+self-referential trap the two preceding STATUS.md commits were fixing. Measured
+2026-08-14 via `git status -sb`: `origin/master` at `432523b`, and
+`list_deployments` confirms `432523b` is the READY production deployment, so
+**everything after it had not deployed.** All of it was pushed on 2026-08-14 —
+see the homepage-fold section below for the push and its confirmation.)
+
+**Last updated 2026-08-14** (homepage fold rebuilt — see the section below. The
+`Last updated` paragraph above it is 2026-08-13's and is left standing as the
+record of that day.)
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -211,7 +220,45 @@ is verified and the motion-enabled half is not), and the two recapture defects i
 the row above. **Thin margin to watch:** the hero CTA row clears the fold by
 **18px at 1280 × 720**, down from 24px.
 
+## Homepage fold — rebuilt 2026-08-14 (`0b047d5`)
+
+*Hero, proof strip, build board. Replaces the `proof-line` band Wave 2 tuned
+(below). Every figure measured on the date. Full reasoning: DESIGN.md §4.18.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Proof strip replaces the proof line** | Three checkable facts — eight live builds · a verified Google review · `site.locationLong` — on an elevated, hairline-divided panel, icon inline with each claim. One sentence between two hairlines had been carrying the site's whole differentiator. `site.gbp` and `site.locationLong` are read from `lib/site.ts`, not retyped |
+| **Build board — four builds, one per solution line** | In `STRIPE_ORDER`, so the fold is a **legend** for the wayfinding system the rest of the page uses. Selection is content: `foldSlugs` in `content/work.ts`. Each slot avoids a build shown elsewhere on the page; amber is `team-performance` because that is the build the Google review describes. The whole card opens the **live product** in a new tab — one action per card, resolving `project-card`'s ambiguity the other way because the fold's job is the opposite of `/work`'s |
+| **Hero headline commits** | "We build the systems your business runs on," compressed from PLAYBOOK §1's tagline. Subhead stops after §1's core belief. **Local clamp 44→76px, not `--text-hero`** — the token still serves six routes via `page-hero`. Re-measured, not assumed: **3 lines exactly at 1280, and the CTA row clears a 1280×720 fold by 30px, against the 18px recorded 2026-08-13** |
+| **Three scoped exceptions, none generalised** | `lucide-react` icons at `strokeWidth 1.5` to match the site's drawn hairlines · `.tg-elevate` / `.tg-lift` on **these two components only** · richer entrance motion reusing `hooks/use-prefers-reduced-motion.ts`. All three are dated decisions in DESIGN.md §4.18; TOKENS.md's "elevation is flat" now carries the exception by name |
+| **The hover lift is `translate`, not `transform`** | Inverted from `.hover-card`, and load-bearing: Motion writes its `y` entrance as an **inline** `transform`, which beats any class — a `transform`-based lift would never have applied once the entrance settled. All three transitioned properties declared together, since a `transition` shorthand resets every one |
+| **§4.4's affordance decision moved, not dropped** | The `tg-rule tg-rule-rest` link is now "See all eight builds" at the end of the board. §4.4 is marked **superseded as a component, retained as reasoning** |
+| **Reduced motion verified by measurement** | 8 `.tg-seq` nodes in the new section, **0 opacity/transform violations, 0 hidden elements**, all transition durations collapsed to `1e-06s` |
+| **Taps re-run after the restructure** | `tierFail=0 overlaps=0` on `/` across all 9 viewport/theme combos. `multiline=1` at narrow widths is the script's documented **pass** bucket, not a failure |
+| **Contrast measured with the tag tint composited** | Card name 17.32 / 15.94 · tag text on tint 6.38 / 4.78 · strip claim and icons 17.32 / 15.94 (light / dark). Keyboard: real `Tab` gives `:focus-visible` + the 2px outline on all six new controls. Launcher yield intact — opacity 0, `pointer-events: none`, `aria-hidden`, `tabIndex -1` |
+
+**New in Open — code, found by this pass and deliberately not fixed:**
+`--tg-secondary` on `--tg-surface` in **dark mode measures 4.14:1**, under AA's
+4.5 for 14px text. Confirmed **identical on untouched `project-card` at `/work`**,
+so it is pre-existing and site-wide, not introduced here: the v2.3 dark audit
+measured secondary against the page floor (`#101010`, 4.53) and never against the
+card fill (`#1a1a1c`). Fixing it changes `--tg-secondary` in `.dark` and repaints
+every card on the site, which is why this pass flagged it rather than taking it.
+
+**Needs the user's eyes:** the strip's 70ms icon stagger and the cards' 80ms /
+18px / 0.985-scale landing, under full motion. Only the reduced-motion half is
+provable on this machine.
+
+**Pushed 2026-08-14.** This push carried **9 commits**, not 2 — the 7 that had
+been sitting unpushed since 2026-08-13 went out with it. See the corrected push
+count in the header.
+
 ## Homepage flow, Wave 2 — shipped 2026-08-13 (`0663baa`)
+
+> **[superseded in part, 2026-08-14]** The **proof-line** row below describes a
+> band that **no longer exists** — see the homepage-fold section above. Its
+> affordance decision (`tg-rule tg-rule-rest`) survives, on the new board's
+> `/work` link. Every other row in this table still ships.
 
 *Proof line + "What We Do" hierarchy. Every figure measured on the date.*
 
