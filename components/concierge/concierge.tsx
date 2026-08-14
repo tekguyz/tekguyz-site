@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ConnectedNodes } from '@/components/logo-lockup';
 import { LAUNCHER_PADDING } from '@/components/button';
+import { OutcomeBlock } from '@/components/outcome-block';
 import { ThinkingStripe } from '@/components/concierge/thinking-stripe';
 import { Markdown } from '@/components/concierge/markdown';
 import {
@@ -660,33 +661,17 @@ export function Concierge() {
 
                 {captured && (
                   <div className="border-t border-border pt-5">
-                    <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
-                      <span
-                        aria-hidden
-                        className="h-[6px] w-[6px] flex-none rounded-full"
-                        style={{ background: 'var(--tg-success)' }}
-                      />
-                      <span className="font-semibold">Details received</span>
-                    </div>
-                    <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary">
-                      Done — your details are in. Expect a reply within one business day.
-                    </p>
+                    <OutcomeBlock
+                      tone="success"
+                      label="Details received"
+                      message="Done — your details are in. Expect a reply within one business day."
+                    />
                   </div>
                 )}
 
                 {error && (
                   <div className="border-t border-border pt-5">
-                    <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
-                      <span
-                        aria-hidden
-                        className="h-[6px] w-[6px] flex-none rounded-full"
-                        style={{ background: 'var(--tg-error)' }}
-                      />
-                      <span className="font-semibold">Didn&rsquo;t send</span>
-                    </div>
-                    <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary">
-                      {error}
-                    </p>
+                    <OutcomeBlock tone="error" label="Didn&rsquo;t send" message={error} />
                   </div>
                 )}
 

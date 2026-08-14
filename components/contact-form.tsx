@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/button';
+import { OutcomeBlock } from '@/components/outcome-block';
 import { sendContactEmail } from '@/app/actions/contact';
 import {
   interestOptions,
@@ -177,18 +178,12 @@ export function ContactForm() {
            now explicit for the same reason it always should be, but the focus
            move is the mechanism that actually guarantees it is heard. */
         <div ref={successRef} role="status" aria-live="polite" tabIndex={-1}>
-          <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
-            <span
-              aria-hidden
-              className="h-[6px] w-[6px] flex-none rounded-full"
-              style={{ background: 'var(--tg-success)' }}
-            />
-            <span className="font-semibold">Message sent</span>
-          </div>
-          <p className="mt-[14px] text-[length:var(--text-body)] text-secondary">
-            Thank you for taking the time to walk us through this. A real person reads every
-            submission; expect a reply within one business day.
-          </p>
+          <OutcomeBlock
+            tone="success"
+            label="Message sent"
+            bodyClassName="text-[length:var(--text-body)]"
+            message="Thank you for taking the time to walk us through this. A real person reads every submission; expect a reply within one business day."
+          />
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} noValidate>

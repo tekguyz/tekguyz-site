@@ -122,13 +122,13 @@ need splitting — did not survive measurement:
 | --- | --- |
 | **One shared `prefers-reduced-motion` hook.** `load-sequence.tsx` named it `useReducedAfterMount`; `process-steps.tsx` carried a character-identical re-inlined copy. Moved verbatim to `hooks/use-prefers-reduced-motion.ts` — same query, same `change` subscription, same mount-gated initial `false`. Establishes `hooks/`, which did not exist. **`reveal.tsx` deliberately not folded in**: its read is a one-shot `.matches` with no listener. Verified with reduce matching — home 12 `.tg-seq` nodes at opacity 1 / transform none, `/process` 4 rail labels at weight 400 with the readout pinned at Step 01 of 04 | `1b30f0a` |
 | **One concierge failure message.** `route.ts`'s `ERROR_REPLY` and `concierge.tsx`'s own literal were two different sentences for one failure — the client's stopped at the email address, the route's went on to "and we'll pick it up from there" — and neither file referenced the other. Both now import `CONCIERGE_ERROR_REPLY` from `lib/concierge/errors.ts`. **The route's wording survives unedited**, being a strict superset; no new copy was written | `f5160c8` |
+| **One outcome block.** The contact form's success state and the concierge's captured and error states now render `components/outcome-block.tsx` (`tone` + `label` + `message`). **The audit's "byte-identical" claim did not survive measurement** — the labels differ at all three sites, and the contact form's body runs at `--text-body` (1.0625rem) against the concierge's 0.875rem, so an optional `bodyClassName` carries that one real difference rather than silently unifying it. The component returns **contents only, not a wrapper**: the contact form's wrapper is the `ref`/`role`/`aria-live`/`tabIndex` focus target that announces the success, the concierge's is the `border-t` rule off the message list — folding those in would trade one duplication for a vaguer surface. No copy changed; `concierge.tsx`'s 11 effects untouched | `bbc1472` |
 | **Dark-context token audit — blocked item 1 resolved.** `footer-dark.tsx`, `live-frame.tsx`, `page-hero.tsx`, `pull-quote.tsx`, `status-line.tsx`, `app/page.tsx` no longer re-derive `--tg-fg`/`--tg-secondary`/`--tg-border` via `onInk` ternaries — the `.ink-band`/`.footer-dark` scope roots are read directly, and every `onInk` prop that existed only to drive that ternary is gone from six components and five call sites. `testimonial.tsx` had no scope root at all (a dark card on a light-mode page) — it now carries `.ink-band` itself rather than hardcoding the same four values. `.ink-band`'s `--tg-secondary` moved off `#9ca3af` (`muted-soft`, retired as a text colour) to `muted-dark`, matching `.footer-dark` and closing the second undocumented exception; contrast on `#111111` goes 7.5:1 → 4.53:1, still AA but the margin is thin — **worth the user's eyes if the band ever darkens further.** `nav.tsx:104` reads `var(--dur-base)` instead of a `240ms` literal that agreed with the token by coincidence. `TOKENS.md`'s mono-usage sentence corrected to the measured two places. New `scripts/check-hex.ts`, wired into `prebuild`, bans the five retired hex values from any `.tsx` outside `globals.css` — exempts comments and Next metadata routes (`opengraph-image`, `manifest`, etc.) that render outside the CSS cascade. Verified by injecting a hex into `pull-quote.tsx` and confirming the guard caught it, then reverting | `2881076` |
 
 **Still open from the audit, ranked (full reasoning in the report):**
 
 | Item | Note |
 | --- | --- |
-| **Outcome block written 3×** | `contact-form.tsx:179-192`, `concierge.tsx:659-673`, `concierge.tsx:675-689` — byte-identical wrapper, dot and body; only the token and strings differ. **Blocked on a decision** — see below |
 | **Concierge transport inline in the view** | `concierge.tsx:401-436` holds the endpoint literal, request shape, three response-field assumptions and the fallback copy. The copy half is now fixed; the transport is not. Deliberately left — real seam, but no second consumer yet, so extracting it now would be speculative |
 | **`contact-form.tsx`: 8 hand-wired field triples** | `:256-303`, `:322-418`. **Local** extraction, not a shared component — one file, eight internal uses. The a11y wiring must survive verbatim: conditional `aria-describedby` (`:352`), `aria-invalid` as `true \| undefined`, the wrapped phone `onChange`, and the `key="step-1"`/`key="step-2"` discipline that sits *outside* any field abstraction |
 | **Body scroll lock, two incompatible restores** | `nav.tsx:74-79` clobbers with `''`; `concierge.tsx:326-333` saves and restores `previous`. Adopt the concierge's contract. Not observed failing — the drawer/panel interaction may make it unreachable today |
@@ -136,16 +136,19 @@ need splitting — did not survive measurement:
 | `mailto:` fallback ×5 | Three treatments across `nav`, `footer-dark`, `contact-form`, `concierge`, `app/error.tsx`. Probably leave — the `tap-44`/`tap-24` variance is legitimate, tier depends on neighbour spacing |
 | `process-steps.tsx:51-79` scroll measurement in the view | Genuine coupling, but extraction needs the four step refs passed in, which preserves most of it. Leave |
 
-**Two items are blocked on a user decision and must not be picked up silently:**
+**One item is blocked on a user decision and must not be picked up silently:**
 
 1. **The eyebrow treatment at 24 sites** — a token or a layered utility, *not* a
    component: the colour varies per site and a utility would have to be
    positioned against unlayered rules in `globals.css`.
-2. **Whether the outcome block should be shared at all** between the contact form
-   and the concierge — two surfaces of one design language that may legitimately
-   want to keep the freedom to diverge.
 
-**Item 1 from this list is now shipped, 2026-08-13** — see the dark-context
+*The outcome block was the second blocked item — "should these two surfaces be
+shared at all, given they may want to diverge." The user released it on
+2026-08-13 on the grounds that the question is about future divergence, not
+present duplication. Shipped above; the two places the surfaces already differ
+are carried as props, so diverging further stays cheap.*
+
+**The dark-context token item is now shipped, 2026-08-13** — see the dark-context
 token audit section below. It surfaced two things the write-up above didn't
 anticipate: `testimonial.tsx` had no scope root to read from at all (a dark
 card with no `.ink-band`/`.footer-dark` ancestor), and `footer-dark.tsx`'s own
