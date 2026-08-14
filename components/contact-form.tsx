@@ -85,7 +85,7 @@ const field =
   'outline-none transition-colors duration-[240ms] focus-visible:border-border-strong';
 
 const label =
-  'block mb-[10px] text-[0.75rem] font-bold tracking-[0.1em] uppercase leading-[1.4] text-secondary';
+  'block mb-[10px] tg-eyebrow text-secondary';
 
 export function ContactForm() {
   const searchParams = useSearchParams();

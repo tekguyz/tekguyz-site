@@ -151,7 +151,7 @@ export function FooterDark() {
               DESIGN.md §4 is explicit that this row must not inherit
               section-level spacing. 22px is the tightest value that works. */}
           <div className="[grid-column:1/5] max-lg:[grid-column:1/4]">
-            <p className="text-secondary mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">
+            <p className="text-secondary mb-5 tg-eyebrow">
               Solutions
             </p>
             <div className="flex flex-col items-start gap-[22px]">
@@ -175,7 +175,7 @@ export function FooterDark() {
           </div>
 
           <div className="[grid-column:5/9] max-lg:[grid-column:4/6]">
-            <p className="text-secondary mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">
+            <p className="text-secondary mb-5 tg-eyebrow">
               Company
             </p>
             <div className="flex flex-col items-start gap-[22px]">
@@ -197,7 +197,7 @@ export function FooterDark() {
           </div>
 
           <div className="[grid-column:9/13] max-lg:[grid-column:6/9]">
-            <p className="text-secondary mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">
+            <p className="text-secondary mb-5 tg-eyebrow">
               Get In Touch
             </p>
             <div className="flex flex-col items-start gap-[22px] tabular-nums">

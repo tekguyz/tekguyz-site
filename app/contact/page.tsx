@@ -71,7 +71,7 @@ export default function ContactPage() {
             each take all 8 tracks rather than a third of the row. */}
         <div className="[grid-column:1/6] max-lg:[grid-column:1/-1]">
           <FlourishMark className="mb-9" />
-          <p className="mb-6 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+          <p className="mb-6 tg-eyebrow text-secondary">
             Get In Touch
           </p>
           <h1
@@ -133,7 +133,7 @@ export default function ContactPage() {
           entrance for a visitor who scrolls to it.) */}
       <section className="reveal pb-20 md:pb-32">
         <div className="tg-container">
-          <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+          <p className="mb-10 tg-eyebrow text-secondary">
             Common Questions
           </p>
           <FaqAccordion />

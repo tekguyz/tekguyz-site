@@ -55,7 +55,7 @@ function MetaRail({
     // `lg:`-gated.
     <aside className="lg:sticky lg:top-[116px] [grid-column:10/13] max-lg:[grid-column:7/9]">
       <div className="border-t border-border pt-5">
-        <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+        <p className="mb-3 tg-eyebrow text-secondary">
           Solution line
         </p>
         <Link href={`/solutions/${solution.slug}`} className="tap-44 flex items-center gap-3">
@@ -65,7 +65,7 @@ function MetaRail({
       </div>
 
       <div className="mt-7 border-t border-border pt-5">
-        <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+        <p className="mb-3 tg-eyebrow text-secondary">
           Status
         </p>
         <StatusLine result={status} />
@@ -75,7 +75,7 @@ function MetaRail({
       </div>
 
       <div className="mt-7 border-t border-border pt-5">
-        <p className="mb-3 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+        <p className="mb-3 tg-eyebrow text-secondary">
           Live demo
         </p>
         <a
@@ -179,7 +179,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                     data-reveal-index={i}
                     className={`reveal grid gap-6 border-t border-border py-10 md:grid-cols-[180px_1fr] ${i === 2 ? 'border-b' : ''}`}
                   >
-                    <p className="text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+                    <p className="tg-eyebrow text-secondary">
                       {label}
                     </p>
                     <p
@@ -206,7 +206,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 </ViewTransition>
                 <FrameMeta status={status} url={entry.url} />
                 <p className="mt-6 max-w-[62ch] text-[0.875rem] leading-[1.55] text-secondary">
-                  <span className="text-[0.75rem] font-bold tracking-[0.1em] uppercase">Try it</span>{' '}
+                  <span className="tg-eyebrow">Try it</span>{' '}
                   &nbsp;{entry.tryIt}
                 </p>
                 <BuildNarrative maxWidth="62ch">{entry.howItsBuilt}</BuildNarrative>
@@ -215,7 +215,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
           ) : (
             <>
               <div className="reveal mt-14 grid gap-6 border-y border-border py-7 md:grid-cols-[180px_1fr]">
-                <p className="text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+                <p className="tg-eyebrow text-secondary">
                   Built for
                 </p>
                 <p className="text-[length:var(--text-body)]">{entry.builtFor}</p>
@@ -229,7 +229,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
               </p>
 
               <div className="reveal mt-12 border-t border-border pt-8">
-                <p className="mb-[14px] text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+                <p className="mb-[14px] tg-eyebrow text-secondary">
                   What made it interesting
                 </p>
                 <p
@@ -253,14 +253,14 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
 
               {entry.tryIt && (
                 <p className="mt-6 max-w-[62ch] text-[0.875rem] leading-[1.55] text-secondary">
-                  <span className="text-[0.75rem] font-bold tracking-[0.1em] uppercase">Try it</span>{' '}
+                  <span className="tg-eyebrow">Try it</span>{' '}
                   &nbsp;{entry.tryIt}
                 </p>
               )}
 
               {entry.hasClientReview && (
                 <div className="mt-16">
-                  <p className="mb-6 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+                  <p className="mb-6 tg-eyebrow text-secondary">
                     Client review
                   </p>
                   <Testimonial contextSlug={entry.slug} />

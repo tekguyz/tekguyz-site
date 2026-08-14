@@ -168,7 +168,7 @@ export function BuildNarrative({
       style={{ maxWidth, borderTopColor: 'var(--tg-border)' }}
     >
       <p
-        className="mb-[10px] text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
+        className="mb-[10px] tg-eyebrow"
         style={{ color: 'var(--tg-secondary)' }}
       >
         How it&rsquo;s built

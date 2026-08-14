@@ -119,7 +119,7 @@ export default async function HomePage() {
       {/* Testimonial — Review schema, no numeric rating (none exists). */}
       <section className="py-20 md:py-32">
         <div className="tg-container">
-          <p className="mb-10 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+          <p className="mb-10 tg-eyebrow text-secondary">
             What Clients Say
           </p>
           <div className="reveal">

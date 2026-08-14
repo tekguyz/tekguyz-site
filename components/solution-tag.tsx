@@ -33,7 +33,7 @@ export function SolutionTag({
   return (
     <span
       className={cn(
-        'inline-block rounded-[6px] text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase',
+        'inline-block rounded-[6px] tg-eyebrow',
         variant === 'card' ? 'px-[9px] py-[4px]' : 'px-[10px] py-[5px]',
         className,
       )}

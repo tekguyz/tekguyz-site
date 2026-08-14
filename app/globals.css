@@ -292,6 +292,42 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Components
+
+   The ONLY layered block in this file, and the layer is the whole point.
+   `@import 'tailwindcss'` declares `theme, base, components, utilities` in that
+   order, so a rule here loses to every Tailwind utility at the call site and
+   wins over nothing but `base`. That is the required direction for `.tg-eyebrow`
+   below: it owns the four typography declarations that were identical at all 24
+   sites, and call sites keep overriding colour (`text-secondary`) and margin
+   (`mb-6`, `mb-10`, …) with ordinary utilities.
+
+   Do NOT move this out of the layer to "make it stronger". Unlayered — the form
+   the rest of this file uses — it would beat `text-secondary` and repaint two
+   thirds of the eyebrows on the site. The `gap-y-12` incident is the same
+   mechanism read the other way round: there, an unlayered `gap` silently ate a
+   layered utility. Here we want the utility to win, so the rule is layered.
+--------------------------------------------------------------------------- */
+@layer components {
+  /*
+   * DESIGN.md §2.1 caption step. Typography only — no colour, no margin.
+   *
+   * Colour is deliberately absent because it is the one thing that genuinely
+   * varies per site: `text-secondary` on most, the accent's `-text` variant on
+   * the solution/work detail pages (resolved from `config/solutions.ts`, the
+   * same resolution that drives dots and tags — there is no second mechanism),
+   * and fixed dark-context values inside `.ink-band` / `.footer-dark`.
+   */
+  .tg-eyebrow {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Layout primitives
 --------------------------------------------------------------------------- */
 .tg-container {

@@ -33,7 +33,7 @@ export function PageHero({
               squeezes the h1 into ~144px. */}
           <div className="[grid-column:1/8] max-lg:[grid-column:1/-1]">
             <FlourishMark className="mb-9" />
-            <p className="mb-6 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+            <p className="mb-6 tg-eyebrow text-secondary">
               {eyebrow}
             </p>
             <h1
@@ -87,7 +87,7 @@ export function SectionHead({
     <div className="tg-container tg-grid">
       <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
         <p
-          className="mb-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
+          className="mb-5 tg-eyebrow"
           style={{ color: dim }}
         >
           {eyebrow}

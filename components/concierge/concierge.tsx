@@ -140,7 +140,7 @@ const SHEET_INSET = {
  */
 function ReplyLabel() {
   return (
-    <p className="mb-[10px] flex items-center gap-2 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+    <p className="mb-[10px] flex items-center gap-2 tg-eyebrow text-secondary">
       <ConnectedNodes size={14} stroke="currentColor" strokeOpacity={0.55} />
       TEKGUYZ
     </p>

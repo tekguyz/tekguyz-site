@@ -92,7 +92,7 @@ export default async function SolutionDetailPage({
                   {solution.name}
                 </h1>
                 <p
-                  className="mt-5 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase"
+                  className="mt-5 tg-eyebrow"
                   style={{ color: a.text }}
                 >
                   {solution.tag}
@@ -135,7 +135,7 @@ export default async function SolutionDetailPage({
 
             <div className="mt-8 flex flex-wrap items-baseline justify-between gap-8">
               <p className="text-[0.875rem] leading-[1.55] text-secondary">
-                <span className="text-[0.75rem] font-bold tracking-[0.1em] uppercase">
+                <span className="tg-eyebrow">
                   Related work
                 </span>{' '}
                 &nbsp;{solution.relatedWork.join(', ')}
@@ -152,7 +152,7 @@ export default async function SolutionDetailPage({
 
         {related.length > 0 && (
           <div className="mt-16 md:mt-24">
-            <p className="mb-8 text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] text-secondary uppercase">
+            <p className="mb-8 tg-eyebrow text-secondary">
               The builds
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

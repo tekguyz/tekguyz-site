@@ -70,7 +70,7 @@ export default async function WorkPage() {
 function GroupHead({ title, note }: { title: string; note: string }) {
   return (
     <div className="flex items-baseline gap-4 border-b border-border pb-7">
-      <h2 className="text-[0.75rem] leading-[1.4] font-bold tracking-[0.1em] uppercase">{title}</h2>
+      <h2 className="tg-eyebrow">{title}</h2>
       <span className="text-[0.875rem] text-secondary">{note}</span>
     </div>
   );
