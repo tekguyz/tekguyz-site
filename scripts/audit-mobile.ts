@@ -1677,9 +1677,12 @@ async function phaseShots(browser: Browser) {
 
 /* ---------------------------------------------------------------- classes
    The launcher-overlap re-partition. Samples each of the four non-CTA classes
-   across the scroll range, admits an overlap ONLY where the launcher is
-   presented, and runs the shared verdict rule from `lib/overlap-verdict.ts` —
-   the same function the positive control exercises.
+   across the scroll range and admits an overlap ONLY where the launcher is
+   presented. It emits `Sample`-shaped rows (`scrollY` / `launcherPresented` /
+   `coveredFraction`) for `verdictFor` in `lib/overlap-verdict.ts` to consume;
+   it does NOT call the rule itself. `scripts/probe-control.ts` is what runs
+   the rule, on the D-02 positive control, and it imports the real function
+   rather than reimplementing it.
 
    Selectors are read from source, never guessed:
      meta-rail   `aside a[href]`                        app/work/[slug]/page.tsx:56
