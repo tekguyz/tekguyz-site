@@ -293,7 +293,7 @@ made deliberately *after* the export (Geist-only typography, the
 - Hero video loop (static image ships first).
 - `lockup-master.svg` wordmark → outlined paths.
 - Cal.com scheduling embed (see §10).
-- GBP Services section — not a website task, but the highest-leverage open SEO item.
+- ~~GBP Services section — not a website task, but the highest-leverage open SEO item.~~ **Resolved** — live in the GBP profile; was never blocked on a website deliverable. See STATUS.md and PLAYBOOK.md §14.
 
 ---
 

@@ -124,4 +124,4 @@ Ships as-is. `BreadcrumbList` addition only.
 
 - Multi-resolution `favicon.ico` in `app/` is currently indexed — don't regress it during the rebuild. (Generated from `icon-master.svg` per the master build prompt.)
 - Delete the root layout's fallback description string — dead code, never served, since every route defines its own.
-- **GBP Services section** (playbook §14 item 2) remains the single highest-leverage open SEO item and is not a website task. Worth doing in parallel with the build, not after it.
+- ~~**GBP Services section** (playbook §14 item 2) remains the single highest-leverage open SEO item.~~ **Resolved** — see PLAYBOOK.md §14 item 2 and STATUS.md.

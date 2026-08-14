@@ -159,7 +159,7 @@ Currently entered in Pomelli's Business Details → Keywords field. Also the bas
 
 **This is a review of a specific build.** The 3CX/Twilio/Zoho integration and the offline-work tracker he describes are the **Team Performance & Automated Customer Feedback** project. It therefore appears twice on the rebuilt site: on the homepage after Featured Work, and cross-linked from that project's own detail page. Marked up as `Review` schema (see docs/SEO.md) — no `reviewRating`, since no numeric score exists.
 
-**Still open:** the GBP review permalink for the "Read it on Google" link.
+**Resolved 2026-08-10:** `https://www.google.com/maps?cid=13204262572880001655`. Google has no durable per-review permalink, so the profile URL is the stable substitute, by decision. See COPY.md.
 
 ## 12. Media Asset Inventory
 
@@ -211,7 +211,7 @@ Site-wide, social links (LinkedIn, Instagram, Facebook, GitHub) appear in the fo
 Full ready-to-paste copy (Description, Services, Posts, Q&A) lives in TEKGUYZ-LinkedIn-GBP-Copy.md. Strategic priorities:
 
 1. Fix NAP consistency — **Resolved.** Hours confirmed Mon–Fri 9AM–5PM and consistent across GBP, LinkedIn, and Facebook. Location standardized to "South Florida" everywhere (no exact address published). Service-area model confirmed intentional (see Internal Notes).
-2. **Complete the Services section** — still pending. A real ranking signal, not just directory filler. Maps directly to the 4 Solutions. This is also the most likely reason Pomelli's Keywords field showed empty — fixing this and entering the Section 10 keyword list addresses both at once.
+2. ~~**Complete the Services section** — still pending.~~ **Resolved** — live in GBP, confirmed by measurement 2026-08-12 (STATUS.md). Maps directly to the 4 Solutions. If Pomelli's Keywords field still shows empty, that's isolated to the Section 10 keyword-list entry now, not this item.
 3. **Post weekly, minimum** — profiles that post consistently get pulled into Google's AI Overviews; ones that don't, don't. The 8 live demos are a built-in content calendar most competitors can't match.
 4. **Seed the Q&A section** before random visitors answer it inaccurately.
 5. **Enable GBP messaging** — response time is now a measured ranking factor.
