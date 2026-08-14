@@ -9,7 +9,7 @@ import {
   type CSSProperties,
 } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/button';
@@ -92,7 +92,17 @@ export function ContactForm() {
   const [step, setStep] = useState<1 | 2>(1);
   const [sent, setSent] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const mountedAt = useRef(Date.now());
+  /*
+   * The bot fill-time stamp — `app/actions/contact.ts:191` rejects a submission
+   * that arrives under 2000ms after this. A lazy `useState` initializer, NOT
+   * `useRef(Date.now())`: `useRef`'s argument is evaluated on every render, so
+   * calling `Date.now()` there is an impure call during render
+   * (`react-hooks/purity`). The lazy initializer runs exactly once. Same value,
+   * same lifetime — and it is now a plain number rather than a ref, which is
+   * also what stops `handleSubmit(onSubmit)` from being flagged for reading a
+   * ref during render (`react-hooks/refs`), since `onSubmit` closed over it.
+   */
+  const [mountedAt] = useState(() => Date.now());
   const step2Ref = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -106,7 +116,7 @@ export function ContactForm() {
     register,
     handleSubmit,
     trigger,
-    watch,
+    control,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -119,7 +129,20 @@ export function ContactForm() {
     if (presetInterest) setValue('projectType', presetInterest);
   }, [presetInterest, setValue]);
 
-  const interest = watch('projectType');
+  /*
+   * `useWatch`, not `watch`. `watch` is a function `useForm()` hands back fresh
+   * on every render, so the React Compiler cannot memoize this component while
+   * it is called here — that was the repo's one remaining lint warning
+   * (`react-hooks/incompatible-library`), and the compiler's answer to it is to
+   * silently skip optimising the file. `useWatch` is RHF's own subscription
+   * hook: it returns the VALUE, subscribes only to `projectType`, and re-renders
+   * only this component.
+   *
+   * This does not touch the step-1/step-2 reconciliation. The only consumer is
+   * the details placeholder below; the field registration, the `key` discipline
+   * that fixed the field-contamination bug, and the schema are all unchanged.
+   */
+  const interest = useWatch({ control, name: 'projectType' });
   const placeholder = detailsPlaceholder[interest] ?? DEFAULT_DETAILS_PLACEHOLDER;
 
   // Real-time cap on the phone field. The input is uncontrolled (RHF), so the
@@ -151,7 +174,7 @@ export function ContactForm() {
 
   async function onSubmit(values: FormValues) {
     setServerError(null);
-    const result = await sendContactEmail({ ...values, timestamp: mountedAt.current });
+    const result = await sendContactEmail({ ...values, timestamp: mountedAt });
     if (result.success) setSent(true);
     else setServerError(result.error ?? 'Something went wrong.');
   }
