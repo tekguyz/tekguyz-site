@@ -415,6 +415,14 @@ home, all changed together — this component is not forked per section.
 
 ### 4.4 `proof-line`
 
+> **[superseded 2026-08-14 — see §4.18.] This component no longer exists in
+> `app/page.tsx`.** The band was replaced by `proof-strip` + `fold-board`. This
+> section is retained for its REASONING, which §4.18 re-confirms rather than
+> re-derives: the affordance decision (`tg-rule tg-rule-rest`, not
+> `link-underline`) moved intact to the new board's `/work` link, and both of the
+> rejections below still stand. **Do not read the layout values below as a
+> description of what ships.**
+
 **[decided v2.5, D-09]** CANONICAL §98 fixes the content and says "one sentence,
 no card" and stops there. This is the treatment it never gave.
 
@@ -1194,6 +1202,15 @@ Column spans are §3's; the media panel and its `<1024px` behaviour are §4.9.
 This entry is only the vertical rhythm inside the text column, which had never
 been specified anywhere.
 
+> **[amended 2026-08-14 — see §4.18.] The rhythm table below is unchanged and
+> still ships.** Two things around it did change: the headline copy and its type
+> scale (a local 44 → 76px clamp, not `--text-hero`), and the section's BOTTOM
+> padding, which drops to `pb-16 md:pb-20` so the proof strip groups with the
+> statement it proves instead of reading as the next section. The four internal
+> gaps — 24 · 32 · 48/64 · 80 — were re-measured after both changes and are as
+> tabulated. The fold clearance the note below worries about **improved**, from
+> 18px to 30px at 1280×720.
+
 **[shipped 2026-08-13] It ran 36 / 32 / 40 — the identical defect v2.5 found and
 fixed in `closing-cta`, in the section nobody went back to.** A near-linear ramp
 in which every gap reads the same, so nothing groups and the block reads flat.
@@ -1297,6 +1314,120 @@ one.
 > ranking the content does not have. **Rejected: a connecting line with tick
 > marks between the cards.** Decoration that draws the sequence rather than
 > encoding it, and it breaks entirely when the grid goes to one column.
+
+### 4.18 The homepage fold — `proof-strip` + `fold-board`
+
+**[decided 2026-08-14]** Replaces §4.4's `proof-line`. Scope: the home hero, the
+band directly under it, and a build row beneath that. **Nothing in this section
+generalises** — §§4.1–4.17 are unchanged, and the three exceptions below are
+scoped to these two components by name.
+
+**The problem.** The fold was hero → one sentence → the rest of the page. That
+sentence — *"Eight live builds. Open any of them right now."* — was carrying the
+site's entire differentiator on its own, on a page whose next 2000px are nothing
+but evidence for it. One line of 17px text is not enough weight for the only
+claim a competitor cannot fake.
+
+**The shape.** Three checkable facts on an elevated strip, then four live builds
+tagged one per solution line. The strip is the claim; the board is the things the
+claim is about. Both sit in one unpadded `<section>`, and the gap is counted
+once: the hero's own `pb-16 md:pb-20` (64/80, down from the section rhythm)
+groups the strip with the statement it proves, and the Solutions section's
+`py-20 md:py-32` supplies the full rhythm below. The 48/64 between strip and
+board is deliberately *under* section rhythm — one argument, two registers.
+
+#### The three authorised exceptions
+
+**1. Icons — `lucide-react`, `strokeWidth={1.5}`, 20px, ink.** The site's second
+icon site after the footer's social row, and it passes the Icon policy's own
+test: three facts read as a paragraph get sorted by reading, and get scanned by
+glyph. A library rather than hand-drawn SVG for one reason — one set means no
+glyph is heavier or rounder than its neighbours, which is the failure the policy
+actually names. 1.5px is chosen to match the site's drawn hairlines (1px borders,
+the 2px `.tg-rule`), not for its own sake.
+
+> **No accent on any icon here, and that is not an oversight.** §4.4 rejected an
+> accent dot on the old proof line because the four accents mean *solution line*
+> and that sentence spanned all four. Identical reasoning, unchanged by the shape
+> change. The board's cards carry accents because each card **is** one line —
+> that is the accents doing their actual job.
+
+**2. Elevation — `.tg-elevate` / `.tg-lift`, these two components only.**
+TOKENS.md's "elevation is flat, hairlines only" still governs every other surface
+on the site. The argument for the exception is content, not taste: these are the
+only two elements on the page whose job is to assert *this is a separate, real
+object you can pick up*, and flat-on-flat is a large part of why the fold read as
+a template. `LiveFrame`'s plate (`padding: 0`, no shadow), `project-card`,
+`case-study-row` and every other tier stay flat — the weight gap between card
+tiers is real signal, and a shadow everywhere communicates nothing.
+
+> **The hover lift is `translate`, not `transform`, inverted from `.hover-card`.**
+> Motion writes its `y` entrance as an inline `transform`, and an inline
+> declaration beats any class — a `transform`-based lift here would simply never
+> apply once the entrance settled. `.reveal` keeps the same split with the two
+> owners swapped. One property, one owner, either way round.
+
+**3. Motion beyond fade+rise-8.** The strip rises as one object and its three
+icons then arrive inside it, staggered 70ms; the four cards land 80ms apart,
+rising 18px and settling from a 0.985 scale. The scale step is what separates
+this from the site's one existing entrance, and it is kept that shallow
+deliberately — anything deeper blurs text in transit. Reduced motion reuses
+`hooks/use-prefers-reduced-motion.ts` (durations to 0) **and** the existing
+`.tg-seq` safety net in globals.css, which is the only thing that can beat
+Motion's inline styles. No second mechanism was built for either.
+
+#### The hero
+
+**Headline copy is new**, and shorter on purpose: *"We build the systems your
+business runs on."* — PLAYBOOK §1's tagline compressed. The old line, *"We build
+tech that actually works for your business,"* is defensive; this one names what
+is being built. The subhead stops after PLAYBOOK §1's core belief instead of
+explaining it a third time and then asserting authorship of it.
+
+**A local clamp, 44 → 76px, not `--text-hero`.** The token stays at 40 → 72 for
+the six routes `page-hero` serves, none of which have a bleeding media panel
+beside their h1. The raise is affordable because the copy got shorter, not
+because the constraint moved — **and the constraint was re-measured, not
+assumed**: 43 characters at 76px wraps to exactly 3 lines in the 564px text
+column, and the CTA row now clears a 1280×720 fold by **30px, up from the 18px
+recorded on 2026-08-13.** Leading 0.92 and tracking −0.05em (from 0.95 /
+−0.045em) is where most of the added confidence comes from — the block reads as
+one mass rather than three stacked lines. If this copy ever grows, re-measure
+against the three-line rule before assuming the ceiling holds.
+
+#### What survived, and what is now closed
+
+**§4.4's affordance decision moved; it was not dropped.** The `tg-rule
+tg-rule-rest` link — the state primitive drawn to 0.34 at rest, completing on
+hover and focus — is now *"See all eight builds"* at the end of the board. That
+decision cost two passes to get right and the shape change does not re-open it.
+
+**§4.4 is superseded as a component and retained as reasoning.** The band it
+describes no longer exists in `app/page.tsx`. Its two rejections still stand and
+are re-confirmed above: no accent on a claim that spans all four lines, and no
+promoting the invitation to a button.
+
+> **[decided 2026-08-14] The board's whole card opens the LIVE PRODUCT, in a new
+> tab** — the one genuinely arguable call here. §4.8 has `project-card` refuse a
+> second "open the demo" action, because on the `/work` index the job is *read
+> the story* and two competing actions on a compact card is the ambiguity that
+> tier exists to avoid. The fold's job is the opposite one, so this tier resolves
+> the same ambiguity the other way and still keeps **one action per card**. New
+> tab, so the site stays open behind it. Nothing is orphaned: `/work` is one link
+> below, and the ink band carries two case studies at full size.
+
+> **[decided 2026-08-14] Rejected: an accent left-spine on the cards.** Drawn and
+> cut. The tag already names the line in words *and* colour; a second accent
+> signal on a 150px card is decoration by the time it is read.
+
+> **[considered 2026-08-14] Four cards in a row, against §0's named
+> anti-pattern.** §0 item 3 bans *four identical solution cards* and replaces
+> them with four full-width rows. This is a different thing and the distinction
+> is load-bearing: these are four **builds**, not the four lines, each with its
+> own product name, its own accent and its own live status — and carrying the
+> four accents in `STRIPE_ORDER` makes the fold a **legend** for the wayfinding
+> system the rest of the page then uses. Selection and its reasoning live in
+> `content/work.ts` (`foldSlugs`), not in the component.
 
 ## 5. `status-line` — the signature component
 

@@ -83,8 +83,15 @@ export function HomeHero({
   alt: string;
   status: StatusResult;
 }) {
+  // `pb-16 md:pb-20` (64/80), not the section rhythm's `pb-20 md:pb-32`. The
+  // proof strip directly below is not the next SECTION — it is the evidence for
+  // the statement in this one, and the two have to read as one fold. Full rhythm
+  // resumes below the build board, where the Solutions section's own
+  // `py-20 md:py-32` provides it. Same "count the gap once" reasoning the
+  // `closing-cta` boundary uses, applied at the top of the page instead of the
+  // bottom.
   return (
-    <section className="overflow-x-clip pt-16 md:pt-24 pb-20 md:pb-32">
+    <section className="overflow-x-clip pt-16 md:pt-24 pb-16 md:pb-20">
       <SequenceRoot trigger="load">
         {/* No `gap-y-*` here: `.tg-grid`'s `gap` is unlayered and would eat it
             silently. The stacked gap is 24 (grid) + 56 (`.tg-hero-frame`). */}
@@ -93,21 +100,48 @@ export function HomeHero({
             <SequenceDots className="mb-6" />
 
             <SequenceItem role="headline">
+              {/* A LOCAL CLAMP, NOT `--text-hero`, and the token is deliberately
+                  left alone: `page-hero` sets every other route's h1 from it, and
+                  the constraint TOKENS.md attaches to the 72px ceiling — three
+                  lines maximum on desktop with the CTA row inside the first
+                  viewport — is a HOME constraint being paid for by six routes
+                  that do not have a bleeding media panel next to their headline.
+                  Raising it here only is the honest scope.
+
+                  44 → 76px, against the token's 40 → 72. It is affordable
+                  because the copy got shorter, not because the constraint moved:
+                  43 characters at 76px wraps to 3 lines in the 564px text column
+                  (the old 51-character line needed 4 at 72px), and the subhead
+                  below dropped a sentence. Measured at 1280x720 after the change
+                  — see DESIGN.md §4.18. If this copy ever grows, re-measure
+                  against the three-line rule before assuming the ceiling holds.
+
+                  0.92 leading and -0.05em tracking, from 0.95 / -0.045em. The
+                  block reads as one mass rather than three stacked lines, which
+                  is where most of the added confidence actually comes from —
+                  more than the 4px. */}
               <h1
-                className="text-[length:var(--text-hero)] leading-[0.95] font-bold tracking-[-0.045em]"
+                className="text-[clamp(2.75rem,6.6vw,4.75rem)] leading-[0.92] font-bold tracking-[-0.05em]"
                 style={{ textWrap: 'pretty' }}
               >
-                We build tech that actually works for your business.
+                We build the systems your business runs on.
               </h1>
             </SequenceItem>
 
             <SequenceItem role="subhead">
+              {/* PLAYBOOK §1's core belief, verbatim to its second clause and
+                  then stopped. The line that used to close it — "…by people who
+                  actually understand how they work. That's what we do." —
+                  explained the claim a third time and then asserted authorship
+                  of it, which is the hedge a confident hero does not need. Two
+                  sentences, one idea, and the vertical budget it returns is what
+                  paid for the headline above. */}
               <p
-                className="mt-8 max-w-[52ch] text-[length:var(--text-body)] text-secondary"
+                className="text-secondary mt-8 max-w-[46ch] text-[length:var(--text-body)]"
                 style={{ textWrap: 'pretty' }}
               >
                 Most businesses don&rsquo;t need more software. They need the right system, built
-                correctly, by people who actually understand how they work. That&rsquo;s what we do.
+                correctly.
               </p>
             </SequenceItem>
 

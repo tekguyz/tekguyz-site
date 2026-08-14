@@ -111,8 +111,17 @@ the first viewport. If the copy changes length, re-measure against that rule.
 Dots and badges are `full`, which is not a token. `--container-pad` drops to
 24px below 768px. Base spacing unit 4px; scale 4·8·12·16·24·32·48·64·96·128.
 
-**Elevation is flat.** Hairlines only, no shadows anywhere; hover lift comes
-from position.
+**Elevation is flat, with one dated, scoped exception.** Hairlines only, no
+shadows, hover lift from position — that still governs every surface on this site
+**except the homepage fold's proof strip and its four build cards**, which carry
+`--tg-elevate` / `--tg-elevate-hover` via `.tg-elevate` / `.tg-lift`
+(`app/globals.css`, added 2026-08-14). Reason in `DESIGN.md` §4.18. The two
+values are **not printed here on purpose** — a shadow is a four-part composite
+whose light and dark forms differ structurally, `check:design` compares single
+declarations, and the guard cannot be made to mean anything useful about it. It
+is one class in one stylesheet with the rule written next to it. **Do not widen
+it:** `LiveFrame`'s plate, `project-card`, and `case-study-row` stay flat, and
+the weight gap between card tiers is the signal that protects.
 
 ---
 

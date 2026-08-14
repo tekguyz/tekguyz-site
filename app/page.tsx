@@ -4,6 +4,8 @@ import { SignatureStripe } from '@/components/signature-stripe';
 import { HomeHero } from '@/components/home-hero';
 import { SectionHead } from '@/components/page-hero';
 import { SolutionRow } from '@/components/solution-row';
+import { ProofStrip } from '@/components/proof-strip';
+import { FoldBoard } from '@/components/fold-board';
 import { Frame } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
@@ -12,7 +14,7 @@ import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
 import { solutions } from '@/content/solutions';
-import { featured, getWork, type CaseStudy } from '@/content/work';
+import { featured, foldBoard, getWork, type CaseStudy } from '@/content/work';
 import { testimonial } from '@/content/process';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/seo';
@@ -51,41 +53,30 @@ export default async function HomePage() {
         status={statuses[hero.slug]!}
       />
 
-      {/* Proof line — CANONICAL §98, treatment in DESIGN.md §4 `proof-line`.
-          Hairlines top and bottom, no fill, no radius: that IS the "no card".
-          36px is the band's own padding, not section rhythm — it's a
-          rule-to-rule beat between two sections, not a section.
+      {/* THE FOLD'S PROOF — DESIGN.md §4.18, replacing §4.4's one-line
+          `proof-line` band. One sentence between two hairlines was carrying the
+          site's entire differentiator; it is now three checkable facts and four
+          live builds. §4.4's affordance decision survives the swap — the
+          `tg-rule tg-rule-rest` link moved to the end of `FoldBoard`, it was
+          not dropped.
 
-          Two clauses, two scales, one baseline row. The claim is the anchor;
-          the invitation is the click, and it is INK, not `muted`. It shipped
-          muted, and `link-underline` grows from 0% — it draws nothing at rest —
-          so the only actionable element on the proof band had no rest-state
-          affordance and was the lighter half of its own sentence. v2.5 fixed
-          the colour; the affordance is fixed below with `tg-rule-rest`. */}
-      <section className="border-y border-border">
-        <div className="tg-container flex flex-wrap items-baseline gap-x-5 gap-y-2 py-9">
-          <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
-            Eight live builds.
-          </p>
-          {/* tap-44, not tap-24: the 24px tier is for links inline in running
-              prose, and this one is no longer inside the sentence's `<p>` —
-              it's its own element on its own baseline, and it stacks onto its
-              own line below 768. Nothing interactive is adjacent, so the
-              overlay has nothing to collide with.
+          NO VERTICAL PADDING ON THIS SECTION, in either direction, and that is
+          the gap being counted once. Above: the hero's own `pb-16 md:pb-20`
+          (64/80) already groups the strip with the statement it proves. Below:
+          the Solutions section's `py-20 md:py-32` supplies the full 80/128
+          rhythm on its own. A `py-*` here would stack two complete gaps at both
+          ends — the defect the `closing-cta` boundary rule exists to fix, read
+          at the top of the page instead of the bottom.
 
-              `tg-rule tg-rule-rest`, NOT `link-underline`: v2.5 fixed the
-              colour half of this defect and left the affordance half open. The
-              site's one state primitive already draws partway, so the rest
-              state is a position on the gesture the visitor learns everywhere
-              else — 34% at rest, completing to 100% on hover and focus — not a
-              second underline mechanism. tap-44 owns ::before, tg-rule ::after;
-              one pseudo per job, no collision. */}
-          <Link
-            href="/work"
-            className="tap-44 tg-rule tg-rule-rest text-[length:var(--text-body)] font-semibold"
-          >
-            Open any of them right now.
-          </Link>
+          The 48/64 between the strip and the board is deliberately under the
+          section rhythm: they are one argument in two registers — the claim,
+          and the things the claim is about. */}
+      <section>
+        <div className="tg-container">
+          <ProofStrip />
+        </div>
+        <div className="mt-12 md:mt-16">
+          <FoldBoard entries={foldBoard} statuses={statuses} />
         </div>
       </section>
 

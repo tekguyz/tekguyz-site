@@ -308,6 +308,43 @@ export const featured = featuredSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is CaseStudy => w?.kind === 'case-study');
 
+/**
+ * The homepage fold's build board — ONE live build per solution line, in
+ * `STRIPE_ORDER` (blue → violet → amber → teal). Selection lives here rather
+ * than in the component for the same reason `featuredSlugs` does: which builds
+ * a page shows is content, not layout.
+ *
+ * The order is not editorial. Four cards carrying the four locked accents in
+ * their canonical order makes the fold a LEGEND for the wayfinding system the
+ * rest of the site then uses — a visitor meets all four accents attached to
+ * four real product names before they reach the Solutions rows. Reordering
+ * these breaks that; adding a fifth is impossible by construction, since there
+ * is no fifth line.
+ *
+ * WHY THESE FOUR SPECIFICALLY. Each line's slot goes to a build not already
+ * shown elsewhere on the homepage, so the page does not repeat itself:
+ * `field-photo-reports` is deliberately absent because the ink band below
+ * carries it at full size. AI Voice Agents is the one unavoidable repeat — it
+ * is the only build on that line, and it is also the hero's poster. Kept
+ * anyway: dropping it would leave a hole in the legend, which costs more than
+ * showing the flagship twice in two different registers (a screenshot above, a
+ * tagged status entry here).
+ *
+ * `team-performance` is the build the verified Google review describes, which
+ * is why it takes the amber slot — the proof strip's review fact and this card
+ * are the same claim from two directions.
+ */
+export const foldSlugs = [
+  'ai-audio-file-insights',
+  'ai-voice-receptionist',
+  'team-performance',
+  'bundle-builder',
+] as const;
+
+export const foldBoard = foldSlugs
+  .map((slug) => work.find((w) => w.slug === slug))
+  .filter((w): w is WorkEntry => Boolean(w));
+
 export function getWork(slug: string): WorkEntry | undefined {
   return work.find((w) => w.slug === slug);
 }

@@ -58,6 +58,14 @@
   --tg-nav-bg: rgb(255 255 255 / 0);
   --tg-nav-border: rgb(229 231 235 / 0);
   --tg-nav-blur: 0px;
+
+  /* Elevation — SCOPED to the homepage fold only. See `.tg-elevate` below for
+     the full decision; these live here rather than at the rule so dark mode can
+     redeclare them at the same scope root every other themed value uses.
+     Two layers: a 1px contact shadow that keeps the edge crisp against the
+     hairline, and a wide diffuse layer that does the actual lifting. */
+  --tg-elevate: 0 1px 2px rgb(17 17 17 / 0.06), 0 12px 28px -8px rgb(17 17 17 / 0.16);
+  --tg-elevate-hover: 0 2px 4px rgb(17 17 17 / 0.07), 0 20px 40px -12px rgb(17 17 17 / 0.24);
 }
 
 .dark {
@@ -80,6 +88,13 @@
 
   --tg-nav-bg: rgb(16 16 16 / 0);
   --tg-nav-border: rgb(42 42 44 / 0);
+
+  /* A shadow tuned for white is invisible on #101010 — the same alpha over a
+     near-black floor produces almost no delta. Dark mode goes to pure black at
+     a much higher alpha so the lift still reads; the hairline is still doing
+     half the work, which is why the border stays on the elevated elements. */
+  --tg-elevate: 0 1px 2px rgb(0 0 0 / 0.6), 0 10px 28px -10px rgb(0 0 0 / 0.8);
+  --tg-elevate-hover: 0 2px 4px rgb(0 0 0 / 0.7), 0 18px 40px -14px rgb(0 0 0 / 0.9);
 }
 
 [data-scrolled='true'] {
@@ -750,6 +765,58 @@
 }
 .hover-card:hover {
   transform: translateY(-3px);
+  border-color: var(--tg-border-strong);
+}
+
+/* ---------------------------------------------------------------------------
+   `.tg-elevate` / `.tg-lift` — the site's ONE elevation, scoped to the homepage
+   fold. [decided 2026-08-14, DESIGN.md §4.18]
+
+   TOKENS.md says "elevation is flat, hairlines only, hover lift comes from
+   position," and that rule still governs every other surface on this site. This
+   is a deliberate, dated exception for exactly two shapes — the fold's proof
+   strip and the fold's four build cards — and the argument is content, not
+   taste: those two are the only elements on the page whose job is to assert
+   "this is a separate, real object you can pick up." Flat-on-flat is what makes
+   a page of hairline rectangles read as a template.
+
+   DO NOT WIDEN THIS. `LiveFrame`'s plate (padding 0, no shadow), `project-card`,
+   `case-study-row` and every other card tier stay flat — the weight gap between
+   card tiers is real signal, and a shadow applied everywhere communicates
+   nothing.
+
+   THE HOVER LIFT IS `translate`, NOT `transform`, and that is inverted from
+   `.hover-card` on purpose. These elements are animated by Motion, which writes
+   its `y` entrance as an INLINE `transform` — an inline declaration beats any
+   class, so a `transform`-based hover lift here would simply never apply after
+   the entrance settled. `.reveal` keeps the same split for the same reason,
+   with the two owners swapped: there the entrance owns `translate` and the
+   hover owns `transform`. One property, one owner, either way round.
+
+   All three transitioned properties are declared TOGETHER in one rule. A
+   `transition` shorthand resets every transition property, so splitting them
+   across two rules silently drops whichever loses the cascade — the mechanism
+   that cancelled the `.reveal.hover-card` entrances.
+
+   Under `prefers-reduced-motion` the universal reset zeroes the duration and
+   the lift becomes instant. It still lifts; it just doesn't travel. Nothing
+   here hides content.
+--------------------------------------------------------------------------- */
+.tg-elevate {
+  box-shadow: var(--tg-elevate);
+}
+
+.tg-lift {
+  box-shadow: var(--tg-elevate);
+  transition:
+    translate var(--dur-base) var(--ease-hover),
+    box-shadow var(--dur-base) var(--ease-hover),
+    border-color var(--dur-base) var(--ease-hover);
+}
+.tg-lift:hover,
+.tg-lift:focus-visible {
+  translate: 0 -3px;
+  box-shadow: var(--tg-elevate-hover);
   border-color: var(--tg-border-strong);
 }
 
