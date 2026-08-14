@@ -43,7 +43,7 @@ See `DESIGN.md` §1 for what each one is *for* and for the accent rules
 --tg-hairline: #e5e7eb;
 --tg-muted: #6a717e;
 --tg-muted-soft: #9ca3af;
---tg-muted-dark: #747c8b;
+--tg-muted-dark: #7b8291;
 --tg-bg-dark: #101010;
 --tg-text-primary-dark: #f5f5f5;
 --tg-border-dark: #2a2a2c;
@@ -54,7 +54,11 @@ See `DESIGN.md` §1 for what each one is *for* and for the accent rules
 ```
 
 Contrast, measured: `muted` 4.91:1 on canvas and 4.50:1 on `surface-card` — the
-minimum step clearing both. `muted-dark` 4.53:1 on `#101010`.
+minimum step clearing both. `muted-dark` clears AA on all three dark
+backgrounds it is composited on: 4.93:1 on `#101010` (page floor, footer),
+4.90:1 on `#111111` (ink band), 4.51:1 on `#1a1a1c` (card fill) — the card
+fill is the binding constraint and the margin there is thin, so re-measure
+before darkening any dark surface.
 **`muted-soft` is retired as a text colour** and is valid only for dots and the
 concierge thinking indicator.
 

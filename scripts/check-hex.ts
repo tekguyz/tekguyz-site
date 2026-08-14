@@ -21,7 +21,8 @@
  *
  *     #f5f5f5  -> var(--tg-fg)        / text-fg
  *     #9ca3af  -> var(--tg-secondary) / text-secondary   (retired as a text colour)
- *     #747c8b  -> var(--tg-secondary) / text-secondary
+ *     #7b8291  -> var(--tg-secondary) / text-secondary
+ *     #747c8b  -> var(--tg-secondary) / text-secondary   (retired 2026-08-14)
  *     #2a2a2c  -> var(--tg-border)    / border-border
  *     #111111  -> var(--tg-bg) on a dark surface, var(--tg-fg) on a light one
  *                 (it is both `.ink-band`'s background and light mode's --tg-ink)
@@ -65,7 +66,8 @@ const EXEMPT_BASENAMES = /^(opengraph-image|twitter-image|icon|apple-icon|manife
 const BANNED: Record<string, string> = {
   '#f5f5f5': 'var(--tg-fg) / text-fg',
   '#9ca3af': 'var(--tg-secondary) / text-secondary  (retired as a text colour)',
-  '#747c8b': 'var(--tg-secondary) / text-secondary',
+  '#7b8291': 'var(--tg-secondary) / text-secondary',
+  '#747c8b': 'var(--tg-secondary) / text-secondary  (retired 2026-08-14 — failed AA on card fill)',
   '#2a2a2c': 'var(--tg-border) / border-border',
   '#111111': 'var(--tg-bg) / bg-bg on a dark surface — var(--tg-fg) / text-fg on a light one',
 };

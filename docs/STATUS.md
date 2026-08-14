@@ -237,13 +237,29 @@ the row above. **Thin margin to watch:** the hero CTA row clears the fold by
 | **Taps re-run after the restructure** | `tierFail=0 overlaps=0` on `/` across all 9 viewport/theme combos. `multiline=1` at narrow widths is the script's documented **pass** bucket, not a failure |
 | **Contrast measured with the tag tint composited** | Card name 17.32 / 15.94 · tag text on tint 6.38 / 4.78 · strip claim and icons 17.32 / 15.94 (light / dark). Keyboard: real `Tab` gives `:focus-visible` + the 2px outline on all six new controls. Launcher yield intact — opacity 0, `pointer-events: none`, `aria-hidden`, `tabIndex -1` |
 
-**New in Open — code, found by this pass and deliberately not fixed:**
+~~**New in Open — code, found by this pass and deliberately not fixed:**
 `--tg-secondary` on `--tg-surface` in **dark mode measures 4.14:1**, under AA's
 4.5 for 14px text. Confirmed **identical on untouched `project-card` at `/work`**,
 so it is pre-existing and site-wide, not introduced here: the v2.3 dark audit
 measured secondary against the page floor (`#101010`, 4.53) and never against the
 card fill (`#1a1a1c`). Fixing it changes `--tg-secondary` in `.dark` and repaints
-every card on the site, which is why this pass flagged it rather than taking it.
+every card on the site, which is why this pass flagged it rather than taking it.~~
+
+**Resolved 2026-08-14.** `--tg-muted-dark` lightened along its own hue and
+saturation, `#747C8B` → `#7B8291`. Recomputed against every background it is
+actually composited on, not just the page floor: **4.93:1** on `#101010` (page
+floor and `.footer-dark`), **4.90:1** on `#111111` (`.ink-band`), **4.51:1** on
+`#1a1a1c` (dark-mode card fill). All three clear AA.
+
+The audit had **two** wrong numbers, not one. The ink band was also failing —
+`#747C8B` measures **4.495:1** on `#111111`, and the 4.53 recorded for it was
+the page-floor figure carried over. Card fill remains the binding constraint at
+4.51:1, so re-measure this token before darkening any dark surface.
+
+`.ink-band` reads `var(--tg-muted-dark)` rather than a literal, so it moved with
+the token — the documented ink-band exception is the *violet tag*, which is
+untouched. `scripts/check-hex.ts` now bans both hexes: `#7B8291` pointing at the
+token, `#747C8B` as retired.
 
 **Needs the user's eyes:** the strip's 70ms icon stagger and the cards' 80ms /
 18px / 0.985-scale landing, under full motion. Only the reduced-motion half is

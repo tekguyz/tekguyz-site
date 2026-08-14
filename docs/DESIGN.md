@@ -97,7 +97,7 @@ specification gap piecemeal produces three unrelated treatments.
 ## Changelog (v2.2 → v2.3)
 
 - **Hero type scale confirmed at 72px**, not 76px — measured against the real headline by the contrast/layout pass, hitting exactly 3 lines with the CTA row inside the first viewport.
-- **Full color audit results applied and locked.** Every color/contrast claim is now backed by a measured, verified ratio: `muted` darkened to #6A717E, `muted-soft` retired as a text color, `--muted-dark` (#747C8B) added to close the dark-mode gap, and dark-specific text variants locked for blue (#5380E4) and violet (#8377E2) — amber and teal already passed as their plain accent value. One documented exception: the home ink band's violet tag keeps a literal hex rather than the token, since the token would resolve to the wrong (light-mode) value there.
+- **Full color audit results applied and locked.** Every color/contrast claim is now backed by a measured, verified ratio: `muted` darkened to #6A717E, `muted-soft` retired as a text color, `--muted-dark` (~~#747C8B~~ → **#7B8291**, lightened 2026-08-14 after the original failed AA on card fill and the ink band) added to close the dark-mode gap, and dark-specific text variants locked for blue (#5380E4) and violet (#8377E2) — amber and teal already passed as their plain accent value. One documented exception: the home ink band's violet tag keeps a literal hex rather than the token, since the token would resolve to the wrong (light-mode) value there.
 - **The `-text` variant rule broadened** — it was scoped too narrowly to "tinted backgrounds" and missed the Solutions page's colored eyebrows, which were failing in three of four accent colors.
 
 ## Changelog (v2.1 → v2.2)
@@ -152,7 +152,7 @@ Icons are allowed where they do real, recognizable work — not banned outright,
 | `hairline` | #E5E7EB | 1px borders, light |
 | `muted` | **#6A717E** *(locked, was #6B7280)* | Secondary text, eyebrows, captions, form labels — everywhere `muted-soft` used to be. 4.91:1 on canvas, 4.50:1 on `surface-card` — the minimum step that clears both; one step lighter fails `surface-card`. |
 | ~~`muted-soft`~~ | #9CA3AF | **Retired as a text color, locked.** All 88 uses across both files moved to `muted`. Still valid for non-text use only: dots and the concierge's thinking indicator. |
-| `muted-dark` | **#747C8B** *(locked, new)* | Dark-mode secondary text — closes the gap where dark mode had no dedicated secondary color at all. 4.53:1 on `#101010`. Replaces every hardcoded `#6B7280` in dark contexts, including the footer's three column headings and both bottom-bar lines. |
+| `muted-dark` | ~~#747C8B~~ → **#7B8291** *(locked, lightened 2026-08-14)* | Dark-mode secondary text — closes the gap where dark mode had no dedicated secondary color at all. ~~4.53:1 on `#101010`.~~ Now 4.93:1 on `#101010`, 4.90:1 on `#111111`, 4.51:1 on `#1a1a1c` — AA on all three. #747C8B failed AA on card fill (4.14:1) and on the ink band (4.50:1, recorded as passing); the new value is the same hue and saturation, lightened until the card fill cleared. Replaces every hardcoded `#6B7280` in dark contexts, including the footer's three column headings and both bottom-bar lines. |
 | `bg-dark` | #101010 | Dark-mode page bg + permanent footer |
 | `text-primary-dark` | #F5F5F5 | Dark-mode text |
 | `border-dark` | #2A2A2C | Dark hairlines |
