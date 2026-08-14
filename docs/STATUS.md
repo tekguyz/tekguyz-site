@@ -38,9 +38,16 @@ self-referential trap the two preceding STATUS.md commits were fixing. Measured
 **everything after it had not deployed.** All of it was pushed on 2026-08-14 —
 see the homepage-fold section below for the push and its confirmation.)
 
-**Last updated 2026-08-14** (homepage fold rebuilt — see the section below. The
-`Last updated` paragraph above it is 2026-08-13's and is left standing as the
-record of that day.)
+**Last updated 2026-08-14** (homepage fold rebuilt, then the Phase 5 dedup pass —
+see both sections below. The `Last updated` paragraph above it is 2026-08-13's
+and is left standing as the record of that day.)
+
+**Push state, measured 2026-08-14 after the Phase 5 push:** `git rev-list
+--left-right --count origin/master...master` returns `0 0`, `origin/master` at
+`a60392e`. That push carried **2** commits — `c967583` (the `--tg-muted-dark`
+lightening) had been committed and left unpushed, so the "Resolved 2026-08-14"
+line in the homepage-fold section below was true of the repo but **not of
+production** until now.
 
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
@@ -146,9 +153,9 @@ need splitting — did not survive measurement:
 | Item | Note |
 | --- | --- |
 | **Concierge transport inline in the view** | `concierge.tsx:401-436` holds the endpoint literal, request shape, three response-field assumptions and the fallback copy. The copy half is now fixed; the transport is not. Deliberately left — real seam, but no second consumer yet, so extracting it now would be speculative |
-| **`contact-form.tsx`: 8 hand-wired field triples** | `:256-303`, `:322-418`. **Local** extraction, not a shared component — one file, eight internal uses. The a11y wiring must survive verbatim: conditional `aria-describedby` (`:352`), `aria-invalid` as `true \| undefined`, the wrapped phone `onChange`, and the `key="step-1"`/`key="step-2"` discipline that sits *outside* any field abstraction |
-| **Body scroll lock, two incompatible restores** | `nav.tsx:74-79` clobbers with `''`; `concierge.tsx:326-333` saves and restores `previous`. Adopt the concierge's contract. Not observed failing — the drawer/panel interaction may make it unreachable today |
-| Scroll-position flag ×2 | `nav.tsx:43-48`, `concierge.tsx:205-210`. Thin on its own; only worth doing alongside the scroll lock, same two files |
+| ~~**`contact-form.tsx`: 8 hand-wired field triples**~~ | **Shipped 2026-08-14 (`a60392e`)** — see the Phase 5 dedup section below |
+| ~~**Body scroll lock, two incompatible restores**~~ | **Shipped 2026-08-14 (`a60392e`)** — see below. The reachability question is answered there: the lock is reachable, the clobber is not |
+| ~~Scroll-position flag ×2~~ | **Shipped 2026-08-14 (`a60392e`)**, alongside the scroll lock as planned |
 | `mailto:` fallback ×5 | Three treatments across `nav`, `footer-dark`, `contact-form`, `concierge`, `app/error.tsx`. Probably leave — the `tap-44`/`tap-24` variance is legitimate, tier depends on neighbour spacing |
 | `process-steps.tsx:51-79` scroll measurement in the view | Genuine coupling, but extraction needs the four step refs passed in, which preserves most of it. Leave |
 
@@ -268,6 +275,44 @@ provable on this machine.
 **Pushed 2026-08-14.** This push carried **9 commits**, not 2 — the 7 that had
 been sitting unpushed since 2026-08-13 went out with it. See the corrected push
 count in the header.
+
+## Phase 5 dedup — shipped 2026-08-14 (`a60392e`)
+
+Two of the three remaining audit rows, run as independent parallel tracks. Both
+behavior-preserving; rendered output is unchanged in both.
+
+| Shipped | Detail |
+| --- | --- |
+| **`contact-form.tsx`: 8 field triples → one local `Field`** | `Field` is defined in the same file (`:441-492`) — **not** a shared component, one consumer. It owns the wrapper `<div>`, the `<label>`, the `(optional)` marker, and the single slot holding **either** the error **or** the hint. The controls stay hand-written as `children`, because they are three different element types with per-field `className`/`inputMode`/`rows`/`autoComplete` — a prop-spreading helper would have deduped the small half and left the markup. **`Field` deliberately does not own `aria-invalid` or `aria-describedby`**; both stay inline at the call sites. Deriving them inside would apply `aria-invalid` uniformly to all eight, which is a behaviour change, and would bury the conditional whose whole point is that it vanishes when the element it points at is replaced. All four required behaviours verified against rendered DOM, not source: `aria-describedby` present→absent→present across the phone field's pristine/errored/recovered cycle and never empty-string; `aria-invalid` absent when pristine, exactly `"true"` when errored, never `"false"`; the wrapped phone `onChange` byte-identical and exercised (20 digits → 15 kept, `+44 20 7123 4567` survives whole at 16 chars / 12 digits); `key="step-1"`/`key="step-2"` still on the step `<div>`s and outside `Field`, verified by consequence — all five step-2 controls read `""` after `Continue`. File 428 → 481 lines; the JSX shrank ~66 lines and the doc comment recording *why* the aria stays at the call sites added 20 |
+| **One scroll lock and one scroll-position flag** | New `lib/use-scroll.ts`: `useScrolledPast(threshold)` and `useBodyScrollLock(active)`. `nav.tsx` −15/+12, `concierge.tsx` −17/+21. The concierge's save-and-restore contract won, as planned; nav's `overflow = ''` unlock is gone. `useScrolledPast` takes a number **or a function** because the concierge's threshold is `innerHeight * 0.85` and must be read per event — both callers pass a module-level constant, so the listener is never rebuilt. **The `sheet` ref-read pattern was not touched, and the audit row's premise about it was wrong:** `sheetRef` is read by the **focus** effect (`:286-299`), never by the lock effect, which has always had `sheet` as a real dependency. That stays — a rotation into sheet mode with the panel already open must engage the lock. Re-verified in-browser: desktop 1280×800 focus lands on `#concierge-input`, no `aria-modal`, no lock; sheet 1280×500 gives `aria-modal="true"`, focus on the panel element, body `hidden`; Escape closes and returns focus to the launcher in both. Restore proven with a sentinel — body set to `overflow: scroll` before opening comes back as `scroll`, where `master` returned `''` |
+
+**Was nav's lock reachable? The lock yes, the clobber no.** The hamburger is a
+real control below 768px (measured at 375px: click opens `#mobile-drawer`, body
+goes to `hidden`), so the lock runs. But the failure needs a *second* inline
+`overflow` writer live at unlock time, and grep confirms exactly two site-wide.
+They cannot both be engaged: below 768px the open sheet occludes the hamburger
+(`elementFromPoint` over its rect returns the panel's close button, panel
+`z-index: 80` vs header `60`); at ≥768px with height ≤560 the hamburger's
+container computes `display: none`, verified at 1024×500. **So this was a latent
+defect, not a live one** — worth fixing because the occlusion is a layout
+coincidence, not a guarantee, but it is not a bug anyone hit.
+
+**One thing did not survive identically, deliberately.** Nav's old effect wrote
+`overflow = ''` on mount and on every close, including when nothing was locked.
+The hook writes nothing when inactive. That is the fix, but it is an observable
+difference; nothing on the site depended on the old behaviour.
+
+**Verification state, measured 2026-08-14 on the combined tree:** `bun run build`
+passes · **97 tests pass across 3 files** · `bun run lint` **clean, zero
+findings** · no console errors, no hydration warnings.
+
+**Two figures elsewhere in this file are stale — corrected here, left standing
+there as dated records.** The Build Phase 1 section says "90 tests pass"; the
+third test file (`lib/overlap-verdict.test.ts`) makes it 97. Build Phases 1, 2
+and 3 all say "lint clean except the one known `contact-form.tsx` warning" —
+that warning was closed on 2026-08-13 in `6a6ee41` (`watch()` → `useWatch`), as
+the header's own close-out paragraph already records. **There is no known lint
+warning in this repo.**
 
 ## Homepage flow, Wave 2 — shipped 2026-08-13 (`0663baa`)
 
