@@ -1477,8 +1477,69 @@ async function phaseMotion(browser: Browser) {
 const TAP_PROBE = `
 (() => {
   const a = window.__a;
-  const out = { rectSmall: [], tierFail: [], overlaps: [], multiline: [], probed: 0 };
-  const els = a.interactives();
+
+  /* SCOPE. Unset (the normal route sweep) means "every interactive on the
+     page". Set to a selector — see the panel-open pass in \`phaseTaps\` — it
+     means "only the controls inside this overlay", which is the whole point of
+     that pass: the concierge panel's own chips, input, send and close button
+     have never been in the site-wide tierFail number because the sweep never
+     opened the panel. */
+  const scopeSel = window.__tapScope || null;
+  const scopeRoot = scopeSel ? document.querySelector(scopeSel) : null;
+  if (scopeSel && !scopeRoot) {
+    return { scope: scopeSel, error: 'scope root not found — pass did not run', rectSmall: [], tierFail: [], overlaps: [], multiline: [], radiusClipped: [], probed: 0 };
+  }
+
+  /* BORDER-RADIUS, and why it gets its own bucket rather than a pass.
+
+     \`elementFromPoint\` honours border-radius. The corner probes sit at
+     \`tier/2 - 1\` from the centre — 1px inside each edge of the tier box — and
+     for a target whose PAINTED box already equals the tier box, that point
+     lands in the clipped arc: 1px in from both edges is 7.07px from the centre
+     of a 6px arc, so it is outside the shape and the parent owns it.
+
+     The concierge's 44x44 close button is exactly that case, and it is what
+     the panel pass first reported. Counting it as \`tierFail\` next to a
+     genuine 40px chip conflates a missing ~1% of corner area with a target a
+     finger cannot reliably hit.
+
+     So it is classified, not forgiven — \`radiusClipped\` is emitted and
+     printed. The carve-out is deliberately narrow: it applies ONLY when the
+     painted box already meets the tier on BOTH axes (so the target is
+     genuinely big enough) and the point is outside the element's own rounded
+     shape. An undersized target still fails, because its tier box is larger
+     than its painted box and the miss is then real distance, not an arc. */
+  const cornerRadii = (el) => {
+    const cs = getComputedStyle(el);
+    const px = (v) => parseFloat(v) || 0;
+    return {
+      tl: px(cs.borderTopLeftRadius), tr: px(cs.borderTopRightRadius),
+      bl: px(cs.borderBottomLeftRadius), br: px(cs.borderBottomRightRadius),
+    };
+  };
+  // Is (x,y) inside the element's rounded rect? Only the four arcs can exclude
+  // a point that is already inside the plain rect.
+  const insideRounded = (el, r, x, y) => {
+    if (x < r.left || x > r.right || y < r.top || y > r.bottom) return false;
+    const rad = cornerRadii(el);
+    const corners = [
+      [r.left + rad.tl, r.top + rad.tl, rad.tl, x < r.left + rad.tl && y < r.top + rad.tl],
+      [r.right - rad.tr, r.top + rad.tr, rad.tr, x > r.right - rad.tr && y < r.top + rad.tr],
+      [r.left + rad.bl, r.bottom - rad.bl, rad.bl, x < r.left + rad.bl && y > r.bottom - rad.bl],
+      [r.right - rad.br, r.bottom - rad.br, rad.br, x > r.right - rad.br && y > r.bottom - rad.br],
+    ];
+    for (const [ccx, ccy, rr, inCornerBox] of corners) {
+      if (rr > 0 && inCornerBox) {
+        if ((x - ccx) ** 2 + (y - ccy) ** 2 > rr * rr) return false;
+      }
+    }
+    return true;
+  };
+
+  const out = { scope: scopeSel, rectSmall: [], tierFail: [], overlaps: [], multiline: [], radiusClipped: [], probed: 0 };
+  const els = scopeRoot
+    ? a.interactives().filter((el) => scopeRoot.contains(el))
+    : a.interactives();
 
   // The declared tier wins where one is declared — the probe then checks what
   // the code claims rather than what a heuristic guesses. Undeclared elements
@@ -1535,6 +1596,10 @@ const TAP_PROBE = `
       ['br', cx + d, cy + d],
     ];
     const miss = [];
+    const clipped = [];
+    // Painted box already meets the tier on both axes? Then a corner miss can
+    // only be the arc, never distance. Precondition for the radius carve-out.
+    const bigEnough = box.width >= t && box.height >= t;
     for (const [name, x, y] of pts) {
       // A probe point outside the viewport cannot be hit-tested and is not a
       // failure of the element — recorded so it is never silently a pass.
@@ -1549,14 +1614,30 @@ const TAP_PROBE = `
       // An ANCESTOR owning the point does not — that is the tap falling
       // through to the container, which is exactly the failure being measured.
       if (hit && (hit === el || el.contains(hit))) continue;
+      // Big enough, and the point is outside the element's own rounded shape:
+      // the arc clipped it. Recorded in its own bucket, never silently passed.
+      if (bigEnough && hit && hit.contains(el) && !insideRounded(el, box, x, y)) {
+        clipped.push({ at: name, owner: a.sel(hit) });
+        continue;
+      }
       const thief = hit ? hit.closest('a,button,input,select,textarea,summary,[role="button"]') : null;
       // The concierge launcher is fixed and floats over everything. Its
       // overlaps are the recorded, out-of-scope gap from Prompt 10 — counting
       // them as new adjacency defects here would be double-booking.
       const isLauncher = !!thief && (thief.textContent || '').includes('Ask about your project');
-      miss.push({ at: name, owner: hit ? a.sel(hit) : null, thiefText: thief ? a.txt(thief, 30) : null, isInteractive: !!thief, isLauncher });
-      if (thief && !isLauncher) out.overlaps.push({ target: rec.selector, targetText: rec.text, at: name, stolenBy: a.sel(thief), stolenByText: a.txt(thief, 30) });
+      // SAME EXEMPTION, WIDENED — not a second mechanism. An OPEN OVERLAY
+      // legitimately covers the page beneath it, exactly as the fixed launcher
+      // does. A control inside the overlay taking a point away from a target
+      // outside it is the overlay doing its job, not an adjacency defect, and
+      // counting it would flood this pass with every link the panel happens to
+      // sit over. Overlay-to-overlay theft is NOT exempt — two panel chips
+      // stealing from each other is the real defect this pass exists to catch.
+      const isOverlay = !!scopeRoot && !!thief && scopeRoot.contains(thief) && !scopeRoot.contains(el);
+      const exempt = isLauncher || isOverlay;
+      miss.push({ at: name, owner: hit ? a.sel(hit) : null, thiefText: thief ? a.txt(thief, 30) : null, isInteractive: !!thief, isLauncher, isOverlay });
+      if (thief && !exempt) out.overlaps.push({ target: rec.selector, targetText: rec.text, at: name, stolenBy: a.sel(thief), stolenByText: a.txt(thief, 30) });
     }
+    if (clipped.length) out.radiusClipped.push({ ...rec, radius: cornerRadii(el), clipped });
     if (miss.length) out.tierFail.push({ ...rec, miss });
   }
   return out;
@@ -1582,17 +1663,93 @@ async function phaseTaps(browser: Browser) {
           tierFail: unknown[];
           overlaps: unknown[];
           multiline: unknown[];
+          radiusClipped: unknown[];
           probed: number;
         };
         results.push({ route, viewport: vp.label, theme, descriptor, ...r });
         console.log(
-          `taps ${vp.label}/${theme} ${route.padEnd(30)} rectSmall=${r.rectSmall.length} tierFail=${r.tierFail.length} overlaps=${r.overlaps.length} multiline=${r.multiline.length}`,
+          `taps ${vp.label}/${theme} ${route.padEnd(30)} rectSmall=${r.rectSmall.length} tierFail=${r.tierFail.length} overlaps=${r.overlaps.length} multiline=${r.multiline.length} radiusClipped=${r.radiusClipped.length}`,
         );
       } catch (e) {
         results.push({ route, viewport: vp.label, theme, error: String(e) });
         console.log(`taps ${vp.label}/${theme} ${route} FAILED ${e}`);
       }
     }
+
+    /* ------------------------------------------------ concierge panel open
+       THE BLIND SPOT THIS PASS CLOSES. Everything above sweeps the page as
+       loaded, and the concierge panel is not mounted until the launcher is
+       clicked — so the panel's own controls (three suggestion chips, the
+       input, send, close) have never been in the site-wide `tierFail=0`
+       number. Found 2026-08-12 by hand: the chips were 40px against a 44px
+       tier. Real, pre-existing, and invisible to the sweep.
+
+       One route is enough. The panel is a single fixed component rendered
+       from the root layout, identical on every route — sweeping all eight
+       would multiply runtime for eight copies of one answer. `/contact` is
+       the route it was found on and the one where the FAQ suppression
+       channel also runs, so it is the least forgiving.
+
+       `__tapScope` restricts the probe to the panel's own subtree. That is
+       what keeps this honest in both directions: it does not re-report the
+       page's controls (already covered above), and the widened exemption in
+       TAP_PROBE stops the open panel from being blamed for covering the page
+       beneath it — the same allowance the fixed launcher already had.
+
+       NOTHING in `concierge.tsx` is touched. This drives the component
+       through its real launcher click, exactly as a visitor would. */
+    try {
+      const panelPage = await ctx.newPage();
+      await load(panelPage, BASE + '/contact');
+      const opened = await panelPage.evaluate(async () => {
+        const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+        // The launcher is deliberately absent above the hero.
+        window.scrollTo(0, window.innerHeight * 1.4);
+        await sleep(400);
+        const fab = [...document.querySelectorAll('button')].find((b) =>
+          (b.textContent || '').includes('Ask about your project'),
+        ) as HTMLElement | undefined;
+        if (!fab) return 'launcher not reachable';
+        fab.click();
+        await sleep(700);
+        return document.querySelector('div[role="dialog"]') ? 'ok' : 'dialog did not mount';
+      });
+
+      if (opened !== 'ok') {
+        // Never a silent pass. A pass that could not open the panel reports
+        // that it did not run, rather than contributing a clean zero.
+        results.push({ route: '/contact', viewport: vp.label, theme, pass: 'concierge-panel', ran: false, reason: opened });
+        console.log(`taps ${vp.label}/${theme} ${'/contact [panel]'.padEnd(30)} DID NOT RUN — ${opened}`);
+      } else {
+        await panelPage.evaluate(() => {
+          (window as unknown as { __tapScope: string }).__tapScope = 'div[role="dialog"]';
+        });
+        const r = (await panelPage.evaluate(TAP_PROBE)) as {
+          rectSmall: unknown[];
+          tierFail: unknown[];
+          overlaps: unknown[];
+          multiline: unknown[];
+          radiusClipped: unknown[];
+          probed: number;
+          error?: string;
+        };
+        // A scoped pass that probed nothing is a broken selector, not a clean
+        // panel — the same silent-zero failure the classes phase guards.
+        const vacuous = !r.error && r.probed === 0;
+        results.push({
+          route: '/contact', viewport: vp.label, theme, descriptor,
+          pass: 'concierge-panel', ran: true, vacuous, ...r,
+        });
+        console.log(
+          `taps ${vp.label}/${theme} ${'/contact [panel]'.padEnd(30)} rectSmall=${r.rectSmall.length} tierFail=${r.tierFail.length} overlaps=${r.overlaps.length} radiusClipped=${r.radiusClipped.length} probed=${r.probed}${vacuous ? '  [VACUOUS — probed nothing]' : ''}`,
+        );
+      }
+      await panelPage.close();
+    } catch (e) {
+      results.push({ route: '/contact', viewport: vp.label, theme, pass: 'concierge-panel', ran: false, error: String(e) });
+      console.log(`taps ${vp.label}/${theme} /contact [panel] FAILED ${e}`);
+    }
+
     await ctx.close();
   }
   return results;
