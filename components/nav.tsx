@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ConnectedNodes } from '@/components/logo-lockup';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ButtonLink } from '@/components/button';
@@ -10,6 +10,7 @@ import { AccentDot } from '@/components/solution-tag';
 import { useSuppressLauncher } from '@/components/concierge/concierge-bus';
 import { solutions } from '@/content/solutions';
 import { site } from '@/lib/site';
+import { useBodyScrollLock, useScrolledPast } from '@/lib/use-scroll';
 import { cn } from '@/lib/utils';
 
 /**
@@ -34,18 +35,14 @@ const LINKS = [
   { href: '/contact', label: 'Contact' },
 ];
 
+/** Past 24px the bar takes its scrolled fill, blur and hairline. */
+const NAV_SCROLL_THRESHOLD = 24;
+
 export function Nav() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
+  const scrolled = useScrolledPast(NAV_SCROLL_THRESHOLD);
   const [open, setOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   // Close the mobile drawer when the route changes — including on a back/forward
   // navigation, which is why it can't just live in the links' onClick.
@@ -71,12 +68,12 @@ export function Nav() {
      narrow. So the drawer says so directly. */
   useSuppressLauncher(open);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [open]);
+  /* The drawer is a full-screen surface, so the page behind it does not scroll.
+     Save-and-restore, via the shared hook — this used to unlock by writing `''`,
+     which does not restore an inline `overflow` that was already there, it
+     deletes it. The concierge's sheet lock was already the correct contract;
+     there is now one of it. */
+  useBodyScrollLock(open);
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);

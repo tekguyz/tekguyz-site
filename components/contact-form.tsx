@@ -84,7 +84,7 @@ const field =
   'w-full h-11 px-3 rounded-[4px] border border-border bg-transparent text-[1rem] ' +
   'outline-none transition-colors duration-[240ms] focus-visible:border-border-strong';
 
-const label =
+const labelClass =
   'block mb-[10px] tg-eyebrow text-secondary';
 
 export function ContactForm() {
@@ -271,10 +271,7 @@ export function ContactForm() {
               collected (shouldUnregister is false), so Back still restores them. */}
           {step === 1 ? (
             <div key="step-1" className="mt-8 flex flex-col gap-6">
-              <div>
-                <label htmlFor="projectType" className={label}>
-                  Area of Interest
-                </label>
+              <Field id="projectType" label="Area of Interest" error={errors.projectType?.message}>
                 <select
                   id="projectType"
                   className={field}
@@ -288,13 +285,9 @@ export function ContactForm() {
                     </option>
                   ))}
                 </select>
-                {errors.projectType && <FieldError>{errors.projectType.message}</FieldError>}
-              </div>
+              </Field>
 
-              <div>
-                <label htmlFor="name" className={label}>
-                  Name
-                </label>
+              <Field id="name" label="Name" error={errors.name?.message}>
                 <input
                   id="name"
                   className={field}
@@ -302,13 +295,9 @@ export function ContactForm() {
                   autoComplete="name"
                   {...register('name')}
                 />
-                {errors.name && <FieldError>{errors.name.message}</FieldError>}
-              </div>
+              </Field>
 
-              <div>
-                <label htmlFor="email" className={label}>
-                  Email
-                </label>
+              <Field id="email" label="Email" error={errors.email?.message}>
                 <input
                   id="email"
                   type="email"
@@ -317,8 +306,7 @@ export function ContactForm() {
                   autoComplete="email"
                   {...register('email')}
                 />
-                {errors.email && <FieldError>{errors.email.message}</FieldError>}
-              </div>
+              </Field>
 
               {/* `data-primary-cta` is the concierge launcher's yield target.
                   `/contact` had none, so the launcher never yielded on the
@@ -338,10 +326,7 @@ export function ContactForm() {
             </div>
           ) : (
             <div key="step-2" ref={step2Ref} className="mt-8 flex flex-col gap-6">
-              <div>
-                <label htmlFor="company" className={label}>
-                  Company <Optional />
-                </label>
+              <Field id="company" label="Company" optional>
                 <input
                   id="company"
                   className={field}
@@ -349,18 +334,24 @@ export function ContactForm() {
                   autoComplete="organization"
                   {...register('company')}
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label htmlFor="phone" className={label}>
-                  Phone <Optional />
-                </label>
-                {/* aria-describedby is conditional because the hint element it
-                    points at is REPLACED by the error, not stacked above it —
-                    an unconditional value dangles at exactly the moment a
-                    screen-reader user most needs the description to resolve.
-                    When the error is showing, FieldError's role="alert" is what
-                    announces, so there is nothing to re-point this at. */}
+              {/* The hint is passed to Field, which renders it with
+                  id="phone-hint" ONLY while there is no error — the hint
+                  element is REPLACED by the error, not stacked above it. That
+                  is why aria-describedby below is conditional and stays at this
+                  call site rather than being derived inside Field: an
+                  unconditional value dangles at exactly the moment a
+                  screen-reader user most needs the description to resolve. When
+                  the error is showing, FieldError's role="alert" is what
+                  announces, so there is nothing to re-point this at. */}
+              <Field
+                id="phone"
+                label="Phone"
+                optional
+                error={errors.phone?.message}
+                hint={<>A second way to reach you, in case email&rsquo;s slow on your end.</>}
+              >
                 <input
                   id="phone"
                   type="tel"
@@ -372,19 +363,9 @@ export function ContactForm() {
                   {...phoneField}
                   onChange={onPhoneChange}
                 />
-                {errors.phone ? (
-                  <FieldError>{errors.phone.message}</FieldError>
-                ) : (
-                  <p id="phone-hint" className="mt-2 text-[0.75rem] text-secondary">
-                    A second way to reach you, in case email&rsquo;s slow on your end.
-                  </p>
-                )}
-              </div>
+              </Field>
 
-              <div>
-                <label htmlFor="website" className={label}>
-                  Website <Optional />
-                </label>
+              <Field id="website" label="Website" optional error={errors.website?.message}>
                 {/* Stays type="text". lib/validation.ts deliberately accepts a
                     bare `tekguyz.com`, which type="url" would reject as
                     malformed — inputMode gives the same mobile keyboard without
@@ -398,13 +379,9 @@ export function ContactForm() {
                   aria-invalid={errors.website ? true : undefined}
                   {...register('website')}
                 />
-                {errors.website && <FieldError>{errors.website.message}</FieldError>}
-              </div>
+              </Field>
 
-              <div>
-                <label htmlFor="message" className={label}>
-                  Project details
-                </label>
+              <Field id="message" label="Project details" error={errors.message?.message}>
                 <textarea
                   id="message"
                   rows={5}
@@ -413,13 +390,9 @@ export function ContactForm() {
                   autoComplete="off"
                   {...register('message')}
                 />
-                {errors.message && <FieldError>{errors.message.message}</FieldError>}
-              </div>
+              </Field>
 
-              <div>
-                <label htmlFor="budget" className={label}>
-                  Estimated budget <Optional />
-                </label>
+              <Field id="budget" label="Estimated budget" optional>
                 <select
                   id="budget"
                   className={`${field} tabular-nums`}
@@ -433,7 +406,7 @@ export function ContactForm() {
                     </option>
                   ))}
                 </select>
-              </div>
+              </Field>
 
               {serverError && (
                 <p role="alert" className="text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>
@@ -461,6 +434,58 @@ export function ContactForm() {
           )}
         </form>
       )}
+    </div>
+  );
+}
+
+/**
+ * The label / control / error triple, local to this file — eight uses, one
+ * consumer, so it deliberately is NOT a shared component.
+ *
+ * What it owns: the wrapper <div>, the <label>, the `(optional)` marker, and
+ * the one slot below the control that holds EITHER the error OR the hint. The
+ * hint is rendered only while `error` is absent, because the two swap rather
+ * than stack — see the phone call site.
+ *
+ * What it deliberately does NOT own: `aria-invalid` and `aria-describedby`.
+ * Those stay on the controls at the call sites. Deriving them here would make
+ * every field carry them uniformly, which is a behaviour change, and it would
+ * bury `aria-describedby`'s conditional — the exact wiring whose whole point is
+ * that it must vanish the moment the element it points at is replaced.
+ *
+ * It also owns no `key`. The `key="step-1"` / `key="step-2"` discipline lives
+ * on the step branches above and must stay there: it forces a real
+ * unmount/mount so step 2 does not inherit step 1's uncontrolled inputs.
+ */
+function Field({
+  id,
+  label,
+  optional,
+  error,
+  hint,
+  children,
+}: {
+  id: string;
+  label: React.ReactNode;
+  optional?: boolean;
+  error?: string;
+  hint?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className={labelClass}>
+        {label}
+        {optional ? <> <Optional /></> : null}
+      </label>
+      {children}
+      {error ? (
+        <FieldError>{error}</FieldError>
+      ) : hint ? (
+        <p id={`${id}-hint`} className="mt-2 text-[0.75rem] text-secondary">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }

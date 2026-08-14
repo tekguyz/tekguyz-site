@@ -17,6 +17,7 @@ import { PANEL_DUR, PANEL_EASE } from '@/components/concierge/panel-motion';
 import { CONCIERGE_ERROR_REPLY } from '@/lib/concierge/errors';
 import { getWork } from '@/content/work';
 import { site } from '@/lib/site';
+import { useBodyScrollLock, useScrolledPast } from '@/lib/use-scroll';
 
 /**
  * A persistent launcher, never a modal — nothing dims, nothing traps focus, the
@@ -100,6 +101,14 @@ const SHEET_QUERY = '(max-height: 560px), (max-width: 767px)';
  */
 const CAPTURE_CLOSE_DWELL = 4000;
 
+/**
+ * The launcher appears once the hero is behind you — 85% of the viewport
+ * height, read per scroll event rather than captured once, because a rotation
+ * changes it. Module-level so the scroll listener is mounted exactly once; an
+ * inline arrow would be a new identity on every render.
+ */
+const PAST_HERO_THRESHOLD = () => window.innerHeight * 0.85;
+
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
@@ -165,7 +174,7 @@ export function Concierge() {
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
 
-  const [pastHero, setPastHero] = useState(false);
+  const pastHero = useScrolledPast(PAST_HERO_THRESHOLD);
   const [ctaInView, setCtaInView] = useState(false);
   /* The app-state half of the yield rule — an open nav drawer or an expanded
      FAQ row. See concierge-bus.ts for why this is not a widened observer. */
@@ -203,13 +212,6 @@ export function Concierge() {
   const opener = build
     ? `That's ${build.name} you're looking at. Tell me what you're dealing with and I'll tell you what we'd build for it — or whether something like this fits.`
     : DEFAULT_OPENER;
-
-  useEffect(() => {
-    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.85);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     const onOpen = () => setOpen(true);
@@ -324,15 +326,17 @@ export function Concierge() {
   }, [open, captured, stayOpen, busy]);
 
   /* Body scroll lock — sheet mode only. Above the threshold the page scrolling
-     behind the panel is the contract, not a bug. */
-  useEffect(() => {
-    if (!open || !sheet) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [open, sheet]);
+     behind the panel is the contract, not a bug.
+
+     Unchanged behaviour, now the shared hook: save the previous inline value and
+     put it back, never write `''`. The nav drawer adopted this contract rather
+     than the other way round. `sheet` stays a real dependency HERE — the lock
+     must engage if a rotation drops the viewport into sheet mode with the panel
+     already open, and re-running this effect costs nothing. The ref-read pattern
+     belongs to the FOCUS effect above, where re-running would re-focus the panel
+     and fight an Android soft keyboard; it is not this effect's pattern and is
+     deliberately not copied down here. */
+  useBodyScrollLock(open && sheet);
 
   /* Focus trap — sheet mode only, for the same reason. */
   useEffect(() => {
