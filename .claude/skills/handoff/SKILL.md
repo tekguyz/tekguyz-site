@@ -54,6 +54,16 @@ anything now closed out of the Open tables. Keep every figure measured and dated
 
 If STATUS.md was already accurate, say so plainly and change nothing.
 
+**If STATUS.md changed, commit it — `docs/STATUS.md` alone, nothing else in the
+tree.** Message: what was corrected and why (e.g. "STATUS.md: fix push count
+and a nonexistent commit sha"). This is a doc-audit commit, not a push — the
+push gate in CLAUDE.md is untouched, and this never stages or commits other
+files even if the working tree has other changes. Rationale: STATUS.md's own
+rule is *"a decision only exists once it's in `docs/STATUS.md` or committed
+code"* — an audit that ends with an uncommitted STATUS.md violates that
+immediately, and the printed handoff block below would be citing a doc state
+that isn't actually in the repo.
+
 ---
 
 ## Job 2 — print the handoff block
