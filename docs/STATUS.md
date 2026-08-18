@@ -98,6 +98,7 @@ presence now all exist.
 | --- | --- |
 | **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot |
 | **Recapture 8 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. ~~`sarah-poster.webp` is the 16:9 hero — leave it.~~ **Superseded by the row above — it needs recapturing too, for reasons this line was written before anyone had looked at it closely.** Then `bun run check:media`. Current, all wrong: `field-ops-thumb` 769×754 · `sarah-thumb` 1080×1059 · `shopify-configurator` 1080×1140 · `crunch-wrap-dashboard` 1080×1038 · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 |
+| **Set `CRM_SIGNING_SECRET` in Vercel — production lead capture is broken until you do** | **New 2026-08-18, blocking.** The CRM's triage endpoint now rejects unsigned POSTs with a 401. Two env vars have to change together in the Vercel project settings: `CRM_TRIAGE_ENDPOINT` becomes the org-id URL (`…/api/v1/triage/<organization_id>`), and `CRM_SIGNING_SECRET` is the new signing key. Both are on the CRM's Settings → Organization panel, as "Endpoint URL" and "Signing secret". Until both are set, every submission returns a `[LEAD-DELIVERY-FAILURE] stage=crm` marker and archives to Upstash rather than reaching the CRM — recoverable, but silent to the visitor, who is still told the form succeeded. Verified working end to end against a local CRM; only the production env vars are outstanding |
 | **Privacy policy — legal review** | Rewritten and shipped 2026-08-12 from measured data flows; **not yet legally reviewed**, and the page has never claimed otherwise. Specific open question for the reviewer: no cookie-consent or state-specific (CCPA etc.) language was added, per the user's call — confirm that's right for the actual traffic and customer base |
 
 ## Open — code
@@ -115,6 +116,48 @@ presence now all exist.
 | ~~`contact-form.tsx` — `react-hooks/incompatible-library` on RHF `watch()`~~ **Closed 2026-08-13, commit `6a6ee41`.** Now `useWatch`. Un-skipping the React Compiler for the file **surfaced two errors the bailout had been masking**, both pre-existing and both fixed in the same commit: `useRef(Date.now())` (`react-hooks/purity` — the argument is evaluated every render) is now a lazy `useState` initializer, which also resolved `handleSubmit(onSubmit)` reading a ref during render (`react-hooks/refs`), since `onSubmit` closed over it. **Lint is now 0 errors / 0 warnings.** Step reconciliation untouched; verified in-browser that `?interest=` still presets, step 2 renders with every field empty (no contamination), and the placeholder still tracks the interest | — |
 | ~~`lib/overlap-verdict.ts` + its tests are orphaned~~ **This row was wrong — measured 2026-08-13, files kept.** `scripts/probe-control.ts:18` imports `verdictFor` and calls it at `:90`; it is the D-02 positive control and its stated purpose is to run the real rule rather than a local reimplementation, so deleting the module would break it. What *was* wrong is a comment in `audit-mobile.ts` claiming `phaseClasses` "runs the shared verdict rule" — it never imported it, it emits `Sample`-shaped rows for the rule to consume. Comment corrected, commit `fde3441` | — |
 | ~~`site.gbp` is a `share.google` shortlink while `COPY.md` records `maps?cid=…`~~ **Closed 2026-08-13, commit `480bc78`.** Not a coin-flip: COPY.md §2 of "WRITING GAPS STILL OPEN" recorded the `cid` URL as resolved, verified 2026-08-10, **by decision** — the code had drifted from a recorded decision, and COPY.md is the authority for this link. The `cid` is Google's stable place identifier and auditable on sight; a `share.google` link is an external redirector whose target can change or be revoked with no change to this repo. Re-verified 200 on 2026-08-13. One consumer: `components/testimonial.tsx:95` | — |
+
+## CRM webhook signing — shipped 2026-08-18
+
+The CRM stopped accepting its webhook secret as a URL path segment. It was being
+written into every request log on every call, unavoidably. The endpoint is now
+`POST /api/v1/triage/<organization_id>` and authenticates on an
+`X-TekGuyz-Signature` header: hex HMAC-SHA256 of the raw request body, keyed by
+the secret. The secret never travels. The org id in the URL grants nothing on
+its own — an unsigned request for a real org gets the same opaque 401 as one for
+an org that does not exist.
+
+**One file changed in the app: `app/actions/contact.ts`.** `sendToCrm` now reads
+`CRM_SIGNING_SECRET` (at call time, never at module scope — same rule as the
+Resend client, so a build still passes with no secrets), serializes the payload
+**once** into `body`, signs that exact string, and sends the same string. The
+`JSON.stringify` deliberately does not live inline in the `fetch` call any more:
+signing one serialization and sending another is the standard failure here and
+it 401s every request, not some of them.
+
+**A wrong comment was the reason this looked impossible from this side.** The
+code carried "Content-Type only. The CRM's CORS allows no other header, and a
+custom one fails preflight," and `CLAUDE.md`, `README.md`, `.env.example` and
+`CANONICAL.md` all repeated the CORS claim as a hard rule. It was wrong: CORS and
+preflight are browser mechanisms, and `sendToCrm` is a server-side fetch from a
+Server Action — no origin, no preflight, no CORS involvement, ever. All five
+places are corrected. A domain or hosting change does not break this call.
+
+**Verified end to end through the real form**, not a hand-built POST: the site
+running locally against the CRM running locally, submitted through `/contact` in
+a browser with real field values. The CRM returned `200` and a `leadId`, the
+`[contact] CRM accepted leadId=…` line appeared in the site's log, and the lead
+appeared in the CRM. Negative case proven the same way — with a deliberately
+wrong `CRM_SIGNING_SECRET`, the identical submission produced a `401` and a
+`[LEAD-DELIVERY-FAILURE] stage=crm` marker, and no lead was created. `RESEND_API_KEY`
+was left unset for both runs so no real email went out; the CRM write and the
+email sends are independent and each records its own failure, so that isolates
+cleanly. The test lead was deleted from the CRM afterwards.
+
+`bun run build`, `bun run lint` and `bun run test` all pass.
+
+**Outstanding: the two Vercel env vars.** See "Open — needs the user". Nothing
+in production changes until those are set, and the CRM's old URL is already dead.
 
 ## Component audit — 2026-08-13, and what it did to Phase 5
 

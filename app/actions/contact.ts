@@ -1,5 +1,6 @@
 'use server';
 
+import { createHmac } from 'node:crypto';
 import { Resend } from 'resend';
 import { z } from 'zod';
 import { after } from 'next/server';
@@ -297,6 +298,31 @@ async function sendToCrm(
     return;
   }
 
+  /**
+   * Read here, never at module scope, for the same reason as the Resend client
+   * above: a build must pass with no secrets present.
+   */
+  const signingSecret = process.env.CRM_SIGNING_SECRET;
+  if (!signingSecret) {
+    await recordFailure('crm', lead, source, payload, 'CRM_SIGNING_SECRET is not set');
+    return;
+  }
+
+  /**
+   * SERIALIZED ONCE. This exact string is both what gets signed and what gets
+   * sent, and those must be the same bytes — the CRM verifies the HMAC against
+   * the raw request body it receives, before it parses anything.
+   *
+   * Building the object, signing JSON.stringify(obj), then handing `obj` to a
+   * client that serializes it a second time is the standard way this breaks:
+   * two serializations of the same value are not guaranteed byte-identical
+   * (key order, whitespace, unicode escaping), and the mismatch fails 100% of
+   * the time with a 401 rather than intermittently. Do not inline this back
+   * into the fetch call.
+   */
+  const body = JSON.stringify(payload);
+  const signature = createHmac('sha256', signingSecret).update(body, 'utf8').digest('hex');
+
   try {
     /**
      * The timeout is 20s against a measured 2–5s endpoint: generous enough that
@@ -305,15 +331,29 @@ async function sendToCrm(
      */
     const response = await fetch(crmEndpoint, {
       method: 'POST',
-      // Content-Type only. The CRM's CORS allows no other header, and a custom
-      // one fails preflight.
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      /**
+       * The signature header is what authenticates this request (2026-08-18).
+       * The CRM endpoint URL now carries only the organization id, which grants
+       * nothing on its own — possession of the URL is no longer credential.
+       *
+       * This used to read "Content-Type only. The CRM's CORS allows no other
+       * header, and a custom one fails preflight." That was wrong, and it was
+       * the reason a custom header looked impossible: CORS and preflight are
+       * BROWSER mechanisms. This is a server-side fetch from a Server Action —
+       * no origin, no preflight, no CORS involvement of any kind. The CRM's
+       * allowed-origin list has never applied to this call.
+       */
+      headers: {
+        'Content-Type': 'application/json',
+        'X-TekGuyz-Signature': signature,
+      },
+      body,
       signal: AbortSignal.timeout(20_000),
     });
 
     if (!response.ok) {
-      // 404 here is indistinguishable from a wrong URL or a bad secret, and 429
+      // 401 means the endpoint URL's org id or the signing secret is wrong —
+      // most likely the secret was rotated in the CRM and not updated here. 429
       // is per-organization rather than per-IP, so the status is worth keeping.
       await recordFailure(
         'crm',

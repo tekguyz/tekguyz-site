@@ -39,9 +39,13 @@ scripts/      generate-icons.ts
 - **The honeypot is `hp_confirm`, never `website`.** `website` is a real CRM
   column; naming the honeypot the same thing silently drops legitimate leads as
   suspected bots, with nothing shown to them and nothing logged.
-- **CORS on the CRM triage endpoint is hard-locked to exactly `https://tekguyz.com`.**
-  No `www`, no subdomain, no preview-deploy URL. A domain or hosting change
-  fails closed and silent, and has to be coordinated with the CRM side first.
+- **Every CRM triage POST must be signed** (2026-08-18). `CRM_TRIAGE_ENDPOINT`
+  now ends in the plain organization id and is not a credential;
+  `CRM_SIGNING_SECRET` is. `sendToCrm` serializes the payload **once** and signs
+  that exact string — signing a re-serialized copy 401s every request. Rotating
+  the secret in the CRM takes effect immediately, so update Vercel first.
+  CORS is not involved: this is a server-side fetch, so there is no origin and
+  no preflight. The CRM's allowed-origin list has never applied to it.
 - **Accent colors come from `config/solutions.ts` only.** The single documented
   exception is the home ink band, which sets literal values via `.ink-band` in
   `globals.css` because it is dark in both themes.
