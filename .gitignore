@@ -42,3 +42,7 @@ npm-debug.log*
 .vscode
 .DS_Store
 
+
+# local Claude Code tooling config (per-machine, not project source)
+.claude/settings.json
+.claude/settings.local.json
