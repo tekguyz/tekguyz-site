@@ -84,6 +84,17 @@ const field =
   'w-full h-11 px-3 rounded-[4px] border border-border bg-transparent text-[1rem] ' +
   'outline-none transition-colors duration-[240ms] focus-visible:border-border-strong';
 
+/* A <select>'s popup list is painted by the browser, and Chrome takes its fill
+   from the control's own computed background-color. `bg-transparent` therefore
+   resolves to the platform default — pure white — while the option text still
+   inherits --tg-fg, so in dark mode the list read as a blank white box until a
+   row was highlighted. The fill has to be a real colour, and the options need
+   it declared on them too. `bg-bg` is what sits behind the control anyway
+   (nothing between the select and <body> paints a background), so the closed
+   control is unchanged in both themes. */
+const selectField =
+  `${field.replace('bg-transparent', 'bg-bg')} [&>option]:bg-bg [&>option]:text-fg`;
+
 const labelClass =
   'block mb-[10px] tg-eyebrow text-secondary';
 
@@ -274,7 +285,7 @@ export function ContactForm() {
               <Field id="projectType" label="Area of Interest" error={errors.projectType?.message}>
                 <select
                   id="projectType"
-                  className={field}
+                  className={selectField}
                   autoComplete="off"
                   {...register('projectType')}
                 >
@@ -395,7 +406,7 @@ export function ContactForm() {
               <Field id="budget" label="Estimated budget" optional>
                 <select
                   id="budget"
-                  className={`${field} tabular-nums`}
+                  className={`${selectField} tabular-nums`}
                   autoComplete="off"
                   {...register('budget')}
                 >
