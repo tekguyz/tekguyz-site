@@ -98,7 +98,6 @@ presence now all exist.
 | --- | --- |
 | **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot |
 | **Recapture 8 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. ~~`sarah-poster.webp` is the 16:9 hero — leave it.~~ **Superseded by the row above — it needs recapturing too, for reasons this line was written before anyone had looked at it closely.** Then `bun run check:media`. Current, all wrong: `field-ops-thumb` 769×754 · `sarah-thumb` 1080×1059 · `shopify-configurator` 1080×1140 · `crunch-wrap-dashboard` 1080×1038 · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 |
-| **Set `CRM_SIGNING_SECRET` in Vercel — production lead capture is broken until you do** | **New 2026-08-18, blocking.** The CRM's triage endpoint now rejects unsigned POSTs with a 401. Two env vars have to change together in the Vercel project settings: `CRM_TRIAGE_ENDPOINT` becomes the org-id URL (`…/api/v1/triage/<organization_id>`), and `CRM_SIGNING_SECRET` is the new signing key. Both are on the CRM's Settings → Organization panel, as "Endpoint URL" and "Signing secret". Until both are set, every submission returns a `[LEAD-DELIVERY-FAILURE] stage=crm` marker and archives to Upstash rather than reaching the CRM — recoverable, but silent to the visitor, who is still told the form succeeded. Verified working end to end against a local CRM; only the production env vars are outstanding |
 | **Privacy policy — legal review** | Rewritten and shipped 2026-08-12 from measured data flows; **not yet legally reviewed**, and the page has never claimed otherwise. Specific open question for the reviewer: no cookie-consent or state-specific (CCPA etc.) language was added, per the user's call — confirm that's right for the actual traffic and customer base |
 
 ## Open — code
@@ -156,8 +155,34 @@ cleanly. The test lead was deleted from the CRM afterwards.
 
 `bun run build`, `bun run lint` and `bun run test` all pass.
 
-**Outstanding: the two Vercel env vars.** See "Open — needs the user". Nothing
-in production changes until those are set, and the CRM's old URL is already dead.
+**Shipped to production 2026-08-19 and confirmed with a real submission.**
+Both repos deployed (CRM `c780a21`, site `44c7295`), the two Vercel env vars are
+set, and a genuine tekguyz.com/contact submission reached the CRM.
+
+**Two failures happened first, and both are worth keeping.** (1) The site was
+redeployed with the new env vars but the OLD code, because the commit had not
+been pushed yet — the env vars alone cannot work, since it is the code that
+computes the signature. (2) Both env var VALUES were pasted with the variable
+name still glued to the front (`CRM_TRIAGE_ENDPOINT=https://…`), which produced
+`TypeError: Failed to parse URL from CRM_TRIAGE_ENDPOINT=https://…` and then,
+after the URL was fixed, a bare `HTTP 401` from the still-malformed secret.
+
+**Vercel marks both variables sensitive, so `vercel env pull` returns
+`"[SENSITIVE]"` rather than the value — they cannot be inspected, only
+replaced.** That is why the fix was to overwrite both from an authoritative
+source rather than to read and correct them. The secret was piped into
+`vercel env add` from a 36-byte file with no trailing newline, straight out of
+the database.
+
+**The cheap way to verify a signing secret without writing anything:** sign a
+deliberately INVALID payload and POST it. A `400 Invalid payload` proves the
+signature was accepted, because validation runs after verification; a `401`
+means the key is wrong. Confirmed against production: correct signature `400`,
+wrong signature `401`, missing header `401`. No lead is created either way.
+
+Nothing was lost during the outage — every failed submission was archived to
+Upstash by `lib/lead-archive.ts` with its 90-day TTL, which is the first time
+that safety net has actually been needed.
 
 ## Component audit — 2026-08-13, and what it did to Phase 5
 
