@@ -11,17 +11,25 @@ build), GBP Services (live in the user's GBP for months), and the footer locatio
 drift (fixed in `COPY.md:69`). All three had been quoted back to the user as
 current state. Assert nothing here you have not just measured.*
 
-Last updated: 2026-08-13 (Build Phase 1 shipped; Build Phase 2 partly shipped —
-D-04 geometry, the concierge panel's presence motion, and two device-reported
-fixes; **Build Phase 3 shipped** — the privacy rewrite, the FAQ rewrite, and all
-8 detail narratives, measured in `content/work.ts` on 2026-08-13. A production
+Last updated: 2026-08-13 (~~Build Phase 1 shipped~~ — **corrected 2026-08-28:
+Build Phase 1 is _partly_ shipped. The plan table below has always said so and
+two Phase 1 rows are still open in "Open — code"; this header was the only place
+claiming otherwise.** Build Phase 2 partly shipped — D-04 geometry, the
+concierge panel's presence motion, and two device-reported fixes;
+~~**Build Phase 3 shipped**~~ **Build Phase 3 shipped except the privacy
+policy's legal review** — the privacy rewrite, the FAQ rewrite, and all
+8 detail narratives, measured in `content/work.ts` on 2026-08-13; the legal
+review is still open under "Open — needs the user", so this is a partial close
+and now says so. A production
 outage on 2026-08-12, caused by the Phase 2 work and self-resolved, is recorded
 below — read it before the next push to `master`. **Homepage flow Waves 1, 2 and
 3 all shipped 2026-08-13** — the plan in `docs/plans/2026-08-13-homepage-flow.md`
 is complete; see the three sections below. **Build Phase 5 was rescoped
 2026-08-13 by measurement** — its line counts were stale and its "split the big
 files" premise did not survive the component audit; two dedup items shipped, and
-two token/sharing decisions are waiting on the user. See the audit section.
+~~two token/sharing decisions are waiting on the user~~ **both of those were
+released by the user and shipped the same day — see the next sentence, and the
+audit section.** See the audit section.
 **The dark-context token audit shipped 2026-08-13, commit `2881076`**, and **the
 outcome block was extracted 2026-08-13, commit `09c1339`** — and **the eyebrow
 treatment, the last of the audit's three blocked items, shipped 2026-08-13 as
@@ -49,6 +57,68 @@ lightening) had been committed and left unpushed, so the "Resolved 2026-08-14"
 line in the homepage-fold section below was true of the repo but **not of
 production** until now.
 
+---
+
+## Last updated 2026-08-28 — everything below was re-measured today
+
+Nothing in this refresh was carried forward from a prior session. Commands run
+this session: `git log`, `git rev-parse`, `git rev-list --left-right --count
+origin/master...master`, `bun run test`, `bun run lint`,
+`bun run scripts/check-design.ts`, `bun run check:media`, `bun run build`,
+`find components -type f | wc -l`, and `wc -l` on every file this document
+prints a line count for.
+
+| | Measured 2026-08-28 | Command |
+| --- | --- | --- |
+| HEAD | `a27a8ea` | `git rev-parse --short HEAD` |
+| Push state | **`0 0` — fully pushed.** `origin/master` is also `a27a8ea` | `git rev-list --left-right --count origin/master...master` |
+| Tests | **97 pass, 3 files, ~1.1s** | `bun run test` |
+| Lint | **clean — no output, zero findings** | `bun run lint` |
+| `check:design` | **39 tokens** match `docs/TOKENS.md` | `bun run scripts/check-design.ts` |
+| `check:media` | 8 entries wired, all posters present, **7 of 8 off their locked ratio**, exit 0 | `bun run check:media` |
+| `bun run build` | passes | `bun run build` |
+| `components/` | **35 files.** Still only two over 300 lines; the third largest is `nav.tsx` at 249 | `find components -type f` piped to `wc -l` |
+| `components/concierge/concierge.tsx` | **755** | `wc -l` |
+| `components/contact-form.tsx` | **516** | `wc -l` |
+| `app/actions/contact.ts` | **463** | `wc -l` |
+
+**Three commits landed after the CRM-signing section below and none of them was
+recorded here until now.**
+
+- **`cf979f1`, 2026-08-19 — the white `<select>` popup in dark mode is fixed.**
+  Chrome paints a `<select>`'s option list itself and takes the fill from the
+  control's own computed `background-color`. The shared `field` class sets
+  `bg-transparent`, so the popup fell back to the platform default — pure white
+  — while the option text still inherited `--tg-fg` (`#f5f5f5`). Area of
+  Interest and Estimated budget read as blank white boxes in dark mode until a
+  row was highlighted. `selectField` swaps `bg-transparent` for `bg-bg` and
+  declares the same pair on the `<option>`s; nothing between the select and
+  `<body>` paints a background, so the closed control is pixel-identical in
+  both themes and light mode is unchanged. One file, `components/contact-form.tsx`,
+  +13/−2 — which is where 11 of that file's current 516 lines came from.
+- **`ec8b9b1`, 2026-08-28 — `public/media/sarah-demo.mp4` is deleted, and the
+  deletion is committed.** The file had been removed from the working tree but
+  never committed, while `CANONICAL.md`, `COPY.md`, `PLAYBOOK.md` and a JSDoc
+  block in `home-hero.tsx` all still described it as present with "do not ship
+  it as-is" language. The reference was dormant — no `<video>`, no `src`, no mp4
+  import anywhere in `app/`, `components/`, `content/`, `lib/` or `config/` —
+  so the deletion was kept and the four references rewritten in the past tense.
+  The hero has rendered a static poster since CANONICAL §1 recorded "Resolved —
+  static image, video deferred." **`public/media/` now holds 10 files, all
+  `.webp`.**
+- **`a27a8ea`, 2026-08-28 — a documentation health audit was added**,
+  `docs/audits/documentation-health-2026-08-28.md`, 354 lines. Findings only:
+  nothing was fixed, edited or merged as part of it. This refresh is the first
+  response to it, and it covers `docs/STATUS.md` only.
+
+**One measurement worth keeping.** The component audit's 2026-08-13 line counts
+(`709 / 428 / 393`) do not reconcile with `git show` at any commit from that
+day: the tree read **751 / 457 / 423**. The numbers to quote are the ones in the
+table above; the 2026-08-13 figures are left in place below as that section's
+own record, with this correction attached.
+
+---
+
 **Attach these to the Claude.ai project** — seven files, this is the current set:
 `CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
 **`docs/TOKENS.md` (new)** · `docs/COPY.md` · `docs/PLAYBOOK.md`.
@@ -56,9 +126,12 @@ production** until now.
 never — it is the record of how we got here and contains claims that are now
 false.)
 
-**Changed 2026-08-12: `CLAUDE.md`, `STATUS.md`, `DESIGN.md`, `COPY.md`
-(privacy + FAQ rewritten), `SEO.md`, and `TOKENS.md` is new.** Replace the old
-copies rather than adding — they will contradict.
+~~**Changed 2026-08-12: `CLAUDE.md`, `STATUS.md`, `DESIGN.md`, `COPY.md`
+(privacy + FAQ rewritten), `SEO.md`, and `TOKENS.md` is new.**~~ **Superseded
+2026-08-28 — that delta is four doc-change days out of date.** Docs changed
+again on 2026-08-13, 08-14, 08-18 and 08-28. **Re-attach the whole set rather
+than diffing it.** Replace the old copies rather than adding — they will
+contradict.
 
 ---
 
@@ -78,9 +151,9 @@ Claude.ai first.*
 | **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
 | **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see below |
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see below |
-| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Shipped 2026-08-13** — privacy rewrite, FAQ rewrite, and all 8 detail narratives, see Build Phase 3 below |
+| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Shipped 2026-08-13 except the legal review** — privacy rewrite, FAQ rewrite and all 8 detail narratives are in; `/privacy` has still never been legally reviewed and that row is open under "Open — needs the user". See Build Phase 3 below |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
-| **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the audit section below. Not "split the big files": `concierge.tsx` **709**, `contact-form.tsx` **428**, `actions/contact.ts` **393** (the old 526/440/423 were stale and no longer measurable). Two of the audit's dedup items are **shipped**; the rest is repetition and coupling, not size | Last — two items shipped 2026-08-13 |
+| **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the audit section below. Not "split the big files": measured 2026-08-28, `components/concierge/concierge.tsx` **755**, `components/contact-form.tsx` **516**, `app/actions/contact.ts` **463** (~~709 / 428 / 393~~ — stale, and they never reconciled with `git show` for their own date either, which read 751/457/423). Two of the audit's dedup items shipped 2026-08-13 and **three more shipped 2026-08-14** in `a60392e`; the rest is repetition and coupling, not size | Last — five items shipped, across 2026-08-13 and 2026-08-14 |
 
 **Phase 1 was the real work.** DESIGN.md was assembled ad-hoc, the Claude Design
 export was never fully implemented, and `frontend-design` had never been invoked
@@ -96,8 +169,8 @@ presence now all exist.
 
 | Item | Note |
 | --- | --- |
-| **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot |
-| **Recapture 8 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. ~~`sarah-poster.webp` is the 16:9 hero — leave it.~~ **Superseded by the row above — it needs recapturing too, for reasons this line was written before anyone had looked at it closely.** Then `bun run check:media`. Current, all wrong: `field-ops-thumb` 769×754 · `sarah-thumb` 1080×1059 · `shopify-configurator` 1080×1140 · `crunch-wrap-dashboard` 1080×1038 · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 |
+| **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot. **Measured 2026-08-28: the file already is 1600×900 (ratio 1.778) and `git log` shows it untouched since `c94695f` on 2026-08-13 — so the size half of "wanted" was already met when this row was written. What is open is only the two content defects.** |
+| ~~**Recapture 8 posters at 16:10**~~ **Recapture 7 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. ~~`sarah-poster.webp` is the 16:9 hero — leave it.~~ **Superseded by the row above — it needs recapturing too, for reasons this line was written before anyone had looked at it closely.** Then `bun run check:media`. **`field-ops-thumb` is done** — replaced 2026-08-17 in `baee083`, now **1440×900 (1.600)**, on-ratio, and `check:media` no longer flags it. Still wrong, every dimension re-measured 2026-08-28 from the WebP headers: `sarah-thumb` 1080×1059 (1.02) · `shopify-configurator` 1080×1140 (0.95) · `crunch-wrap-dashboard` 1080×1038 (1.04) · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 (1.33). `bun run check:media` reports **7 of 8 off their locked ratio**, exit 0 |
 | **Privacy policy — legal review** | Rewritten and shipped 2026-08-12 from measured data flows; **not yet legally reviewed**, and the page has never claimed otherwise. Specific open question for the reviewer: no cookie-consent or state-specific (CCPA etc.) language was added, per the user's call — confirm that's right for the actual traffic and customer base |
 
 ## Open — code
@@ -109,7 +182,7 @@ presence now all exist.
 | **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
 | ~~**`phaseTaps` never opens the concierge panel**~~ **Closed 2026-08-13, commit `ac54202`.** Panel-open pass added per viewport/theme combo: it clicks the real launcher (`concierge.tsx` untouched) and `window.__tapScope` restricts `TAP_PROBE` to the dialog's subtree. The launcher exemption was **widened, not duplicated** — `isOverlay` exempts a thief inside the scoped overlay stealing from a target outside it; overlay-to-overlay theft stays a defect. Two guards against a silent clean zero: a pass that cannot open the panel reports `ran: false` with a reason, and one that probed nothing is flagged `vacuous`. Measured on all 9 combos: `probed=30`, `tierFail=0`, `overlaps=0`, none vacuous — **the chips now hit-test as passing, so the 2026-08-12 fix is covered rather than assumed**. One new bucket, `radiusClipped`, added because the pass's first finding was a false positive — see the row below | — |
 | **`radiusClipped`: the concierge close button loses its four corners to its own `border-radius`.** 44×44, `border-radius: 6px`, no `tap-44` declaration — so its tier box equals its painted box, and `TAP_PROBE`'s corner points (1px inside each edge) sit 7.07px from a 6px arc's centre, outside the shape. `elementFromPoint` honours that, so all four corners return the parent. **Not a tap failure** — ~1% of corner area, not a target a finger can miss — which is why it is classified rather than counted as `tierFail`. Recorded because it is the one thing the new pass found. Fixing it would mean declaring `tap-44` on the button, which is a `concierge.tsx` change and was deliberately out of scope for the harness commit | any |
-| 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17% | 4 |
+| 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17%. **Re-measured 2026-08-28, unchanged** — `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` | 4 |
 | **D-07 hero media bleeds through card content above 1440px.** Untouched — the desktop panel and its 10vw bleed were not changed on 2026-08-13 and were re-measured unchanged (32px padding, 136px past a 1440px viewport) | 4 |
 | **D-08 hero poster illegible — resolved below 1024px only, still open at desktop-narrow.** 2026-08-13 shipped `heroPosterMobile`: a 1038×584 crop of the same real capture, art-directed in via `<picture>`, legible at ~330px (DESIGN.md §4.9). **The full four-panel capture is still what desktop renders**, so any width that shows it small is unimproved. Closing this fully is still the recapture | 4 |
 | ~~`contact-form.tsx` — `react-hooks/incompatible-library` on RHF `watch()`~~ **Closed 2026-08-13, commit `6a6ee41`.** Now `useWatch`. Un-skipping the React Compiler for the file **surfaced two errors the bailout had been masking**, both pre-existing and both fixed in the same commit: `useRef(Date.now())` (`react-hooks/purity` — the argument is evaluated every render) is now a lazy `useState` initializer, which also resolved `handleSubmit(onSubmit)` reading a ref during render (`react-hooks/refs`), since `onSubmit` closed over it. **Lint is now 0 errors / 0 warnings.** Step reconciliation untouched; verified in-browser that `?interest=` still presets, step 2 renders with every field empty (no contamination), and the placeholder still tracks the interest | — |
@@ -188,15 +261,24 @@ that safety net has actually been needed.
 
 *Full report: `docs/audits/2026-08-13-component-audit.md`. All 30 files in
 `components/` read in full, plus `app/actions/contact.ts` and the relevant parts
-of `lib/`. Every figure below was measured on the date.*
+of `lib/`. Every figure below was measured on the date.* **`components/` holds
+35 files as of 2026-08-28** — the 30 is that day's count, not a current one.
 
 **Phase 5's old line counts were stale and its framing was wrong.** The row read
 `concierge.tsx` 526 / `contact-form.tsx` 440 / `actions/contact.ts` 423; measured
-2026-08-13 they are **709 / 428 / 393**. More importantly the premise — big files
-need splitting — did not survive measurement:
+2026-08-13 they are ~~**709 / 428 / 393**~~. **Corrected 2026-08-28, twice over.**
+Those three numbers do not reconcile with `git show` at any 2026-08-13 commit —
+the tree that day read **751 / 457 / 423** — and the files have grown since.
+**Current, measured today: `components/concierge/concierge.tsx` 755 ·
+`components/contact-form.tsx` 516 · `app/actions/contact.ts` 463.** The path
+matters too: `concierge.tsx` has lived at `components/concierge/concierge.tsx`
+since before this audit, and every bare `concierge.tsx` below is shorthand for
+it. More importantly the premise — big files need splitting — did not survive
+measurement:
 
 - **Only two files in `components/` exceed 300 lines**, and they are the two
-  already scoped. There is no third oversized file.
+  already scoped. There is no third oversized file. **Still true 2026-08-28** —
+  755 and 516, with `nav.tsx` next at 249.
 - **`concierge.tsx` is not a split candidate on size.** Its 11 effects are
   mutually coupled by design — `sheetRef` exists specifically to keep sheet mode
   out of the focus effect's dependencies, guarding a documented Android
@@ -220,7 +302,7 @@ need splitting — did not survive measurement:
 
 | Item | Note |
 | --- | --- |
-| **Concierge transport inline in the view** | `concierge.tsx:401-436` holds the endpoint literal, request shape, three response-field assumptions and the fallback copy. The copy half is now fixed; the transport is not. Deliberately left — real seam, but no second consumer yet, so extracting it now would be speculative |
+| **Concierge transport inline in the view** | ~~`concierge.tsx:401-436`~~ **`components/concierge/concierge.tsx:418-440`, re-measured 2026-08-28** — holds the endpoint literal, request shape, three response-field assumptions and the fallback copy. The copy half is now fixed; the transport is not. Deliberately left — real seam, but no second consumer yet, so extracting it now would be speculative |
 | ~~**`contact-form.tsx`: 8 hand-wired field triples**~~ | **Shipped 2026-08-14 (`a60392e`)** — see the Phase 5 dedup section below |
 | ~~**Body scroll lock, two incompatible restores**~~ | **Shipped 2026-08-14 (`a60392e`)** — see below. The reachability question is answered there: the lock is reachable, the clobber is not |
 | ~~Scroll-position flag ×2~~ | **Shipped 2026-08-14 (`a60392e`)**, alongside the scroll lock as planned |
@@ -351,8 +433,8 @@ behavior-preserving; rendered output is unchanged in both.
 
 | Shipped | Detail |
 | --- | --- |
-| **`contact-form.tsx`: 8 field triples → one local `Field`** | `Field` is defined in the same file (`:441-492`) — **not** a shared component, one consumer. It owns the wrapper `<div>`, the `<label>`, the `(optional)` marker, and the single slot holding **either** the error **or** the hint. The controls stay hand-written as `children`, because they are three different element types with per-field `className`/`inputMode`/`rows`/`autoComplete` — a prop-spreading helper would have deduped the small half and left the markup. **`Field` deliberately does not own `aria-invalid` or `aria-describedby`**; both stay inline at the call sites. Deriving them inside would apply `aria-invalid` uniformly to all eight, which is a behaviour change, and would bury the conditional whose whole point is that it vanishes when the element it points at is replaced. All four required behaviours verified against rendered DOM, not source: `aria-describedby` present→absent→present across the phone field's pristine/errored/recovered cycle and never empty-string; `aria-invalid` absent when pristine, exactly `"true"` when errored, never `"false"`; the wrapped phone `onChange` byte-identical and exercised (20 digits → 15 kept, `+44 20 7123 4567` survives whole at 16 chars / 12 digits); `key="step-1"`/`key="step-2"` still on the step `<div>`s and outside `Field`, verified by consequence — all five step-2 controls read `""` after `Continue`. File 428 → 481 lines; the JSX shrank ~66 lines and the doc comment recording *why* the aria stays at the call sites added 20 |
-| **One scroll lock and one scroll-position flag** | New `lib/use-scroll.ts`: `useScrolledPast(threshold)` and `useBodyScrollLock(active)`. `nav.tsx` −15/+12, `concierge.tsx` −17/+21. The concierge's save-and-restore contract won, as planned; nav's `overflow = ''` unlock is gone. `useScrolledPast` takes a number **or a function** because the concierge's threshold is `innerHeight * 0.85` and must be read per event — both callers pass a module-level constant, so the listener is never rebuilt. **The `sheet` ref-read pattern was not touched, and the audit row's premise about it was wrong:** `sheetRef` is read by the **focus** effect (`:286-299`), never by the lock effect, which has always had `sheet` as a real dependency. That stays — a rotation into sheet mode with the panel already open must engage the lock. Re-verified in-browser: desktop 1280×800 focus lands on `#concierge-input`, no `aria-modal`, no lock; sheet 1280×500 gives `aria-modal="true"`, focus on the panel element, body `hidden`; Escape closes and returns focus to the launcher in both. Restore proven with a sentinel — body set to `overflow: scroll` before opening comes back as `scroll`, where `master` returned `''` |
+| **`contact-form.tsx`: 8 field triples → one local `Field`** | `Field` is defined in the same file (~~`:441-492`~~ **`:471-509`, re-measured 2026-08-28; `FieldError` follows at `:510`**) — **not** a shared component, one consumer. It owns the wrapper `<div>`, the `<label>`, the `(optional)` marker, and the single slot holding **either** the error **or** the hint. The controls stay hand-written as `children`, because they are three different element types with per-field `className`/`inputMode`/`rows`/`autoComplete` — a prop-spreading helper would have deduped the small half and left the markup. **`Field` deliberately does not own `aria-invalid` or `aria-describedby`**; both stay inline at the call sites. Deriving them inside would apply `aria-invalid` uniformly to all eight, which is a behaviour change, and would bury the conditional whose whole point is that it vanishes when the element it points at is replaced. All four required behaviours verified against rendered DOM, not source: `aria-describedby` present→absent→present across the phone field's pristine/errored/recovered cycle and never empty-string; `aria-invalid` absent when pristine, exactly `"true"` when errored, never `"false"`; the wrapped phone `onChange` byte-identical and exercised (20 digits → 15 kept, `+44 20 7123 4567` survives whole at 16 chars / 12 digits); `key="step-1"`/`key="step-2"` still on the step `<div>`s and outside `Field`, verified by consequence — all five step-2 controls read `""` after `Continue`. ~~File 428 → 481 lines~~ — **corrected 2026-08-28 from `git show`: this commit took `components/contact-form.tsx` 480 → 505.** It is **516** today, the extra 11 from `cf979f1`'s dark-mode `selectField` fix. The JSX shrank ~66 lines and the doc comment recording *why* the aria stays at the call sites added 20 |
+| **One scroll lock and one scroll-position flag** | New `lib/use-scroll.ts`: `useScrolledPast(threshold)` and `useBodyScrollLock(active)`. `nav.tsx` −15/+12, `concierge.tsx` −17/+21. The concierge's save-and-restore contract won, as planned; nav's `overflow = ''` unlock is gone. `useScrolledPast` takes a number **or a function** because the concierge's threshold is `innerHeight * 0.85` and must be read per event — both callers pass a module-level constant, so the listener is never rebuilt. **The `sheet` ref-read pattern was not touched, and the audit row's premise about it was wrong:** `sheetRef` is read by the **focus** effect (~~`:286-299`~~ **`:290`, re-measured 2026-08-28**), never by the lock effect, which has always had `sheet` as a real dependency. That stays — a rotation into sheet mode with the panel already open must engage the lock. Re-verified in-browser: desktop 1280×800 focus lands on `#concierge-input`, no `aria-modal`, no lock; sheet 1280×500 gives `aria-modal="true"`, focus on the panel element, body `hidden`; Escape closes and returns focus to the launcher in both. Restore proven with a sentinel — body set to `overflow: scroll` before opening comes back as `scroll`, where `master` returned `''` |
 
 **Was nav's lock reachable? The lock yes, the clobber no.** The hamburger is a
 real control below 768px (measured at 375px: click opens `#mobile-drawer`, body
@@ -374,13 +456,15 @@ difference; nothing on the site depended on the old behaviour.
 passes · **97 tests pass across 3 files** · `bun run lint` **clean, zero
 findings** · no console errors, no hydration warnings.
 
-**Two figures elsewhere in this file are stale — corrected here, left standing
-there as dated records.** The Build Phase 1 section says "90 tests pass"; the
-third test file (`lib/overlap-verdict.test.ts`) makes it 97. Build Phases 1, 2
-and 3 all say "lint clean except the one known `contact-form.tsx` warning" —
-that warning was closed on 2026-08-13 in `6a6ee41` (`watch()` → `useWatch`), as
-the header's own close-out paragraph already records. **There is no known lint
-warning in this repo.**
+~~**Two figures elsewhere in this file are stale — corrected here, left standing
+there as dated records.**~~ **Both were corrected in place on 2026-08-28 rather
+than left standing, so this paragraph is now the reasoning and not the fix.**
+The Build Phase 1 section said "90 tests pass"; the third test file
+(`lib/overlap-verdict.test.ts`) makes it 97. Build Phases 1, 2 and 3 all said
+"lint clean except the one known `contact-form.tsx` warning" — that warning was
+closed on 2026-08-13 in `6a6ee41` (`watch()` → `useWatch`), as the header's own
+close-out paragraph already records. **There is no known lint warning in this
+repo**, re-confirmed 2026-08-28: `bun run lint` produces no output at all.
 
 ## Homepage flow, Wave 2 — shipped 2026-08-13 (`0663baa`)
 
@@ -483,13 +567,18 @@ not behind a token — see DESIGN.md §8.0 for the three reasons. The
   The script's own header said "NOT under Bun" and there was no `package.json`
   entry, so the wrong invocation was the easy one. **Now `bun run audit:mobile`,
   which shells to Node.**
-- **`bun run check:design` is new and gates `prebuild`.** 24 tokens across
-  §2.1, §3.1, §6.1 and §8.0 are asserted against `app/globals.css`; a mismatch
+- **`bun run check:design` is new and gates `prebuild`.** ~~24 tokens across
+  §2.1, §3.1, §6.1 and §8.0~~ — **39 as of 2026-08-28, and the source moved:
+  `scripts/check-design.ts` reads `docs/TOKENS.md`, not DESIGN.md** — asserted
+  against `app/globals.css`; a mismatch
   fails the build and names the token and both values. Verified by injecting
   drift into four different tokens and confirming each was caught.
 
-**Verification state.** `bun run build` passes · 90 tests pass · lint clean
-except the one known `contact-form.tsx` warning · **`audit:mobile taps` clean
+**Verification state.** `bun run build` passes · ~~90 tests pass~~ **97 tests
+across 3 files, re-run 2026-08-28** · ~~lint clean except the one known
+`contact-form.tsx` warning~~ **lint clean, zero findings — that warning was
+closed 2026-08-13 in `6a6ee41` and there is no known lint warning in this
+repo** · **`audit:mobile taps` clean
 site-wide: `tierFail=0 overlaps=0` on every route, every breakpoint, both
 themes** · no console errors · both themes measured.
 
@@ -555,7 +644,9 @@ all three. The 8px `gap-2` survives it with **4px of clearance**, so it creates
 none of the source-order adjacency overlaps the footer column hit at 12px.
 
 **Verification state.** `bun run build` passes · **97 tests** · `check:design`
-38 tokens · lint clean but for the known `contact-form.tsx` warning ·
+~~38 tokens~~ **39, re-run 2026-08-28 — `--text-subhead` landed 2026-08-13** ·
+~~lint clean but for the known `contact-form.tsx` warning~~ **lint clean, zero
+findings** ·
 `audit:mobile taps` **`tierFail=0 overlaps=0` across all 162 route × viewport ×
 theme combinations** — 18 routes × 9 combos (7 viewports light, plus dark at
 `narrow` and `standard`). *This figure read 79 when first committed in `73d95e3`:
@@ -602,7 +693,7 @@ measured on the built site, both modes):
 regression from this work.** They are in Open — code and are *not* claimed as
 fixed here.
 
-## Build Phase 3 — shipped 2026-08-13
+## Build Phase 3 — shipped 2026-08-13, except the privacy policy's legal review
 
 **Privacy `/privacy` — rewritten, replacing the text live since July 13.** All
 three gaps `COPY.md` had been flagging as "must, before launch" are closed: the
@@ -634,8 +725,9 @@ prints that exact `name` in its `FAQPage` example, was updated too.
 Verified on the built output, not the source: `.next/server/app/privacy.html`
 carries the new date and all three new headings and no "Children"; the new Q1
 string appears in `.next/server/app/contact.html`. `bun run build` passes, 97
-tests pass, lint is unchanged at the one pre-existing `contact-form.tsx`
-warning.
+tests pass, ~~lint is unchanged at the one pre-existing `contact-form.tsx`
+warning~~ **lint is clean with zero findings — that warning was closed the same
+day in `6a6ee41`; re-run 2026-08-28**.
 
 **The 8 detail narratives — done, and measured rather than recalled.**
 `content/work.ts` was read entry by entry on 2026-08-13: all 8 carry full
@@ -720,7 +812,8 @@ against it before shipping.
 - **GBP Services is not an open item** and never was a website task.
 - **The testimonial is on the site** — home and `/work/[slug]`.
 - **Footer location is "South Florida"** everywhere, in code and in COPY.md.
-- **`bun run test` now gates the build** via `prebuild` (73 cases, ~0.7s).
+- **`bun run test` now gates the build** via `prebuild` (~~73 cases, ~0.7s~~ **97
+  cases across 3 files, ~1.1s, re-measured 2026-08-28**).
 
 ## Known and accepted about this environment
 
