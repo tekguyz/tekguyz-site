@@ -46,7 +46,7 @@ Skills do not load themselves. Invoke the one that matches **before** starting, 
 | --- | --- |
 | **What is open right now** | `docs/STATUS.md` — short, and the only live status |
 | An architecture or CRM-contract decision | `docs/CANONICAL.md` (highest authority) |
-| **An exact token value** — a colour, a duration, an easing, a radius, the type scale, the density scale | **`docs/TOKENS.md`. Small, read it whole, and quote it freely — 38 tokens are asserted against `globals.css` on every `prebuild`, so it cannot be silently wrong.** |
+| **An exact token value** — a colour, a duration, an easing, a radius, the type scale, the density scale | **`docs/TOKENS.md`. Small, read it whole, and quote it freely — 39 tokens are asserted against `globals.css` on every `prebuild` (re-counted 2026-08-28; `bun run check:design` prints the number itself), so it cannot be silently wrong.** |
 | **Why** a value is what it is, or a component's mechanism | `docs/DESIGN.md` §-by-§, not whole |
 | Page copy, or a route's title/description | `docs/COPY.md` — the relevant page only |
 | JSON-LD for a route | `docs/SEO.md` (small, fine to read whole) |

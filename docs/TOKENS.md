@@ -169,14 +169,29 @@ The declared value is the ≤767px one; the comment gives all three across
 ≤767 / 768 / 1024. **All three are checked**, in three separate blocks of
 `globals.css`, so a breakpoint that silently loses its override fails the build.
 
-**Section rhythm is deliberately not a token** — it lives at the call sites as
-`py-20 md:py-32` and `pt-16 md:pt-24`. `DESIGN.md` §8.0 has the three reasons.
+**Section rhythm is deliberately not a token** — the content-section call sites
+carry it as `py-20 md:py-32` and `pt-16 md:pt-24`. `DESIGN.md` §8.0 has the three
+reasons, and there is no `--rhythm-section` or `--tg-section` custom property to
+go looking for.
+
+**There is, however, a `.tg-section` CLASS, and this file did not say so.**
+Measured 2026-08-28: `app/globals.css:363–371` declares `padding-block: 128px`,
+dropping to `80px` under `max-width: 767px` — the same 128/80 the call sites
+resolve to, hardcoded. Its only two consumers are `app/error.tsx:19` and
+`app/not-found.tsx:8`, the two routes that have no content sections to rhythm
+against. That does not contradict the rule above — it is a class, not a token,
+and it is not on any content route — but it is **a second place the rhythm
+lives**, and no guard will tell you when the two drift.
 
 ---
 
 ## Colour format: hex today, OKLCH is a real open option
 
-**The site is hex throughout — 50 values in `globals.css`, zero OKLCH.**
+**The site is hex throughout — zero OKLCH.** ~~50 values.~~ **Counted directly
+2026-08-28** by matching `#[0-9a-fA-F]{3,8}` against `app/globals.css`: **48 hex
+values in live declarations, 27 of them distinct** (55 occurrences and 29
+distinct if the comments are counted with them). The old 50 matched none of those
+four ways of counting.
 
 **Nothing was "overridden."** Tailwind v4's oklch palette is *its own* colours
 (`--color-blue-500` and friends). This is a bespoke brand palette from the

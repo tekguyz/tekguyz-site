@@ -26,7 +26,7 @@ Most software portfolios show screenshots of things that may or may not still wo
 
 ## 3. Visual Identity — "Monochrome & Ink"
 
-> **For the website, `DESIGN.md` (v2.4) is the operative spec** — exact hex values (several corrected by a measured WCAG contrast audit), the full type scale, component definitions, and the motion contract. This section remains the plain-language description of the direction; DESIGN.md is the implementation authority.
+> **For the website, `DESIGN.md` (v2.6) is the operative spec** — exact hex values (several corrected by a measured WCAG contrast audit), the full type scale, component definitions, and the motion contract. This section remains the plain-language description of the direction; DESIGN.md is the implementation authority.
 
 A near-monochrome system — white canvas, black ink — built to feel confidently engineered rather than decorated. Color is reserved for wayfinding: one accent per Solution line, used on tags, dots, and badges, never on a button.
 
@@ -52,7 +52,7 @@ A near-monochrome system — white canvas, black ink — built to feel confident
 
 **Signature stripe:** a thin four-segment bar, one stripe per accent color, appears in exactly three places on every page — top of hero, above the closing CTA band, bottom of footer. Never anywhere else.
 
-**Live-demo signature:** a pulsing "LIVE — TRY IT YOURSELF" badge and a real preview of the actual product on every case study.
+**Live-demo signature:** ~~a pulsing "LIVE — TRY IT YOURSELF" badge~~ **— replaced, and the replacement is the whole idea.** A measured status line: the server issues a real HEAD request per demo on an hourly revalidate and renders what actually came back — `Live · checked at 14:20 UTC`, or `Temporarily unreachable` with the link still available. Plus a real preview of the actual product on every case study. **Confirmed 2026-08-28: the badge string appears nowhere in the repo**, and `components/status-line.tsx` describes itself as replacing it. See CANONICAL §3 for the argument and DESIGN.md §5 for the treatment.
 
 **Explicitly avoided:** cyberpunk or terminal aesthetics, a fifth accent color, any accent color on a button, engineering jargon in visible copy, generic template patterns.
 

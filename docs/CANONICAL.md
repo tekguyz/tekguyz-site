@@ -7,9 +7,9 @@
 - ~~tekguyz-site-architecture-ux-flow.md~~ (proposed four `/solutions/[slug]` pages — **withdrawn**)
 - ~~tekguyz-rebuild-master-plan.md~~ (proposed live-iframe embed as the v1 signature — **deferred**, see §3)
 
-Only two more documents will exist after this one: **Copy Deck v2** (all new page copy) and **Design System v2.0** (the visual contract Claude Code reads). Nothing else.
+Only two more documents will exist after this one: **Copy Deck v2** (all new page copy) and the **Design System** (the visual contract Claude Code reads). Nothing else. ~~Written here as *v2.0*~~ — that pinned a version to a document that did not exist yet, and it is **v2.6 as of 2026-08-28**, six revisions on. Cite the file, `docs/DESIGN.md`, never the number.
 
-Source of truth hierarchy: **Brand Playbook v2 > this brief > Design System v2.0 > Copy Deck v2.** If any two disagree, the higher one wins and the lower one gets fixed.
+Source of truth hierarchy: **Brand Playbook v2 > this brief > Design System > Copy Deck v2.** If any two disagree, the higher one wins and the lower one gets fixed. (~~*Design System v2.0*~~ — the version pin is dropped for the reason above; the file is `docs/DESIGN.md` and its own header is the only version that counts.)
 
 ---
 

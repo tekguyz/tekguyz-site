@@ -27,9 +27,11 @@ checked.** Three kinds, and they are not interchangeable:
 
 **Every token now lives in [`TOKENS.md`](TOKENS.md), where it is enforced** —
 `bun run check:design` runs on every `prebuild` and fails the build when that
-file and `app/globals.css` disagree, naming the token and both values. **38
-tokens are under test** — measured 2026-08-12 by running it; this line said 40
-— covering colour, type, radius, container, motion and density.
+file and `app/globals.css` disagree, naming the token and both values. **39
+tokens are under test** — re-measured 2026-08-28 by running the script and
+reading the count it prints itself; this line said 40, then 38 — covering
+colour, type, radius, container, motion and density. **Do not retype this
+number from memory: `bun run check:design` prints it on every run.**
 
 That split is the actual fix for what went wrong here. This document was 89KB
 doing two jobs at once, and a reader could not tell a measured fact from an
@@ -184,7 +186,7 @@ Semantic: `success` #10B981 · `warning` #F59E0B · `error` #EF4444.
 
 **Geist** for everything — display (600–700) and body/UI (400–600). Wordmark is Geist 800, fixed brand treatment.
 
-**Single-family, deliberately.** Earlier versions paired Geist with Inter, but both are neo-grotesque sans faces built for screen UI — near-identical in use case, so the pairing cost two font loads and delivered almost no visible contrast. Hierarchy here comes from weight and a 4× size jump (72px/700 hero against 17px/400 body), which is more than enough. One family is also faster and more consistent with a system whose entire thesis is restraint.
+**Single-family, deliberately.** Earlier versions paired Geist with Inter, but both are neo-grotesque sans faces built for screen UI — near-identical in use case, so the pairing cost two font loads and delivered almost no visible contrast. Hierarchy here comes from weight and a size jump measured 2026-08-28 at 1440×900: **4.5×** on the home page (76px/700 hero against 17px/400 body) and **4.2×** on the six routes `page-hero` serves (72px/700). Both fall short of CANONICAL §2's pre-build target of a ceiling "near 96px" and a 5–6× ratio — that target was never built, and the three-line constraint below is why. One family is also faster and more consistent with a system whose entire thesis is restraint.
 
 **Explicitly rejected: adding a display serif** (Playfair Display or similar). It reads fashion/editorial/luxury, which fights "Confidently Engineered," and high-contrast serif is one of the three aesthetic clusters AI-generated design reliably falls into — it would make the site look more templated, not less.
 
@@ -201,11 +203,32 @@ Semantic: `success` #10B981 · `warning` #F59E0B · `error` #EF4444.
 Do not copy the values here — one source per number is the whole point of the
 split.
 
-**Why 72px, exactly:** the first correction (76px) was still one step off — it wraps to 4 lines, not 3, in the unchanged 596px hero text column. 72px is the measured value that actually hits 3 lines with the CTA row inside the first viewport, confirmed against the real headline, not estimated. **The rule that governs is the constraint, not this pixel value**: this headline must wrap to no more than 3 lines on desktop, and the primary CTA row must always be visible without scrolling. If the headline copy changes length in the future, re-measure against that rule — don't assume 72px still holds.
+**Why the ceiling is what it is — and there are two ceilings, not one.**
+**[measured 2026-08-28, live at 1440×900 and 1280×720]**
+
+| Where | Ceiling | Leading | Tracking | Source |
+| --- | --- | --- | --- | --- |
+| Home `h1` | **76px** — a local `clamp(2.75rem, 6.6vw, 4.75rem)`, not the token | 0.92 | −0.05em | `components/home-hero.tsx` |
+| The six `page-hero` routes | **72px** — `--text-hero` | 0.95 | −0.045em | `components/page-hero.tsx:40` |
+
+~~72px, because the first correction to 76px wrapped to 4 lines, not 3.~~ **That
+held only while the 51-character headline shipped.** The copy shortened to 43
+characters on 2026-08-14 and paid for the raise: 76px wraps to exactly 3 lines in
+the **596px** hero text column (§3's `1 / 7` span on a 12-track `.tg-grid`
+— 6×79.33 + 5×24, measured live at 1440×900), and the CTA row clears a
+1280×720 fold by **30px**. The token stays at 72px because the six routes it
+serves have no bleeding media panel beside their h1 and should not pay a
+constraint that belongs to the home page.
+
+**The rule that governs is the constraint, not either pixel value**: the home
+headline must wrap to no more than 3 lines on desktop, and the primary CTA row
+must always be visible without scrolling. If the copy changes length, re-measure
+against that rule — don't assume 76px still holds.
 
 | Role | Size | Weight | Leading | Tracking |
 | --- | --- | --- | --- | --- |
-| Hero h1 | `--text-hero` | 700 Geist | 0.95 | −0.045em |
+| Hero h1 — the six `page-hero` routes | `--text-hero` | 700 Geist | 0.95 | −0.045em |
+| Hero h1 — home only | local clamp, 44 → 76px | 700 Geist | 0.92 | −0.05em |
 | Section head | `--text-display` | 700 Geist | 1.05 | −0.03em |
 | Section lede (`SectionHead` description) | `--text-title` | 400 Geist | 1.35 | −0.01em |
 | Solution row title | `--text-subhead` | 600 Geist | 1.1 | −0.025em |
@@ -245,8 +268,19 @@ rather than erroring:
 **Radius, container and spacing values live in
 [`TOKENS.md`](TOKENS.md#radius-container-spacing), where they are enforced.**
 
-**Elevation: flat. [decided, standing]** Hairlines only, no shadows anywhere.
-Hover lift comes from position, not shadow.
+**Elevation: flat, with one dated, scoped exception. [decided, standing]**
+Hairlines only; hover lift comes from position, not shadow. ~~No shadows
+anywhere.~~ That was true until 2026-08-14. **[measured 2026-08-28
+`app/globals.css:808–824`]** Exactly two classes declare a real `box-shadow`,
+and each has exactly one consumer in the repo: `.tg-elevate` on
+`components/proof-strip.tsx:113` and `.tg-lift` on
+`components/fold-board.tsx:103` — the homepage fold's proof strip and its four
+build cards. Reason in §4.18. The values sit in `globals.css` beside the rule and
+deliberately **not** in `TOKENS.md`: a shadow is a four-part composite whose light
+and dark forms differ structurally, and `check:design` compares single
+declarations. **Do not widen it** — `LiveFrame`'s plate, `project-card` and
+`case-study-row` stay flat, and that weight gap between card tiers is the signal
+the exception exists to protect.
 
 **The boundary above `closing-cta` — one gap, counted once.** Every route ends the
 same way: a section closing at full 128px bottom rhythm, then the signature
@@ -258,10 +292,20 @@ pages, where the preceding block has its own trailing padding on top of that).
 128px exists to separate **two content sections**. What follows here is not a
 content section — it is a full-bleed coloured rule, and a rule is already a
 boundary. So a section that closes *into* the closing stripe sheds half its
-bottom rhythm: **64px desktop, 40px below 768px.** With `closing-cta`'s own
+bottom rhythm: **64px desktop, 40px below 768px.** ~~With `closing-cta`'s own
 40/32px top padding that puts the last content 110px (desktop) / 78px (mobile)
-from the closing headline — roughly one rhythm unit **in total**, which is what
-the rhythm was always asking for.
+from the closing headline.~~ **That is the pre-ground arithmetic and is
+superseded.** §4.5 gave the band a `--tg-surface` ground on 2026-08-13 and its
+top padding moved 40 → 64 desktop, 32 → 48 mobile. **[measured 2026-08-28, live
+at 1440×900 and 375×812]** the total is now **134px desktop / 94px mobile** —
+64 + 6 + 64 and 40 + 6 + 48 — still roughly one rhythm unit **in total**, which
+is what the rhythm was always asking for.
+
+**Every number in this paragraph is measured from the preceding section's
+padding box**, which is where the declared values live and is route-independent.
+Measuring instead from the last *painted* glyph adds whatever that block's last
+line-box leaves behind — 4px on `/`, and a per-route amount, not a constant. §4.5
+quotes the painted figures; they are the same gap read from a different edge.
 
 **This is fixed at the collision, not at the global value.** `--` the 128px
 section rhythm is untouched, and so is every page's markup: the rule is
@@ -539,11 +583,21 @@ where the ~200px of dead space actually lived.
 is not a third instance of the spacing leak.** The ground changed what the
 number measures. It is no longer a gap between two invisible blocks; it is the
 interior of a visible one. The gap a visitor actually reads is canvas + stripe,
-above the band's edge, and that **went down** — measured 2026-08-13 on `/`:
-**68px desktop** from the last content to the band edge, against 110px of
-undifferentiated canvas before. Total last-content-to-headline is 138px desktop
-/ 94px mobile, still about one rhythm unit. The invariant in §3 is untouched and
-was re-measured: the preceding section still sheds to 64px desktop / 40px mobile.
+above the band's edge, and that **went down**. **[measured 2026-08-28, live on
+`/` at 1440×900 and 375×812]**, and the reference edge is stated because two
+edges were being quoted as one number:
+
+| Read from | Canvas + stripe | Last content → closing headline |
+| --- | --- | --- |
+| The preceding section's **padding box** — the declared value, route-independent | **70px** desktop / **46px** mobile | **134px** desktop / **94px** mobile |
+| The last **painted** glyph on `/` — 4px higher than the padding box | 74px / 50px (68px / 44px to the top of the stripe) | 138px / 98px |
+
+~~68px desktop · 138px desktop / 94px mobile.~~ Those were both real and both
+correct; they were read from **different** edges in one sentence — 138 painted,
+94 padding-box — which is what made them look like they disagreed with §3 and
+with `globals.css`. Against 110px of undifferentiated canvas before, the read gap
+still went down. The invariant in §3 is untouched and was re-measured live: the
+preceding section still sheds to 64px desktop / 40px mobile.
 
 **[measured 2026-08-12 `closing-cta.tsx`] Internal rhythm — 24 · 48 · 24 · 16.**
 Verified as `mt-6` / `mt-12` / `mt-6` / `gap-4`.
@@ -933,16 +987,39 @@ over the hero, where it competes with the hero's own CTAs and reads as a bug. Th
 mechanism is §6/§8's yield rule, not a scroll threshold.
 
 **[decided 2026-08-13] The launcher is sized per breakpoint, and it was not
-before.** One desktop size shipped to every width: `px-6 py-4` with the full
-label, **234 × 50**. Measured on a 412px viewport (Pixel 9A) that is **57% of the
+before.** One desktop size shipped to every width: the full label at
+**234 × 50**, measured on a 412px viewport (Pixel 9A) where that is **57% of the
 screen width, 63% of it occupied**, landing on the Process teaser's body copy.
-Below 768px it is now `px-4 py-[13px]` with the label **"Ask us"** — **107 × 44**,
-26%. Desktop is unchanged, because 234px against 1440 is 16% and was never the
-problem.
+Below 768px it now carries the label **"Ask us"**. Desktop is unchanged, because
+234px against 1440 is 16% and was never the problem.
 
-- **`py-[13px]` is an exact number, not a round one.** 13 + the 18px mark + 13 is
-  **44px** — §8's tap floor precisely. Nothing above the floor is doing work, and
-  the pill needs no `.tap-44` overlay because it clears the floor natively.
+**[measured 2026-08-28 `components/button.tsx:81`, live at 412×915 and 1440×900]**
+One string owns both sizes:
+
+```
+LAUNCHER_PADDING = 'px-[15px] py-[12px] md:px-[23px] md:py-[15px]'
+```
+
+| Width | Declared padding | Label | Outer box |
+| --- | --- | --- | --- |
+| <768px | 12 × 15 | "Ask us" | **≈107 × 44px** — 26% of a 412px viewport |
+| ≥768px | 15 × 23 | "Ask about your project" | **234 × 50px** — 16% of 1440 |
+
+> **This document was wrong.** It printed `px-6 py-4` and `px-4 py-[13px]`.
+> Neither utility is in the file. Those are the **outer boxes** — 24 × 16 and
+> 16 × 13 — and the declared padding is 1px short on every side because the
+> hairline adds it back. One number, one meaning: the table above is the
+> declaration, the arithmetic below is the box.
+
+- **The vertical padding is exact, not round.** 12 + the 18px mark + 12 + the 2px
+  of hairline is **44px** — §8's tap floor precisely, so the pill needs no
+  `.tap-44` overlay. Desktop is 15 + 18 + 15 + 2 = **50px**. ~~13 + 18 + 13~~ was
+  the arithmetic before the border existed; it reached the same 44 by a route the
+  code no longer takes.
+- **The width is derived, not chosen**, which is why it reads 106.5 in an
+  emulator that snaps the 1px border to 0.8: 15 + 18 mark + 10 gap + 46.9 label
+  ("Ask us" at 14.5px Geist) + 15 + 2 border = **106.9px**. Desktop:
+  23 + 18 + 10 + 158.0 + 23 + 2 = **234.0px**.
 - **The label swap is two spans and a CSS `hidden`, never `matchMedia`.** A JS
   width check renders the wrong string on the server and hydrates into a
   mismatch. `display: none` also takes the inactive string out of the
@@ -1236,10 +1313,13 @@ designed in one pass so that a visitor meets the same spacing logic at both ends
 > geometry.** 48px is what mobile can pay while keeping the CTA row above the
 > fold. What has to hold everywhere is only that the break is decisively the
 > largest gap inside the text block — 48 against 32 achieves that; the old 40
-> against 32 did not. **[measured 2026-08-13]** the CTA row clears the fold by
-> **18px at 1280 × 720**, the tightest realistic laptop, which is thin: TOKENS.md's
-> standing hero constraint (headline ≤3 lines with the CTA row in the first
-> viewport) is the thing to re-measure if this copy ever changes. `items-center`
+> against 32 did not. ~~**[measured 2026-08-13]** the CTA row clears the fold by
+> **18px at 1280 × 720**.~~ **[measured 2026-08-28, live at 1280×720]** it clears
+> by **29.8px — call it 30px**, the tightest realistic laptop. The 18px reading
+> predates §4.18's shorter headline copy and is superseded, not disputed. The
+> margin is still thin, so TOKENS.md's standing hero constraint (headline ≤3
+> lines with the CTA row in the first viewport) is the thing to re-measure if this
+> copy ever changes. `items-center`
 > means the taller media panel drives the row height, so a 24px change in the
 > text column moved the row only 6px.
 
@@ -1388,7 +1468,7 @@ explaining it a third time and then asserting authorship of it.
 the six routes `page-hero` serves, none of which have a bleeding media panel
 beside their h1. The raise is affordable because the copy got shorter, not
 because the constraint moved — **and the constraint was re-measured, not
-assumed**: 43 characters at 76px wraps to exactly 3 lines in the 564px text
+assumed**: 43 characters at 76px wraps to exactly 3 lines in the 596px text
 column, and the CTA row now clears a 1280×720 fold by **30px, up from the 18px
 recorded on 2026-08-13.** Leading 0.92 and tracking −0.05em (from 0.95 /
 −0.045em) is where most of the added confidence comes from — the block reads as
@@ -1640,13 +1720,34 @@ Stagger 80ms. The rise uses `translate`, never `transform`.
 is visible by default. `animation-timeline: view()` is wrong here — it scrubs
 with scroll and cannot express "once."
 
-**Hero load sequence [export]:** flourish dots stagger 60ms → headline fades up
-(32px→0) at +180ms → subhead +80ms → CTA row +80ms → hero media scales 0.97→1
-concurrently with the CTA row. Resolves under ~900ms. Closing-CTA echo replays
-the same timing minus the dots, `once: true`, on scroll-into-view.
+**Hero load sequence — ~~[export]~~ [measured 2026-08-28
+`components/load-sequence.tsx`].** It is built and shipping: the hero mounts it
+with `trigger="load"`, and §4.5's closing-CTA echo is the same component with
+`trigger="inView"`. The marker was wrong, not the choreography. Delays, read out
+of that file's `DELAY` map:
 
-**Shared element [export]:** build card poster + title carry a
-`view-transition-name` matching the detail page hero.
+| Beat | Delay |
+| --- | --- |
+| flourish dots | 0 / 60 / 120 / 180ms (60ms stagger, fade only) |
+| headline | 360ms — +180ms after the last dot |
+| subhead | 440ms |
+| **trust** | 480ms |
+| CTA row | 600ms |
+| hero media | 600ms — concurrent with the CTA row, not chained |
+
+Every beat runs 500ms on `cubic-bezier(0.16, 1, 0.3, 1)` with a 32px rise; media
+is `scale 0.97 → 1` instead of a rise. **Resolves at 600 + 500 = ~1.1s** —
+~~under ~900ms~~, which was arithmetic on a four-beat chain that has five beats.
+The echo is `whileInView` with `viewport={{ once: true, amount: 0.3 }}` and no
+second set of dots.
+
+**Shared element [export] — and this one is genuinely unbuilt, unlike the
+sequence above.** `Frame` accepts a `viewTransitionName` prop
+(`components/live-frame.tsx:58`) and `globals.css` already carries
+`::view-transition-group(.morph)`, but **[measured 2026-08-28]** no call site
+passes it — the repo's only `viewTransitionName` is `nav.tsx:84`'s `site-nav`.
+Build card poster + title carrying a name that matches the detail page hero
+remains a target.
 
 ### 6.5 Scroll and the pin
 
@@ -1659,10 +1760,22 @@ scrollable range.
 
 ### 6.6 Banned — and what this list is actually rejecting
 
-**[decided, standing]** Parallax · gradient blobs · spinning shapes · marquees ·
-particles · glassmorphism · cursor-followers · magnetic buttons · skeleton
-shimmer · smooth-scroll libraries · scroll-jacking beyond the single pinned
-section.
+**[decided, standing] Twelve items — the converged list.** Three copies existed
+with three different tails: CANONICAL §6 ends on *uniform fade-everything-in*
+(and bans smooth-scroll in its own paragraph above); CLAUDE.md ends on
+*smooth-scroll libraries*; this list carried smooth-scroll and scroll-jacking but
+had **dropped uniform fade-everything-in**. The union is the list, and CANONICAL
+outranks this file, so nothing here may be shorter than what it carries:
+
+Parallax · gradient blobs · spinning shapes · marquees · particles ·
+glassmorphism · cursor-followers · magnetic buttons · skeleton shimmer ·
+**uniform fade-everything-in** · smooth-scroll libraries · scroll-jacking beyond
+the single pinned section.
+
+**The restored item is the one worth reading twice.** *Uniform
+fade-everything-in* came from the highest-authority document, this file lost it,
+and the site then shipped exactly the thing it names — one entrance recipe
+applied everywhere. It belongs on a banned list, not in a footnote.
 
 **This list rejects one aesthetic: the cyberpunk / hacker-terminal / dev-portfolio
 look. It is not a cap on motion, and it was read as one for the life of the
@@ -1745,12 +1858,20 @@ desynchronise the markup. The earlier `mounted`-flag version fired a second
 render on every mount for a value CSS already knew — next-themes puts `.dark` on
 `<html>` before paint — and tripped `react-hooks/set-state-in-effect`.
 
-**[measured 2026-08-12 `globals.css:104`] One open discrepancy, contrast-safe.**
-`.ink-band` sets `--tg-secondary: #9ca3af`, which is `muted-soft` — a value
-`TOKENS.md` retires as a text colour and permits only for dots and the concierge
-indicator. On `#111111` it computes to **7.43:1**, so this is a rule being broken
-silently rather than an accessibility failure. Logged in `STATUS.md`;
-resolving it is a §1 decision, not a §7 one.
+**[measured 2026-08-28 `globals.css:128`] That discrepancy is closed.**
+~~`.ink-band` sets `--tg-secondary: #9ca3af`, which is `muted-soft` — a value
+`TOKENS.md` retires as a text colour. On `#111111` it computes to 7.43:1, so this
+is a rule being broken silently rather than an accessibility failure.~~ The band
+now reads `--tg-secondary: var(--tg-muted-dark)`, which resolves to **`#7B8291`**
+— the same declaration `.footer-dark` uses, so the two dark surfaces match by
+construction rather than by coincidence. **Contrast recomputed this session from
+relative luminance: 4.90:1 on `#111111`**, AA for the 14px body the band carries.
+The token itself moved twice: `#747C8B` when it landed, then lightened to
+`#7B8291` on 2026-08-14 after the original failed AA on the `#1a1a1c` card fill
+(4.14:1) and only just cleared the band (4.50:1, recorded at the time as the
+4.53:1 page-floor number). The band was the second thing that lightening fixed.
+The violet tag literal in the same block stays a literal and remains the one
+documented exception — token resolution would give the light-mode value there.
 
 ---
 
@@ -2193,23 +2314,32 @@ and the equivalent for `right`; the sheet takes all four sides. Always the
 two-argument form, so a browser without `env()` resolves to the existing 24px
 rather than 0.
 
-**Launcher.** Measured: **234.0 × 50.0px, byte-identical at all eight audited
-viewports** — 65.0% of a 360px viewport, 16.3% of 1440 (M-06). Mid-scroll it
+**Launcher.** ~~Measured: **234.0 × 50.0px, byte-identical at all eight audited
+viewports** — 65.0% of a 360px viewport, 16.3% of 1440 (M-06).~~ **That is the
+pre-2026-08-13 box, and M-06 is the reason it changed.** §4.13 sized the launcher
+per breakpoint on that date; **[measured 2026-08-28, live]** it is
+**≈107 × 44px** below 768px and **234.0 × 50.0px** at and above it, from one
+`md:` padding pair and a CSS label swap. The M-06 figures below are the
+before-baseline and are not rebaselined. Mid-scroll it
 covered **174 distinct route/element pairs**, 65 of them ≥50% covered, including
 each page's own `Let's Talk` at up to **81.1%** — and **zero persisted at maximum
 scroll**, so the occlusion was entirely transient (M-15).
 
-**The launcher yields; it does not shrink.** Its width and label are unchanged at
-every viewport. An `IntersectionObserver` watches the page's hero CTA and the
+**The launcher yields as well as shrinking; yielding is what M-15 needed.**
+~~Its width and label are unchanged at every viewport.~~ They are not — §4.13's
+per-breakpoint sizing landed 2026-08-13. **The point that stands is that sizing
+alone would not have been enough**, for the reason in the next paragraph: 109 of
+M-15's 174 pairs occur above 414px, where the pill is already at its desktop
+size. An `IntersectionObserver` watches the page's hero CTA and the
 `closing-cta` button — those two elements only, tagged `data-primary-cta`, which
 is the one place CTA detection lives. While either is in the viewport the
 launcher goes to `opacity: 0`, `pointer-events: none`, `aria-hidden="true"`, and
 out of the tab order; otherwise `opacity: 1`. It is never hidden-but-focusable.
 
-Why yielding rather than a narrow variant: shrinking below 414px addresses M-06's
-width and does nothing for M-15, where **109 of the 174 pairs occur above 414px**.
-Yielding fixes both with one mechanism, and extends the rule that already existed
-(never visible over the hero) instead of inventing a second one. Why the target
+Why yielding rather than a narrow variant alone: shrinking below 414px addresses
+M-06's width and does nothing for M-15, where **109 of the 174 pairs occur above
+414px**. Yielding fixes both with one mechanism, and extends the rule that
+already existed (never visible over the hero) instead of inventing a second one. Why the target
 set is exactly two elements: M-15 measured against each page's own primary
 conversion element, not every CTA-shaped control. `/work`'s per-project "Try it"
 links and the case-study CTAs are not in it — an observer keyed to every
