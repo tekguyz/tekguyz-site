@@ -11,7 +11,9 @@ build), GBP Services (live in the user's GBP for months), and the footer locatio
 drift (fixed in `COPY.md:69`). All three had been quoted back to the user as
 current state. Assert nothing here you have not just measured.*
 
-Last updated: 2026-08-13 (~~Build Phase 1 shipped~~ — **corrected 2026-08-28:
+Last updated: 2026-08-28 (~~2026-08-13~~ — this sentence and the `## Last updated`
+heading below had drifted a full fifteen days apart; both now say 2026-08-28.
+~~Build Phase 1 shipped~~ — **corrected 2026-08-28:
 Build Phase 1 is _partly_ shipped. The plan table below has always said so and
 two Phase 1 rows are still open in "Open — code"; this header was the only place
 claiming otherwise.** Build Phase 2 partly shipped — D-04 geometry, the
@@ -70,8 +72,8 @@ prints a line count for.
 
 | | Measured 2026-08-28 | Command |
 | --- | --- | --- |
-| HEAD | `a27a8ea` | `git rev-parse --short HEAD` |
-| Push state | **`0 0` — fully pushed.** `origin/master` is also `a27a8ea` | `git rev-list --left-right --count origin/master...master` |
+| HEAD | `b862ac3` (~~`a27a8ea`~~ — two doc commits landed after this table was first written; re-measured 2026-08-28) | `git rev-parse --short HEAD` |
+| Push state | **`0 0` — fully pushed.** `origin/master` is also `b862ac3` | `git rev-list --left-right --count origin/master...master` |
 | Tests | **97 pass, 3 files, ~1.1s** | `bun run test` |
 | Lint | **clean — no output, zero findings** | `bun run lint` |
 | `check:design` | **39 tokens** match `docs/TOKENS.md` | `bun run scripts/check-design.ts` |
@@ -82,8 +84,10 @@ prints a line count for.
 | `components/contact-form.tsx` | **516** | `wc -l` |
 | `app/actions/contact.ts` | **463** | `wc -l` |
 
-**Three commits landed after the CRM-signing section below and none of them was
-recorded here until now.**
+**Five commits landed after the CRM-signing section below and none of them was
+recorded here until now.** The last two are this file and `DESIGN.md` correcting
+themselves; they are listed because a doc-audit commit is still a commit, and the
+figures they moved are quotable.
 
 - **`cf979f1`, 2026-08-19 — the white `<select>` popup in dark mode is fixed.**
   Chrome paints a `<select>`'s option list itself and takes the fill from the
@@ -110,6 +114,27 @@ recorded here until now.**
   `docs/audits/documentation-health-2026-08-28.md`, 354 lines. Findings only:
   nothing was fixed, edited or merged as part of it. This refresh is the first
   response to it, and it covers `docs/STATUS.md` only.
+- **`5ec14a9`, 2026-08-28 — this file's own re-measure.** Every count and date
+  above was re-run against the tree rather than carried forward. It could not
+  record its own sha, which is why the HEAD row above needed correcting again.
+- **`b862ac3`, 2026-08-28 — `DESIGN.md`'s second response to the audit: 14
+  figures where it disagreed with itself, or with CANONICAL/TOKENS/STATUS,
+  re-measured against `app/globals.css`, the components, and a live browser at
+  1440×900 / 1280×720 / 412×915 / 375×812.** Docs only, no code touched,
+  `check:design` passes. The ones that change what is quotable elsewhere:
+  the **token guard count is 39, not 38** (matching the table above, and
+  `CLAUDE.md` was corrected with it); the ink-band `--tg-secondary` is
+  **`#7B8291`, 4.90:1 on `#111111`**, which closes the "open discrepancy" that
+  entry had recorded; the home `h1` runs a **local `clamp(2.75rem, 6.6vw,
+  4.75rem)` = 76px**, while `--text-hero` at 72px still serves the six
+  `page-hero` routes — two ceilings, not one; the hero text column is **596px**
+  (`1 / 7` on a 12-track `.tg-grid`), not 564; fold clearance at 1280×720 is
+  **29.8px**, not 18; `globals.css` holds **48 hex values in live declarations,
+  27 distinct, zero OKLCH**. Two claims were struck as never built: PLAYBOOK's
+  pulsing "LIVE — TRY IT YOURSELF" badge (`StatusLine` replaced it) and the
+  shared-element view transition (**no call site passes the prop** — the hero
+  load sequence *is* built and resolves at ~1.1s, not ~900ms). `DESIGN.md` is
+  **v2.6**; stop citing "Design System v2.0" pins — cite the file.
 
 **One measurement worth keeping.** The component audit's 2026-08-13 line counts
 (`709 / 428 / 393`) do not reconcile with `git show` at any commit from that
