@@ -84,7 +84,7 @@ HEADLINE: We build tech that actually works for your business.
 SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
 CTA PRIMARY: See Our Work → /work
 CTA SECONDARY: Let's Talk → /contact
-MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. The `sarah-demo.mp4` loop is retired for launch — it still shows the withdrawn phone simulator (CANONICAL §1).
+MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. There is no video loop — the old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28 (CANONICAL §1).
 
 ## Proof line
 

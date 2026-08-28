@@ -185,7 +185,7 @@ Current set, all `.webp`:
 
 **Capture method** (this took several failed attempts to get right — use it): OS screenshot tool, not DevTools. Mac `Cmd+Shift+4`, Windows `Win+Shift+S`. ShareX's "Fixed size region mode" with width/height set is ideal if you have it. Arrange multiple cards in the browser first (resize the window, use real browser zoom) so they sit together cleanly, *then* capture — you compose the shot visually rather than asking software to do it. Edit in PNG (lossless), convert to `.webp` at ~quality 90 as the final step only.
 
-**Hero video:** `sarah-demo.mp4` still shows the retired phone-call simulator — **do not ship it as-is.** The rebuild launches with the static hero image; a recaptured video loop (plus matching poster) is a post-launch enhancement.
+**Hero video:** none. `sarah-demo.mp4` showed the retired phone-call simulator and was **deleted 2026-08-28** rather than left on disk where it could be picked up by mistake. The site runs on the static hero image; a video loop (plus matching poster), if it ever happens, starts from a fresh capture.
 
 The earlier cobalt-era asset set was never reconciled against Monochrome & Ink and isn't in use. Relevant only to social/GBP profile assets (Section 13).
 

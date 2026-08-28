@@ -20,7 +20,7 @@ Source of truth hierarchy: **Brand Playbook v2 > this brief > Design System v2.0
 | Icon direction | **Resolved.** `icon-master.svg` — Connected Nodes: four accent circles (top blue, right violet, bottom amber, left teal) joined by hairline connectors, no container. Diamond arrangement, floating. |
 | Brand asset set | **Done**, generated from the two masters. |
 | Case-study imagery | **Done**, with one open item. `field-ops-thumb.webp` recaptured. `sarah-poster.webp` recaptured as the real AI Voice Receptionist dashboard (transcript, CRM sync, follow-up email) — replacing an earlier version that showed a sandboxed phone-call simulator, which was never the actual product. |
-| Hero media | **Resolved — static image, video deferred.** New `sarah-poster.webp` captured at 1600×900 (16:9) showing the real dashboard: customer profile, live conversation feed, and confirmation email. Launching with the static image; the looped `.mp4` is a later enhancement, not a launch blocker. (The old `sarah-demo.mp4` still shows the retired phone-call simulator — do not ship it as-is; recapture when the video version happens.) Hero uses its own 16:9 ratio, distinct from the 16:10 used in compact card contexts — see DESIGN.md `LiveFrame`. |
+| Hero media | **Resolved — static image, video deferred.** New `sarah-poster.webp` captured at 1600×900 (16:9) showing the real dashboard: customer profile, live conversation feed, and confirmation email. Launching with the static image; a looped `.mp4` is a later enhancement, not a launch blocker. (The old `sarah-demo.mp4` showed the retired phone-call simulator and was **deleted 2026-08-28** — a video hero starts from a fresh capture, never from that file.) Hero uses its own 16:9 ratio, distinct from the 16:10 used in compact card contexts — see DESIGN.md `LiveFrame`. |
 | Lead capture | **Built and live in this repo.** `app/actions/contact.ts` — Zod validation (including format checks on the optional `phone` and `website`), honeypot named `hp_confirm`, min-fill-time, parallel Resend notification + submitter confirmation + CRM dispatch via `Promise.allSettled`. Exercised end to end against real credentials. |
 | AI concierge | **Built and live in this repo.** `app/api/concierge/route.ts` — tool-calling lead capture through the same shared action, session cap, shared durable rate limit, Gemini 3.6 Flash behind `lib/concierge/llm.ts`. |
 | Core SEO | **Live.** Canonicals, robots.ts, sitemap.ts, ProfessionalService JSON-LD, dynamic OG route, full favicon/manifest set. |
@@ -94,7 +94,7 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
 ### Homepage sequence
 
 1. Signature stripe
-2. **Hero** — headline at full scale, subhead, dual CTA, static `sarah-poster.webp` (16:9). The `sarah-demo.mp4` loop is retired for launch — see §1; it still shows the withdrawn phone simulator.
+2. **Hero** — headline at full scale, subhead, dual CTA, static `sarah-poster.webp` (16:9). There is no video loop — the old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28; see §1.
 3. **Proof line** — one sentence, no card: *Eight live builds. Open any of them right now.*
 4. **Solutions** — four cards, accent dot, one-line hook, → `/solutions/[slug]`
 5. **Featured Work** — 2 case studies, alternating full-width rows, LiveFrame + pull-quote

@@ -67,8 +67,9 @@ import type { StatusResult } from '@/lib/status';
  * always `.tg-hero-frame`'s own `margin-top`, and it is left there, alone, so
  * one number means one thing.
  *
- * Media is a static poster. The looped sarah-demo.mp4 still shows the retired
- * phone-call simulator and must not ship.
+ * Media is a static poster. The retired phone-call-simulator video loop was
+ * deleted 2026-08-28 rather than left on disk to be picked up by mistake; a
+ * video hero, if it ever happens, starts from a fresh capture.
  */
 export function HomeHero({
   poster,
