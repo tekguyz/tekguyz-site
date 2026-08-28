@@ -577,13 +577,26 @@ export function Concierge() {
               {/* 44x44 by padding around the glyph, never by resizing it — the
                   ✕ stays at its exported 16px. The negative margin keeps the
                   painted glyph where the export puts it while the hit area
-                  grows outward around it. */}
+                  grows outward around it.
+
+                  `tap-44` is declared even though the PAINTED box is already
+                  44x44, and it is not redundant: `elementFromPoint` honours
+                  `border-radius`, so with `rounded-[6px]` the four corner
+                  points `TAP_PROBE` samples (1px inside each edge, 7.07px from
+                  a 6px arc's centre) fall outside the shape and the parent
+                  owns them. `.tap-44::before` is a SQUARE 44x44 overlay with
+                  no radius, so those four pixels resolve to this button again.
+                  Measured: 4/4 corners MISS without the class, 4/4 HIT with
+                  it, painted box and radius unchanged. The class also declares
+                  the tier to the probe instead of leaving it to a heuristic.
+                  ::before, never ::after — ::after is the nav's active-page
+                  indicator site-wide. */}
               <button
                 ref={closeRef}
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="-mr-[6px] ml-auto flex h-11 w-11 flex-none cursor-pointer items-center justify-center rounded-[6px] text-[16px] leading-none text-secondary hover:text-fg"
+                className="tap-44 -mr-[6px] ml-auto flex h-11 w-11 flex-none cursor-pointer items-center justify-center rounded-[6px] text-[16px] leading-none text-secondary hover:text-fg"
               >
                 ✕
               </button>
