@@ -194,7 +194,7 @@ export function ContactForm() {
     // 40px of card padding is 22% of a 360px viewport. Dropping it to 24 below
     // `sm` is where the 30px the step header is short actually comes from; the
     // step-header comment below has the arithmetic.
-    <div className="rounded-[16px] border border-border p-10 max-sm:p-6">
+    <div className="rounded-[16px] border border-border" style={{ padding: 'var(--pad-card)' }}>
       {sent ? (
         /* D-03. Submitting unmounts the form, so the focused Send button goes
            with it and focus falls to <body>; the next Tab — or Chrome's own
