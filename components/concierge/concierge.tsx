@@ -572,7 +572,26 @@ export function Concierge() {
             }
           >
             <div className="flex h-14 flex-none items-center gap-[10px] border-b border-border px-4">
-              <ConnectedNodes size={18} />
+              {/* ROLE avatar, not a person: the Connected Nodes mark on a
+                  `surface` plate. No name, no face, no initial — a human name
+                  or portrait would assert that a person is on the other end,
+                  which is exactly the claim CANONICAL forbids the concierge
+                  from making. The plate is what turns the mark into an avatar;
+                  the mark was already here bare, and bare it read as a header
+                  logo rather than as the speaker.
+
+                  Not interactive, so no tap tier applies — `.tap-44` is for
+                  controls, and giving a decorative box a 44x44 `::before`
+                  overlay would steal the probe points from its neighbours.
+                  32px inside a 56px header leaves the row's 12px breathing
+                  space intact; the mark stays at its existing 18px, so nothing
+                  about the glyph changes, only what sits behind it. */}
+              <div
+                aria-hidden
+                className="flex h-8 w-8 flex-none items-center justify-center rounded-[8px] bg-surface"
+              >
+                <ConnectedNodes size={18} />
+              </div>
               <span className="text-[14.5px] font-semibold">Ask about your project</span>
               {/* 44x44 by padding around the glyph, never by resizing it — the
                   ✕ stays at its exported 16px. The negative margin keeps the

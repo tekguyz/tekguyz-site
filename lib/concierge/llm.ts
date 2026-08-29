@@ -127,6 +127,24 @@ function extract(contents: GeminiContent[]): CompletionResult {
   return { text: text?.trim() || null, toolCall, assistantTurn: content };
 }
 
+/**
+ * `maxOutputTokens` is a budget for THINKING PLUS TEXT, not for text, and
+ * Gemini 3.6 thinks by default. Measured 2026-08-29 on the live key: a one-line
+ * visitor message spent 864 thought tokens against a 900 cap, left 32 for the
+ * reply, and returned `finishReason: MAX_TOKENS` — the visitor saw a sentence
+ * that stopped mid-word, and on one run the model's own reasoning leaked into
+ * the panel. It reads as the model breaking, and it was silent because nothing
+ * here inspects `finishReason`.
+ *
+ * `thinkingLevel: 'low'` is the fix, not a bigger cap alone: the concierge
+ * routes a short message to one of four known lines and writes four sentences,
+ * which is not a job that needs a long deliberation, and an unbounded thinking
+ * budget will grow to fill whatever ceiling it is given. Same measurement after:
+ * 471 thoughts, 113 text, `finishReason: STOP`. The raised cap is headroom on
+ * top of that, so a long visitor message cannot walk back into the same wall.
+ */
+const THINKING = { thinkingLevel: 'low' } as const;
+
 export async function getChatCompletion({
   system,
   messages,
@@ -140,7 +158,7 @@ export async function getChatCompletion({
     systemInstruction: { parts: [{ text: system }] },
     contents: toContents(messages),
     ...(tools?.length ? { tools: [{ functionDeclarations: toFunctionDeclarations(tools) }] } : {}),
-    generationConfig: { temperature: 0.6, maxOutputTokens: 900 },
+    generationConfig: { temperature: 0.6, maxOutputTokens: 1600, thinkingConfig: THINKING },
   });
   return extract(contents);
 }
@@ -190,7 +208,7 @@ export async function completeToolRoundTrip({
       },
     ],
     ...(tools?.length ? { tools: [{ functionDeclarations: toFunctionDeclarations(tools) }] } : {}),
-    generationConfig: { temperature: 0.6, maxOutputTokens: 500 },
+    generationConfig: { temperature: 0.6, maxOutputTokens: 1200, thinkingConfig: THINKING },
   });
 
   return extract(contents);
