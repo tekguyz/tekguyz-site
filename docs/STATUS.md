@@ -72,11 +72,12 @@ prints a line count for.
 
 | | Measured 2026-08-28 | Command |
 | --- | --- | --- |
-| HEAD | `b862ac3` (~~`a27a8ea`~~ — two doc commits landed after this table was first written; re-measured 2026-08-28) | `git rev-parse --short HEAD` |
-| Push state | **`0 0` — fully pushed.** `origin/master` is also `b862ac3` | `git rev-list --left-right --count origin/master...master` |
-| Tests | **97 pass, 3 files, ~1.1s** | `bun run test` |
+| HEAD | `5ebe2c4` (~~`b862ac3`~~, ~~`a27a8ea`~~ — nine commits have landed since this table was first written; re-measured 2026-08-28, second pass) | `git rev-parse --short HEAD` |
+| Push state | **`0 0` — fully pushed.** `origin/master` is also `5ebe2c4` | `git rev-list --left-right --count origin/master...master` |
+| Tests | **97 pass, 3 files, ~0.9s** | `bun run test` |
 | Lint | **clean — no output, zero findings** | `bun run lint` |
-| `check:design` | **39 tokens** match `docs/TOKENS.md` | `bun run scripts/check-design.ts` |
+| `check:design` | ~~39~~ **40 tokens** match `docs/TOKENS.md` — `--pad-card` joined on 2026-08-28 | `bun run check:design` |
+| `check:claude` | **OK — 7 claim groups match**, re-run 2026-08-28 after `5ebe2c4` | `bun run check:claude` |
 | `check:media` | 8 entries wired, all posters present, **7 of 8 off their locked ratio**, exit 0 | `bun run check:media` |
 | `bun run build` | passes | `bun run build` |
 | `components/` | **35 files.** Still only two over 300 lines; the third largest is `nav.tsx` at 249 | `find components -type f` piped to `wc -l` |
@@ -135,6 +136,30 @@ figures they moved are quotable.
   shared-element view transition (**no call site passes the prop** — the hero
   load sequence *is* built and resolves at ~1.1s, not ~900ms). `DESIGN.md` is
   **v2.6**; stop citing "Design System v2.0" pins — cite the file.
+
+**Nine more commits landed later on 2026-08-28**, after the table above was
+first written. Five are the `--pad-card` batch and are recorded in full in the
+density row under "Open — code"; `f0c5a4f` is the D-07 re-measure, recorded in
+its own row. The remaining three are recorded only here:
+
+- **`7016618`, 2026-08-28 — the `/handoff` skill now says to use the `vercel`
+  CLI.** The Vercel MCP plugin was removed from this machine the same day, so
+  the skill's "use the connector" instruction pointed at a tool that no longer
+  exists. It also now refreshes **both** `Last updated` spots in this file,
+  because they had drifted fifteen days apart. Skill file only, no site code.
+- **`6fb4dcb`, 2026-08-28 — `bun run check:claude` exists**,
+  `scripts/check-claude-md.ts`. It measures only the **countable** claims in
+  `CLAUDE.md`: the test count, both token counts, `.vercelignore`'s contents,
+  the honeypot field name, every `bun run <script>` that file names, and every
+  repo path it names in backticks. **7 claim groups, 24 file paths, 6 scripts.**
+  Deliberately **not** in `prebuild`: a wrong token value ships a visual defect
+  and must block a deploy; a stale sentence in a doc must not. A pattern that
+  stops matching is reported as a **failure**, not skipped. It cannot check a
+  *rule* — those are decisions, not measurements.
+- **`5ebe2c4`, 2026-08-28 — the five claims that guard found wrong, fixed in
+  `CLAUDE.md`.** Including that file's own token count and a
+  `concierge-bus.ts` path missing its `components/` prefix. Re-run 2026-08-28
+  after this handoff: **clean.**
 
 **One measurement worth keeping.** The component audit's 2026-08-13 line counts
 (`709 / 428 / 393`) do not reconcile with `git show` at any commit from that
