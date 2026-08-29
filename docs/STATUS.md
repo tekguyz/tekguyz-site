@@ -11,18 +11,23 @@ build), GBP Services (live in the user's GBP for months), and the footer locatio
 drift (fixed in `COPY.md:69`). All three had been quoted back to the user as
 current state. Assert nothing here you have not just measured.*
 
-Last updated: 2026-08-28 (~~2026-08-13~~ — this sentence and the `## Last updated`
-heading below had drifted a full fifteen days apart; both now say 2026-08-28.
+Last updated: **2026-08-29** (~~2026-08-28~~, ~~2026-08-13~~ — this sentence and
+the `## Last updated` heading below had drifted a full fifteen days apart and
+were reconciled to 2026-08-28. **The 2026-08-29 edit is the privacy-policy
+close only — no figure below was re-measured today, so that heading correctly
+still reads 2026-08-28 and is the record of that pass.**
 ~~Build Phase 1 shipped~~ — **corrected 2026-08-28:
 Build Phase 1 is _partly_ shipped. The plan table below has always said so and
 two Phase 1 rows are still open in "Open — code"; this header was the only place
 claiming otherwise.** Build Phase 2 partly shipped — D-04 geometry, the
 concierge panel's presence motion, and two device-reported fixes;
-~~**Build Phase 3 shipped**~~ **Build Phase 3 shipped except the privacy
-policy's legal review** — the privacy rewrite, the FAQ rewrite, and all
-8 detail narratives, measured in `content/work.ts` on 2026-08-13; the legal
-review is still open under "Open — needs the user", so this is a partial close
-and now says so. A production
+~~**Build Phase 3 shipped**~~ ~~**Build Phase 3 shipped except the privacy
+policy's legal review**~~ **Build Phase 3 is fully closed as of 2026-08-29** —
+the privacy rewrite, the FAQ rewrite, and all 8 detail narratives, measured in
+`content/work.ts` on 2026-08-13; and `/privacy`'s review, closed 2026-08-29
+**by self-assessment against the CCPA thresholds, not by a lawyer.** The page
+has never claimed a legal review and still does not. Reopen triggers are in
+the row under "Open — needs the user". A production
 outage on 2026-08-12, caused by the Phase 2 work and self-resolved, is recorded
 below — read it before the next push to `master`. **Homepage flow Waves 1, 2 and
 3 all shipped 2026-08-13** — the plan in `docs/plans/2026-08-13-homepage-flow.md`
@@ -201,7 +206,7 @@ Claude.ai first.*
 | **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
 | **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see below |
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see below |
-| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | **Shipped 2026-08-13 except the legal review** — privacy rewrite, FAQ rewrite and all 8 detail narratives are in; `/privacy` has still never been legally reviewed and that row is open under "Open — needs the user". See Build Phase 3 below |
+| **3** | Copy: privacy policy, 8 detail narratives, FAQ review | ~~**Shipped 2026-08-13 except the legal review**~~ **Shipped. Closed 2026-08-29** — privacy rewrite, FAQ rewrite and all 8 detail narratives shipped 2026-08-13, and the last open item, `/privacy`'s review, was closed 2026-08-29 **as a self-review against the CCPA thresholds, not by a lawyer** — see the row in "Open — needs the user" for the assessment and its three reopen triggers. See Build Phase 3 below |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
 | **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the audit section below. Not "split the big files": measured 2026-08-28, `components/concierge/concierge.tsx` **755**, `components/contact-form.tsx` **516**, `app/actions/contact.ts` **463** (~~709 / 428 / 393~~ — stale, and they never reconciled with `git show` for their own date either, which read 751/457/423). Two of the audit's dedup items shipped 2026-08-13 and **three more shipped 2026-08-14** in `a60392e`; the rest is repetition and coupling, not size | Last — five items shipped, across 2026-08-13 and 2026-08-14 |
 
@@ -221,7 +226,7 @@ presence now all exist.
 | --- | --- |
 | **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot. **Measured 2026-08-28: the file already is 1600×900 (ratio 1.778) and `git log` shows it untouched since `c94695f` on 2026-08-13 — so the size half of "wanted" was already met when this row was written. What is open is only the two content defects.** |
 | ~~**Recapture 8 posters at 16:10**~~ **Recapture 7 posters at 16:10** | 2026-08-13. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`. ~~`sarah-poster.webp` is the 16:9 hero — leave it.~~ **Superseded by the row above — it needs recapturing too, for reasons this line was written before anyone had looked at it closely.** Then `bun run check:media`. **`field-ops-thumb` is done** — replaced 2026-08-17 in `baee083`, now **1440×900 (1.600)**, on-ratio, and `check:media` no longer flags it. Still wrong, every dimension re-measured 2026-08-28 from the WebP headers: `sarah-thumb` 1080×1059 (1.02) · `shopify-configurator` 1080×1140 (0.95) · `crunch-wrap-dashboard` 1080×1038 (1.04) · `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` all 600×450 (1.33). `bun run check:media` reports **7 of 8 off their locked ratio**, exit 0 |
-| **Privacy policy — legal review** | Rewritten and shipped 2026-08-12 from measured data flows; **not yet legally reviewed**, and the page has never claimed otherwise. Specific open question for the reviewer: no cookie-consent or state-specific (CCPA etc.) language was added, per the user's call — confirm that's right for the actual traffic and customer base |
+| ~~**Privacy policy — legal review**~~ **CLOSED BY THE USER 2026-08-29 as a SELF-review. No lawyer was engaged, and this row must never be summarised as "legally reviewed."** | Rewritten and shipped 2026-08-12 from measured data flows. The open question was whether omitting cookie-consent and CCPA language was right. **Self-assessed against the 2025–2026 CCPA thresholds — $26,625,000 revenue / 100k CA consumers via sale-or-share / 50% of revenue from sale-or-share. None met**: no ad-tech, no GA4, no sale or share of PI, and revenue and traffic both far under. **Cookie consent is a separate, GDPR-only trigger and does not apply either** — Vercel Web Analytics and Speed Insights are cookieless (temporary hash, 24h). No banner and no CCPA-specific language added. **Verified in the repo 2026-08-29: `app/layout.tsx` mounts `@vercel/analytics/next` and `@vercel/speed-insights/next` and nothing else — zero `gtag`, `googletagmanager` or GA4 measurement-id matches anywhere in `app/`, `components/`, `lib/`, `config/` or `package.json`.** **Reopen if any one of three things becomes true:** GA4 or remarketing is added · lead data starts being shared with a third party · revenue crosses the threshold |
 
 ## Open — code
 
@@ -743,7 +748,7 @@ measured on the built site, both modes):
 regression from this work.** They are in Open — code and are *not* claimed as
 fixed here.
 
-## Build Phase 3 — shipped 2026-08-13, except the privacy policy's legal review
+## Build Phase 3 — shipped 2026-08-13; its last item closed 2026-08-29 as a self-review, not a legal one
 
 **Privacy `/privacy` — rewritten, replacing the text live since July 13.** All
 three gaps `COPY.md` had been flagging as "must, before launch" are closed: the
@@ -760,9 +765,15 @@ written **only when internal delivery fails**, `TTL_SECONDS = 60 * 60 * 24 * 90`
 (`lib/lead-archive.ts:52`). Both facts were read before the sentence was
 written. Change either and the policy becomes untrue.
 
-**Still not legally reviewed**, and neither the page nor `COPY.md` says
+~~**Still not legally reviewed**, and neither the page nor `COPY.md` says
 otherwise. The one open question left for that reviewer is in Open — needs the
-user: no cookie-consent or state-specific (CCPA etc.) language was added.
+user: no cookie-consent or state-specific (CCPA etc.) language was added.~~
+**Closed 2026-08-29 — and it is still not legally reviewed.** The user closed
+it as a **self-review**: the 2025–2026 CCPA thresholds were assessed and none
+are met, and cookie consent is a GDPR trigger that does not apply to cookieless
+analytics. **No lawyer was engaged, the page still does not claim one was, and
+no copy changed.** Full assessment and the three reopen triggers are in the row
+under "Open — needs the user".
 
 **FAQ — all 6 rewritten in `content/faq.ts` and `COPY.md` in the same turn**, so
 the `FAQPage` JSON-LD stays the same strings rather than a paraphrased second
