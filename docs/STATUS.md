@@ -235,8 +235,7 @@ presence now all exist.
 
 | Item | Phase |
 | --- | --- |
-| **DESIGN.md §0–§3 still read in the old single voice** — the mandate, icon policy, colour, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. §1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard | 1 |
-| ~~Density scale adopted by `testimonial.tsx` only~~ **PARTIAL — the padding half closed 2026-08-28; the gap half is deliberately still open.** `--pad-card` (24/24/32) added and consumed by ~~`proof-strip.tsx`~~, `project-card.tsx`, `fold-board.tsx` and `contact-form.tsx` — **three consumers, not four, as of 2026-08-29: `proof-strip.tsx` was deleted with the fold rebuild (`aaf0ed6`), so the control this row cites no longer exists in the tree.** The measurement it produced stands as history; the file does not; `--pad-container` unchanged at 24/32/64 with its one consumer, `testimonial.tsx`. `check:design` 39 → 40 tokens. Measured: fold-board 214 → 238px at 286px wide (`--pad-container`'s 64px would have been 362px, +69%); project-card 353 → 369px at 1440, mobile unchanged; contact panel 502 → 470px across 640–1023, a band that had never been measured because `max-sm:` breaks at 640 not 768; proof-strip byte-identical, which is why it went first as the control. **The gap half is NOT merely unfinished — it was measured and rejected:** `--gap-group`'s 56px ≥1024 step makes both candidates worse (`case-study-row`'s 1024px column mismatch 205px → 237px; `project-card` +19% at 1440), so `case-study-row.tsx` and `project-card.tsx` gaps stay hand-picked, outside the token system. `footer-dark.tsx` and `faq-accordion.tsx` are **permanently** out of density scope — 44px tap-target arithmetic, not density — and are not to be re-raised as an open density item. Reasons in DESIGN.md §8.0 | 1 |
+| **DESIGN.md §0, §2 and §3 still read in the old single voice** — the mandate, icon policy, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. ~~§1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard~~ **The colour half CLOSED on 2026-08-28 and this row did not say so. Re-measured 2026-08-29: `## Colour` is a `TOKEN_SECTIONS` entry in `scripts/check-design.ts`, and all 14 colour tokens are asserted against `globals.css` on every `prebuild`. §1 is now enforced, so what is open here is prose voice in §0, §2 and §3 — nothing numeric.** The contrast RATIOS in §1 remain unchecked; a hex value cannot drift, a ratio claim about it can | 1 |
 | **Concierge UX/UI — D-04 geometry, panel presence motion, the reply-length/routing prompt and the header role avatar are all shipped (below); the rest of the redo is not scoped.** Updated 2026-08-29: `3d170f7` closed two named items off this heading. What remains is still a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
 | ~~**`phaseTaps` never opens the concierge panel**~~ **Closed 2026-08-13, commit `ac54202`.** Panel-open pass added per viewport/theme combo: it clicks the real launcher (`concierge.tsx` untouched) and `window.__tapScope` restricts `TAP_PROBE` to the dialog's subtree. The launcher exemption was **widened, not duplicated** — `isOverlay` exempts a thief inside the scoped overlay stealing from a target outside it; overlay-to-overlay theft stays a defect. Two guards against a silent clean zero: a pass that cannot open the panel reports `ran: false` with a reason, and one that probed nothing is flagged `vacuous`. Measured on all 9 combos: `probed=30`, `tierFail=0`, `overlaps=0`, none vacuous — **the chips now hit-test as passing, so the 2026-08-12 fix is covered rather than assumed**. One new bucket, `radiusClipped`, added because the pass's first finding was a false positive — see the row below | — |
 | ~~**`radiusClipped`: the concierge close button loses its four corners to its own `border-radius`.**~~ **Closed 2026-08-28.** One class: `tap-44` on the close button in `components/concierge/concierge.tsx`. The painted box is untouched — still 44x44, still `rounded-[6px]`, glyph still 16px — because `.tap-44::before` is a SQUARE 44x44 overlay with no radius, so the four corner pixels resolve to the button instead of the arc's outside. Proven by hit-test, not by rect: `elementFromPoint` at all four `TAP_PROBE` corner points returns **4/4 MISS with the class removed at runtime, 4/4 HIT with it**. Full `taps` re-run: **9/9 viewport/theme combos, both themes, `radiusClipped=0 tierFail=0 overlaps=0 probed=30` on every panel pass, none vacuous**. `audit-mobile.ts` untouched; the wider concierge redo (Phase 2) untouched |
@@ -932,6 +931,28 @@ against it before shipping.
 - **Modals/sheets are accepted.** The concierge sheet is `aria-modal` with a
   focus trap below `(max-height: 560px)`, and the nav drawer exists. CLAUDE.md's
   "no modals or popups anywhere" described an intent the code never matched.
+- **The density GAP half is CLOSED AS REJECTED, not open.** ~~It sat in "Open —
+  code" until 2026-08-29 while its own text described it as measured and
+  rejected — the row argued both sides in one cell, which is the exact defect
+  the "partially resolved is never summarised as resolved" rule exists to
+  prevent, running in reverse.~~ Moved here by the user, who pushed back on it
+  being handed to the planning Project as work. **`--gap-group`'s 56px ≥1024
+  step was measured against both remaining candidates and makes each worse:**
+  `case-study-row`'s text column is already 205px taller than its media column
+  at 1024px, its worst width, and 56px takes that to **237px**; `project-card`
+  grows **19% at 1440px** for no content gained. Both files' gaps stay
+  hand-picked, outside the token system. The `18/14` vs `24/24` disagreement
+  between them is deliberate — two card tiers at different weights.
+  **`footer-dark.tsx` and `faq-accordion.tsx` are permanently out of density
+  scope**: their spacing is 44px tap-target arithmetic, not density, and
+  reopening it would put the tap policy at risk to buy nothing. Reasons and the
+  full measurement are in DESIGN.md §8.0, which already said in as many words
+  that this "should not be recorded as an open density item."
+  **Requeue only on a NEW measurement — name what changed. Re-deriving the
+  numbers above is not new information.** The padding half genuinely shipped:
+  `--pad-card` (24/24/32) is consumed by `project-card.tsx`, `fold-board.tsx`
+  and `contact-form.tsx` (~~and `proof-strip.tsx`, deleted 2026-08-29~~), and
+  `--pad-container` keeps its one consumer, `testimonial.tsx`.
 - **GBP Services is not an open item** and never was a website task.
 - **The testimonial is on the site** — home and `/work/[slug]`.
 - **Footer location is "South Florida"** everywhere, in code and in COPY.md.
