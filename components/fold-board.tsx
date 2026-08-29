@@ -100,7 +100,8 @@ export function FoldBoard({
               href={entry.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="tg-lift bg-surface border-border flex h-full flex-col rounded-[12px] border p-5"
+              className="tg-lift bg-surface border-border flex h-full flex-col rounded-[12px] border"
+              style={{ padding: 'var(--pad-card)' }}
             >
               <span className="flex items-start justify-between gap-3">
                 <SolutionTag solution={entry.solution} label={entry.tag} variant="card" />
