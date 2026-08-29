@@ -162,6 +162,7 @@ declares nothing gets the dense value rather than the loose one.
 
 ```css
 --pad-container: 24px; /* 24 → 32 → 64px */
+--pad-card: 24px; /* 24 → 24 → 32px */
 --gap-group: 28px; /* 28 → 40 → 56px */
 ```
 

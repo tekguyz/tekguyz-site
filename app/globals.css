@@ -230,13 +230,21 @@
   /* DESIGN.md §8 — the density scale. Components declare intent and the value
      resolves per width, instead of each one hand-picking `py-14 sm:py-18`.
      Mobile-first: the bare :root IS the ≤767px value. */
-  --pad-container: 24px; /* inside a card or panel */
+  --pad-container: 24px; /* inside a full-bleed panel */
+  --pad-card: 24px; /* inside a card that sits in a multi-column grid */
   --gap-group: 28px; /* between grouped elements within one component */
 }
 
 @media (min-width: 768px) {
   :root {
     --pad-container: 32px;
+    /* Identical to the base value ON PURPOSE, and mandatory. A card in a
+       multi-column grid gains no width at 768 — the grid gains tracks, not
+       room — so the value genuinely does not step here. check-design.ts
+       asserts all three breakpoints of every density token in three separate
+       blocks, so deleting this "redundant" line fails `prebuild`; it does not
+       tidy it. */
+    --pad-card: 24px;
     --gap-group: 40px;
   }
 }
@@ -244,6 +252,7 @@
 @media (min-width: 1024px) {
   :root {
     --pad-container: 64px;
+    --pad-card: 32px;
     --gap-group: 56px;
   }
 }
