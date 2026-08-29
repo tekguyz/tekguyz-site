@@ -84,7 +84,22 @@ export function FoldBoard({
            placement: 4 x span-3 on desktop, 2 x span-4 at tablet. Below 768px
            `.tg-grid > *` forces `1 / -1 !important` and the spans are moot. */
         className="tg-container tg-grid list-none p-0"
-        style={{ margin: 0 }}
+        /* `marginBlock`, NOT `margin`, and the difference is the whole fix.
+           This element IS the `.tg-container` — the class that centres every
+           block on the site with `margin-inline: auto`. An inline style beats
+           any class, so `margin: 0` was silently deleting that centring.
+
+           MEASURED at 1440px before the fix: this grid sat at left 0 / right
+           145, while the proof strip directly above it and the "See all eight
+           builds" link directly below it both sat at 73 / 73. It was the only
+           element on the homepage not centred, which is why the row read as
+           neither centred nor aligned to anything.
+
+           The reset is still needed — the UA stylesheet gives `<ul>` a 1em
+           block margin — but only the BLOCK axis was ever the thing to reset.
+           Any future `.tg-container` element that also needs a margin reset
+           has this same trap waiting in it. */
+        style={{ marginBlock: 0 }}
         variants={boardVariants(instant)}
         initial="hidden"
         whileInView="shown"
