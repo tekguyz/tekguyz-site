@@ -117,9 +117,12 @@ Dots and badges are `full`, which is not a token. `--container-pad` drops to
 
 **Elevation is flat, with one dated, scoped exception.** Hairlines only, no
 shadows, hover lift from position — that still governs every surface on this site
-**except the homepage fold's proof strip and its four build cards**, which carry
-`--tg-elevate` / `--tg-elevate-hover` via `.tg-elevate` / `.tg-lift`
-(`app/globals.css`, added 2026-08-14). Reason in `DESIGN.md` §4.18. The two
+**except the homepage fold's four build cards**, which carry `--tg-elevate` /
+`--tg-elevate-hover` via `.tg-lift` (`app/globals.css`, added 2026-08-14).
+Reason in `DESIGN.md` §4.18. **[narrowed 2026-08-29]** The exception used to
+cover the fold's proof strip as well; that component is deleted, so the static
+`.tg-elevate` class was removed and only `.tg-lift` remains. Both custom
+properties stay — `.tg-lift` reads them. The two
 values are **not printed here on purpose** — a shadow is a four-part composite
 whose light and dark forms differ structurally, `check:design` compares single
 declarations, and the guard cannot be made to mean anything useful about it. It

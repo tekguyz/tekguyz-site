@@ -86,9 +86,27 @@ CTA PRIMARY: See Our Work → /work
 CTA SECONDARY: Let's Talk → /contact
 MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. There is no video loop — the old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28 (CANONICAL §1).
 
-## Proof line
+## The fold — build board caption
 
-Eight live builds. Open any of them right now.
+**[changed 2026-08-29]** The elevated three-fact proof strip is deleted. Its
+"Eight live builds" claim is not written anywhere any more — the board below the
+hero *is* four live builds with a measured status on each, and `See all eight
+builds` is the link directly beneath them. The other two facts are now one muted
+caption line beside that link, in the site's standard trust-fact pattern (one
+`--text-sm` secondary row, 3px `muted-soft` mid-dots, stacked below 766px).
+
+LINK: See all eight builds → /work
+FACT: A verified Google review. **Read it on Google →** (`site.gbp`)
+FACT: South Florida, remote nationwide (`site.locationLong`, read from
+`lib/site.ts` — never retyped here)
+
+The strip's two support sentences are RETIRED, not relocated: *"Real, running
+apps you can open and use yourself"* and *"Remote and cloud-based, wherever your
+team sits"* have no home in a one-line caption.
+
+> **Superseded, kept for the record.** The v2.4 one-line proof band read
+> *"Eight live builds. Open any of them right now."* It was replaced by the
+> proof strip on 2026-08-14 and the strip was cut on 2026-08-29.
 
 ## Solutions
 
@@ -210,7 +228,7 @@ We build AI voice agents that answer every call like your best employee would �
 - Live appointment scheduling
 - Instant CRM and follow-up sync
 
-RELATED WORK: AI Voice Receptionist & Live Demo
+RELATED WORK: AI Voice Receptionist & Call Booking
 CTA: Hear one in action → /work/ai-voice-receptionist
 
 METADATA — TITLE: `TEKGUYZ | AI Voice Agents — Answer Every Call, Day or Night`
@@ -248,7 +266,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Bundle Builder, Bilingual Restaurant Menu, Auto Detailer Booking
+RELATED WORK: Shopify Bundle Builder & Storefront, Bilingual Restaurant Menu, Auto Detailer Booking
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -317,7 +335,7 @@ DESCRIPTION: `A live field-photo capture system that replaces site visits with i
 
 ---
 
-## `/work/ai-voice-receptionist` — AI Voice Receptionist & Live Demo
+## `/work/ai-voice-receptionist` — AI Voice Receptionist & Call Booking
 
 TAG: AI Voice Agents
 HEADLINE: Answer every after-hours call like your best employee would, live, in real time.
@@ -345,7 +363,7 @@ DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations
 
 ---
 
-## `/work/bundle-builder` — Bundle Builder
+## `/work/bundle-builder` — Shopify Bundle Builder & Storefront
 
 TAG: Custom Web Apps
 HEADLINE: A custom storefront built directly on Shopify's API for bundled products.

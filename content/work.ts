@@ -112,7 +112,7 @@ export const work: WorkEntry[] = [
   {
     slug: 'ai-voice-receptionist',
     kind: 'case-study',
-    name: 'AI Voice Receptionist & Live Demo',
+    name: 'AI Voice Receptionist & Call Booking',
     tag: 'AI VOICE AGENTS',
     solution: 'ai-voice-agents',
     headline: 'Answer every after-hours call like your best employee would, live, in real time.',
@@ -156,7 +156,7 @@ export const work: WorkEntry[] = [
   {
     slug: 'bundle-builder',
     kind: 'case-study',
-    name: 'Bundle Builder',
+    name: 'Shopify Bundle Builder & Storefront',
     tag: 'CUSTOM WEB APPS',
     solution: 'custom-web-apps',
     headline: "A custom storefront built directly on Shopify's API for bundled products.",
@@ -321,23 +321,37 @@ export const featured = featuredSlugs
  * these breaks that; adding a fifth is impossible by construction, since there
  * is no fifth line.
  *
- * WHY THESE FOUR SPECIFICALLY. Each line's slot goes to a build not already
- * shown elsewhere on the homepage, so the page does not repeat itself:
- * `field-photo-reports` is deliberately absent because the ink band below
- * carries it at full size. AI Voice Agents is the one unavoidable repeat — it
- * is the only build on that line, and it is also the hero's poster. Kept
- * anyway: dropping it would leave a hole in the legend, which costs more than
- * showing the flagship twice in two different registers (a screenshot above, a
- * tagged status entry here).
+ * WHY THESE FOUR SPECIFICALLY. Every slot is a CASE STUDY, and that is the
+ * rule now — the board is four builds with a story behind each, so the tier a
+ * card links into is the same for all four.
  *
- * `team-performance` is the build the verified Google review describes, which
- * is why it takes the amber slot — the proof strip's review fact and this card
- * are the same claim from two directions.
+ * [decided 2026-08-29, replacing the 2026-08-14 selection] The amber slot was
+ * `team-performance`, a PROJECT, chosen so the homepage would not repeat
+ * itself: the ink band below carries `field-photo-reports` at full size. Two
+ * things unwound that argument.
+ *
+ * 1. THE NO-REPEAT RULE WAS ALREADY BROKEN, and by more than this. Measured:
+ *    `ai-voice-receptionist` is the hero's poster, the violet card here, AND
+ *    the second row of the ink band — three appearances on one page. Holding
+ *    the amber slot to a standard the flagship never met was buying nothing.
+ * 2. IT WAS THE ONE PROJECT AMONG THREE CASE STUDIES. On a row of four
+ *    identically-shaped cards that difference is invisible to the visitor and
+ *    real in the content — one card led somewhere thinner than the others.
+ *
+ * `field-photo-reports` now appears twice, in two registers: a tagged index
+ * entry here, a full-size row with a poster and a pull-quote below. That is the
+ * same trade already accepted for the voice build, and it is the cheaper of the
+ * two costs.
+ *
+ * WHAT THIS GIVES UP, stated rather than buried: `team-performance` is the
+ * build the verified Google review describes, so the fold's review fact and its
+ * amber card are no longer the same claim from two directions. The review fact
+ * still stands on its own — it links to Google, which is where it is checkable.
  */
 export const foldSlugs = [
   'ai-audio-file-insights',
   'ai-voice-receptionist',
-  'team-performance',
+  'field-photo-reports',
   'bundle-builder',
 ] as const;
 

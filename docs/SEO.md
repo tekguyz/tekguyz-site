@@ -71,7 +71,7 @@ One per page, description drawn from that page's own COPY.md content. This is ac
 ```json
 {
   "@type": "SoftwareApplication",
-  "name": "AI Voice Receptionist & Live Demo",
+  "name": "AI Voice Receptionist & Call Booking",
   "applicationCategory": "BusinessApplication",
   "url": "https://tekguyz-sarah.vercel.app",
   "creator": { "@type": "Organization", "name": "TEKGUYZ" }

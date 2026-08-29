@@ -1395,7 +1395,33 @@ one.
 > marks between the cards.** Decoration that draws the sequence rather than
 > encoding it, and it breaks entirely when the grid goes to one column.
 
-### 4.18 The homepage fold — `proof-strip` + `fold-board`
+### 4.18 The homepage fold — `fold-board`
+
+> **[amended 2026-08-29] The `proof-strip` half of this section no longer
+> exists.** `components/proof-strip.tsx` is deleted and the fold is the board
+> alone plus one caption line. Five decisions below were re-opened and settled
+> differently; each is marked inline. Everything not marked still stands.
+>
+> The amendments, in one place:
+>
+> | Was (2026-08-14) | Is (2026-08-29) | Why |
+> | --- | --- | --- |
+> | Three-fact elevated strip above the board | Deleted; two of its facts are the board's caption | Its loudest fact, "Eight live builds", is what the board itself demonstrates two inches below |
+> | Card opens the live product in a new tab | Card goes to `/work/<slug>` | Ejecting a visitor off-site in the second block under the hero, before they know who we are |
+> | Accent tag pill on each card | `AccentDot` + label in `secondary` | The pill was four signals (fill, border, uppercase 700, accent text) for one fact, and out-shouted the product name |
+> | Elevation exception covers two shapes | Covers the cards only; `.tg-elevate` removed | Its other consumer is gone |
+> | Amber slot is `team-performance` (a project) | `field-photo-reports` (a case study) | All four cards now resolve to the same tier; reasoning in `content/work.ts` |
+>
+> Two defects were also fixed that were never decisions, only bugs: the status
+> line wrapped inside the card (273px of text in a 222px box — now
+> `StatusLine variant="compact"`), and the card grid was never centred
+> (`style={{ margin: 0 }}` on the element that *is* the `.tg-container`, which
+> killed `margin-inline: auto` and put the row 73px left of every other block
+> on the page).
+>
+> **The mechanism behind every one of these lives at the top of
+> `components/fold-board.tsx`, not here.** This entry records that they were
+> decided and when; that file records how and why, next to the code.
 
 **[decided 2026-08-14]** Replaces §4.4's `proof-line`. Scope: the home hero, the
 band directly under it, and a build row beneath that. **Nothing in this section
@@ -1433,6 +1459,8 @@ the 2px `.tg-rule`), not for its own sake.
 > that is the accents doing their actual job.
 
 **2. Elevation — `.tg-elevate` / `.tg-lift`, these two components only.**
+**[amended 2026-08-29: the cards only, via `.tg-lift`. `.tg-elevate` is
+removed.]**
 TOKENS.md's "elevation is flat, hairlines only" still governs every other surface
 on the site. The argument for the exception is content, not taste: these are the
 only two elements on the page whose job is to assert *this is a separate, real
@@ -1487,8 +1515,15 @@ describes no longer exists in `app/page.tsx`. Its two rejections still stand and
 are re-confirmed above: no accent on a claim that spans all four lines, and no
 promoting the invitation to a button.
 
-> **[decided 2026-08-14] The board's whole card opens the LIVE PRODUCT, in a new
-> tab** — the one genuinely arguable call here. §4.8 has `project-card` refuse a
+> **[SUPERSEDED 2026-08-29 — the card now goes to `/work/<slug>` in the same
+> tab.** The argument below is about the BUILD, and it is still true about the
+> build; it was never an argument about this POSITION on the page. The board is
+> the second block a visitor meets, and the live link survives on the detail
+> page, in the ink band, and implicitly in the card's own measured status line.
+> Full reasoning in `components/fold-board.tsx`.]
+>
+> ~~**[decided 2026-08-14] The board's whole card opens the LIVE PRODUCT, in a
+> new tab**~~ — the one genuinely arguable call here. §4.8 has `project-card` refuse a
 > second "open the demo" action, because on the `/work` index the job is *read
 > the story* and two competing actions on a compact card is the ambiguity that
 > tier exists to avoid. The fold's job is the opposite one, so this tier resolves

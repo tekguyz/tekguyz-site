@@ -786,11 +786,13 @@
 
    TOKENS.md says "elevation is flat, hairlines only, hover lift comes from
    position," and that rule still governs every other surface on this site. This
-   is a deliberate, dated exception for exactly two shapes — the fold's proof
-   strip and the fold's four build cards — and the argument is content, not
-   taste: those two are the only elements on the page whose job is to assert
-   "this is a separate, real object you can pick up." Flat-on-flat is what makes
-   a page of hairline rectangles read as a template.
+   is a deliberate, dated exception for ONE shape — the fold's four build cards
+   — and the argument is content, not taste: they are the only elements on the
+   page whose job is to assert "this is a separate, real object you can pick
+   up." Flat-on-flat is what makes a page of hairline rectangles read as a
+   template. [narrowed 2026-08-29: the exception used to cover the fold's proof
+   strip too. That component is deleted, so the static `.tg-elevate` class went
+   with it and only the hover-capable `.tg-lift` remains.]
 
    DO NOT WIDEN THIS. `LiveFrame`'s plate (padding 0, no shadow), `project-card`,
    `case-study-row` and every other card tier stay flat — the weight gap between
@@ -814,10 +816,10 @@
    the lift becomes instant. It still lifts; it just doesn't travel. Nothing
    here hides content.
 --------------------------------------------------------------------------- */
-.tg-elevate {
-  box-shadow: var(--tg-elevate);
-}
-
+/* `.tg-elevate` — the static, non-interactive form — was REMOVED 2026-08-29.
+   Its only consumer was the fold's proof strip, and that component is deleted
+   (DESIGN.md §4.18; reasoning at the top of `components/fold-board.tsx`). The
+   two custom properties below it stay: `.tg-lift` still reads both. */
 .tg-lift {
   box-shadow: var(--tg-elevate);
   transition:

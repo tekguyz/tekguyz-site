@@ -4,7 +4,6 @@ import { SignatureStripe } from '@/components/signature-stripe';
 import { HomeHero } from '@/components/home-hero';
 import { SectionHead } from '@/components/page-hero';
 import { SolutionRow } from '@/components/solution-row';
-import { ProofStrip } from '@/components/proof-strip';
 import { FoldBoard } from '@/components/fold-board';
 import { Frame } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
@@ -53,31 +52,31 @@ export default async function HomePage() {
         status={statuses[hero.slug]!}
       />
 
-      {/* THE FOLD'S PROOF — DESIGN.md §4.18, replacing §4.4's one-line
-          `proof-line` band. One sentence between two hairlines was carrying the
-          site's entire differentiator; it is now three checkable facts and four
-          live builds. §4.4's affordance decision survives the swap — the
-          `tg-rule tg-rule-rest` link moved to the end of `FoldBoard`, it was
-          not dropped.
+      {/* THE FOLD'S PROOF — DESIGN.md §4.18. Four live builds, one per
+          solution line, then one muted caption line.
+
+          [changed 2026-08-29] The elevated three-fact `proof-strip` that used
+          to sit above the board is GONE, and `components/proof-strip.tsx` is
+          deleted with it. Its loudest fact was "Eight live builds" — which the
+          board directly beneath it already IS, with a measured live status on
+          each card and "See all eight builds" one line below. A panel
+          asserting that two inches above the evidence was the page arguing
+          with itself. Its other two facts, the ones the board genuinely cannot
+          prove about itself, moved into the board's caption row. Full
+          reasoning, and what it cost, at the top of `fold-board.tsx`.
 
           NO VERTICAL PADDING ON THIS SECTION, in either direction, and that is
           the gap being counted once. Above: the hero's own `pb-16 md:pb-20`
-          (64/80) already groups the strip with the statement it proves. Below:
+          (64/80) already groups the board with the statement it proves. Below:
           the Solutions section's `py-20 md:py-32` supplies the full 80/128
-          rhythm on its own. A `py-*` here would stack two complete gaps at both
-          ends — the defect the `closing-cta` boundary rule exists to fix, read
-          at the top of the page instead of the bottom.
+          rhythm on its own. A `py-*` here would stack two complete gaps at
+          both ends — the defect the `closing-cta` boundary rule exists to fix,
+          read at the top of the page instead of the bottom.
 
-          The 48/64 between the strip and the board is deliberately under the
-          section rhythm: they are one argument in two registers — the claim,
-          and the things the claim is about. */}
+          The strip's removal took the 48/64 `mt-12 md:mt-16` with it; the
+          board is now the section's only child and needs no internal step. */}
       <section>
-        <div className="tg-container">
-          <ProofStrip />
-        </div>
-        <div className="mt-12 md:mt-16">
-          <FoldBoard entries={foldBoard} statuses={statuses} />
-        </div>
+        <FoldBoard entries={foldBoard} statuses={statuses} />
       </section>
 
       {/* Solutions — four full-width rows, never a four-card grid. */}
