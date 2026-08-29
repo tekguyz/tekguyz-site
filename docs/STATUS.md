@@ -13,9 +13,12 @@ current state. Assert nothing here you have not just measured.*
 
 Last updated: **2026-08-29** (~~2026-08-28~~, ~~2026-08-13~~ — this sentence and
 the `## Last updated` heading below had drifted a full fifteen days apart and
-were reconciled to 2026-08-28. **The 2026-08-29 edit is the privacy-policy
-close only — no figure below was re-measured today, so that heading correctly
-still reads 2026-08-28 and is the record of that pass.**
+were reconciled to 2026-08-28. ~~**The 2026-08-29 edit is the privacy-policy
+close only — no figure below was re-measured today.**~~ **Superseded: a second
+2026-08-29 pass re-measured every figure in the table below and the heading now
+reads 2026-08-29.** Three batches shipped on 2026-08-29 after the privacy close
+— the fold rebuild (`aaf0ed6`), its centring fix (`86cddae`) and the concierge
+prompt/avatar/truncation work (`3d170f7`) — each has a section below.
 ~~Build Phase 1 shipped~~ — **corrected 2026-08-28:
 Build Phase 1 is _partly_ shipped. The plan table below has always said so and
 two Phase 1 rows are still open in "Open — code"; this header was the only place
@@ -66,27 +69,27 @@ production** until now.
 
 ---
 
-## Last updated 2026-08-28 — everything below was re-measured today
+## Last updated 2026-08-29 — everything below was re-measured today
 
 Nothing in this refresh was carried forward from a prior session. Commands run
 this session: `git log`, `git rev-parse`, `git rev-list --left-right --count
-origin/master...master`, `bun run test`, `bun run lint`,
-`bun run scripts/check-design.ts`, `bun run check:media`, `bun run build`,
+origin/master...master`, `bun run test`, `bun run lint`, `bun run check:design`,
+`bun run check:claude`, `bun run check:media`, `bun run build`, `vercel ls`,
 `find components -type f | wc -l`, and `wc -l` on every file this document
 prints a line count for.
 
-| | Measured 2026-08-28 | Command |
+| | Measured 2026-08-29 | Command |
 | --- | --- | --- |
-| HEAD | `5ebe2c4` (~~`b862ac3`~~, ~~`a27a8ea`~~ — nine commits have landed since this table was first written; re-measured 2026-08-28, second pass) | `git rev-parse --short HEAD` |
-| Push state | **`0 0` — fully pushed.** `origin/master` is also `5ebe2c4` | `git rev-list --left-right --count origin/master...master` |
+| HEAD | **`3d170f7`** (~~`5ebe2c4`~~, ~~`b862ac3`~~, ~~`a27a8ea`~~ — six more commits have landed since the 2026-08-28 pass; re-measured 2026-08-29, third pass) | `git rev-parse --short HEAD` |
+| Push state | **`0 0` — fully pushed.** `origin/master` is also `3d170f7`, and `vercel ls` shows that sha's Production deployment **Ready**, built in 27s | `git rev-list --left-right --count origin/master...master` · `vercel ls tekguyz-site` |
 | Tests | ~~97 pass, 3 files~~ **101 pass, 4 files, ~1.2s** — `components/concierge/sheet-threshold.test.ts` joined 2026-08-29 | `bun run test` |
 | Lint | **clean — no output, zero findings** | `bun run lint` |
 | `check:design` | ~~39~~ **40 tokens** match `docs/TOKENS.md` — `--pad-card` joined on 2026-08-28 | `bun run check:design` |
-| `check:claude` | **OK — 7 claim groups match**, re-run 2026-08-28 after `5ebe2c4` | `bun run check:claude` |
-| `check:media` | 8 entries wired, all posters present, **7 of 8 off their locked ratio**, exit 0 | `bun run check:media` |
+| `check:claude` | **OK — 7 claim groups match**, re-run 2026-08-29 after `3d170f7` | `bun run check:claude` |
+| `check:media` | 8 entries wired, all posters present, **7 of 8 off their locked ratio**, exit 0 — unchanged 2026-08-29 | `bun run check:media` |
 | `bun run build` | passes | `bun run build` |
-| `components/` | **35 files.** Still only two over 300 lines; the third largest is `nav.tsx` at 249 | `find components -type f` piped to `wc -l` |
-| `components/concierge/concierge.tsx` | **755** | `wc -l` |
+| `components/` | **35 files** — the count is unchanged, but not the contents: `proof-strip.tsx` was deleted and `fold-board.tsx`'s sibling set changed on 2026-08-29. Still only two over 300 lines | `find components -type f` piped to `wc -l` |
+| `components/concierge/concierge.tsx` | **787** (~~755~~ — +32 for the role avatar and its comment, 2026-08-29) | `wc -l` |
 | `components/contact-form.tsx` | **516** | `wc -l` |
 | `app/actions/contact.ts` | **463** | `wc -l` |
 
@@ -233,8 +236,8 @@ presence now all exist.
 | Item | Phase |
 | --- | --- |
 | **DESIGN.md §0–§3 still read in the old single voice** — the mandate, icon policy, colour, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. §1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard | 1 |
-| ~~Density scale adopted by `testimonial.tsx` only~~ **PARTIAL — the padding half closed 2026-08-28; the gap half is deliberately still open.** `--pad-card` (24/24/32) added and consumed by `proof-strip.tsx`, `project-card.tsx`, `fold-board.tsx` and `contact-form.tsx`; `--pad-container` unchanged at 24/32/64 with its one consumer, `testimonial.tsx`. `check:design` 39 → 40 tokens. Measured: fold-board 214 → 238px at 286px wide (`--pad-container`'s 64px would have been 362px, +69%); project-card 353 → 369px at 1440, mobile unchanged; contact panel 502 → 470px across 640–1023, a band that had never been measured because `max-sm:` breaks at 640 not 768; proof-strip byte-identical, which is why it went first as the control. **The gap half is NOT merely unfinished — it was measured and rejected:** `--gap-group`'s 56px ≥1024 step makes both candidates worse (`case-study-row`'s 1024px column mismatch 205px → 237px; `project-card` +19% at 1440), so `case-study-row.tsx` and `project-card.tsx` gaps stay hand-picked, outside the token system. `footer-dark.tsx` and `faq-accordion.tsx` are **permanently** out of density scope — 44px tap-target arithmetic, not density — and are not to be re-raised as an open density item. Reasons in DESIGN.md §8.0 | 1 |
-| **Concierge UX/UI — D-04 geometry and panel presence motion are shipped (below); the rest of the redo is not scoped.** What remains under this heading is a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
+| ~~Density scale adopted by `testimonial.tsx` only~~ **PARTIAL — the padding half closed 2026-08-28; the gap half is deliberately still open.** `--pad-card` (24/24/32) added and consumed by ~~`proof-strip.tsx`~~, `project-card.tsx`, `fold-board.tsx` and `contact-form.tsx` — **three consumers, not four, as of 2026-08-29: `proof-strip.tsx` was deleted with the fold rebuild (`aaf0ed6`), so the control this row cites no longer exists in the tree.** The measurement it produced stands as history; the file does not; `--pad-container` unchanged at 24/32/64 with its one consumer, `testimonial.tsx`. `check:design` 39 → 40 tokens. Measured: fold-board 214 → 238px at 286px wide (`--pad-container`'s 64px would have been 362px, +69%); project-card 353 → 369px at 1440, mobile unchanged; contact panel 502 → 470px across 640–1023, a band that had never been measured because `max-sm:` breaks at 640 not 768; proof-strip byte-identical, which is why it went first as the control. **The gap half is NOT merely unfinished — it was measured and rejected:** `--gap-group`'s 56px ≥1024 step makes both candidates worse (`case-study-row`'s 1024px column mismatch 205px → 237px; `project-card` +19% at 1440), so `case-study-row.tsx` and `project-card.tsx` gaps stay hand-picked, outside the token system. `footer-dark.tsx` and `faq-accordion.tsx` are **permanently** out of density scope — 44px tap-target arithmetic, not density — and are not to be re-raised as an open density item. Reasons in DESIGN.md §8.0 | 1 |
+| **Concierge UX/UI — D-04 geometry, panel presence motion, the reply-length/routing prompt and the header role avatar are all shipped (below); the rest of the redo is not scoped.** Updated 2026-08-29: `3d170f7` closed two named items off this heading. What remains is still a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
 | ~~**`phaseTaps` never opens the concierge panel**~~ **Closed 2026-08-13, commit `ac54202`.** Panel-open pass added per viewport/theme combo: it clicks the real launcher (`concierge.tsx` untouched) and `window.__tapScope` restricts `TAP_PROBE` to the dialog's subtree. The launcher exemption was **widened, not duplicated** — `isOverlay` exempts a thief inside the scoped overlay stealing from a target outside it; overlay-to-overlay theft stays a defect. Two guards against a silent clean zero: a pass that cannot open the panel reports `ran: false` with a reason, and one that probed nothing is flagged `vacuous`. Measured on all 9 combos: `probed=30`, `tierFail=0`, `overlaps=0`, none vacuous — **the chips now hit-test as passing, so the 2026-08-12 fix is covered rather than assumed**. One new bucket, `radiusClipped`, added because the pass's first finding was a false positive — see the row below | — |
 | ~~**`radiusClipped`: the concierge close button loses its four corners to its own `border-radius`.**~~ **Closed 2026-08-28.** One class: `tap-44` on the close button in `components/concierge/concierge.tsx`. The painted box is untouched — still 44x44, still `rounded-[6px]`, glyph still 16px — because `.tap-44::before` is a SQUARE 44x44 overlay with no radius, so the four corner pixels resolve to the button instead of the arc's outside. Proven by hit-test, not by rect: `elementFromPoint` at all four `TAP_PROBE` corner points returns **4/4 MISS with the class removed at runtime, 4/4 HIT with it**. Full `taps` re-run: **9/9 viewport/theme combos, both themes, `radiusClipped=0 tierFail=0 overlaps=0 probed=30` on every panel pass, none vacuous**. `audit-mobile.ts` untouched; the wider concierge redo (Phase 2) untouched |
 | 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17%. **Re-measured 2026-08-28, unchanged** — `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` | 4 |
@@ -431,6 +434,53 @@ runs `MinAnimate = 0`, so `reduce` matches machine-wide — the reduced-motion h
 is verified and the motion-enabled half is not), and the two recapture defects in
 the row above. **Thin margin to watch:** the hero CTA row clears the fold by
 **18px at 1280 × 720**, down from 24px.
+
+## Concierge — reply length, routing, role avatar, and a truncation bug — shipped 2026-08-29 (`3d170f7`)
+
+*Three files: `lib/concierge/system-prompt.ts`, `components/concierge/concierge.tsx`,
+`lib/concierge/llm.ts`. Pushed and Production-Ready the same day; verified against
+`https://tekguyz.com/api/concierge`, not only locally.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Replies are half as long, measured** | Six fixed visitor messages run through the real `getChatCompletion` against both prompts, back to back. **Before: 164 words average. After: 81.** Bullets per reply **3.0 → 0**. Neither arm leaked a price or a timeline. The prompt had said "keep replies short" since it was written and it was doing nothing; the new text states a number (3–4 sentences, under 80 words) and the number is what moved it |
+| **The concierge routes itself now** | It picks the nearest of the four solution lines from what the visitor already said instead of asking them to classify a problem they arrived unable to classify. **A solution line was named in 3 of 6 replies before, 6 of 6 after.** Two of the six landed on a neighbouring line (van dispatch → Business Systems, quote emails → Smart Operations); **both did that under the old prompt too, so it is not a regression**, and both readings are defensible |
+| **Depth is offered, not spent** | First reply answers and stops; the last line hands over the next move — more detail, or their details to the team. Bulleted lists are now allowed only on a follow-up the visitor asked for, and only at four or more items |
+| **Role avatar in the panel header** | The Connected Nodes mark on a 32px `bg-surface` plate, `rounded-[8px]`, no border. **No name, no face, no initial** — a human one asserts a person is on the other end, the one claim the concierge may never make. The mark was already in that header bare, where it read as a logo rather than as the speaker. No new asset; the glyph stays at its existing 18px |
+| **Geometry proven unchanged, not assumed** | Measured in-browser at **1280×900**: panel still 420×640, header still 56px, close button hit-tests **5/5** (four corners + centre). At **375×812** (sheet): sheet still full-viewport, header still 56px, title still one line, close **4/4**. Dark mode avatar resolves to `#1a1a1c` on `#101010` — a token, not a literal. Only the header `<div>` changed in `concierge.tsx`: **+20/−1**, all inside it. Message list, sheet threshold, capture flow, launcher yield and the tap classes were not touched |
+| **File uploads: considered and rejected** | Named as out of scope in the brief and **not built anywhere.** Do not re-propose |
+
+**And a live bug that was neither of those, found while trying to measure the
+first one.** `maxOutputTokens` is a budget for **thinking plus text**, and Gemini
+3.6 thinks by default. Measured on the live key: **864 thought tokens against a
+900 cap, 32 left for the reply, `finishReason: MAX_TOKENS`.** Visitors on
+tekguyz.com were reading replies that stopped mid-sentence, and on one run the
+model's own reasoning leaked into the panel as visible text. It was silent
+because nothing in `llm.ts` inspects `finishReason`. Fix is
+`thinkingConfig: { thinkingLevel: 'low' }` on both call sites, **not a bigger cap
+alone** — an unbounded thinking budget grows to fill whatever ceiling it is
+given, and routing a short message to one of four known lines is not a job that
+needs a long deliberation. Same measurement after: **471 thoughts, 113 text,
+`finishReason: STOP`.** Caps raised to 1600/1200 as headroom on top of that.
+**Live check after deploy: 70 words, complete sentence, correct line, correct
+build linked.**
+
+---
+
+## Homepage fold — rebuilt again 2026-08-29 (`aaf0ed6`, then `86cddae`)
+
+*Supersedes the 2026-08-14 rebuild in the section below, which is left standing
+as the record of that pass. `DESIGN.md` §4.18 carries the amendment table.*
+
+| Shipped | Detail |
+| --- | --- |
+| **`components/proof-strip.tsx` is deleted** | Its loudest fact, "Eight live builds", is what the board two inches below it already demonstrates. Its other two facts became the board's caption in the site's existing trust-fact pattern; its two support sentences were retired, not relocated. `.tg-elevate` lost its only consumer and was removed from `globals.css` — `.tg-lift` and both `--tg-elevate*` properties stay |
+| **Two bugs fixed, not design changes** | (1) The status line **wrapped** — 273px of text in a 222px card box, on the signature component, in the first block under the hero. New `StatusLine variant="compact"` at 176px; `default` unchanged for all seven other call sites. (2) `StatusLine`'s font-size class now comes **first** in `cn()` — tailwind-merge was deleting `leading-[1.55]` before it reached the DOM, measured **22.4px instead of 21.7px on every StatusLine on the site**. Same trap as `button.tsx`'s dropped `leading-none` |
+| **Three earlier decisions re-opened** | Card now goes to `/work/<slug>` in the same tab, not to `entry.url` in a new one — the second block under the hero should not eject a visitor into an unfamiliar app; the icon follows the destination, so `ArrowUpRight` (which **means** external) became `ArrowRight`. The accent tag pill became `AccentDot` + a `secondary` label — the pill was four signals for one fact. The amber slot is `field-photo-reports`, not `team-performance` |
+| **Two builds renamed** | `Bundle Builder` → `Shopify Bundle Builder & Storefront`; `AI Voice Receptionist & Live Demo` → `AI Voice Receptionist & Call Booking` — "Live Demo" described the sandbox, not what the app does. Title band tightened from 14–46 chars to 24–46. `content/solutions.ts` matches `relatedWork` by **exact name string**, so it moved in the same commit; all four `/solutions` pages verified to still resolve |
+| **`86cddae` — the board was never centred** | `fold-board.tsx` put `style={{ margin: 0 }}` on the element that **is** the `.tg-container`. That class centres every block on the site with `margin-inline: auto`, and an inline declaration beats a class — so the reset was silently deleting the centring, not just the `<ul>` margin it was aimed at. Same family as the "a grid placement never ships as an inline `style`" rule |
+
+---
 
 ## Homepage fold — rebuilt 2026-08-14 (`0b047d5`)
 
