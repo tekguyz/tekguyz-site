@@ -44,11 +44,14 @@ Check, in this order:
 4. **Unpushed commits.** `git status -sb`. A commit that is not on
    `origin/master` has not deployed. Push means production here.
 
-5. **Production reality, if the answer depends on it.** The Vercel connector's
-   `list_deployments` gives what each push actually did. Do not cite a doc for
-   hosting or deployment state.
+5. **Production reality, if the answer depends on it.** Use the `vercel` CLI —
+   `vercel ls`, `vercel inspect <url>`, `vercel logs <url>` — to see what each
+   push actually did. The Vercel MCP plugin was removed on 2026-08-28; do not
+   suggest re-installing it. Do not cite a doc for hosting or deployment state.
 
-Then update STATUS.md: refresh the "Last updated" paragraph, add a section per
+Then update STATUS.md: refresh **both** "Last updated" spots — the inline
+`Last updated:` sentence in the opening block *and* the `## Last updated <date>`
+section heading further down. They drift apart. Add a section per
 shipped batch in the existing table format (`| Shipped | Detail |`), and move
 anything now closed out of the Open tables. Keep every figure measured and dated.
 
