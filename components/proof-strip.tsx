@@ -93,7 +93,7 @@ function iconVariants(instant: boolean): Variants {
  * the two text rows share a left edge and the icon hangs in its own gutter.
  */
 const CELL =
-  'flex flex-col border-border p-6 lg:p-8 max-md:border-t max-md:first:border-t-0 md:border-l md:first:border-l-0';
+  'flex flex-col border-border max-md:border-t max-md:first:border-t-0 md:border-l md:first:border-l-0';
 const CLAIM_ROW = 'flex items-start gap-3';
 const CLAIM = 'text-[length:var(--text-body)] leading-[1.35] font-semibold tracking-[-0.01em]';
 const SUPPORT = 'text-secondary mt-2 ml-8 text-[0.875rem] leading-[1.55]';
@@ -188,7 +188,7 @@ function Fact({
   support: React.ReactNode;
 }) {
   return (
-    <li className={CELL}>
+    <li className={CELL} style={{ padding: 'var(--pad-card)' }}>
       <div className={CLAIM_ROW}>
         {/* `mt-[2px]` is optical, not structural: `items-start` aligns the 20px
             glyph's box to the top of a 23px line box, which sets the icon ~1.5px
