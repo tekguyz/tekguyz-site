@@ -1957,8 +1957,52 @@ same class of fix as the glyph and is not: at 360px the card's content box is
 where it *would* bind is ~700px, where releasing it hands the quote a 650px
 measure. Measure caps stay at every width.
 
-**Converted so far:** `testimonial.tsx`. Everything else still hand-picks, and
-each conversion is a real measurement rather than a find-and-replace.
+**[decided 2026-08-28] A third token, `--pad-card`, because a card in a grid and
+a full-bleed panel are not the same object.** `--pad-container`'s ≥1024 step was
+sized for the exemplar, which is 1216px wide. Applied to the tightest real card
+on the site — `fold-board`'s, 286px at 1440px — it is 45% of the card's width and
+inflates it **214px → 362px (+69%)**, measured on the live DOM rather than
+estimated. `--pad-card` is not a new invention: `proof-strip.tsx` already shipped
+exactly these three values by hand, so the token is the one component that got it
+right, promoted. Values in [`TOKENS.md`](TOKENS.md#density), enforced.
+
+**[measured 2026-08-28] The 768px step is a deliberate no-op.** A card in a
+multi-column grid gains no width at 768 — the grid gains tracks, not room — so
+the value genuinely does not step there. It is still declared, because
+`check:design` asserts all three breakpoints in three separate blocks and a
+missing one fails the build. Removing it as redundant breaks `prebuild`.
+
+**[measured 2026-08-28] `contact-form.tsx`'s panel was reclassified.** It reads
+as a full-width panel and is not: **596px at 1440px**, the same width as a
+project card. It takes `--pad-card`. Its `max-sm:` also broke at **640px, not
+768**, so 640–1023px had been running the desktop 40px value — a band nobody had
+measured until this pass. That leaves `--pad-container` with one consumer,
+`testimonial.tsx`, which is correct rather than a gap.
+
+**[decided 2026-08-28] Gaps were explicitly left out of this pass, by decision
+and not by omission.** `--gap-group`'s 56px ≥1024 step was measured against both
+remaining candidates and makes each *worse*: `case-study-row`'s text column is
+already 205px taller than its media column at 1024px, its worst width, and 56px
+takes that to 237px; `project-card` grows 19% at 1440px for no content gained.
+Both files' gaps stay hand-picked, outside the token system. The `18/14` vs
+`24/24` disagreement between the two files is also deliberate — the two card
+tiers are different weights by design, and forcing their internal rhythm to match
+would erase that. `case-study-row:88` (`mt-5`, FrameMeta → "Try it") is
+**within-group**: one caption cluster describing the frame above it, and
+`BuildNarrative`'s own hairline top border already marks the real boundary
+further down, so a second separator would be redundant.
+
+**[decided 2026-08-28] `footer-dark.tsx` and `faq-accordion.tsx` are permanently
+out of density scope.** Their spacing is 44px tap-target arithmetic, not
+hand-picked density, and re-opening it would put the tap policy at risk to buy
+nothing. They are not an open density item and should not be recorded as one.
+
+**Converted:** `testimonial.tsx` (`--pad-container`); `proof-strip.tsx`,
+`project-card.tsx`, `fold-board.tsx`, `contact-form.tsx` (`--pad-card`). Every
+conversion in this pass was measured before and after at the widths that bind,
+not pattern-matched. `proof-strip.tsx` went first as the control, because its
+correct outcome was *zero change* — it measured byte-identical, which is what
+licensed the other three.
 
 ### 8.1 Breakpoints
 
