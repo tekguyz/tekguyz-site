@@ -28,7 +28,8 @@ export function ProjectCard({
       href={`/work/${entry.slug}`}
       data-card
       data-reveal-index={index}
-      className="reveal hover-card flex h-full flex-col rounded-[12px] border border-border bg-surface p-6"
+      className="reveal hover-card flex h-full flex-col rounded-[12px] border border-border bg-surface"
+      style={{ padding: 'var(--pad-card)' }}
     >
       <SolutionTag solution={entry.solution} label={entry.tag} variant="card" className="self-start" />
 
