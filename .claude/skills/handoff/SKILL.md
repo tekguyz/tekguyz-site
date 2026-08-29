@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Audit docs/STATUS.md against the real repo state, update it if stale, then print a paste-ready handoff block for the user's Claude.ai planning Project. Use when the user asks for a handoff, a status sync, "where are we", or says they are about to plan/spec/write a prompt in Claude.ai.
+description: Audit docs/STATUS.md and CLAUDE.md against the real repo state, update them if stale, then print a paste-ready handoff block for the user's Claude.ai planning Project. Use when the user asks for a handoff, a status sync, "where are we", or says they are about to plan/spec/write a prompt in Claude.ai.
 ---
 
 # Handoff to the Claude.ai planning Project
@@ -14,7 +14,10 @@ knows only what the user pastes into it.
 next brief against state that already shipped — which has happened, and is what
 this skill exists to prevent.
 
-Two jobs, in this order. **Never skip job 1.** A handoff generated from a stale
+`CLAUDE.md` is the second file the user attaches, and nothing updates it either.
+Job 1b checks it with a script.
+
+Three jobs, in this order. **Never skip job 1.** A handoff generated from a stale
 STATUS.md is worse than no handoff, because it looks authoritative.
 
 ---
@@ -66,6 +69,52 @@ rule is *"a decision only exists once it's in `docs/STATUS.md` or committed
 code"* — an audit that ends with an uncommitted STATUS.md violates that
 immediately, and the printed handoff block below would be citing a doc state
 that isn't actually in the repo.
+
+---
+
+## Job 1b — audit `CLAUDE.md`, but ONLY repair what is measurably wrong
+
+The user attaches `CLAUDE.md` to the planning Project alongside STATUS.md, and
+**nothing updates it automatically** — `/init` writes it once and it drifts from
+then on. A stale copy is read there as current, which is the same failure job 1
+exists to prevent, one file over.
+
+Run it:
+
+```
+bun run check:claude
+```
+
+`scripts/check-claude-md.ts` measures the countable claims only — the test
+count, both token counts, `.vercelignore`'s contents, the honeypot field name,
+every `bun run <script>` this file names, and every repo path it names in
+backticks. It prints nothing but mismatches, so a clean run costs almost no
+context. It found four wrong on its first run.
+
+**Fix only what the script names.** `CLAUDE.md` is mostly *decisions* — rules,
+bans, and the incident behind each one. Those are not stale for being old, and
+this job does not touch them. Correct the figure, keep the reason: every one of
+those rules cost a real bug, and the sentence explaining it is the valuable
+half.
+
+**Two things the script cannot do, so do not claim it did them:**
+
+- It cannot check a *rule*. If a mechanism is described wrongly, only reading
+  the code finds that. Same limit `check:design` has.
+- It only sees claims someone wired up. A new countable claim added to
+  `CLAUDE.md` is unchecked until a check is added for it.
+
+If the script reports a **dead check** — "the sentence this check reads is no
+longer in CLAUDE.md" — that is a real failure, not noise. The claim was reworded
+and the check is now watching nothing. Re-point the regex in
+`scripts/check-claude-md.ts` or delete the check; do not leave it dangling.
+
+If it passes, say so plainly and change nothing.
+
+**If `CLAUDE.md` changed, commit it alone** — never staged with `docs/STATUS.md`,
+so the two audits stay separately reviewable, and never with anything else in
+the tree. Message names the measurement, e.g.
+`"CLAUDE.md: test count 90/2 -> 97/3, measured"`.
 
 ---
 

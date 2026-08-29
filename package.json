@@ -13,7 +13,8 @@
     "check:media": "bun run scripts/check-media.ts",
     "check:design": "bun run scripts/check-design.ts",
     "check:hex": "bun run scripts/check-hex.ts",
-    "audit:mobile": "node --experimental-strip-types scripts/audit-mobile.ts"
+    "audit:mobile": "node --experimental-strip-types scripts/audit-mobile.ts",
+    "check:claude": "bun run scripts/check-claude-md.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
