@@ -79,7 +79,7 @@ prints a line count for.
 | --- | --- | --- |
 | HEAD | `5ebe2c4` (~~`b862ac3`~~, ~~`a27a8ea`~~ — nine commits have landed since this table was first written; re-measured 2026-08-28, second pass) | `git rev-parse --short HEAD` |
 | Push state | **`0 0` — fully pushed.** `origin/master` is also `5ebe2c4` | `git rev-list --left-right --count origin/master...master` |
-| Tests | **97 pass, 3 files, ~0.9s** | `bun run test` |
+| Tests | ~~97 pass, 3 files~~ **101 pass, 4 files, ~1.2s** — `components/concierge/sheet-threshold.test.ts` joined 2026-08-29 | `bun run test` |
 | Lint | **clean — no output, zero findings** | `bun run lint` |
 | `check:design` | ~~39~~ **40 tokens** match `docs/TOKENS.md` — `--pad-card` joined on 2026-08-28 | `bun run check:design` |
 | `check:claude` | **OK — 7 claim groups match**, re-run 2026-08-28 after `5ebe2c4` | `bun run check:claude` |
@@ -674,6 +674,18 @@ Both engaged `aria-modal="true"`, body `overflow: hidden`, and focus inside the
 panel. At 1440×900 the non-modal contract holds: **no `aria-modal`, no scroll
 lock**, focus still moved to the input, Escape still closed, and focus returned
 to the launcher.
+
+**Re-measured 2026-08-29 and now guarded.** All three cases above still hold on
+the shipped build — 844×390 and 390×844 both `aria-modal="true"` with body
+`overflow: hidden` and focus inside the panel; 1440×900 no `aria-modal`, body
+`overflow: visible`, panel `420 × 640`. **This section was right and CLAUDE.md
+was wrong**: CLAUDE.md claimed the code "still ships the height arm alone" until
+2026-08-29, while `SHEET_QUERY` has read
+`'(max-height: 560px), (max-width: 767px)'` since this phase landed. Nothing was
+checking it, which is the whole reason a doc could disagree with the code for
+weeks. `components/concierge/sheet-threshold.test.ts` now parses that literal
+and asserts each arm against the viewport the *other* arm misses, so `prebuild`
+fails if either is removed.
 
 **Presence motion — specified in DESIGN.md §4.13, recipe in
 `components/concierge/panel-motion.ts`.** Chosen from three built options; the
