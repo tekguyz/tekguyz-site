@@ -2039,3 +2039,871 @@ infer it from the command's output.**
 - No modals or popups anywhere — the concierge is a persistent panel, not a takeover; no cookie banner (the site doesn't use cookies); no newsletter popup.
 - `project-card` never gets an image — the size/weight gap from `case-study-row` is intentional signal.
 - The four-color moving treatment appears in exactly one place: the concierge's thinking state.
+
+---
+
+# Moved out of docs/STATUS.md on 2026-09-01
+
+These sections are the shipped record. They were removed from `docs/STATUS.md`
+because that file is the LIVE status document and 70% of it had become history.
+Every claim below was true on the date it names. **Nothing here is current state.**
+
+## CRM webhook signing — shipped 2026-08-18
+
+The CRM stopped accepting its webhook secret as a URL path segment. It was being
+written into every request log on every call, unavoidably. The endpoint is now
+`POST /api/v1/triage/<organization_id>` and authenticates on an
+`X-TekGuyz-Signature` header: hex HMAC-SHA256 of the raw request body, keyed by
+the secret. The secret never travels. The org id in the URL grants nothing on
+its own — an unsigned request for a real org gets the same opaque 401 as one for
+an org that does not exist.
+
+**One file changed in the app: `app/actions/contact.ts`.** `sendToCrm` now reads
+`CRM_SIGNING_SECRET` (at call time, never at module scope — same rule as the
+Resend client, so a build still passes with no secrets), serializes the payload
+**once** into `body`, signs that exact string, and sends the same string. The
+`JSON.stringify` deliberately does not live inline in the `fetch` call any more:
+signing one serialization and sending another is the standard failure here and
+it 401s every request, not some of them.
+
+**A wrong comment was the reason this looked impossible from this side.** The
+code carried "Content-Type only. The CRM's CORS allows no other header, and a
+custom one fails preflight," and `CLAUDE.md`, `README.md`, `.env.example` and
+`CANONICAL.md` all repeated the CORS claim as a hard rule. It was wrong: CORS and
+preflight are browser mechanisms, and `sendToCrm` is a server-side fetch from a
+Server Action — no origin, no preflight, no CORS involvement, ever. All five
+places are corrected. A domain or hosting change does not break this call.
+
+**Verified end to end through the real form**, not a hand-built POST: the site
+running locally against the CRM running locally, submitted through `/contact` in
+a browser with real field values. The CRM returned `200` and a `leadId`, the
+`[contact] CRM accepted leadId=…` line appeared in the site's log, and the lead
+appeared in the CRM. Negative case proven the same way — with a deliberately
+wrong `CRM_SIGNING_SECRET`, the identical submission produced a `401` and a
+`[LEAD-DELIVERY-FAILURE] stage=crm` marker, and no lead was created. `RESEND_API_KEY`
+was left unset for both runs so no real email went out; the CRM write and the
+email sends are independent and each records its own failure, so that isolates
+cleanly. The test lead was deleted from the CRM afterwards.
+
+`bun run build`, `bun run lint` and `bun run test` all pass.
+
+**Shipped to production 2026-08-19 and confirmed with a real submission.**
+Both repos deployed (CRM `c780a21`, site `44c7295`), the two Vercel env vars are
+set, and a genuine tekguyz.com/contact submission reached the CRM.
+
+**Two failures happened first, and both are worth keeping.** (1) The site was
+redeployed with the new env vars but the OLD code, because the commit had not
+been pushed yet — the env vars alone cannot work, since it is the code that
+computes the signature. (2) Both env var VALUES were pasted with the variable
+name still glued to the front (`CRM_TRIAGE_ENDPOINT=https://…`), which produced
+`TypeError: Failed to parse URL from CRM_TRIAGE_ENDPOINT=https://…` and then,
+after the URL was fixed, a bare `HTTP 401` from the still-malformed secret.
+
+**Vercel marks both variables sensitive, so `vercel env pull` returns
+`"[SENSITIVE]"` rather than the value — they cannot be inspected, only
+replaced.** That is why the fix was to overwrite both from an authoritative
+source rather than to read and correct them. The secret was piped into
+`vercel env add` from a 36-byte file with no trailing newline, straight out of
+the database.
+
+**The cheap way to verify a signing secret without writing anything:** sign a
+deliberately INVALID payload and POST it. A `400 Invalid payload` proves the
+signature was accepted, because validation runs after verification; a `401`
+means the key is wrong. Confirmed against production: correct signature `400`,
+wrong signature `401`, missing header `401`. No lead is created either way.
+
+Nothing was lost during the outage — every failed submission was archived to
+Upstash by `lib/lead-archive.ts` with its 90-day TTL, which is the first time
+that safety net has actually been needed.
+
+## Component audit — 2026-08-13, and what it did to Phase 5
+
+*Full report: `docs/audits/2026-08-13-component-audit.md`. All 30 files in
+`components/` read in full, plus `app/actions/contact.ts` and the relevant parts
+of `lib/`. Every figure below was measured on the date.* **`components/` holds
+35 files as of 2026-08-28** — the 30 is that day's count, not a current one.
+
+**Phase 5's old line counts were stale and its framing was wrong.** The row read
+`concierge.tsx` 526 / `contact-form.tsx` 440 / `actions/contact.ts` 423; measured
+2026-08-13 they are ~~**709 / 428 / 393**~~. **Corrected 2026-08-28, twice over.**
+Those three numbers do not reconcile with `git show` at any 2026-08-13 commit —
+the tree that day read **751 / 457 / 423** — and the files have grown since.
+**Current, measured today: `components/concierge/concierge.tsx` 755 ·
+`components/contact-form.tsx` 516 · `app/actions/contact.ts` 463.** The path
+matters too: `concierge.tsx` has lived at `components/concierge/concierge.tsx`
+since before this audit, and every bare `concierge.tsx` below is shorthand for
+it. More importantly the premise — big files need splitting — did not survive
+measurement:
+
+- **Only two files in `components/` exceed 300 lines**, and they are the two
+  already scoped. There is no third oversized file. **Still true 2026-08-28** —
+  755 and 516, with `nav.tsx` next at 249.
+- **`concierge.tsx` is not a split candidate on size.** Its 11 effects are
+  mutually coupled by design — `sheetRef` exists specifically to keep sheet mode
+  out of the focus effect's dependencies, guarding a documented Android
+  soft-keyboard loop. At ~51 bytes/line it is roughly double the repo average
+  because it carries its incident history inline.
+- **`contact-form.tsx` is repetition, not size** — eight hand-wired label /
+  control / error triples. Its Zod schema only *looks* duplicated against
+  `actions/contact.ts`; the asymmetry is deliberate and documented on both sides.
+- **`actions/contact.ts` is already decomposed correctly.** No action.
+
+**Shipped 2026-08-13:**
+
+| What | Commit |
+| --- | --- |
+| **One shared `prefers-reduced-motion` hook.** `load-sequence.tsx` named it `useReducedAfterMount`; `process-steps.tsx` carried a character-identical re-inlined copy. Moved verbatim to `hooks/use-prefers-reduced-motion.ts` — same query, same `change` subscription, same mount-gated initial `false`. Establishes `hooks/`, which did not exist. **`reveal.tsx` deliberately not folded in**: its read is a one-shot `.matches` with no listener. Verified with reduce matching — home 12 `.tg-seq` nodes at opacity 1 / transform none, `/process` 4 rail labels at weight 400 with the readout pinned at Step 01 of 04 | `1b30f0a` |
+| **One concierge failure message.** `route.ts`'s `ERROR_REPLY` and `concierge.tsx`'s own literal were two different sentences for one failure — the client's stopped at the email address, the route's went on to "and we'll pick it up from there" — and neither file referenced the other. Both now import `CONCIERGE_ERROR_REPLY` from `lib/concierge/errors.ts`. **The route's wording survives unedited**, being a strict superset; no new copy was written | `f5160c8` |
+| **One outcome block.** The contact form's success state and the concierge's captured and error states now render `components/outcome-block.tsx` (`tone` + `label` + `message`). **The audit's "byte-identical" claim did not survive measurement** — the labels differ at all three sites, and the contact form's body runs at `--text-body` (1.0625rem) against the concierge's 0.875rem, so an optional `bodyClassName` carries that one real difference rather than silently unifying it. The component returns **contents only, not a wrapper**: the contact form's wrapper is the `ref`/`role`/`aria-live`/`tabIndex` focus target that announces the success, the concierge's is the `border-t` rule off the message list — folding those in would trade one duplication for a vaguer surface. No copy changed; `concierge.tsx`'s 11 effects untouched | `09c1339` |
+| **Dark-context token audit — blocked item 1 resolved.** `footer-dark.tsx`, `live-frame.tsx`, `page-hero.tsx`, `pull-quote.tsx`, `status-line.tsx`, `app/page.tsx` no longer re-derive `--tg-fg`/`--tg-secondary`/`--tg-border` via `onInk` ternaries — the `.ink-band`/`.footer-dark` scope roots are read directly, and every `onInk` prop that existed only to drive that ternary is gone from six components and five call sites. `testimonial.tsx` had no scope root at all (a dark card on a light-mode page) — it now carries `.ink-band` itself rather than hardcoding the same four values. `.ink-band`'s `--tg-secondary` moved off `#9ca3af` (`muted-soft`, retired as a text colour) to `muted-dark`, matching `.footer-dark` and closing the second undocumented exception; contrast on `#111111` goes 7.5:1 → 4.53:1, still AA but the margin is thin — **worth the user's eyes if the band ever darkens further.** `nav.tsx:104` reads `var(--dur-base)` instead of a `240ms` literal that agreed with the token by coincidence. `TOKENS.md`'s mono-usage sentence corrected to the measured two places. New `scripts/check-hex.ts`, wired into `prebuild`, bans the five retired hex values from any `.tsx` outside `globals.css` — exempts comments and Next metadata routes (`opengraph-image`, `manifest`, etc.) that render outside the CSS cascade. Verified by injecting a hex into `pull-quote.tsx` and confirming the guard caught it, then reverting | `2881076` |
+
+**Still open from the audit, ranked (full reasoning in the report):**
+
+| Item | Note |
+| --- | --- |
+| **Concierge transport inline in the view** | ~~`concierge.tsx:401-436`~~ **`components/concierge/concierge.tsx:418-440`, re-measured 2026-08-28** — holds the endpoint literal, request shape, three response-field assumptions and the fallback copy. The copy half is now fixed; the transport is not. Deliberately left — real seam, but no second consumer yet, so extracting it now would be speculative |
+| ~~**`contact-form.tsx`: 8 hand-wired field triples**~~ | **Shipped 2026-08-14 (`a60392e`)** — see the Phase 5 dedup section below |
+| ~~**Body scroll lock, two incompatible restores**~~ | **Shipped 2026-08-14 (`a60392e`)** — see below. The reachability question is answered there: the lock is reachable, the clobber is not |
+| ~~Scroll-position flag ×2~~ | **Shipped 2026-08-14 (`a60392e`)**, alongside the scroll lock as planned |
+| `mailto:` fallback ×5 | Three treatments across `nav`, `footer-dark`, `contact-form`, `concierge`, `app/error.tsx`. Probably leave — the `tap-44`/`tap-24` variance is legitimate, tier depends on neighbour spacing |
+| `process-steps.tsx:51-79` scroll measurement in the view | Genuine coupling, but extraction needs the four step refs passed in, which preserves most of it. Leave |
+
+**The audit's last blocked item is now released and shipped:**
+
+1. ~~**The eyebrow treatment at 24 sites**~~ **Shipped 2026-08-13 as
+   `.tg-eyebrow`, commit `a24b01e`** — the user released it with the approach
+   named: a layered utility, colour routed through the existing accent
+   resolution. It is the **one layered block in `globals.css`**, in
+   `@layer components`, and the layer is the mechanism: Tailwind's import
+   declares `theme, base, components, utilities`, so the rule loses to every
+   call-site utility. That is the required direction — call sites still set
+   colour (`text-secondary`) and margin (`mb-6`, `mb-10`) as utilities, and
+   unlayered it would have beaten `text-secondary` and repainted two thirds of
+   the site's eyebrows. Colour is deliberately **not** in the class; the
+   accent-coloured eyebrows already resolve `a.text` from `config/solutions.ts`,
+   the same `-text` resolution that drives dots and tags, and that path was not
+   touched. Measured after: all 25 elements compute
+   12px / 16.8px / 700 / 1.2px / uppercase with colours unchanged.
+
+*The outcome block was the second blocked item — "should these two surfaces be
+shared at all, given they may want to diverge." The user released it on
+2026-08-13 on the grounds that the question is about future divergence, not
+present duplication. Shipped above; the two places the surfaces already differ
+are carried as props, so diverging further stays cheap.*
+
+**The dark-context token item is now shipped, 2026-08-13** — see the dark-context
+token audit section below. It surfaced two things the write-up above didn't
+anticipate: `testimonial.tsx` had no scope root to read from at all (a dark
+card with no `.ink-band`/`.footer-dark` ancestor), and `footer-dark.tsx`'s own
+literals disagreed with its own scope's `--tg-secondary` — the file carried
+`#9CA3AF` while `.footer-dark` said `#747C8B`, so two different secondary
+greys shipped from one file.
+
+*One correction the audit owes itself: it argued `concierge.tsx` should not be
+split, but conflated "these 11 effects must stay together" with "they must stay
+in this file." Those are different claims. A split that moves the coupled unit
+whole — effects, `sheetRef` and their comments into one hook, render pieces into
+their own files — does not reopen the bug the coupling protects. That is a live
+option for Phase 5, not something the audit ruled out; it was simply out of scope
+on 2026-08-13.*
+
+## Homepage flow, Wave 1 — shipped 2026-08-13
+
+*Not a Build Phase. This is Wave 1 of the homepage-narrative blueprint from the
+Claude.ai project, recorded verbatim in `docs/plans/2026-08-13-homepage-flow.md`.
+**Waves 2 and 3 have since shipped too — their sections follow this one.** Every
+figure below was measured on the date.*
+
+**The two bookends — hero and `closing-cta` — reworked in one pass so they
+rhyme.** Both were correctly built against DESIGN.md and underweighted for the
+moments they are. The rhyme is deliberately cheap: one shared token
+(`--tg-surface`) and one shared spacing grammar at two amplitudes. No new
+tokens, no new motion, no new library, no accent reused.
+
+| Shipped | Detail |
+| --- | --- |
+| **Hero panel is desktop-only** | Below 1024px `.tg-hero-frame` dropped its background, border, radius and padding. It had been keeping all four and only shrinking the padding to 24px — a panel at card scale, the exact thing DESIGN.md §4.9 forbids, in the one place the bleed cannot exist. Measured at 375px before: **33.2% of the panel box was empty `--tg-surface`** (30.0% at 430px). Poster went 278 → 327px wide, **+38% area**. Desktop re-measured unchanged |
+| **Hero art direction** | `heroPosterMobile` → `sarah-poster-mobile.webp`, 1038×584, a crop of the same real capture at (12, 316). Legible at ~330px; 33KB against the source's 117KB. `Frame` gained an optional `posterMobile` prop using `getImageProps` + `<picture>`, so exactly one variant is fetched. **Off for every compact context**, which renders the identical `<Image>` as before |
+| **Hero rhythm** | 36 / 32 / 40 → **24 · 32 · 48/64 · 80**. The near-linear ramp v2.5 fixed in `closing-cta` and never applied here. DESIGN.md §4.16, new |
+| **`gap-y-14` deleted from the hero grid** | It had **never applied** — `.tg-grid`'s `gap` is unlayered and beats a layered `row-gap`. Same silent drop as the case-study `gap-y-12`. The 56px was always `.tg-hero-frame`'s `margin-top` |
+| **`closing-cta` has a ground** | `--tg-surface`, full-bleed, one declaration. The stripe above becomes its lid, the dark footer its floor. Not a card — v2.5 rejected *boxing the stack*, which this is not. Applies to all seven routes carrying the component |
+| **`closing-cta` padding** | 40/32/48 → **64/48 top, 80/64 bottom**. Safe because the ground changed what the number measures: the canvas gap a visitor actually reads **went down**, 110 → 68px desktop. §3's shed-rhythm invariant re-measured intact (64/40) |
+| **Neither button size changed** | Re-justified rather than bumped. `closing-cta` keeps `large` (alone, terminal). The hero keeps `default` — its ask is a *pair*, and §4.1's 14×24 secondary exists to paint the same height as a 15×24 primary, so there is no `large` secondary to pair with. DESIGN.md §4.1 / §4.5 |
+
+**Needs the user's eyes, not more code:** full-motion behaviour (this machine
+runs `MinAnimate = 0`, so `reduce` matches machine-wide — the reduced-motion half
+is verified and the motion-enabled half is not), and the two recapture defects in
+the row above. **Thin margin to watch:** the hero CTA row clears the fold by
+**18px at 1280 × 720**, down from 24px.
+
+## Concierge — reply length, routing, role avatar, and a truncation bug — shipped 2026-08-29 (`3d170f7`)
+
+*Three files: `lib/concierge/system-prompt.ts`, `components/concierge/concierge.tsx`,
+`lib/concierge/llm.ts`. Pushed and Production-Ready the same day; verified against
+`https://tekguyz.com/api/concierge`, not only locally.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Replies are half as long, measured** | Six fixed visitor messages run through the real `getChatCompletion` against both prompts, back to back. **Before: 164 words average. After: 81.** Bullets per reply **3.0 → 0**. Neither arm leaked a price or a timeline. The prompt had said "keep replies short" since it was written and it was doing nothing; the new text states a number (3–4 sentences, under 80 words) and the number is what moved it |
+| **The concierge routes itself now** | It picks the nearest of the four solution lines from what the visitor already said instead of asking them to classify a problem they arrived unable to classify. **A solution line was named in 3 of 6 replies before, 6 of 6 after.** Two of the six landed on a neighbouring line (van dispatch → Business Systems, quote emails → Smart Operations); **both did that under the old prompt too, so it is not a regression**, and both readings are defensible |
+| **Depth is offered, not spent** | First reply answers and stops; the last line hands over the next move — more detail, or their details to the team. Bulleted lists are now allowed only on a follow-up the visitor asked for, and only at four or more items |
+| **Role avatar in the panel header** | The Connected Nodes mark on a 32px `bg-surface` plate, `rounded-[8px]`, no border. **No name, no face, no initial** — a human one asserts a person is on the other end, the one claim the concierge may never make. The mark was already in that header bare, where it read as a logo rather than as the speaker. No new asset; the glyph stays at its existing 18px |
+| **Geometry proven unchanged, not assumed** | Measured in-browser at **1280×900**: panel still 420×640, header still 56px, close button hit-tests **5/5** (four corners + centre). At **375×812** (sheet): sheet still full-viewport, header still 56px, title still one line, close **4/4**. Dark mode avatar resolves to `#1a1a1c` on `#101010` — a token, not a literal. Only the header `<div>` changed in `concierge.tsx`: **+20/−1**, all inside it. Message list, sheet threshold, capture flow, launcher yield and the tap classes were not touched |
+| **File uploads: considered and rejected** | Named as out of scope in the brief and **not built anywhere.** Do not re-propose |
+
+**And a live bug that was neither of those, found while trying to measure the
+first one.** `maxOutputTokens` is a budget for **thinking plus text**, and Gemini
+3.6 thinks by default. Measured on the live key: **864 thought tokens against a
+900 cap, 32 left for the reply, `finishReason: MAX_TOKENS`.** Visitors on
+tekguyz.com were reading replies that stopped mid-sentence, and on one run the
+model's own reasoning leaked into the panel as visible text. It was silent
+because nothing in `llm.ts` inspects `finishReason`. Fix is
+`thinkingConfig: { thinkingLevel: 'low' }` on both call sites, **not a bigger cap
+alone** — an unbounded thinking budget grows to fill whatever ceiling it is
+given, and routing a short message to one of four known lines is not a job that
+needs a long deliberation. Same measurement after: **471 thoughts, 113 text,
+`finishReason: STOP`.** Caps raised to 1600/1200 as headroom on top of that.
+**Live check after deploy: 70 words, complete sentence, correct line, correct
+build linked.**
+
+---
+
+## Homepage fold — rebuilt again 2026-08-29 (`aaf0ed6`, then `86cddae`)
+
+*Supersedes the 2026-08-14 rebuild in the section below, which is left standing
+as the record of that pass. `DESIGN.md` §4.18 carries the amendment table.*
+
+| Shipped | Detail |
+| --- | --- |
+| **`components/proof-strip.tsx` is deleted** | Its loudest fact, "Eight live builds", is what the board two inches below it already demonstrates. Its other two facts became the board's caption in the site's existing trust-fact pattern; its two support sentences were retired, not relocated. `.tg-elevate` lost its only consumer and was removed from `globals.css` — `.tg-lift` and both `--tg-elevate*` properties stay |
+| **Two bugs fixed, not design changes** | (1) The status line **wrapped** — 273px of text in a 222px card box, on the signature component, in the first block under the hero. New `StatusLine variant="compact"` at 176px; `default` unchanged for all seven other call sites. (2) `StatusLine`'s font-size class now comes **first** in `cn()` — tailwind-merge was deleting `leading-[1.55]` before it reached the DOM, measured **22.4px instead of 21.7px on every StatusLine on the site**. Same trap as `button.tsx`'s dropped `leading-none` |
+| **Three earlier decisions re-opened** | Card now goes to `/work/<slug>` in the same tab, not to `entry.url` in a new one — the second block under the hero should not eject a visitor into an unfamiliar app; the icon follows the destination, so `ArrowUpRight` (which **means** external) became `ArrowRight`. The accent tag pill became `AccentDot` + a `secondary` label — the pill was four signals for one fact. The amber slot is `field-photo-reports`, not `team-performance` |
+| **Two builds renamed** | `Bundle Builder` → `Shopify Bundle Builder & Storefront`; `AI Voice Receptionist & Live Demo` → `AI Voice Receptionist & Call Booking` — "Live Demo" described the sandbox, not what the app does. Title band tightened from 14–46 chars to 24–46. `content/solutions.ts` matches `relatedWork` by **exact name string**, so it moved in the same commit; all four `/solutions` pages verified to still resolve |
+| **`86cddae` — the board was never centred** | `fold-board.tsx` put `style={{ margin: 0 }}` on the element that **is** the `.tg-container`. That class centres every block on the site with `margin-inline: auto`, and an inline declaration beats a class — so the reset was silently deleting the centring, not just the `<ul>` margin it was aimed at. Same family as the "a grid placement never ships as an inline `style`" rule |
+
+---
+
+## Homepage fold — rebuilt 2026-08-14 (`0b047d5`)
+
+*Hero, proof strip, build board. Replaces the `proof-line` band Wave 2 tuned
+(below). Every figure measured on the date. Full reasoning: DESIGN.md §4.18.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Proof strip replaces the proof line** | Three checkable facts — eight live builds · a verified Google review · `site.locationLong` — on an elevated, hairline-divided panel, icon inline with each claim. One sentence between two hairlines had been carrying the site's whole differentiator. `site.gbp` and `site.locationLong` are read from `lib/site.ts`, not retyped |
+| **Build board — four builds, one per solution line** | In `STRIPE_ORDER`, so the fold is a **legend** for the wayfinding system the rest of the page uses. Selection is content: `foldSlugs` in `content/work.ts`. Each slot avoids a build shown elsewhere on the page; amber is `team-performance` because that is the build the Google review describes. The whole card opens the **live product** in a new tab — one action per card, resolving `project-card`'s ambiguity the other way because the fold's job is the opposite of `/work`'s |
+| **Hero headline commits** | "We build the systems your business runs on," compressed from PLAYBOOK §1's tagline. Subhead stops after §1's core belief. **Local clamp 44→76px, not `--text-hero`** — the token still serves six routes via `page-hero`. Re-measured, not assumed: **3 lines exactly at 1280, and the CTA row clears a 1280×720 fold by 30px, against the 18px recorded 2026-08-13** |
+| **Three scoped exceptions, none generalised** | `lucide-react` icons at `strokeWidth 1.5` to match the site's drawn hairlines · `.tg-elevate` / `.tg-lift` on **these two components only** · richer entrance motion reusing `hooks/use-prefers-reduced-motion.ts`. All three are dated decisions in DESIGN.md §4.18; TOKENS.md's "elevation is flat" now carries the exception by name |
+| **The hover lift is `translate`, not `transform`** | Inverted from `.hover-card`, and load-bearing: Motion writes its `y` entrance as an **inline** `transform`, which beats any class — a `transform`-based lift would never have applied once the entrance settled. All three transitioned properties declared together, since a `transition` shorthand resets every one |
+| **§4.4's affordance decision moved, not dropped** | The `tg-rule tg-rule-rest` link is now "See all eight builds" at the end of the board. §4.4 is marked **superseded as a component, retained as reasoning** |
+| **Reduced motion verified by measurement** | 8 `.tg-seq` nodes in the new section, **0 opacity/transform violations, 0 hidden elements**, all transition durations collapsed to `1e-06s` |
+| **Taps re-run after the restructure** | `tierFail=0 overlaps=0` on `/` across all 9 viewport/theme combos. `multiline=1` at narrow widths is the script's documented **pass** bucket, not a failure |
+| **Contrast measured with the tag tint composited** | Card name 17.32 / 15.94 · tag text on tint 6.38 / 4.78 · strip claim and icons 17.32 / 15.94 (light / dark). Keyboard: real `Tab` gives `:focus-visible` + the 2px outline on all six new controls. Launcher yield intact — opacity 0, `pointer-events: none`, `aria-hidden`, `tabIndex -1` |
+
+~~**New in Open — code, found by this pass and deliberately not fixed:**
+`--tg-secondary` on `--tg-surface` in **dark mode measures 4.14:1**, under AA's
+4.5 for 14px text. Confirmed **identical on untouched `project-card` at `/work`**,
+so it is pre-existing and site-wide, not introduced here: the v2.3 dark audit
+measured secondary against the page floor (`#101010`, 4.53) and never against the
+card fill (`#1a1a1c`). Fixing it changes `--tg-secondary` in `.dark` and repaints
+every card on the site, which is why this pass flagged it rather than taking it.~~
+
+**Resolved 2026-08-14.** `--tg-muted-dark` lightened along its own hue and
+saturation, `#747C8B` → `#7B8291`. Recomputed against every background it is
+actually composited on, not just the page floor: **4.93:1** on `#101010` (page
+floor and `.footer-dark`), **4.90:1** on `#111111` (`.ink-band`), **4.51:1** on
+`#1a1a1c` (dark-mode card fill). All three clear AA.
+
+The audit had **two** wrong numbers, not one. The ink band was also failing —
+`#747C8B` measures **4.495:1** on `#111111`, and the 4.53 recorded for it was
+the page-floor figure carried over. Card fill remains the binding constraint at
+4.51:1, so re-measure this token before darkening any dark surface.
+
+`.ink-band` reads `var(--tg-muted-dark)` rather than a literal, so it moved with
+the token — the documented ink-band exception is the *violet tag*, which is
+untouched. `scripts/check-hex.ts` now bans both hexes: `#7B8291` pointing at the
+token, `#747C8B` as retired.
+
+**Needs the user's eyes:** the strip's 70ms icon stagger and the cards' 80ms /
+18px / 0.985-scale landing, under full motion. Only the reduced-motion half is
+provable on this machine.
+
+**Pushed 2026-08-14.** This push carried **9 commits**, not 2 — the 7 that had
+been sitting unpushed since 2026-08-13 went out with it. See the corrected push
+count in the header.
+
+## Phase 5 dedup — shipped 2026-08-14 (`a60392e`)
+
+Two of the three remaining audit rows, run as independent parallel tracks. Both
+behavior-preserving; rendered output is unchanged in both.
+
+| Shipped | Detail |
+| --- | --- |
+| **`contact-form.tsx`: 8 field triples → one local `Field`** | `Field` is defined in the same file (~~`:441-492`~~ **`:471-509`, re-measured 2026-08-28; `FieldError` follows at `:510`**) — **not** a shared component, one consumer. It owns the wrapper `<div>`, the `<label>`, the `(optional)` marker, and the single slot holding **either** the error **or** the hint. The controls stay hand-written as `children`, because they are three different element types with per-field `className`/`inputMode`/`rows`/`autoComplete` — a prop-spreading helper would have deduped the small half and left the markup. **`Field` deliberately does not own `aria-invalid` or `aria-describedby`**; both stay inline at the call sites. Deriving them inside would apply `aria-invalid` uniformly to all eight, which is a behaviour change, and would bury the conditional whose whole point is that it vanishes when the element it points at is replaced. All four required behaviours verified against rendered DOM, not source: `aria-describedby` present→absent→present across the phone field's pristine/errored/recovered cycle and never empty-string; `aria-invalid` absent when pristine, exactly `"true"` when errored, never `"false"`; the wrapped phone `onChange` byte-identical and exercised (20 digits → 15 kept, `+44 20 7123 4567` survives whole at 16 chars / 12 digits); `key="step-1"`/`key="step-2"` still on the step `<div>`s and outside `Field`, verified by consequence — all five step-2 controls read `""` after `Continue`. ~~File 428 → 481 lines~~ — **corrected 2026-08-28 from `git show`: this commit took `components/contact-form.tsx` 480 → 505.** It is **516** today, the extra 11 from `cf979f1`'s dark-mode `selectField` fix. The JSX shrank ~66 lines and the doc comment recording *why* the aria stays at the call sites added 20 |
+| **One scroll lock and one scroll-position flag** | New `lib/use-scroll.ts`: `useScrolledPast(threshold)` and `useBodyScrollLock(active)`. `nav.tsx` −15/+12, `concierge.tsx` −17/+21. The concierge's save-and-restore contract won, as planned; nav's `overflow = ''` unlock is gone. `useScrolledPast` takes a number **or a function** because the concierge's threshold is `innerHeight * 0.85` and must be read per event — both callers pass a module-level constant, so the listener is never rebuilt. **The `sheet` ref-read pattern was not touched, and the audit row's premise about it was wrong:** `sheetRef` is read by the **focus** effect (~~`:286-299`~~ **`:290`, re-measured 2026-08-28**), never by the lock effect, which has always had `sheet` as a real dependency. That stays — a rotation into sheet mode with the panel already open must engage the lock. Re-verified in-browser: desktop 1280×800 focus lands on `#concierge-input`, no `aria-modal`, no lock; sheet 1280×500 gives `aria-modal="true"`, focus on the panel element, body `hidden`; Escape closes and returns focus to the launcher in both. Restore proven with a sentinel — body set to `overflow: scroll` before opening comes back as `scroll`, where `master` returned `''` |
+
+**Was nav's lock reachable? The lock yes, the clobber no.** The hamburger is a
+real control below 768px (measured at 375px: click opens `#mobile-drawer`, body
+goes to `hidden`), so the lock runs. But the failure needs a *second* inline
+`overflow` writer live at unlock time, and grep confirms exactly two site-wide.
+They cannot both be engaged: below 768px the open sheet occludes the hamburger
+(`elementFromPoint` over its rect returns the panel's close button, panel
+`z-index: 80` vs header `60`); at ≥768px with height ≤560 the hamburger's
+container computes `display: none`, verified at 1024×500. **So this was a latent
+defect, not a live one** — worth fixing because the occlusion is a layout
+coincidence, not a guarantee, but it is not a bug anyone hit.
+
+**One thing did not survive identically, deliberately.** Nav's old effect wrote
+`overflow = ''` on mount and on every close, including when nothing was locked.
+The hook writes nothing when inactive. That is the fix, but it is an observable
+difference; nothing on the site depended on the old behaviour.
+
+**Verification state, measured 2026-08-14 on the combined tree:** `bun run build`
+passes · **97 tests pass across 3 files** · `bun run lint` **clean, zero
+findings** · no console errors, no hydration warnings.
+
+~~**Two figures elsewhere in this file are stale — corrected here, left standing
+there as dated records.**~~ **Both were corrected in place on 2026-08-28 rather
+than left standing, so this paragraph is now the reasoning and not the fix.**
+The Build Phase 1 section said "90 tests pass"; the third test file
+(`lib/overlap-verdict.test.ts`) makes it 97. Build Phases 1, 2 and 3 all said
+"lint clean except the one known `contact-form.tsx` warning" — that warning was
+closed on 2026-08-13 in `6a6ee41` (`watch()` → `useWatch`), as the header's own
+close-out paragraph already records. **There is no known lint warning in this
+repo**, re-confirmed 2026-08-28: `bun run lint` produces no output at all.
+
+## Homepage flow, Wave 2 — shipped 2026-08-13 (`0663baa`)
+
+> **[superseded in part, 2026-08-14]** The **proof-line** row below describes a
+> band that **no longer exists** — see the homepage-fold section above. Its
+> affordance decision (`tg-rule tg-rule-rest`) survives, on the new board's
+> `/work` link. Every other row in this table still ships.
+
+*Proof line + "What We Do" hierarchy. Every figure measured on the date.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Proof-line link has a rest state** | Dropped `link-underline` for `tg-rule tg-rule-rest` — the state primitive drawn to **0.34 at rest**, completing to 1 on hover/focus. v2.5 fixed this link's colour and left the affordance open: `link-underline` grows from 0%, so the only actionable element on the band drew nothing until you were already on it, and nothing at all on touch. A third position on one gesture, not a second mechanism. DESIGN.md §4.4 |
+| **`.tg-rule-rest` is a class, never an inline value** | (0,1,0), so `.tg-rule:hover` at (0,2,0) still wins. Inline would inherit to the pseudo and pin the bar at 0.34 *through* hover — the same property the contact form's rail depends on, turned into a bug |
+| **New `--text-subhead` token** | `clamp(1.5rem, 3vw, 2.25rem)`, 24→36px, under `check:design` (39 tokens now). The item-level heading step |
+| **Section head vs. row title** | Both were `--text-display`, separated by weight alone (700 vs 600) — measured **49.5px/700 against 49.5px/600** at 1100px, with row titles wrapping to two lines and reading *heavier* than the head above them. Row title → `--text-subhead`. **Section level owns `display`; items under a section own `subhead`** |
+| **Section lede vs. row hook** | Also identical — `--text-body`/secondary both, in the same column band. Lede → `--text-title`, hook → `--text-sm` (measure 46→52ch). Four levels, no two decided by weight |
+| **`solution-row` is shared with `/solutions`** | Changed once, not forked. Verified that page still reads correctly — four rows at `display` under a `--text-hero` h1 had nothing between them; at `subhead` it reads head → list |
+| **Concierge launcher sized per breakpoint** | Was one desktop size at every width: **234 × 50, 57% of a 412px screen**, landing on the Process teaser's copy. Now `LAUNCHER_PADDING` with the label **"Ask us"** below 768px — **106 × 44**, 26%. `py-[12px]` + the 18px mark + the hairline = exactly §8's 44px tap floor |
+| **Launcher hairline** | `rgb(255 255 255 / 0.25)`. Border colour composites over the element's own background, so one declaration covers both: invisible against a light page, legible against `.ink-band`, where a fixed-position ink pill previously vanished completely. Dark mode resolves it to ~`#F7F7F7` — invisible, correctly |
+| **Concierge replies are attributed** | Every reply, the opener included, opens with a `TEKGUYZ` eyebrow label carrying `ConnectedNodes`. A long reply had no fill, alignment or container and read as an unowned slab. The visitor's turn stays unlabelled — the filled right-aligned bubble already says "you" |
+| **Browser chrome is themed** | `components/theme-color.tsx`, `#ffffff` / `#101010`. The two-tag `prefers-color-scheme` form is wrong here: `enableSystem={false}`, so it would track the OS and give an OS-dark visitor a black address bar over the light site |
+| **`.gitattributes` added** | `* text=auto eol=lf`. `core.autocrlf=true` + no attributes file meant a fresh Windows clone gets CRLF `TOKENS.md`, and `check:design`'s fence regex requires `` ```css\n `` — all five token sections fail at once. Hit during this session from a single `git stash` / `pop`. Vercel was never affected (Linux checkout), which is what made it invisible |
+| **`LAUNCHER_PADDING` exported from `button.tsx`** | The launcher's padding matched none of §4.1's four sizes and lived inline. Now beside them, one source per number. It takes the padding but **not** `base`: `.tg-yield`'s unlayered `transition` shorthand would silently drop everything `base` declares |
+
+**Known, accepted:** a returning dark-mode visitor sees one frame of white browser
+chrome before the effect corrects it — the server-rendered value is light because
+light is what a first-time visitor gets. Closing it needs a second blocking
+inline script beside next-themes' own.
+
+## Homepage flow, Wave 3 — shipped 2026-08-13
+
+*Process teaser. Closes the plan — all three waves are now done.*
+
+| Shipped | Detail |
+| --- | --- |
+| **Extracted to `components/process-teaser.tsx`** | It had never been a component — four lines of inline JSX in `app/page.tsx`, which is why DESIGN.md §4 had nothing to describe |
+| **Differentiated by a progress rail** | `.tg-rule` + `data-on="true"` + inline `--tg-rule-scale` of **0.25 / 0.5 / 0.75 / 1**, drawn along each step's top edge. Left to right on desktop, down the page on mobile: a staircase showing how far through the engagement that step ends. Measured at 1280px: 71 / 141 / 212 / 282px of a 282px cell |
+| **Same object as the contact form's step rail** | No new vocabulary — it reuses the partial-draw channel that exists because the form needed to show a step reached. `data-on` weight, because the transient `border-strong` is one shade off the `border` hairline it is drawn over and would have been invisible |
+| **`.tg-rule.tg-rule-top` at (0,2,0)** | Beats `.tg-rule::after`'s `bottom` on specificity. `[data-navlink]::after` does the same override on source order; that works and is the habit being retired |
+| **`<ol>`, not four `<div>`s** | The rail says "sequence" visually; the list says it to a screen reader. Both now carry the same fact |
+| **No hover state, decided** | These are not links. A hover response on a non-interactive element advertises an affordance that is not there. Never decided either way before, so this is a decision rather than a restoration |
+| **The 80ms stagger was already there** | `reveal` + `data-reveal-index`, resolved as `Math.min(index, 3) * 80`. Neither missing nor added — recorded because it is invisible on this machine and is exactly the kind of thing a session re-ships by accident |
+
+**Reserved systems untouched and re-confirmed:** no numerals (`/process` only),
+no pin (CANONICAL §6, "Used once, which is what makes it register"), no reuse of
+the four solution accents. DESIGN.md §4.17 is new and carries the reasoning.
+
+**Needs the user's eyes:** the rail's entrance under full motion. The bar itself
+is static, so the reduced-motion state is complete and verified.
+
+## Build Phase 1 — shipped 2026-08-12
+
+*All figures here were measured on the date, not estimated. Where an earlier
+figure in this file was an estimate, the real number is given next to it.*
+
+**Motion — the missing layer was *state*, not variety.** The site had an
+entrance layer and a thin hover layer and nothing that animated when something
+on the page *changed*: the FAQ toggled `hidden` and swapped the character `+`
+for `−`, form steps swapped silently, the theme toggle was instant. (Press was
+already correct — `active:scale-[0.98]` in `button.tsx` — an earlier claim that
+it was missing was wrong.)
+
+- **One primitive, `.tg-rule`** — a 2px hairline drawn from the left, widened
+  out of the nav's own active-page indicator rather than invented. Now on nav
+  links, `solution-row`, `faq-accordion` rows, and the contact form's step rail.
+- **Accordion** animates: `.tg-collapse` 0fr→1fr with a `visibility` flip that
+  keeps collapsed answers out of the accessibility tree, and `.tg-mark`, two
+  bars rotating, replacing the character swap.
+- **Contact form** — the step header's existing hairline *is* the progress rail,
+  0.5 → 1 via `--tg-rule-scale`. Nothing touches the step branches' `key`s.
+- **Theme toggle** — the SVG holding both glyphs rotates 90°.
+- **Tokens** — 5 durations, 3 easings. **No easing on this site overshoots**;
+  that was chosen against a spring, built side by side, and rejected because an
+  overshoot reads as *performed* on a site whose every other signal says
+  *measured*.
+
+**Density — the exemplar was the small half of the problem.**
+
+| | Before | After |
+| --- | --- | --- |
+| `testimonial.tsx` at 360px | **798.7px** (this file said "~500px" — the estimate was 60% low) | **561px** |
+| Section rhythm at 360px | 128px, every section, every route | 80px |
+| `/contact` top/bottom at 360px | 96px / 128px | 64px / 80px |
+
+**§3 has specified "128px desktop, 80px mobile" since v2.2 and the mobile half
+was never built.** All 14 call sites shipped the desktop value at every width;
+home spent ~416px of a 360px viewport on padding the document already said
+should not be there. Fixed mobile-first at the call sites (`py-20 md:py-32`),
+not behind a token — see DESIGN.md §8.0 for the three reasons. The
+`closing-cta` boundary invariant was **re-measured, not assumed**: 40px at
+360px, 64px at 1440px, unchanged.
+
+**Tooling — two things that were silently broken.**
+
+- **`scripts/audit-mobile.ts` has never run in this repo under Bun.**
+  `playwright-core` + Bun on Windows fails on both transports. Measured
+  2026-08-12: the browser binary is fine, CDP over TCP is fine, disabling the
+  sandbox changes nothing, and the identical script under Node works first try.
+  The script's own header said "NOT under Bun" and there was no `package.json`
+  entry, so the wrong invocation was the easy one. **Now `bun run audit:mobile`,
+  which shells to Node.**
+- **`bun run check:design` is new and gates `prebuild`.** ~~24 tokens across
+  §2.1, §3.1, §6.1 and §8.0~~ — **39 as of 2026-08-28, and the source moved:
+  `scripts/check-design.ts` reads `docs/TOKENS.md`, not DESIGN.md** — asserted
+  against `app/globals.css`; a mismatch
+  fails the build and names the token and both values. Verified by injecting
+  drift into four different tokens and confirming each was caught.
+
+**Verification state.** `bun run build` passes · ~~90 tests pass~~ **97 tests
+across 3 files, re-run 2026-08-28** · ~~lint clean except the one known
+`contact-form.tsx` warning~~ **lint clean, zero findings — that warning was
+closed 2026-08-13 in `6a6ee41` and there is no known lint warning in this
+repo** · **`audit:mobile taps` clean
+site-wide: `tierFail=0 overlaps=0` on every route, every breakpoint, both
+themes** · no console errors · both themes measured.
+
+**Not proved, and the user's to check:** whether the motion *feels* right. This
+machine matches `prefers-reduced-motion: reduce`, so only wiring was verified —
+computed styles, pseudo-elements, transforms, both themes. The accordion's open
+state resolves to a real 140.8px grid row and the step rail to `matrix(0.5,…)`,
+but nothing here saw an animation run.
+
+**Observed, pre-existing, not a regression:** `/work` reports `multiline=2` at
+narrow widths — two case-study titles (`h3 > a.tap-44`) wrap to two lines.
+`tierFail` and `overlaps` are both 0, so no tap actually fails.
+
+## Build Phase 2 — partly shipped 2026-08-12
+
+*D-04 geometry and the panel's presence motion. The wider "concierge UX/UI redo"
+is **not** closed by this — see the Open — code row.*
+
+**D-04 geometry, built as specified and measured on the shipped build** (desktop
+1440×900):
+
+| | Spec | Measured |
+| --- | --- | --- |
+| Desktop panel | 420 × 640 | `420px` × `640px` |
+| Viewport bound | `calc(100dvh - 48px)` | `852px` at 900 tall — and it **wins**: the list compresses 440 → 417.6 rather than the panel growing |
+| Message-list floor | `flex: 1 1 440px` + `min-height: 0` | `1 1 440px`, `min-height: 0px` — not a hard min-height |
+
+**Sheet threshold is now `(max-height: 560px)` OR `(max-width: 767px)`, and both
+arms were measured separately** — the point of the pair is that neither alone is
+enough:
+
+| Case | Height arm | Width arm | Result |
+| --- | --- | --- | --- |
+| **844 × 390** — phone held sideways (M-03) | **true** | false | Sheet. A width-only threshold misses this entirely; this is why the height arm does not come out |
+| **390 × 844** — tall portrait phone | false | **true** | Sheet. The case the height arm legitimately cannot cover |
+
+Both engaged `aria-modal="true"`, body `overflow: hidden`, and focus inside the
+panel. At 1440×900 the non-modal contract holds: **no `aria-modal`, no scroll
+lock**, focus still moved to the input, Escape still closed, and focus returned
+to the launcher.
+
+**Re-measured 2026-08-29 and now guarded.** All three cases above still hold on
+the shipped build — 844×390 and 390×844 both `aria-modal="true"` with body
+`overflow: hidden` and focus inside the panel; 1440×900 no `aria-modal`, body
+`overflow: visible`, panel `420 × 640`. **This section was right and CLAUDE.md
+was wrong**: CLAUDE.md claimed the code "still ships the height arm alone" until
+2026-08-29, while `SHEET_QUERY` has read
+`'(max-height: 560px), (max-width: 767px)'` since this phase landed. Nothing was
+checking it, which is the whole reason a doc could disagree with the code for
+weeks. `components/concierge/sheet-threshold.test.ts` now parses that literal
+and asserts each arm against the viewport the *other* arm misses, so `prebuild`
+fails if either is removed.
+
+**Presence motion — specified in DESIGN.md §4.13, recipe in
+`components/concierge/panel-motion.ts`.** Chosen from three built options; the
+desktop panel scales from `100% 100%`, which is the launcher's own corner
+(`transform-origin` measured at `420px 640px`). Out is one duration step shorter
+than in, on `--ease-hover`. **Phase 1 did not leave this panel motionless** — it
+left it on the *entrance* recipe (`opacity` + 12px rise, hardcoded `0.24` /
+`[0.16, 1, 0.3, 1]`), which is the wrong layer for a summoned surface. Phase 2
+replaced it.
+
+**`panel-motion.test.ts` is the guard that makes the mirror safe.** Motion's JS
+API cannot read a CSS custom property, so the durations and easings are
+literals — the exact `nav.tsx:104` trap. The test parses `app/globals.css`,
+asserts every `--dur-*` / `--ease-*` it mirrors (including that `--ease-entrance`
+agrees across **both** its declarations), and asserts neither easing can
+overshoot. 90 → **97 tests**, and `prebuild` runs them.
+
+**One real defect found and fixed, and it was not in the new work.** The three
+suggestion chips were **40px tall against a 44px tier** — pre-existing, and
+invisible to `phaseTaps`, which never opens the panel. Fixed with `tap-44`
+(pseudo expansion): painted box still 40px, hit box 44px, `tierMiss` empty on
+all three. The 8px `gap-2` survives it with **4px of clearance**, so it creates
+none of the source-order adjacency overlaps the footer column hit at 12px.
+
+**Verification state.** `bun run build` passes · **97 tests** · `check:design`
+~~38 tokens~~ **39, re-run 2026-08-28 — `--text-subhead` landed 2026-08-13** ·
+~~lint clean but for the known `contact-form.tsx` warning~~ **lint clean, zero
+findings** ·
+`audit:mobile taps` **`tierFail=0 overlaps=0` across all 162 route × viewport ×
+theme combinations** — 18 routes × 9 combos (7 viewports light, plus dark at
+`narrow` and `standard`). *This figure read 79 when first committed in `73d95e3`:
+the run was piped through `tail`, and the truncated log was counted instead of
+the run. Corrected by re-running to a full log and counting that.* (`/work`
+still reports `multiline` at phone widths — the pre-existing wrapped case-study
+titles, counted separately and not a tap failure) · dark mode measured on the
+panel (`#101010` fill, `#2A2A2C`
+border, `#F5F5F5` input text, **zero** literal-white elements) · no console
+errors.
+
+**Two fixes came out of the user's Pixel 9A pass and are shipped** (both
+measured on the built site, both modes):
+
+- **The soft keyboard no longer opens with the panel.** Sheet mode focuses the
+  dialog container (`tabIndex={-1}`) instead of the input; desktop still focuses
+  the input. §8's focus baseline and `aria-modal` are unaffected — focus still
+  enters the panel, it just doesn't land in a text field. The mode is read
+  through a ref so the effect cannot re-run when an Android keyboard shrinks the
+  viewport past `(max-height: 560px)` and flips `sheet` — that loop would
+  re-focus, dismiss the keyboard, and repeat.
+- **The panel closes itself ~4s after a capture, both modes.** Measured at
+  ~4.0s in each, with the scroll lock released and focus back on the launcher.
+  **Typing after a capture cancels it permanently** — a follow-up typed 1s after
+  capture left the panel open past 7s — which is how §4.13's "a captured lead may
+  still have questions" survives the reversal. Reopening shows the same thread,
+  the confirmation, and the "Keep going if you'd like…" placeholder; **no
+  "welcome back" state was built**, on purpose (DESIGN.md §4.13 has the reason —
+  it would fire inconsistently, since the thread does not survive a reload).
+
+**Both device checks came back clean — confirmed by the user, Pixel 9A,
+2026-08-12.** Neither was provable on this machine, and both are now closed:
+
+1. **The motion feels right.** This machine matches `prefers-reduced-motion:
+   reduce`, so only wiring was verified here (`transform: none`, duration ~0 —
+   correct, and also why nothing local ever saw the scale or slide run). The
+   motion-enabled path is the user's, and it passed.
+2. **The sheet is correct on a real phone, portrait *and* landscape.** This is
+   the `dvh` / `svh` / `vh` question that headless Chromium cannot answer — no
+   collapsing URL bar, all three probe identical. **`dvh` is confirmed on
+   device**; the 844×390 harness result only ever proved the threshold fired.
+
+**Two findings came out of that same device pass, both real, neither a
+regression from this work.** They are in Open — code and are *not* claimed as
+fixed here.
+
+## Build Phase 3 — shipped 2026-08-13; its last item closed 2026-08-29 as a self-review, not a legal one
+
+**Privacy `/privacy` — rewritten, replacing the text live since July 13.** All
+three gaps `COPY.md` had been flagging as "must, before launch" are closed: the
+optional phone field is in the collection list, the AI concierge (Gemini) and
+the CRM forward each have their own section, and Data Retention now states the
+90-day backup path. A fourth, previously unflagged, was found by measurement
+rather than by reading the doc: **Vercel Speed Insights has been mounted in
+`app/layout.tsx:61` and was undisclosed** — the section is now *Website
+Analytics & Performance Monitoring* and covers both. Children's Privacy removed
+per the user's instruction.
+
+The 90-day sentence is a description of `lib/lead-archive.ts` — a backup copy is
+written **only when internal delivery fails**, `TTL_SECONDS = 60 * 60 * 24 * 90`
+(`lib/lead-archive.ts:52`). Both facts were read before the sentence was
+written. Change either and the policy becomes untrue.
+
+~~**Still not legally reviewed**, and neither the page nor `COPY.md` says
+otherwise. The one open question left for that reviewer is in Open — needs the
+user: no cookie-consent or state-specific (CCPA etc.) language was added.~~
+**Closed 2026-08-29 — and it is still not legally reviewed.** The user closed
+it as a **self-review**: the 2025–2026 CCPA thresholds were assessed and none
+are met, and cookie consent is a GDPR trigger that does not apply to cookieless
+analytics. **No lawyer was engaged, the page still does not claim one was, and
+no copy changed.** Full assessment and the three reopen triggers are in the row
+under "Open — needs the user".
+
+**FAQ — all 6 rewritten in `content/faq.ts` and `COPY.md` in the same turn**, so
+the `FAQPage` JSON-LD stays the same strings rather than a paraphrased second
+copy (`lib/seo.ts` reads `content/faq.ts` directly, as do
+`components/faq-accordion.tsx` and `lib/concierge/grounding.ts`). Wording
+tightened; **no facts changed**. Q1's *question* changed — "What does a project
+cost?" → "How much does a project cost?" — which is why `docs/SEO.md:103`, which
+prints that exact `name` in its `FAQPage` example, was updated too.
+
+Verified on the built output, not the source: `.next/server/app/privacy.html`
+carries the new date and all three new headings and no "Children"; the new Q1
+string appears in `.next/server/app/contact.html`. `bun run build` passes, 97
+tests pass, ~~lint is unchanged at the one pre-existing `contact-form.tsx`
+warning~~ **lint is clean with zero findings — that warning was closed the same
+day in `6a6ee41`; re-run 2026-08-28**.
+
+**The 8 detail narratives — done, and measured rather than recalled.**
+`content/work.ts` was read entry by entry on 2026-08-13: all 8 carry full
+narrative content and none is a stub. The 4 case studies
+(`field-photo-reports`, `ai-voice-receptionist`, `bundle-builder`,
+`ai-audio-file-insights`) each carry `challenge`, `approach`, `outcome`,
+`pullQuote`, `tryIt`, `howItsBuilt`; the 4 projects (`team-performance`,
+`meeting-organizer`, `restaurant-menu`, `auto-detailer`) each carry `builtFor`,
+`summary`, `whatMadeItInteresting`. `docs/CANONICAL.md` §5 item 3 is closed with
+the same measurement.
+
+**One copy defect was found in that pass and fixed.** Field Photo Reports'
+Outcome repeated "seeing / what they're seeing" and its faster-billing outcome
+was still unwritten. Outcome now reads *"Fewer return trips, faster dispute
+resolution, and invoices that go out the same day instead of waiting on
+paperwork from the field."*; pull quote *"Fewer return trips, faster dispute
+resolution, and invoices that don't wait on paperwork."* `content/work.ts` and
+`docs/COPY.md` were changed in the same commit so the canonical copy source
+cannot go stale against the code. **No figure was invented** — the retired
+`[NEEDS REAL DATA]` marker's reasoning is preserved in `COPY.md`; the sentence
+now stands on a qualitative outcome, which the hard rule permits.
+
+
+## Incident 2026-08-12 — production build failed for ~4 minutes
+
+**`master` broke in production the moment `docs/TOKENS.md` first shipped as a
+build-time dependency, and nothing local could have caught it.**
+
+Pushing the four Build Phase 1/2 commits (ending `b7c328c`) triggered a Vercel
+deployment that failed `prebuild`: `ENOENT: no such file or directory, open
+'docs/TOKENS.md'`. Measured via `get_deployment_build_logs`, not guessed.
+
+**Cause:** `.vercelignore` has excluded `docs/` since 2026-08-06 (`833e7f5`),
+correctly at the time — pure documentation, nothing read it at build time.
+Build Phase 1 (`0cebef9`) added `check:design` as a `prebuild` gate that reads
+`docs/TOKENS.md` by a plain relative path, and `0cebef9` had never actually
+reached production before this session's push — so this exact combination had
+never been exercised on Vercel. `bun run build` passed locally every time
+because `.vercelignore` only governs what a git-connected Vercel deploy
+uploads to the build container; a local build reads straight off disk and
+never sees it. **Every green local build before now was real and gave no
+signal of this** — it is structurally unable to.
+
+**Fix (`8f7a413`):** removed the `docs/` line from `.vercelignore`. Reproduced
+the exact failure locally first (hid `docs/`, ran `check-design.ts`, got the
+identical `ENOENT`) before trusting the diagnosis. `scripts/verify.ts` and
+`scripts/audit.ts` stay ignored — real dev-only tooling, nothing at build time
+reads them.
+
+**Confirmed resolved, not inferred:** `list_deployments` → `dpl_DttFF1cxmxGB…`
+`READY`, aliased to both `tekguyz.com` and `www.tekguyz.com`
+(`get_deployment`), and `curl -o /dev/null -w '%{http_code}' https://tekguyz.com`
+→ `200`. Outage window: push-to-`READY`, under 4 minutes.
+
+**The general lesson, not just this file:** `.vercelignore` (and anything else
+that changes what reaches the build container) is a second surface a
+build-time dependency can silently violate, and `bun run build` cannot see it.
+Written into `CLAUDE.md`'s hard rules so a future `prebuild` addition checks
+against it before shipping.
+
+
+---
+
+## Last updated 2026-08-29 — everything below was re-measured today
+
+Nothing in this refresh was carried forward from a prior session. Commands run
+this session: `git log`, `git rev-parse`, `git rev-list --left-right --count
+origin/master...master`, `bun run test`, `bun run lint`, `bun run check:design`,
+`bun run check:claude`, `bun run check:media`, `bun run build`, `vercel ls`,
+`find components -type f | wc -l`, and `wc -l` on every file this document
+prints a line count for.
+
+| | Measured 2026-08-29 | Command |
+| --- | --- | --- |
+| HEAD | **`3d170f7`** (~~`5ebe2c4`~~, ~~`b862ac3`~~, ~~`a27a8ea`~~ — six more commits have landed since the 2026-08-28 pass; re-measured 2026-08-29, third pass) | `git rev-parse --short HEAD` |
+| Push state | **`0 0` — fully pushed.** `origin/master` is also `3d170f7`, and `vercel ls` shows that sha's Production deployment **Ready**, built in 27s | `git rev-list --left-right --count origin/master...master` · `vercel ls tekguyz-site` |
+| Tests | ~~97 pass, 3 files~~ **101 pass, 4 files, ~1.2s** — `components/concierge/sheet-threshold.test.ts` joined 2026-08-29 | `bun run test` |
+| Lint | **clean — no output, zero findings** | `bun run lint` |
+| `check:design` | ~~39~~ **40 tokens** match `docs/TOKENS.md` — `--pad-card` joined on 2026-08-28 | `bun run check:design` |
+| `check:claude` | **OK — 7 claim groups match**, re-run 2026-08-29 after `3d170f7` | `bun run check:claude` |
+| `check:media` | 8 entries wired, all posters present, **7 of 8 off their locked ratio**, exit 0 — unchanged 2026-08-29 | `bun run check:media` |
+| `bun run build` | passes | `bun run build` |
+| `components/` | **35 files** — the count is unchanged, but not the contents: `proof-strip.tsx` was deleted and `fold-board.tsx`'s sibling set changed on 2026-08-29. Still only two over 300 lines | `find components -type f` piped to `wc -l` |
+| `components/concierge/concierge.tsx` | **787** (~~755~~ — +32 for the role avatar and its comment, 2026-08-29) | `wc -l` |
+| `components/contact-form.tsx` | **516** | `wc -l` |
+| `app/actions/contact.ts` | **463** | `wc -l` |
+
+**Five commits landed after the CRM-signing section below and none of them was
+recorded here until now.** The last two are this file and `DESIGN.md` correcting
+themselves; they are listed because a doc-audit commit is still a commit, and the
+figures they moved are quotable.
+
+- **`cf979f1`, 2026-08-19 — the white `<select>` popup in dark mode is fixed.**
+  Chrome paints a `<select>`'s option list itself and takes the fill from the
+  control's own computed `background-color`. The shared `field` class sets
+  `bg-transparent`, so the popup fell back to the platform default — pure white
+  — while the option text still inherited `--tg-fg` (`#f5f5f5`). Area of
+  Interest and Estimated budget read as blank white boxes in dark mode until a
+  row was highlighted. `selectField` swaps `bg-transparent` for `bg-bg` and
+  declares the same pair on the `<option>`s; nothing between the select and
+  `<body>` paints a background, so the closed control is pixel-identical in
+  both themes and light mode is unchanged. One file, `components/contact-form.tsx`,
+  +13/−2 — which is where 11 of that file's current 516 lines came from.
+- **`ec8b9b1`, 2026-08-28 — `public/media/sarah-demo.mp4` is deleted, and the
+  deletion is committed.** The file had been removed from the working tree but
+  never committed, while `CANONICAL.md`, `COPY.md`, `PLAYBOOK.md` and a JSDoc
+  block in `home-hero.tsx` all still described it as present with "do not ship
+  it as-is" language. The reference was dormant — no `<video>`, no `src`, no mp4
+  import anywhere in `app/`, `components/`, `content/`, `lib/` or `config/` —
+  so the deletion was kept and the four references rewritten in the past tense.
+  The hero has rendered a static poster since CANONICAL §1 recorded "Resolved —
+  static image, video deferred." **`public/media/` now holds 10 files, all
+  `.webp`.**
+- **`a27a8ea`, 2026-08-28 — a documentation health audit was added**,
+  `docs/audits/documentation-health-2026-08-28.md`, 354 lines. Findings only:
+  nothing was fixed, edited or merged as part of it. This refresh is the first
+  response to it, and it covers `docs/STATUS.md` only.
+- **`5ec14a9`, 2026-08-28 — this file's own re-measure.** Every count and date
+  above was re-run against the tree rather than carried forward. It could not
+  record its own sha, which is why the HEAD row above needed correcting again.
+- **`b862ac3`, 2026-08-28 — `DESIGN.md`'s second response to the audit: 14
+  figures where it disagreed with itself, or with CANONICAL/TOKENS/STATUS,
+  re-measured against `app/globals.css`, the components, and a live browser at
+  1440×900 / 1280×720 / 412×915 / 375×812.** Docs only, no code touched,
+  `check:design` passes. The ones that change what is quotable elsewhere:
+  the **token guard count is 39, not 38** (matching the table above, and
+  `CLAUDE.md` was corrected with it); the ink-band `--tg-secondary` is
+  **`#7B8291`, 4.90:1 on `#111111`**, which closes the "open discrepancy" that
+  entry had recorded; the home `h1` runs a **local `clamp(2.75rem, 6.6vw,
+  4.75rem)` = 76px**, while `--text-hero` at 72px still serves the six
+  `page-hero` routes — two ceilings, not one; the hero text column is **596px**
+  (`1 / 7` on a 12-track `.tg-grid`), not 564; fold clearance at 1280×720 is
+  **29.8px**, not 18; `globals.css` holds **48 hex values in live declarations,
+  27 distinct, zero OKLCH**. Two claims were struck as never built: PLAYBOOK's
+  pulsing "LIVE — TRY IT YOURSELF" badge (`StatusLine` replaced it) and the
+  shared-element view transition (**no call site passes the prop** — the hero
+  load sequence *is* built and resolves at ~1.1s, not ~900ms). `DESIGN.md` is
+  **v2.6**; stop citing "Design System v2.0" pins — cite the file.
+
+**Nine more commits landed later on 2026-08-28**, after the table above was
+first written. Five are the `--pad-card` batch and are recorded in full in the
+density row under "Open — code"; `f0c5a4f` is the D-07 re-measure, recorded in
+its own row. The remaining three are recorded only here:
+
+- **`7016618`, 2026-08-28 — the `/handoff` skill now says to use the `vercel`
+  CLI.** The Vercel MCP plugin was removed from this machine the same day, so
+  the skill's "use the connector" instruction pointed at a tool that no longer
+  exists. It also now refreshes **both** `Last updated` spots in this file,
+  because they had drifted fifteen days apart. Skill file only, no site code.
+- **`6fb4dcb`, 2026-08-28 — `bun run check:claude` exists**,
+  `scripts/check-claude-md.ts`. It measures only the **countable** claims in
+  `CLAUDE.md`: the test count, both token counts, `.vercelignore`'s contents,
+  the honeypot field name, every `bun run <script>` that file names, and every
+  repo path it names in backticks. **7 claim groups, 24 file paths, 6 scripts.**
+  Deliberately **not** in `prebuild`: a wrong token value ships a visual defect
+  and must block a deploy; a stale sentence in a doc must not. A pattern that
+  stops matching is reported as a **failure**, not skipped. It cannot check a
+  *rule* — those are decisions, not measurements.
+- **`5ebe2c4`, 2026-08-28 — the five claims that guard found wrong, fixed in
+  `CLAUDE.md`.** Including that file's own token count and a
+  `concierge-bus.ts` path missing its `components/` prefix. Re-run 2026-08-28
+  after this handoff: **clean.**
+
+**One measurement worth keeping.** The component audit's 2026-08-13 line counts
+(`709 / 428 / 393`) do not reconcile with `git show` at any commit from that
+day: the tree read **751 / 457 / 423**. The numbers to quote are the ones in the
+table above; the 2026-08-13 figures are left in place below as that section's
+own record, with this correction attached.
+
+---
+
+**Attach these to the Claude.ai project** — seven files, this is the current set:
+`CLAUDE.md` · `docs/STATUS.md` · `docs/CANONICAL.md` · `docs/DESIGN.md` ·
+**`docs/TOKENS.md` (new)** · `docs/COPY.md` · `docs/PLAYBOOK.md`.
+(`docs/SEO.md` only if the conversation is about JSON-LD; `docs/archive/*`
+never — it is the record of how we got here and contains claims that are now
+false.)
+
+~~**Changed 2026-08-12: `CLAUDE.md`, `STATUS.md`, `DESIGN.md`, `COPY.md`
+(privacy + FAQ rewritten), `SEO.md`, and `TOKENS.md` is new.**~~ **Superseded
+2026-08-28 — that delta is four doc-change days out of date.** Docs changed
+again on 2026-08-13, 08-14, 08-18 and 08-28. **Re-attach the whole set rather
+than diffing it.** Replace the old copies rather than adding — they will
+contradict.
+
+---
+
+## Closed rows removed from STATUS.md Open tables, 2026-09-01
+
+Each was already marked closed in place. Verbatim:
+
+| Item | Detail |
+| --- | --- |
+| ~~**Privacy policy — legal review**~~ **CLOSED BY THE USER 2026-08-29 as a SELF-review. No lawyer was engaged, and this row must never be summarised as "legally reviewed."** | Rewritten and shipped 2026-08-12 from measured data flows. The open question was whether omitting cookie-consent and CCPA language was right. **Self-assessed against the 2025–2026 CCPA thresholds — $26,625,000 revenue / 100k CA consumers via sale-or-share / 50% of revenue from sale-or-share. None met**: no ad-tech, no GA4, no sale or share of PI, and revenue and traffic both far under. **Cookie consent is a separate, GDPR-only trigger and does not apply either** — Vercel Web Analytics and Speed Insights are cookieless (temporary hash, 24h). No banner and no CCPA-specific language added. **Verified in the repo 2026-08-29: `app/layout.tsx` mounts `@vercel/analytics/next` and `@vercel/speed-insights/next` and nothing else — zero `gtag`, `googletagmanager` or GA4 measurement-id matches anywhere in `app/`, `components/`, `lib/`, `config/` or `package.json`.** **Reopen if any one of three things becomes true:** GA4 or remarketing is added · lead data starts being shared with a third party · revenue crosses the threshold |
+| ~~**`phaseTaps` never opens the concierge panel**~~ **Closed 2026-08-13, commit `ac54202`.** Panel-open pass added per viewport/theme combo: it clicks the real launcher (`concierge.tsx` untouched) and `window.__tapScope` restricts `TAP_PROBE` to the dialog's subtree. The launcher exemption was **widened, not duplicated** — `isOverlay` exempts a thief inside the scoped overlay stealing from a target outside it; overlay-to-overlay theft stays a defect. Two guards against a silent clean zero: a pass that cannot open the panel reports `ran: false` with a reason, and one that probed nothing is flagged `vacuous`. Measured on all 9 combos: `probed=30`, `tierFail=0`, `overlaps=0`, none vacuous — **the chips now hit-test as passing, so the 2026-08-12 fix is covered rather than assumed**. One new bucket, `radiusClipped`, added because the pass's first finding was a false positive — see the row below | — |
+| ~~**`radiusClipped`: the concierge close button loses its four corners to its own `border-radius`.**~~ **Closed 2026-08-28.** One class: `tap-44` on the close button in `components/concierge/concierge.tsx`. The painted box is untouched — still 44x44, still `rounded-[6px]`, glyph still 16px — because `.tap-44::before` is a SQUARE 44x44 overlay with no radius, so the four corner pixels resolve to the button instead of the arc's outside. Proven by hit-test, not by rect: `elementFromPoint` at all four `TAP_PROBE` corner points returns **4/4 MISS with the class removed at runtime, 4/4 HIT with it**. Full `taps` re-run: **9/9 viewport/theme combos, both themes, `radiusClipped=0 tierFail=0 overlaps=0 probed=30` on every panel pass, none vacuous**. `audit-mobile.ts` untouched; the wider concierge redo (Phase 2) untouched |
+| ~~`contact-form.tsx` — `react-hooks/incompatible-library` on RHF `watch()`~~ **Closed 2026-08-13, commit `6a6ee41`.** Now `useWatch`. Un-skipping the React Compiler for the file **surfaced two errors the bailout had been masking**, both pre-existing and both fixed in the same commit: `useRef(Date.now())` (`react-hooks/purity` — the argument is evaluated every render) is now a lazy `useState` initializer, which also resolved `handleSubmit(onSubmit)` reading a ref during render (`react-hooks/refs`), since `onSubmit` closed over it. **Lint is now 0 errors / 0 warnings.** Step reconciliation untouched; verified in-browser that `?interest=` still presets, step 2 renders with every field empty (no contamination), and the placeholder still tracks the interest | — |
+| ~~`lib/overlap-verdict.ts` + its tests are orphaned~~ **This row was wrong — measured 2026-08-13, files kept.** `scripts/probe-control.ts:18` imports `verdictFor` and calls it at `:90`; it is the D-02 positive control and its stated purpose is to run the real rule rather than a local reimplementation, so deleting the module would break it. What *was* wrong is a comment in `audit-mobile.ts` claiming `phaseClasses` "runs the shared verdict rule" — it never imported it, it emits `Sample`-shaped rows for the rule to consume. Comment corrected, commit `fde3441` | — |
+| ~~`site.gbp` is a `share.google` shortlink while `COPY.md` records `maps?cid=…`~~ **Closed 2026-08-13, commit `480bc78`.** Not a coin-flip: COPY.md §2 of "WRITING GAPS STILL OPEN" recorded the `cid` URL as resolved, verified 2026-08-10, **by decision** — the code had drifted from a recorded decision, and COPY.md is the authority for this link. The `cid` is Google's stable place identifier and auditable on sight; a `share.google` link is an external redirector whose target can change or be revoked with no change to this repo. Re-verified 200 on 2026-08-13. One consumer: `components/testimonial.tsx:95` | — |
+
+---
+
+# docs/DESIGN.md changelogs v2.1 → v2.6, moved here 2026-09-01
+
+Removed from `docs/DESIGN.md`. A live design doc records what IS, not the
+five-version diff of how it got there. Verbatim:
+
+## Changelog (v2.5 → v2.6)
+
+- **§6 Motion rewritten as a three-layer system.** The site shipped with an
+  *entrance* layer and a thin *hover* layer and **no state layer at all** —
+  nothing animated when something on the page changed. That absence, not the
+  count of motion ideas, is what made it read like a document.
+- **`.tg-rule` — one state primitive, drawn from the nav's own indicator.**
+  Generalised rather than invented; the nav's active-page bar already did it
+  and was the only thing that did.
+- **§8 gains a density scale.** Mobile was desktop values with one `sm:` step,
+  chosen per component. Two tokens now carry it, and the exemplar
+  (`testimonial.tsx`) is rebuilt against them.
+- **The provenance convention above.**
+
+## Changelog (v2.4 → v2.5)
+
+Three elements that shipped as generic defaults, because this document never
+specified them. None of them was a build error — each was built correctly
+against guidance that did not exist. **They are one pass**, because fixing a
+specification gap piecemeal produces three unrelated treatments.
+
+- **The proof line gets an entry at all** (D-09). CANONICAL §98 fixed its content and its "no card" treatment and stopped there, so it shipped as one 28px line whose *actionable half* was muted grey with no rest-state underline. New entry in §4.
+- **`LiveFrame`'s container is specified** (D-11). The old entry defined the two ratios and `object-fit` and said nothing about fill, padding, radius, or where the status block sits — so the compact contexts inherited a generic card. The hero's panel was specified; the compact contexts' plate was not. New sub-entry under `LiveFrame` in §4.
+- **The alternating case-study rows stop alternating their DOM order** (§3, §8). Reported after the pass above: below 768px the home band and `/work` put two posters back to back, because a one-column grid has nothing left but source order. The alternation moves entirely onto `grid-column` with both halves pinned to `grid-row: 1`. Found alongside it: `gap-y-12` on those rows **had never applied** — `.tg-grid`'s unlayered `gap: 24px` beat it — so the stacked split gap is now a real 48px via `.tg-split`.
+- **`closing-cta` gets an internal rhythm, and the ~200px of dead space above it is fixed at the collision** (D-12). The band matched its old entry element for element and read flat: near-linear 24/32/36 gaps, so nothing grouped and nothing anchored. Revised entry in §4, plus a new rule in §3 for the section boundary above it.
+
+## Changelog (v2.3 → v2.4)
+
+- **Closing CTA's real problem identified**: not spacing, which was already correct — the button was underpowered relative to the headline above it. Given its own documented size exception, plus a small secondary text link to the AI concierge as a lower-commitment path.
+- **Hero gets its own frame ratio, 16:9**, separate from the 16:10 used everywhere else — resolves the crop-vs-gap tension that comes from forcing a 16:9-native screen capture into a 16:10 container.
+- **AI concierge's "thinking" state upgraded** from a plain muted dot to a shimmering version of the signature stripe — the one functional, restrained use of the brand's four-color system in motion, and the only place it appears.
+
+## Changelog (v2.2 → v2.3)
+
+- **Hero type scale confirmed at 72px**, not 76px — measured against the real headline by the contrast/layout pass, hitting exactly 3 lines with the CTA row inside the first viewport.
+- **Full color audit results applied and locked.** Every color/contrast claim is now backed by a measured, verified ratio: `muted` darkened to #6A717E, `muted-soft` retired as a text color, `--muted-dark` (~~#747C8B~~ → **#7B8291**, lightened 2026-08-14 after the original failed AA on card fill and the ink band) added to close the dark-mode gap, and dark-specific text variants locked for blue (#5380E4) and violet (#8377E2) — amber and teal already passed as their plain accent value. One documented exception: the home ink band's violet tag keeps a literal hex rather than the token, since the token would resolve to the wrong (light-mode) value there.
+- **The `-text` variant rule broadened** — it was scoped too narrowly to "tinted backgrounds" and missed the Solutions page's colored eyebrows, which were failing in three of four accent colors.
+
+## Changelog (v2.1 → v2.2)
+
+- **Icon policy reversed, with a real rule in its place.** The original "no icons anywhere" instruction was too literal a reading of "no emojis/icons for their own sake." Icons are fine where they do real work: the footer's social row and the theme toggle now use icons. `solution-row` stays icon-free — that was never the part anyone objected to.
+- **Hero type scale recalibrated.** The old `--text-hero` max (104px) was set without checking it against the actual headline copy's length, so it wrapped to 6 lines and pushed the CTAs off-screen. Fixed against the real copy, not an arbitrary ceiling.
+- **`closing-cta` corrected a second time** — the first fix matched it to standard section scale, which was itself the wrong target; it needed to be *more compact* than a standard section, not equal to one. The proof line is also removed — it duplicated the homepage's proof strip and read as filler.
+- **`footer-dark` masthead tightened again** — 64/48 wasn't enough.
+- **`build-narrative` scope corrected** — it was only specified for standalone detail pages, but `/work` index shows the same full-length case-study-row content and had the identical empty-space problem. Now applies everywhere the full-length case-study content appears.
+- **`LiveFrame` given real guidance on hero vs. card assets** — the hero and the compact card contexts don't have to share one identical crop; a dense dashboard screenshot that reads fine in a small card can be too busy blown up large in a hero.
+- **Concierge launcher must use the real `icon-master.svg`** — it had drifted into a generic 2×2 dot grid instead of the actual Connected Nodes mark.
+

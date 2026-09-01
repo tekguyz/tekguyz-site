@@ -64,53 +64,7 @@ calendar date.** Those decisions predate this convention and their real dates
 are not recoverable from the repo. The version is the most specific honest
 provenance available; do not upgrade one to a date by guessing.
 
-## Changelog (v2.5 → v2.6)
-
-- **§6 Motion rewritten as a three-layer system.** The site shipped with an
-  *entrance* layer and a thin *hover* layer and **no state layer at all** —
-  nothing animated when something on the page changed. That absence, not the
-  count of motion ideas, is what made it read like a document.
-- **`.tg-rule` — one state primitive, drawn from the nav's own indicator.**
-  Generalised rather than invented; the nav's active-page bar already did it
-  and was the only thing that did.
-- **§8 gains a density scale.** Mobile was desktop values with one `sm:` step,
-  chosen per component. Two tokens now carry it, and the exemplar
-  (`testimonial.tsx`) is rebuilt against them.
-- **The provenance convention above.**
-
-## Changelog (v2.4 → v2.5)
-
-Three elements that shipped as generic defaults, because this document never
-specified them. None of them was a build error — each was built correctly
-against guidance that did not exist. **They are one pass**, because fixing a
-specification gap piecemeal produces three unrelated treatments.
-
-- **The proof line gets an entry at all** (D-09). CANONICAL §98 fixed its content and its "no card" treatment and stopped there, so it shipped as one 28px line whose *actionable half* was muted grey with no rest-state underline. New entry in §4.
-- **`LiveFrame`'s container is specified** (D-11). The old entry defined the two ratios and `object-fit` and said nothing about fill, padding, radius, or where the status block sits — so the compact contexts inherited a generic card. The hero's panel was specified; the compact contexts' plate was not. New sub-entry under `LiveFrame` in §4.
-- **The alternating case-study rows stop alternating their DOM order** (§3, §8). Reported after the pass above: below 768px the home band and `/work` put two posters back to back, because a one-column grid has nothing left but source order. The alternation moves entirely onto `grid-column` with both halves pinned to `grid-row: 1`. Found alongside it: `gap-y-12` on those rows **had never applied** — `.tg-grid`'s unlayered `gap: 24px` beat it — so the stacked split gap is now a real 48px via `.tg-split`.
-- **`closing-cta` gets an internal rhythm, and the ~200px of dead space above it is fixed at the collision** (D-12). The band matched its old entry element for element and read flat: near-linear 24/32/36 gaps, so nothing grouped and nothing anchored. Revised entry in §4, plus a new rule in §3 for the section boundary above it.
-
-## Changelog (v2.3 → v2.4)
-
-- **Closing CTA's real problem identified**: not spacing, which was already correct — the button was underpowered relative to the headline above it. Given its own documented size exception, plus a small secondary text link to the AI concierge as a lower-commitment path.
-- **Hero gets its own frame ratio, 16:9**, separate from the 16:10 used everywhere else — resolves the crop-vs-gap tension that comes from forcing a 16:9-native screen capture into a 16:10 container.
-- **AI concierge's "thinking" state upgraded** from a plain muted dot to a shimmering version of the signature stripe — the one functional, restrained use of the brand's four-color system in motion, and the only place it appears.
-
-## Changelog (v2.2 → v2.3)
-
-- **Hero type scale confirmed at 72px**, not 76px — measured against the real headline by the contrast/layout pass, hitting exactly 3 lines with the CTA row inside the first viewport.
-- **Full color audit results applied and locked.** Every color/contrast claim is now backed by a measured, verified ratio: `muted` darkened to #6A717E, `muted-soft` retired as a text color, `--muted-dark` (~~#747C8B~~ → **#7B8291**, lightened 2026-08-14 after the original failed AA on card fill and the ink band) added to close the dark-mode gap, and dark-specific text variants locked for blue (#5380E4) and violet (#8377E2) — amber and teal already passed as their plain accent value. One documented exception: the home ink band's violet tag keeps a literal hex rather than the token, since the token would resolve to the wrong (light-mode) value there.
-- **The `-text` variant rule broadened** — it was scoped too narrowly to "tinted backgrounds" and missed the Solutions page's colored eyebrows, which were failing in three of four accent colors.
-
-## Changelog (v2.1 → v2.2)
-
-- **Icon policy reversed, with a real rule in its place.** The original "no icons anywhere" instruction was too literal a reading of "no emojis/icons for their own sake." Icons are fine where they do real work: the footer's social row and the theme toggle now use icons. `solution-row` stays icon-free — that was never the part anyone objected to.
-- **Hero type scale recalibrated.** The old `--text-hero` max (104px) was set without checking it against the actual headline copy's length, so it wrapped to 6 lines and pushed the CTAs off-screen. Fixed against the real copy, not an arbitrary ceiling.
-- **`closing-cta` corrected a second time** — the first fix matched it to standard section scale, which was itself the wrong target; it needed to be *more compact* than a standard section, not equal to one. The proof line is also removed — it duplicated the homepage's proof strip and read as filler.
-- **`footer-dark` masthead tightened again** — 64/48 wasn't enough.
-- **`build-narrative` scope corrected** — it was only specified for standalone detail pages, but `/work` index shows the same full-length case-study-row content and had the identical empty-space problem. Now applies everywhere the full-length case-study content appears.
-- **`LiveFrame` given real guidance on hero vs. card assets** — the hero and the compact card contexts don't have to share one identical crop; a dense dashboard screenshot that reads fine in a small card can be too busy blown up large in a hero.
-- **Concierge launcher must use the real `icon-master.svg`** — it had drifted into a generic 2×2 dot grid instead of the actual Connected Nodes mark.
+*Changelogs for v2.1 → v2.6 moved to `docs/archive/HISTORY.md` on 2026-09-01.*
 
 ---
 
