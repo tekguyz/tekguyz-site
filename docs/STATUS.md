@@ -26,13 +26,16 @@ Every row below was run this session. Nothing was carried forward.
 
 | | Measured 2026-09-01 | Command |
 | --- | --- | --- |
-| HEAD | `fe9031e` | `git rev-parse --short HEAD` |
-| Push state | **`0 0` — fully in sync.** `origin/master` is also `fe9031e` | `git rev-list --left-right --count origin/master...master` |
-| Working tree | **3 modified, uncommitted** — `public/media/crunch-wrap-dashboard.webp`, `sarah-thumb.webp`, `shopify-configurator.webp`. Replaced by the user; not committed, therefore **not deployed** | `git status --short` |
-| Tests | **101 pass, 4 files, 1.83s** | `bun run test` |
+| HEAD | `6b6187d` (~~`fe9031e`~~ — four commits landed after this table was first written; re-measured at the end of the same session) | `git rev-parse --short HEAD` |
+| Push state | **4 ahead, UNPUSHED.** `origin/master` is still `fe9031e`. Push means production here, so **none of the four has deployed** | `git status -sb` |
+| Working tree | **clean** — the three replaced posters were committed in `6b6187d` | `git status --short` |
+| Tests | **101 pass, 4 files, 0.94s** | `bun run test` |
 | `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
 | `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
-| `check:media` | 8 entries wired, all posters present, **4 of 8 off their locked ratio** (was 7), exit 0 | `bun run check:media` |
+| `check:media` | 8 entries wired, all posters present, **4 of 8 off their locked ratio** (was 7), exit 0. Off-ratio warns rather than fails, so exit 0 is not a pass — read the lines | `bun run check:media` |
+| Lint | **clean — no output, zero findings** | `bun run lint` |
+| `bun run build` | **passes** | `bun run build` |
+| Production | newest Ready Production deployment is **3 days old**, i.e. `fe9031e`. Nothing from this session is live | `vercel ls tekguyz-site` |
 | `components/concierge/concierge.tsx` | 787 lines | `wc -l` |
 | `components/contact-form.tsx` | 516 lines | `wc -l` |
 | `app/actions/contact.ts` | 463 lines | `wc -l` |
@@ -40,8 +43,30 @@ Every row below was run this session. Nothing was carried forward.
 **Three posters were replaced and are on-ratio.** Measured from the WebP headers
 2026-09-01: `shopify-configurator` **1440×900 (1.600)**, `crunch-wrap-dashboard`
 **1440×900 (1.600)**, `sarah-thumb` **1437×900 (1.597)**. All three previously
-sat near 1.0 and cover-cropped to a fragment. They are **uncommitted**, so
-production still serves the old ones.
+sat near 1.0 and cover-cropped to a fragment. **Committed in `6b6187d` and not
+yet pushed**, so production still serves the old ones.
+
+### Shipped this session, four commits, all UNPUSHED
+
+- **`ead9696` — `docs/STATUS.md` 971 lines → 185, 87 KB → 15 KB.** Roughly 70%
+  of it was shipped history. Every shipped-batch section, Incident 2026-08-12,
+  the 2026-08-29 narrative block, six already-closed Open rows, and DESIGN.md's
+  five changelogs moved **verbatim** to `docs/archive/HISTORY.md`. Also dropped:
+  a 59-line running strikethrough log of this file's own corrections. Five
+  dangling "see below" citations re-pointed at the archive.
+- **`9ce6449` — `CLAUDE.md` now names `impeccable`.** It was installed and
+  unmentioned, along with `vercel-react-best-practices` and
+  `web-design-guidelines`. Recorded with it: the skill boots at ~165 KB here
+  because its loader prints all of `docs/DESIGN.md`; it did **not** write that
+  file; and it must never write a `PRODUCT.md` or root `DESIGN.md` here,
+  because its format carries token values in YAML frontmatter and would put a
+  second copy of every number outside `TOKENS.md` and the `check:design` guard.
+- **`d93e752` — the `handoff` skill gained three checks and lost its blind
+  spot.** Contradictions *between* docs with every citation followed (3b),
+  a 300-line ceiling on this file (3c), and the build/test/lint gates (5).
+  `docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md` is new — the Claude.ai Project's
+  instructions now live in the repo and the Project holds the copy.
+- **`6b6187d` — three posters on-ratio.** `check:media` 7 off → 4.
 
 ---
 
