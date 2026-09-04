@@ -2853,6 +2853,71 @@ Each was already marked closed in place. Verbatim:
 | ~~`site.gbp` is a `share.google` shortlink while `COPY.md` records `maps?cid=…`~~ **Closed 2026-08-13, commit `480bc78`.** Not a coin-flip: COPY.md §2 of "WRITING GAPS STILL OPEN" recorded the `cid` URL as resolved, verified 2026-08-10, **by decision** — the code had drifted from a recorded decision, and COPY.md is the authority for this link. The `cid` is Google's stable place identifier and auditable on sight; a `share.google` link is an external redirector whose target can change or be revoked with no change to this repo. Re-verified 200 on 2026-08-13. One consumer: `components/testimonial.tsx:95` | — |
 
 ---
+## Moved out of docs/STATUS.md on 2026-09-04
+
+Three Open rows that closed on 2026-09-04, and the whole previous-session
+"Measured 2026-09-01" block, which its successor table already declared not
+carried forward. Verbatim; nothing reworded.
+
+### Closed rows removed from STATUS.md Open tables, 2026-09-04
+
+| ~~**`/work/tekguyz-crm`'s "Live demo" link lands on a login screen.**~~ **CLOSED 2026-09-04, same day it opened.** | The CRM shipped a public `/demo` entry point: one GET signs a visitor into a live seeded instance and redirects to `/` — no signup, no password, no email. `content/work.ts` now points at `https://tekguyz-crm.vercel.app/demo`, **not the bare origin**, which is still login-gated. Copy rewritten to promise **browsing, never editing**, because the demo identity is a `demo_readonly` Postgres role holding SELECT and nothing else — a write is refused by the database, not the UI. **Measured before the change, with a cookie jar:** `/demo` 307s to `/`, and the followed request lands on the real app at 200 with the agenda and pipeline rendering. **`curl -L` on the bare origin reports a misleading 200 from the login page** — that trap cost a day, so the check is `curl -s -o /dev/null -w '%{http_code} %{redirect_url}'` with no `-L`. The contact form and `/api/v1/triage/` were deliberately untouched and still post into the real org. |
+| ~~**Recapture 4 posters at 16:10**~~ **CLOSED 2026-09-04.** `bun run check:media` now reports **6 entries, all posters present, ZERO off-ratio** — the first time the whole set has been on-ratio. It closed by subtraction as much as by capture: `meeting-organizer-thumb`, `dragonfly-nica-thumb` and `executive-detailer-thumb` left with their retired entries and their files are deleted, `crunch-wrap-dashboard` was replaced by `squid-ink.webp` (1440x900), `tekguyz-crm.webp` (1440x900) is new, and `advantage-teams-thumb` was replaced by the user in the same batch. **A future off-ratio warning is now a real regression rather than the standing state.** |
+| ~~4 project thumbs are 600x450 (4:3) rendered at 16:10~~ **CLOSED 2026-09-04 — see the poster row above. Zero off-ratio across all 6 entries.** | 4 |
+
+### The previous session's measured block
+
+## Measured 2026-09-01
+
+Every row below was run this session. Nothing was carried forward.
+
+| | Measured 2026-09-01 | Command |
+| --- | --- | --- |
+| HEAD | `6b6187d` (~~`fe9031e`~~ — four commits landed after this table was first written; re-measured at the end of the same session) | `git rev-parse --short HEAD` |
+| Push state | **4 ahead, UNPUSHED.** `origin/master` is still `fe9031e`. Push means production here, so **none of the four has deployed** | `git status -sb` |
+| Working tree | **clean** — the three replaced posters were committed in `6b6187d` | `git status --short` |
+| Tests | **101 pass, 4 files, 0.94s** | `bun run test` |
+| `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
+| `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
+| `check:media` | 8 entries wired, all posters present, **4 of 8 off their locked ratio** (was 7), exit 0. Off-ratio warns rather than fails, so exit 0 is not a pass — read the lines | `bun run check:media` |
+| Lint | **clean — no output, zero findings** | `bun run lint` |
+| `bun run build` | **passes** | `bun run build` |
+| Production | newest Ready Production deployment is **3 days old**, i.e. `fe9031e`. Nothing from this session is live | `vercel ls tekguyz-site` |
+| `components/concierge/concierge.tsx` | 787 lines | `wc -l` |
+| `components/contact-form.tsx` | 516 lines | `wc -l` |
+| `app/actions/contact.ts` | 463 lines | `wc -l` |
+
+**Three posters were replaced and are on-ratio.** Measured from the WebP headers
+2026-09-01: `shopify-configurator` **1440×900 (1.600)**, `crunch-wrap-dashboard`
+**1440×900 (1.600)**, `sarah-thumb` **1437×900 (1.597)**. All three previously
+sat near 1.0 and cover-cropped to a fragment. **Committed in `6b6187d` and not
+yet pushed**, so production still serves the old ones.
+
+### Shipped this session, four commits, all UNPUSHED
+
+- **`ead9696` — `docs/STATUS.md` 971 lines → 185, 87 KB → 15 KB.** Roughly 70%
+  of it was shipped history. Every shipped-batch section, Incident 2026-08-12,
+  the 2026-08-29 narrative block, six already-closed Open rows, and DESIGN.md's
+  five changelogs moved **verbatim** to `docs/archive/HISTORY.md`. Also dropped:
+  a 59-line running strikethrough log of this file's own corrections. Five
+  dangling "see below" citations re-pointed at the archive.
+- **`9ce6449` — `CLAUDE.md` now names `impeccable`.** It was installed and
+  unmentioned, along with `vercel-react-best-practices` and
+  `web-design-guidelines`. Recorded with it: the skill boots at ~165 KB here
+  because its loader prints all of `docs/DESIGN.md`; it did **not** write that
+  file; and it must never write a `PRODUCT.md` or root `DESIGN.md` here,
+  because its format carries token values in YAML frontmatter and would put a
+  second copy of every number outside `TOKENS.md` and the `check:design` guard.
+- **`d93e752` — the `handoff` skill gained three checks and lost its blind
+  spot.** Contradictions *between* docs with every citation followed (3b),
+  a 300-line ceiling on this file (3c), and the build/test/lint gates (5).
+  `docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md` is new — the Claude.ai Project's
+  instructions now live in the repo and the Project holds the copy.
+- **`6b6187d` — three posters on-ratio.** `check:media` 7 off → 4.
+
+
+---
+
 
 # docs/DESIGN.md changelogs v2.1 → v2.6, moved here 2026-09-01
 

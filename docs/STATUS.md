@@ -22,17 +22,23 @@ planning tool has to read.
 
 ## Measured 2026-09-04 — the work lineup changed from 8 builds to 6
 
-Every row run this session. The table under it, "Measured 2026-09-01", is the
-previous session's and is **not** carried forward — read this one first.
+Every row run this session, and **re-run at the end of it** — the first version of
+this table was written four commits before the session ended and its push row was
+already false on arrival. The previous session's "Measured 2026-09-01" block moved
+verbatim to `docs/archive/HISTORY.md` on 2026-09-04; it was never carried forward.
 
 | | Measured 2026-09-04 | Command |
 | --- | --- | --- |
-| Tests | **101 pass, 4 files, 9.4s** | `bun run test` |
+| HEAD | `9a85f9d` | `git rev-parse --short HEAD` |
+| Working tree | **clean** | `git status --short` |
+| Tests | **101 pass, 4 files, 1.16s** | `bun run test` |
+| Lint | **clean — no output, zero findings** | `bun run lint` |
+| `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
 | `check:media` | **6 entries, all posters present, ZERO off-ratio** (was 4 of 8 off) | `bun run check:media` |
 | `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
 | `bun run build` | **passes.** 6 `/work/[slug]` pages + 6 OG images generated | `bun run build` |
 | Typecheck | **clean, exit 0** | `bunx tsc --noEmit` |
-| Push state | **PUSHED and LIVE.** `fed530e` deployed to production, Ready in 32s. Measured after: `/work` 200, `/work/tekguyz-crm` 200, `/work/ai-meeting-notes` 200, `/work/auto-detailer` **404**, `/work/ai-audio-file-insights` **404**, and the live `sitemap.xml` lists exactly the 6 current work routes and none of the retired ones | `git log origin/master` · `vercel ls` · `curl -o /dev/null -w '%{http_code}'` |
+| Push state | **PUSHED and LIVE, through `9a85f9d`.** `origin/master` == HEAD, 0 ahead. The newest Ready Production deployment is aliased to `tekguyz.com`, `www`, and `git-master`; **the live HTML serves `tekguyz-crm.vercel.app/demo`**, which only `9a85f9d`'s parent introduced, so the alias is confirmed by content and not by timestamp. Live codes: `/` 200, `/work` 200, `/work/tekguyz-crm` 200, `/work/ai-meeting-notes` 200, `/work/auto-detailer` **404** | `git status -sb` · `vercel ls` · `vercel inspect` · `curl` |
 
 ### The lineup change
 
@@ -101,62 +107,12 @@ absence reads as a decision rather than an oversight.
 
 | Item | Note |
 | --- | --- |
-| ~~**`/work/tekguyz-crm`'s "Live demo" link lands on a login screen.**~~ **CLOSED 2026-09-04, same day it opened.** | The CRM shipped a public `/demo` entry point: one GET signs a visitor into a live seeded instance and redirects to `/` — no signup, no password, no email. `content/work.ts` now points at `https://tekguyz-crm.vercel.app/demo`, **not the bare origin**, which is still login-gated. Copy rewritten to promise **browsing, never editing**, because the demo identity is a `demo_readonly` Postgres role holding SELECT and nothing else — a write is refused by the database, not the UI. **Measured before the change, with a cookie jar:** `/demo` 307s to `/`, and the followed request lands on the real app at 200 with the agenda and pipeline rendering. **`curl -L` on the bare origin reports a misleading 200 from the login page** — that trap cost a day, so the check is `curl -s -o /dev/null -w '%{http_code} %{redirect_url}'` with no `-L`. The contact form and `/api/v1/triage/` were deliberately untouched and still post into the real org. |
 | **The CRM poster shows seeded demo figures.** | `tekguyz-crm.webp` is the real product's real Reports view, but the tenant is `TEKGUYZ Demo` and its pipeline / revenue / win-rate numbers are **seeded verification data, not a client result.** It satisfies PLAYBOOK §12 (real production UI, not a simulator) and it licenses **no number** in copy. Recorded at the entry in `docs/COPY.md` and in `docs/kb/tekguyz-crm.md`. |
-| **`docs/kb/` is new — 5 files.** | Product reference documents compiled from four other repositories, plus an index. **They are source material, not an authority** — the `CANONICAL > DESIGN > COPY > SEO` order is unchanged and this folder sits outside it. `docs/kb/field-ops.md` carries a blocking caveat: it may or may not describe the build `/work/field-photo-reports` actually links to. |
+| **`docs/kb/` is new — 6 files**, measured 2026-09-04: five product documents plus `README.md`, the index. (This row said 5 while the prose above it called `leadgen.md` the sixth document; `ls docs/kb/` settles it.) | Product reference documents compiled from four other repositories, plus an index. **They are source material, not an authority** — the `CANONICAL > DESIGN > COPY > SEO` order is unchanged and this folder sits outside it. `docs/kb/field-ops.md` carries a blocking caveat: it may or may not describe the build `/work/field-photo-reports` actually links to. |
 | **Retired routes have no redirects.** | `/work/ai-audio-file-insights`, `/work/meeting-organizer`, `/work/restaurant-menu`, `/work/auto-detailer` now 404. They were live on tekguyz.com. If any has inbound links worth keeping, that is a `next.config` redirect and it is not written. |
 
 ---
 
-## Measured 2026-09-01
-
-Every row below was run this session. Nothing was carried forward.
-
-| | Measured 2026-09-01 | Command |
-| --- | --- | --- |
-| HEAD | `6b6187d` (~~`fe9031e`~~ — four commits landed after this table was first written; re-measured at the end of the same session) | `git rev-parse --short HEAD` |
-| Push state | **4 ahead, UNPUSHED.** `origin/master` is still `fe9031e`. Push means production here, so **none of the four has deployed** | `git status -sb` |
-| Working tree | **clean** — the three replaced posters were committed in `6b6187d` | `git status --short` |
-| Tests | **101 pass, 4 files, 0.94s** | `bun run test` |
-| `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
-| `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
-| `check:media` | 8 entries wired, all posters present, **4 of 8 off their locked ratio** (was 7), exit 0. Off-ratio warns rather than fails, so exit 0 is not a pass — read the lines | `bun run check:media` |
-| Lint | **clean — no output, zero findings** | `bun run lint` |
-| `bun run build` | **passes** | `bun run build` |
-| Production | newest Ready Production deployment is **3 days old**, i.e. `fe9031e`. Nothing from this session is live | `vercel ls tekguyz-site` |
-| `components/concierge/concierge.tsx` | 787 lines | `wc -l` |
-| `components/contact-form.tsx` | 516 lines | `wc -l` |
-| `app/actions/contact.ts` | 463 lines | `wc -l` |
-
-**Three posters were replaced and are on-ratio.** Measured from the WebP headers
-2026-09-01: `shopify-configurator` **1440×900 (1.600)**, `crunch-wrap-dashboard`
-**1440×900 (1.600)**, `sarah-thumb` **1437×900 (1.597)**. All three previously
-sat near 1.0 and cover-cropped to a fragment. **Committed in `6b6187d` and not
-yet pushed**, so production still serves the old ones.
-
-### Shipped this session, four commits, all UNPUSHED
-
-- **`ead9696` — `docs/STATUS.md` 971 lines → 185, 87 KB → 15 KB.** Roughly 70%
-  of it was shipped history. Every shipped-batch section, Incident 2026-08-12,
-  the 2026-08-29 narrative block, six already-closed Open rows, and DESIGN.md's
-  five changelogs moved **verbatim** to `docs/archive/HISTORY.md`. Also dropped:
-  a 59-line running strikethrough log of this file's own corrections. Five
-  dangling "see below" citations re-pointed at the archive.
-- **`9ce6449` — `CLAUDE.md` now names `impeccable`.** It was installed and
-  unmentioned, along with `vercel-react-best-practices` and
-  `web-design-guidelines`. Recorded with it: the skill boots at ~165 KB here
-  because its loader prints all of `docs/DESIGN.md`; it did **not** write that
-  file; and it must never write a `PRODUCT.md` or root `DESIGN.md` here,
-  because its format carries token values in YAML frontmatter and would put a
-  second copy of every number outside `TOKENS.md` and the `check:design` guard.
-- **`d93e752` — the `handoff` skill gained three checks and lost its blind
-  spot.** Contradictions *between* docs with every citation followed (3b),
-  a 300-line ceiling on this file (3c), and the build/test/lint gates (5).
-  `docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md` is new — the Claude.ai Project's
-  instructions now live in the repo and the Project holds the copy.
-- **`6b6187d` — three posters on-ratio.** `check:media` 7 off → 4.
-
----
 
 ## Attach to the Claude.ai planning Project
 
@@ -205,7 +161,7 @@ Claude.ai first.*
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see `docs/archive/HISTORY.md` |
 | **3** | Copy: privacy policy, 8 detail narratives, FAQ review | ~~**Shipped 2026-08-13 except the legal review**~~ **Shipped. Closed 2026-08-29** — privacy rewrite, FAQ rewrite and all 8 detail narratives shipped 2026-08-13, and the last open item, `/privacy`'s review, was closed 2026-08-29 **as a self-review against the CCPA thresholds, not by a lawyer** — see the row in "Open — needs the user" for the assessment and its three reopen triggers. See Build Phase 3 below |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
-| **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the component-audit section in `docs/archive/HISTORY.md`. Not "split the big files": measured 2026-08-28, `components/concierge/concierge.tsx` **755**, `components/contact-form.tsx` **516**, `app/actions/contact.ts` **463** (~~709 / 428 / 393~~ — stale, and they never reconciled with `git show` for their own date either, which read 751/457/423). Two of the audit's dedup items shipped 2026-08-13 and **three more shipped 2026-08-14** in `a60392e`; the rest is repetition and coupling, not size | Last — five items shipped, across 2026-08-13 and 2026-08-14 |
+| **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the component-audit section in `docs/archive/HISTORY.md`. Not "split the big files": re-measured 2026-09-04, `components/concierge/concierge.tsx` **787** (~~755 on 2026-08-28~~ — `3d170f7` added the role avatar and the reply-length work), `components/contact-form.tsx` **516**, `app/actions/contact.ts` **463** (~~709 / 428 / 393~~ — stale, and they never reconciled with `git show` for their own date either, which read 751/457/423). Two of the audit's dedup items shipped 2026-08-13 and **three more shipped 2026-08-14** in `a60392e`; the rest is repetition and coupling, not size | Last — five items shipped, across 2026-08-13 and 2026-08-14 |
 
 **Phase 1 was the real work.** DESIGN.md was assembled ad-hoc, the Claude Design
 export was never fully implemented, and `frontend-design` had never been invoked
@@ -222,7 +178,6 @@ presence now all exist.
 | Item | Note |
 | --- | --- |
 | **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot. **Measured 2026-08-28: the file already is 1600×900 (ratio 1.778) and `git log` shows it untouched since `c94695f` on 2026-08-13 — so the size half of "wanted" was already met when this row was written. What is open is only the two content defects.** |
-| ~~**Recapture 4 posters at 16:10**~~ **CLOSED 2026-09-04.** `bun run check:media` now reports **6 entries, all posters present, ZERO off-ratio** — the first time the whole set has been on-ratio. It closed by subtraction as much as by capture: `meeting-organizer-thumb`, `dragonfly-nica-thumb` and `executive-detailer-thumb` left with their retired entries and their files are deleted, `crunch-wrap-dashboard` was replaced by `squid-ink.webp` (1440x900), `tekguyz-crm.webp` (1440x900) is new, and `advantage-teams-thumb` was replaced by the user in the same batch. **A future off-ratio warning is now a real regression rather than the standing state.** |
 
 ## Open — code
 
@@ -230,7 +185,6 @@ presence now all exist.
 | --- | --- |
 | **DESIGN.md §0, §2 and §3 still read in the old single voice** — the mandate, icon policy, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. ~~§1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard~~ **The colour half CLOSED on 2026-08-28 and this row did not say so. Re-measured 2026-08-29: `## Colour` is a `TOKEN_SECTIONS` entry in `scripts/check-design.ts`, and all 14 colour tokens are asserted against `globals.css` on every `prebuild`. §1 is now enforced, so what is open here is prose voice in §0, §2 and §3 — nothing numeric.** The contrast RATIOS in §1 remain unchecked; a hex value cannot drift, a ratio claim about it can | 1 |
 | **Concierge UX/UI — D-04 geometry, panel presence motion, the reply-length/routing prompt and the header role avatar are all shipped (see `docs/archive/HISTORY.md`); the rest of the redo is not scoped.** Updated 2026-08-29: `3d170f7` closed two named items off this heading. What remains is still a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
-| ~~4 project thumbs are 600x450 (4:3) rendered at 16:10~~ **CLOSED 2026-09-04 — see the poster row above. Zero off-ratio across all 6 entries.** | 4 |
 | **D-07 hero media bleeds through card content above 1440px — the SYMPTOM DOES NOT REPRODUCE. Re-measured 2026-08-28.** `.tg-hero-frame`'s box was intersected against every element outside the hero `<section>` at 1441 / 1600 / 1920 / 2560: **0 intersections at every width** (the one hit at 1600 is the fixed concierge launcher, which floats by design), **0 horizontal overflow**, and `object-fit: cover` crops **0.0-0.2%** because `sarah-poster.webp` is 1600x900 (1.7778) against a 1.7778 box. Containment is already there and always was: `overflow-x-clip` on the hero section since the initial commit, plus the grid row sizing to the panel. Confirmed on the **pre-2026-08-14 build** too (worktree at `a24b01e`, 1920x1080, 0 intersections), so it did not reproduce in the build the register described either. What IS real above ~1440 is what HISTORY.md:1917 already classified it as — an **asset ceiling, not code**: next/image serves the largest variant it has and that is capped by the 1600px source, so a wide or retina panel upscales. Same recapture as D-08. **No code change made: the bleed is a mandatory departure (DESIGN.md §0) and there was nothing else to fix** | 4 |
 | **D-08 hero poster illegible — resolved below 1024px only, still open at desktop-narrow.** 2026-08-13 shipped `heroPosterMobile`: a 1038×584 crop of the same real capture, art-directed in via `<picture>`, legible at ~330px (DESIGN.md §4.9). **The full four-panel capture is still what desktop renders**, so any width that shows it small is unimproved. Closing this fully is still the recapture | 4 |
 
