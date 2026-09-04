@@ -94,30 +94,28 @@ Pitch: if you can describe the workflow, we can build it.
 
 ## 6. Case Studies (the deep-dive four)
 
-**Field Photo Reports & Quality Tracking** (Business Systems) Project managers couldn't verify field work without driving to the site, and crew notes were too messy to share. We built a photo-capture system that feeds straight into digital reports — no site visit required. Result: fewer return trips, faster dispute resolution, and clients who trust what they're seeing. Link: rs-field-ops.netlify.app
+*Lineup changed 2026-09-04. `AI Audio & File Insights` (crunch-wrap.netlify.app) was replaced by `AI Meeting Notes & Transcription` — the same product one full rewrite later. `Lead & Pipeline CRM` was added. `Shopify Bundle Builder & Storefront` moved down to Section 7. The old entries are in git history, not archived here.*
+
+**Field Photo Reports & Quality Tracking** (Business Systems) Project managers couldn't verify field work without driving to the site, and crew notes were too messy to share. We built a photo-capture system that feeds straight into digital reports — no site visit required. Result: fewer return trips, faster dispute resolution, and invoices that go out the same day instead of waiting on paperwork from the field. Link: rs-field-ops.netlify.app
+
+**AI Meeting Notes & Transcription** (Smart Operations) Meeting notes either don't get written or don't get read, and the tools that fix it send a bot into the call — awkward in front of a client, blocked by plenty of IT policies, and still just a wall of transcript. We built a notepad that records straight from the browser with nothing joining the meeting, transcribes with the speakers separated, and writes the summary, takeaways and action items with every line linked back to the moment in the transcript that supports it. Result: no bot joins the call, and every takeaway can be checked against what was actually said. Link: squid-ink.vercel.app
+
+**Lead & Pipeline CRM** (Business Systems) Enquiries arrive in an inbox, a phone log and a form notification, the follow-up lives in somebody's head, and nothing records what the pipeline was worth once it closed. We built the CRM we run TEKGUYZ on — this site's contact form posts into it over a signed webhook, every lead carries a next-action date, and one that slips past it visibly changes state. Result: a lead cannot quietly go cold without showing it. Link: tekguyz-crm.vercel.app *(login-gated by design — there is no public route)*
 
 **AI Voice Receptionist & Call Booking** (AI Voice Agents) A stone fabrication shop was losing leads to after-hours calls and a dead-end voicemail box. We built a real-time AI voice agent that captures project details and books consultations on the spot, while a live dashboard shows the call, the CRM sync, and the follow-up email happening as it happens. Result: watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact. Link: tekguyz-sarah.vercel.app
 
-**Shopify Bundle Builder & Storefront** (Custom Web Apps) A retailer's existing theme couldn't handle configurable, bundled products — customers building a workstation from hardware, software, and accessories had no clean way to watch the total update as they chose options. We built a custom storefront directly on Shopify's API that updates instantly and checks out through Shopify's own secure flow. Result: watch the total update instantly as the order comes together — then check out for real, risk-free (the demo is fully sandboxed). Link: reporter-resource-temp.vercel.app
-
-**AI Audio & File Insights** (Smart Operations) Consultants and ops teams were losing track of small but important details buried in audio recordings and documents. We built a digital workspace that listens to your files, extracts what matters, and organizes it into automatic summaries, action trackers, and a searchable archive. Result: never lose track of a small but important detail buried in a long recording, ever again. Link: crunch-wrap.netlify.app
-
-## 7. Projects (the lighter four)
+## 7. Projects (the lighter two)
 
 | **Project** | **Solution Line** | **Built For** | **Link** |
 | --- | --- | --- | --- |
+| Shopify Bundle Builder & Storefront | Custom Web Apps | Retailers selling configurable, bundled, or made-to-order products | reporter-resource-temp.vercel.app |
 | Team Performance & Automated Customer Feedback | Business Systems | Service businesses with phone-based teams and customer follow-up surveys | advantage-teams.vercel.app/dashboard |
-| Automated Meeting & Research Organizer | Smart Operations | Professionals and teams who record meetings and need organized follow-up | crispy-bacon.netlify.app |
-| Bilingual Restaurant Menu & WhatsApp Ordering | Custom Web Apps | Restaurants, food vendors, bilingual markets | dragonfly-nica.netlify.app |
-| Auto Detailer Booking & Lead Tracker | Custom Web Apps | Premium vehicle detailing shops, mobile auto services | the-executivedetailer.vercel.app |
+
+**Shopify Bundle Builder & Storefront** A headless storefront built directly on Shopify's API rather than against the theme. Options update the running total instantly, and checkout hands off to Shopify's own secure flow, so payments and fulfillment never had to be rebuilt.
 
 **Team Performance & Automated Customer Feedback** Connects desk-phone logs directly to the CRM for automatic job credit, plus a smart-limit SMS feedback loop that only surveys customers when it's actually useful.
 
-**Automated Meeting & Research Organizer** A secure recording tool that extracts takeaways and action items automatically, filing everything into a clean, searchable archive you can actually find things in later.
-
-**Bilingual Restaurant Menu & WhatsApp Ordering** A bilingual ordering platform that lets customers browse a photo-rich menu and order directly via WhatsApp — no app required.
-
-**Auto Detailer Booking & Lead Tracker** A booking platform for premium vehicle detailing with responsive request forms, built-in lead tracking, automated scheduling, a custom gallery, and review tools.
+*Retired 2026-09-04: `Automated Meeting & Research Organizer` (crispy-bacon.netlify.app — the predecessor of the meeting notepad above, so it showed one product twice), `Bilingual Restaurant Menu & WhatsApp Ordering` (dragonfly-nica.netlify.app) and `Auto Detailer Booking & Lead Tracker` (the-executivedetailer.vercel.app), the last two at the owner's direction as carrying no real value for the site.*
 
 ## 8. Process (How We Work)
 
@@ -175,13 +173,15 @@ Current set, all `.webp`:
 - `sarah-thumb.webp` — AI Voice Receptionist, **compact 16:10 contexts** (case-study row, detail page). **Decided 2026-08-07 and wired; the file itself is pending the recapture.** It replaces `sarah-project-thumb.webp`, which was never documented here and was a crop of the retired phone-call simulator — a violation of this section's own hard rule, not merely a naming gap. `bun run check:media` fails the build until the file lands, which is the guard working as intended.
 - `field-ops-thumb.webp` — Field Photo Reports. The one app with both an admin and installer/mobile view; the desktop admin view is the primary capture.
 - `shopify-configurator.webp` — Bundle Builder
-- `crunch-wrap-dashboard.webp` — AI Audio & File Insights
+- `squid-ink.webp` — AI Meeting Notes & Transcription. 1440×900. Keeps the source repo's working name as a filename; the **page never uses that name**, because the product's public name is unconfirmed upstream. Replaced `crunch-wrap-dashboard.webp` on 2026-09-04.
+- `tekguyz-crm.webp` — Lead & Pipeline CRM. 1440×900. **Read this before writing any copy near it:** it is the real product's real Reports view, but the tenant shown is `TEKGUYZ Demo` and every figure on it is **seeded verification data, not a client result.** It satisfies this section's hard rule (real production UI, not a simulator) and it does **not** license a single number on the page.
 - `advantage-teams-thumb.webp` — Team Performance
-- `meeting-organizer-thumb.webp` — Automated Meeting & Research Organizer
-- `dragonfly-nica-thumb.webp` — Bilingual Restaurant Menu
-- `executive-detailer-thumb.webp` — Auto Detailer
 
-**All four project thumbs are now rendered**, not just wired: `/work/[slug]` project pages carry a `LiveFrame` as of 2026-08-07. They were previously referenced in `content/work.ts` and displayed nowhere, since `project-card` has no image by design and the project detail page had none either. Measured at capture time they are 600×450 (4:3), so `object-fit: cover` currently drops the bottom ~17% of each — the recapture at 1440×900 resolves it with no code change.
+**Deleted 2026-09-04** along with their entries: `crunch-wrap-dashboard.webp`, `meeting-organizer-thumb.webp`, `dragonfly-nica-thumb.webp`, `executive-detailer-thumb.webp`. They are gone from `public/media/`, which is deliberate — `check:media` fails the build on a missing poster, so a re-added entry cannot ship a blank frame.
+
+**Project thumbs are rendered**, not just wired: `/work/[slug]` project pages carry a `LiveFrame` as of 2026-08-07. They were previously referenced in `content/work.ts` and displayed nowhere, since `project-card` has no image by design and the project detail page had none either.
+
+**Ratio state, measured 2026-09-04 by `bun run check:media`: 6 entries, all posters present, ZERO off-ratio.** The three 4:3 stragglers that used to sit here left with their entries; the remaining set is all 1440×900 or 1600×900. This is the first time the whole set has been on-ratio, so a future off-ratio warning is a real regression rather than the standing state.
 
 **Capture method** (this took several failed attempts to get right — use it): OS screenshot tool, not DevTools. Mac `Cmd+Shift+4`, Windows `Win+Shift+S`. ShareX's "Fixed size region mode" with width/height set is ideal if you have it. Arrange multiple cards in the browser first (resize the window, use real browser zoom) so they sit together cleanly, *then* capture — you compose the shot visually rather than asking software to do it. Edit in PNG (lossless), convert to `.webp` at ~quality 90 as the final step only.
 

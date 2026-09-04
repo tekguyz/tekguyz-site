@@ -11,7 +11,7 @@
 - `BreadcrumbList` on **every** non-home route, emitted through one shared helper in `lib/seo.ts` — never hand-repeated per page. Home → [Page] for top-level routes; Home → Work → [Build] for detail pages.
 - `alternates.canonical` set explicitly per route — don't rely on default resolution.
 - `sitemap.ts` `lastModified` sources from each content entry's real `updatedAt` field in `content/work.ts`, not request-time `new Date()`. Static routes without a natural date (e.g. `/process`) may keep request-time as a lesser fallback — the content-driven routes are the priority fix.
-- `robots.ts` / `sitemap.ts` must enumerate all new routes. The 8 `/work/[slug]` entries should be driven by `generateStaticParams` output, not hand-listed a second time.
+- `robots.ts` / `sitemap.ts` must enumerate all new routes. The `/work/[slug]` entries — **6 as of 2026-09-04, was 8** — should be driven by `generateStaticParams` output, not hand-listed a second time.
 
 ---
 
@@ -60,11 +60,11 @@ One per page, description drawn from that page's own COPY.md content. This is ac
 
 ## Work index `/work`
 
-`BreadcrumbList`, plus an `ItemList` referencing all 8 `/work/[slug]` pages so crawlers get the complete set from one node. Cheap to add, don't skip it.
+`BreadcrumbList`, plus an `ItemList` referencing all 6 `/work/[slug]` pages so crawlers get the complete set from one node. Cheap to add, don't skip it.
 
 ---
 
-## Work detail `/work/[slug]` (×8)
+## Work detail `/work/[slug]` (×6 — was ×8 until the 2026-09-04 lineup change)
 
 `BreadcrumbList` (Home → Work → [Name]) plus a `SoftwareApplication` node per build:
 

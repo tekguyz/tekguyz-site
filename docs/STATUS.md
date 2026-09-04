@@ -20,6 +20,67 @@ planning tool has to read.
 
 ---
 
+## Measured 2026-09-04 — the work lineup changed from 8 builds to 6
+
+Every row run this session. The table under it, "Measured 2026-09-01", is the
+previous session's and is **not** carried forward — read this one first.
+
+| | Measured 2026-09-04 | Command |
+| --- | --- | --- |
+| Tests | **101 pass, 4 files, 9.4s** | `bun run test` |
+| `check:media` | **6 entries, all posters present, ZERO off-ratio** (was 4 of 8 off) | `bun run check:media` |
+| `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
+| `bun run build` | **passes.** 6 `/work/[slug]` pages + 6 OG images generated | `bun run build` |
+| Typecheck | **clean, exit 0** | `bunx tsc --noEmit` |
+| Push state | **UNPUSHED at the time of writing.** Push means production here | `git status -sb` |
+
+### The lineup change
+
+**Six of the eight `/work` entries moved.** Decided by the owner this session;
+the reasoning for each is recorded in `content/work.ts` beside the change.
+
+| Slug | What happened |
+| --- | --- |
+| `field-photo-reports` | unchanged, case study |
+| `ai-voice-receptionist` | unchanged, case study — **now 4th in the array**, behind the two new entries, per the owner's stated order |
+| `ai-audio-file-insights` | **→ `ai-meeting-notes`.** Same product, one full rewrite later. New copy, new poster (`squid-ink.webp`), new slug. The old route is **removed, not redirected** |
+| `tekguyz-crm` | **NEW case study**, "Lead & Pipeline CRM" |
+| `bundle-builder` | **case study → project.** Its Challenge/Approach/Outcome copy was cut; `builtFor` / `summary` / `whatMadeItInteresting` are new writing |
+| `meeting-organizer` | **RETIRED.** It was `crispy-bacon.netlify.app` — the predecessor of `ai-meeting-notes`, so the site was showing one product twice with the worse version as separate work |
+| `restaurant-menu` | **RETIRED** at the owner's direction |
+| `auto-detailer` | **RETIRED** at the owner's direction |
+
+Result: **4 case studies + 2 projects = 6.**
+
+### Two counts were typed into copy and both became false at once
+
+`/work`'s page hero said "Eight live builds" and the home fold's link said "See
+all eight builds". **Nothing in the build could see either go wrong** — not
+`tsc`, not the linter, not `check:media`. Both now read
+`buildCountWord` / `buildCountWordCapitalized`, exported from `content/work.ts`
+and derived from `work.length`. **The only way to make them wrong now is to make
+the array wrong.**
+
+### One fold-board invariant bent, deliberately and namedly
+
+`foldSlugs` is one build per solution line, and a 2026-08-29 decision made every
+slot a case study. `bundle-builder` is the only build on the custom-web-apps
+line and is now a project, so **the teal slot is a project card.** The
+alternative was an empty teal slot, which destroys the four-accent legend the
+board exists to be. Recorded at the constant in `content/work.ts`; if a second
+custom-web-apps case study ever ships, that slot should take it.
+
+### Open, from this change
+
+| Item | Note |
+| --- | --- |
+| **`/work/tekguyz-crm`'s "Live demo" link lands on a login screen.** | The CRM is login-gated by design with no public route, so the `url` resolves to `/login` and the hourly status check will read it as Live — which is true and also not what a visitor expects from "Live demo". The `tryIt` copy says so explicitly. **A read-only demo tenant is the real fix and is not built.** Owner's call. |
+| **The CRM poster shows seeded demo figures.** | `tekguyz-crm.webp` is the real product's real Reports view, but the tenant is `TEKGUYZ Demo` and its pipeline / revenue / win-rate numbers are **seeded verification data, not a client result.** It satisfies PLAYBOOK §12 (real production UI, not a simulator) and it licenses **no number** in copy. Recorded at the entry in `docs/COPY.md` and in `docs/kb/tekguyz-crm.md`. |
+| **`docs/kb/` is new — 5 files.** | Product reference documents compiled from four other repositories, plus an index. **They are source material, not an authority** — the `CANONICAL > DESIGN > COPY > SEO` order is unchanged and this folder sits outside it. `docs/kb/field-ops.md` carries a blocking caveat: it may or may not describe the build `/work/field-photo-reports` actually links to. |
+| **Retired routes have no redirects.** | `/work/ai-audio-file-insights`, `/work/meeting-organizer`, `/work/restaurant-menu`, `/work/auto-detailer` now 404. They were live on tekguyz.com. If any has inbound links worth keeping, that is a `next.config` redirect and it is not written. |
+
+---
+
 ## Measured 2026-09-01
 
 Every row below was run this session. Nothing was carried forward.
@@ -134,7 +195,7 @@ presence now all exist.
 | Item | Note |
 | --- | --- |
 | **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot. **Measured 2026-08-28: the file already is 1600×900 (ratio 1.778) and `git log` shows it untouched since `c94695f` on 2026-08-13 — so the size half of "wanted" was already met when this row was written. What is open is only the two content defects.** |
-| **Recapture 4 posters at 16:10** (~~8~~, ~~7~~) | 2026-08-13, re-measured 2026-09-01. 1920×1200 preferred, never upscale, WebP q82, same filenames in `public/media/`, then `bun run check:media`. **Four are now done.** `field-ops-thumb` shipped 2026-08-17 in `baee083` at 1440×900 (1.600). `shopify-configurator` **1440×900 (1.600)**, `crunch-wrap-dashboard` **1440×900 (1.600)** and `sarah-thumb` **1437×900 (1.597)** were replaced by the user and measured from the WebP headers 2026-09-01 — all three previously sat near 1.0. **They are uncommitted, so production still serves the old ones.** Still wrong, all four at 600×450 (1.33): `advantage-teams-thumb` · `meeting-organizer-thumb` · `dragonfly-nica-thumb` · `executive-detailer-thumb`. `bun run check:media` reports **4 of 8 off ratio**, exit 0 |
+| ~~**Recapture 4 posters at 16:10**~~ **CLOSED 2026-09-04.** `bun run check:media` now reports **6 entries, all posters present, ZERO off-ratio** — the first time the whole set has been on-ratio. It closed by subtraction as much as by capture: `meeting-organizer-thumb`, `dragonfly-nica-thumb` and `executive-detailer-thumb` left with their retired entries and their files are deleted, `crunch-wrap-dashboard` was replaced by `squid-ink.webp` (1440x900), `tekguyz-crm.webp` (1440x900) is new, and `advantage-teams-thumb` was replaced by the user in the same batch. **A future off-ratio warning is now a real regression rather than the standing state.** |
 
 ## Open — code
 
@@ -142,7 +203,7 @@ presence now all exist.
 | --- | --- |
 | **DESIGN.md §0, §2 and §3 still read in the old single voice** — the mandate, icon policy, type and layout. §4, §5, §7 and §9 were converted 2026-08-12; §2.1, §3.1, §6 and §8.0 were already converted and enforced. ~~§1's colours carry real measured ratios from the v2.3 audit but are not machine-checked — the palette is in `:root` and could join the guard~~ **The colour half CLOSED on 2026-08-28 and this row did not say so. Re-measured 2026-08-29: `## Colour` is a `TOKEN_SECTIONS` entry in `scripts/check-design.ts`, and all 14 colour tokens are asserted against `globals.css` on every `prebuild`. §1 is now enforced, so what is open here is prose voice in §0, §2 and §3 — nothing numeric.** The contrast RATIOS in §1 remain unchecked; a hex value cannot drift, a ratio claim about it can | 1 |
 | **Concierge UX/UI — D-04 geometry, panel presence motion, the reply-length/routing prompt and the header role avatar are all shipped (see `docs/archive/HISTORY.md`); the rest of the redo is not scoped.** Updated 2026-08-29: `3d170f7` closed two named items off this heading. What remains is still a design question nobody has asked yet, not a known defect list. `concierge.tsx` structure is Phase 5, separately | 2 |
-| 4 project thumbs are 600×450 (4:3) rendered at 16:10; `cover` drops ~17%. **Re-measured 2026-08-28, unchanged** — `advantage-teams-thumb`, `meeting-organizer-thumb`, `dragonfly-nica-thumb`, `executive-detailer-thumb` | 4 |
+| ~~4 project thumbs are 600x450 (4:3) rendered at 16:10~~ **CLOSED 2026-09-04 — see the poster row above. Zero off-ratio across all 6 entries.** | 4 |
 | **D-07 hero media bleeds through card content above 1440px — the SYMPTOM DOES NOT REPRODUCE. Re-measured 2026-08-28.** `.tg-hero-frame`'s box was intersected against every element outside the hero `<section>` at 1441 / 1600 / 1920 / 2560: **0 intersections at every width** (the one hit at 1600 is the fixed concierge launcher, which floats by design), **0 horizontal overflow**, and `object-fit: cover` crops **0.0-0.2%** because `sarah-poster.webp` is 1600x900 (1.7778) against a 1.7778 box. Containment is already there and always was: `overflow-x-clip` on the hero section since the initial commit, plus the grid row sizing to the panel. Confirmed on the **pre-2026-08-14 build** too (worktree at `a24b01e`, 1920x1080, 0 intersections), so it did not reproduce in the build the register described either. What IS real above ~1440 is what HISTORY.md:1917 already classified it as — an **asset ceiling, not code**: next/image serves the largest variant it has and that is capped by the 1600px source, so a wide or retina panel upscales. Same recapture as D-08. **No code change made: the bleed is a mandatory departure (DESIGN.md §0) and there was nothing else to fix** | 4 |
 | **D-08 hero poster illegible — resolved below 1024px only, still open at desktop-narrow.** 2026-08-13 shipped `heroPosterMobile`: a 1038×584 crop of the same real capture, art-directed in via `<picture>`, legible at ~330px (DESIGN.md §4.9). **The full four-panel capture is still what desktop renders**, so any width that shows it small is unimproved. Closing this fully is still the recapture | 4 |
 

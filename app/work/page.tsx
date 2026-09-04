@@ -2,7 +2,7 @@ import { PageHero } from '@/components/page-hero';
 import { CaseStudyRow } from '@/components/case-study-row';
 import { ProjectCard } from '@/components/project-card';
 import { ClosingCta } from '@/components/closing-cta';
-import { caseStudies, projects } from '@/content/work';
+import { caseStudies, projects, buildCountWordCapitalized } from '@/content/work';
 import { getAllStatuses } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, workItemList } from '@/lib/seo';
 
@@ -38,10 +38,15 @@ export default async function WorkPage() {
         )}
       />
 
+      {/* The count is DERIVED, never typed. This line read "Eight live builds"
+          until 2026-09-04, when the lineup dropped to six and the sentence
+          became false with nothing in the build able to see it — not tsc, not
+          the linter, not `check:media`. `buildCountWord` reads `work.length`,
+          so the only way to make it wrong now is to make the array wrong. */}
       <PageHero
         eyebrow="Our Work"
         headline="Everything here is running right now."
-        description="Not screenshots of things that used to work. Eight live builds — click into any one and open it yourself."
+        description={`Not screenshots of things that used to work. ${buildCountWordCapitalized} live builds — click into any one and open it yourself.`}
       />
 
       <div>

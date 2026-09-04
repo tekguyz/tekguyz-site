@@ -90,12 +90,12 @@ MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. 
 
 **[changed 2026-08-29]** The elevated three-fact proof strip is deleted. Its
 "Eight live builds" claim is not written anywhere any more — the board below the
-hero *is* four live builds with a measured status on each, and `See all eight
+hero *is* four live builds with a measured status on each, and `See all six
 builds` is the link directly beneath them. The other two facts are now one muted
 caption line beside that link, in the site's standard trust-fact pattern (one
 `--text-sm` secondary row, 3px `muted-soft` mid-dots, stacked below 766px).
 
-LINK: See all eight builds → /work
+LINK: See all six builds — the label is derived from `work.length` in `components/fold-board.tsx`, never typed → /work
 FACT: A verified Google review. **Read it on Google →** (`site.gbp`)
 FACT: South Florida, remote nationwide (`site.locationLong`, read from
 `lib/site.ts` — never retyped here)
@@ -209,7 +209,7 @@ We build systems that handle the heavy lifting automatically — so the work sti
 - Task and workflow automation across your tools
 - Real-time operational alerts when something needs you
 
-RELATED WORK: AI Audio & File Insights, Automated Meeting & Research Organizer
+RELATED WORK: AI Meeting Notes & Transcription
 CTA: Talk about automating this → /contact?interest=smart-operations
 
 METADATA — TITLE: `TEKGUYZ | Smart Operations — Custom AI Assistants & Automation`
@@ -247,7 +247,7 @@ We move you into one organized, private system where your clients and team log i
 - Automated invoicing
 - Integrations across the tools you already use
 
-RELATED WORK: Field Photo Reports & Quality Tracking, Team Performance & Automated Customer Feedback
+RELATED WORK: Field Photo Reports & Quality Tracking, Lead & Pipeline CRM, Team Performance & Automated Customer Feedback
 CTA: Talk about consolidating this → /contact?interest=business-systems
 
 METADATA — TITLE: `TEKGUYZ | Business Systems — One Private System, Not Five Tools`
@@ -266,7 +266,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Shopify Bundle Builder & Storefront, Bilingual Restaurant Menu, Auto Detailer Booking
+RELATED WORK: Shopify Bundle Builder & Storefront
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -363,65 +363,90 @@ DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations
 
 ---
 
-## `/work/bundle-builder` — Shopify Bundle Builder & Storefront
+## `/work/ai-meeting-notes` — AI Meeting Notes & Transcription
 
-TAG: Custom Web Apps
-HEADLINE: A custom storefront built directly on Shopify's API for bundled products.
+*Added 2026-09-04. Supersedes `/work/ai-audio-file-insights` — the same product one full rewrite later. The old route and its copy were removed, not redirected.*
+
+TAG: Smart Operations
+HEADLINE: Get the notes, the takeaways, and the action items without sending a bot to the call.
 
 **THE CHALLENGE**
-The retailer's existing theme couldn't handle configurable, bundled products. Customers assembling a workstation from hardware, software, and accessories had no clean way to see the total update as they chose options — so they guessed, or they left.
+Meeting notes either don't get written or don't get read. The tools that promise to fix it send a bot to sit in the call — which is awkward in front of a client, blocked outright by plenty of IT policies, and still leaves you with a wall of transcript nobody goes back to.
 
 **THE APPROACH**
-We built a custom storefront directly on Shopify's API rather than fighting the theme. Options update the running total instantly, and checkout hands off to Shopify's own secure flow — so nothing about payments or order management had to be rebuilt or re-secured.
+We built a notepad that records the call straight from the browser, so nothing joins the meeting and nobody has to be invited. It transcribes with the speakers separated, then writes the summary, the takeaways, and the action items — and every line it writes carries a link back to the exact moment in the transcript that supports it.
 
 **THE OUTCOME**
-Customers can see exactly what they're building and what it costs while they build it, and the merchant keeps every piece of Shopify's existing order infrastructure.
+A written record of the meeting exists whether or not anyone took notes, and every claim in it can be checked against what was actually said instead of taken on trust.
 
 **PULL QUOTE**
-Watch the total update instantly as the order comes together — then check out for real, risk-free.
+No bot joins the call — and every takeaway links back to the second of the transcript it came from.
 
 **TRY IT**
-The demo is fully sandboxed. Check out for real using `1` as the card number and any other test details.
+Sign in with your email. It sends a link back, so there is no password to make up.
 
 **HOW IT'S BUILT**
-Headless storefront on Shopify's API with live price computation, handing off to Shopify Checkout for payment and fulfillment.
+In-browser system and microphone capture, batch transcription with speaker separation, and a second pass that turns the transcript into a summary, takeaways, and traceable action items. Reading lenses change how the same recording is analyzed without re-recording it.
 
-METADATA — TITLE: `TEKGUYZ | Bundle Builder — Custom Shopify Storefront`
-DESCRIPTION: `A configurable product storefront built directly on Shopify's API. Build a bundle, watch the total update instantly, then check out for real in the live demo.`
+METADATA — TITLE: `TEKGUYZ | AI Meeting Notes & Transcription`
+DESCRIPTION: `An AI meeting notepad that records without sending a bot to the call, then writes summaries, takeaways, and action items you can trace back to the transcript.`
 
 ---
 
-## `/work/ai-audio-file-insights` — AI Audio & File Insights
+## `/work/tekguyz-crm` — Lead & Pipeline CRM
 
-TAG: Smart Operations
-HEADLINE: Turn your files and recordings into automatic summaries and a searchable archive.
+*Added 2026-09-04. **The product's public name is not "TEKGUYZ CRM" on this site** — the repo is named that, the page is not, because a client reading it should see a system they could have rather than an internal tool of ours. The slug keeps the repo name for wiring.*
+
+TAG: Business Systems
+HEADLINE: Track every lead from first enquiry to closed deal, in one pipeline.
 
 **THE CHALLENGE**
-Consultants and ops teams were losing details buried in audio recordings and documents. The information existed — it just wasn't findable, so the same questions got re-asked and the same recordings got re-listened to.
+Enquiries arrive in an inbox, a phone log, and a form notification, and the follow-up lives in somebody's head. Nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.
 
 **THE APPROACH**
-We built a workspace that listens to your files, pulls out what matters, and organizes it automatically into summaries, action trackers, and an archive you can actually search.
+We built the CRM we run TEKGUYZ on. The contact form on this site posts straight into it over a signed webhook, so a new enquiry becomes a tracked lead with nobody re-typing anything. Every lead carries a next-action date, and one that slips past it visibly changes state and surfaces on the day's agenda.
 
 **THE OUTCOME**
-Details that used to be effectively lost the moment a recording ended are now findable in seconds by anyone on the team.
+A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.
 
 **PULL QUOTE**
-Never lose track of a small but important detail buried in a long recording, ever again.
+The contact form on this page posts into it. This is the system we run our own business on.
 
 **TRY IT**
-There's a demo button at the bottom of the sign-in page — no account needed.
+This one is private by design — a login-gated internal tool with no public route, so the link opens a sign-in screen. Ask us for a walkthrough and we will show you the whole thing.
 
 **HOW IT'S BUILT**
-Audio and document ingestion, automatic transcription and extraction, structured summaries and action items, full-text search across everything.
+Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself.
 
-METADATA — TITLE: `TEKGUYZ | AI Audio & File Insights`
-DESCRIPTION: `A digital workspace that turns recordings and documents into automatic summaries and a searchable archive. Try it — no account required.`
+> **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Reports view, but the org shown is **TEKGUYZ Demo** and every figure on it — open pipeline, realized revenue, win rate — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
+
+METADATA — TITLE: `TEKGUYZ | Lead & Pipeline CRM`
+DESCRIPTION: `A multi-tenant CRM that captures website enquiries over a signed webhook, flags follow-ups before they go cold, and records what the pipeline was actually worth.`
 
 ---
 
 # PROJECT DETAIL PAGES
 
 *Lighter structure by design: tag · headline · Built For · what it does · what made it interesting · LiveFrame + status.*
+
+## `/work/bundle-builder` — Shopify Bundle Builder & Storefront
+
+*Moved from case study to project 2026-09-04, at the owner's direction. The Challenge / Approach / Outcome / Pull Quote copy that used to sit here was cut, not archived — it is in git history. `builtFor`, `summary` and `whatMadeItInteresting` below are new writing in its place, and `tryIt` is carried over unchanged.*
+
+TAG: Custom Web Apps
+BUILT FOR: Retailers selling configurable, bundled, or made-to-order products
+HEADLINE: A custom storefront built directly on Shopify's API for bundled products.
+
+A headless storefront built directly on Shopify's API rather than against the theme, for a catalog where a workstation is assembled from hardware, software, and accessories. Options update the running total instantly, and checkout hands off to Shopify's own secure flow — so payments, orders, and fulfillment never had to be rebuilt or re-secured.
+
+**WHAT MADE IT INTERESTING:** knowing which part not to build. The interesting engineering is the configurator; the payment stack already existed and was already trusted, so the job was joining the two cleanly rather than replacing either.
+
+**TRY IT:** The demo is fully sandboxed. Check out for real using `1` as the card number and any other test details.
+
+METADATA — TITLE: `TEKGUYZ | Bundle Builder — Custom Shopify Storefront`
+DESCRIPTION: `A configurable product storefront built directly on Shopify's API. Build a bundle, watch the total update instantly, then check out for real in the live demo.`
+
+---
 
 ## `/work/team-performance` — Team Performance & Automated Customer Feedback
 
@@ -437,53 +462,6 @@ Connects desk-phone logs directly to the CRM so team members get automatic credi
 
 METADATA — TITLE: `TEKGUYZ | Team Performance & Automated Feedback`
 DESCRIPTION: `Desk-phone logs connected straight to the CRM, plus a smart-limit SMS feedback loop that only surveys customers when it actually matters.`
-
----
-
-## `/work/meeting-organizer` — Automated Meeting & Research Organizer
-
-TAG: Smart Operations
-BUILT FOR: Professionals and teams who record meetings and need organized follow-up
-HEADLINE: Record the meeting, get the follow-up automatically.
-
-A secure recording tool that pulls out takeaways and action items on its own, then files everything into a clean, searchable archive — so the notes exist whether or not anyone remembered to take them.
-
-**WHAT MADE IT INTERESTING:** the archive matters more than the transcript. Anyone can transcribe a meeting; the value is being able to find the one thing that was said three weeks ago.
-
-**TRY IT:** Sign up with your email to use it.
-
-METADATA — TITLE: `TEKGUYZ | Automated Meeting & Research Organizer`
-DESCRIPTION: `A secure recording tool that extracts takeaways and action items automatically, filed into a searchable archive you'll actually use later.`
-
----
-
-## `/work/restaurant-menu` — Bilingual Restaurant Menu & WhatsApp Ordering
-
-TAG: Custom Web Apps
-BUILT FOR: Local restaurants, food vendors, bilingual markets
-HEADLINE: A photo menu customers order from directly in WhatsApp.
-
-A bilingual ordering platform where customers browse a photo-rich menu and send their order straight through WhatsApp — no app to download, no account to make. Cart management, order notes, and instant confirmation keep it simple on both sides of the counter.
-
-**WHAT MADE IT INTERESTING:** meeting customers where they already are. For a bilingual market, WhatsApp isn't a workaround — it's the primary channel, and building for it removed every step between hungry and ordered.
-
-METADATA — TITLE: `TEKGUYZ | Bilingual Restaurant Menu & WhatsApp Ordering`
-DESCRIPTION: `A photo-rich, bilingual ordering platform that takes real orders over WhatsApp — no app, no download, no account needed.`
-
----
-
-## `/work/auto-detailer` — Auto Detailer Booking & Lead Tracker
-
-TAG: Custom Web Apps
-BUILT FOR: Premium vehicle detailing shops, mobile auto services
-HEADLINE: Booking, lead tracking, and the gallery that closes the sale.
-
-A booking platform for premium detailing with responsive request forms and built-in lead tracking, so an inquiry doesn't die in an inbox. Automated scheduling, a custom gallery, and review tools built to earn the second appointment, not just the first.
-
-**WHAT MADE IT INTERESTING:** for premium detailing, the gallery *is* the pitch. Treating it as a first-class part of the booking flow rather than a separate page changed what the site was for.
-
-METADATA — TITLE: `TEKGUYZ | Auto Detailer Booking & Lead Tracker`
-DESCRIPTION: `A booking platform for premium vehicle detailing with automated scheduling, lead tracking, and review tools built to earn repeat business.`
 
 ---
 

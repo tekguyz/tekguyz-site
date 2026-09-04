@@ -1,7 +1,7 @@
 import type { SolutionSlug } from '@/config/solutions';
 
 /**
- * The typed array that drives /work, all 8 detail pages, generateStaticParams,
+ * The typed array that drives /work, all 6 detail pages, generateStaticParams,
  * JSON-LD, per-slug OG images, the live status checks, and sitemap lastModified.
  *
  * Adding an entry here must produce a complete page with no template work.
@@ -76,6 +76,15 @@ export type WorkEntry = CaseStudy | Project;
  */
 const AUTHORED = '2026-08-05';
 
+/**
+ * Date the 2026-09-04 lineup change was authored: three builds retired
+ * (`restaurant-menu`, `auto-detailer`, `meeting-organizer`), `bundle-builder`
+ * moved from case study to project, and two entries added — `ai-meeting-notes`
+ * (which supersedes the retired `ai-audio-file-insights`, the same product one
+ * full rewrite later) and `tekguyz-crm`.
+ */
+const REVISED = '2026-09-04';
+
 export const work: WorkEntry[] = [
   {
     slug: 'field-photo-reports',
@@ -108,6 +117,62 @@ export const work: WorkEntry[] = [
     title: 'TEKGUYZ | Field Photo Reports & Quality Tracking',
     description:
       'A live field-photo capture system that replaces site visits with instant, shareable reports. Try the real Admin and Installer views yourself.',
+  },
+  {
+    slug: 'ai-meeting-notes',
+    kind: 'case-study',
+    name: 'AI Meeting Notes & Transcription',
+    tag: 'SMART OPERATIONS',
+    solution: 'smart-operations',
+    headline: 'Get the notes, the takeaways, and the action items without sending a bot to the call.',
+    url: 'https://squid-ink.vercel.app',
+    poster: '/media/squid-ink.webp',
+    alt: 'AI meeting notepad showing generated takeaways with timestamp citations, per-speaker stats, and the diarized transcript alongside',
+    embeddable: false,
+    updatedAt: REVISED,
+    challenge:
+      "Meeting notes either don't get written or don't get read. The tools that promise to fix it send a bot to sit in the call — which is awkward in front of a client, blocked outright by plenty of IT policies, and still leaves you with a wall of transcript nobody goes back to.",
+    approach:
+      'We built a notepad that records the call straight from the browser, so nothing joins the meeting and nobody has to be invited. It transcribes with the speakers separated, then writes the summary, the takeaways, and the action items — and every line it writes carries a link back to the exact moment in the transcript that supports it.',
+    outcome:
+      'A written record of the meeting exists whether or not anyone took notes, and every claim in it can be checked against what was actually said instead of taken on trust.',
+    pullQuote:
+      'No bot joins the call — and every takeaway links back to the second of the transcript it came from.',
+    tryIt:
+      'Sign in with your email. It sends a link back, so there is no password to make up.',
+    howItsBuilt:
+      'In-browser system and microphone capture, batch transcription with speaker separation, and a second pass that turns the transcript into a summary, takeaways, and traceable action items. Reading lenses change how the same recording is analyzed without re-recording it.',
+    title: 'TEKGUYZ | AI Meeting Notes & Transcription',
+    description:
+      'An AI meeting notepad that records without sending a bot to the call, then writes summaries, takeaways, and action items you can trace back to the transcript.',
+  },
+  {
+    slug: 'tekguyz-crm',
+    kind: 'case-study',
+    name: 'Lead & Pipeline CRM',
+    tag: 'BUSINESS SYSTEMS',
+    solution: 'business-systems',
+    headline: 'Track every lead from first enquiry to closed deal, in one pipeline.',
+    url: 'https://tekguyz-crm.vercel.app',
+    poster: '/media/tekguyz-crm.webp',
+    alt: 'Lead and pipeline CRM reporting view showing open pipeline by stage, closed leads by outcome, and a win-rate figure',
+    embeddable: false,
+    updatedAt: REVISED,
+    challenge:
+      'Enquiries arrive in an inbox, a phone log, and a form notification, and the follow-up lives in somebody’s head. Nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
+    approach:
+      'We built the CRM we run TEKGUYZ on. The contact form on this site posts straight into it over a signed webhook, so a new enquiry becomes a tracked lead with nobody re-typing anything. Every lead carries a next-action date, and one that slips past it visibly changes state and surfaces on the day’s agenda.',
+    outcome:
+      'A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
+    pullQuote:
+      'The contact form on this page posts into it. This is the system we run our own business on.',
+    tryIt:
+      'This one is private by design — a login-gated internal tool with no public route, so the link opens a sign-in screen. Ask us for a walkthrough and we will show you the whole thing.',
+    howItsBuilt:
+      'Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself.',
+    title: 'TEKGUYZ | Lead & Pipeline CRM',
+    description:
+      'A multi-tenant CRM that captures website enquiries over a signed webhook, flags follow-ups before they go cold, and records what the pipeline was actually worth.',
   },
   {
     slug: 'ai-voice-receptionist',
@@ -153,9 +218,11 @@ export const work: WorkEntry[] = [
     description:
       'A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.',
   },
+  // ---- Projects (lighter by design; project-card never carries an image) ----
+
   {
     slug: 'bundle-builder',
-    kind: 'case-study',
+    kind: 'project',
     name: 'Shopify Bundle Builder & Storefront',
     tag: 'CUSTOM WEB APPS',
     solution: 'custom-web-apps',
@@ -164,53 +231,18 @@ export const work: WorkEntry[] = [
     poster: '/media/shopify-configurator.webp',
     alt: 'Bundle Builder storefront with product options and a running total that updates as the bundle is assembled',
     embeddable: false,
-    updatedAt: AUTHORED,
-    challenge:
-      "The retailer's existing theme couldn't handle configurable, bundled products. Customers assembling a workstation from hardware, software, and accessories had no clean way to see the total update as they chose options — so they guessed, or they left.",
-    approach:
-      "We built a custom storefront directly on Shopify's API rather than fighting the theme. Options update the running total instantly, and checkout hands off to Shopify's own secure flow — so nothing about payments or order management had to be rebuilt or re-secured.",
-    outcome:
-      "Customers can see exactly what they're building and what it costs while they build it, and the merchant keeps every piece of Shopify's existing order infrastructure.",
-    pullQuote:
-      'Watch the total update instantly as the order comes together — then check out for real, risk-free.',
+    updatedAt: REVISED,
+    builtFor: 'Retailers selling configurable, bundled, or made-to-order products',
+    summary:
+      "A headless storefront built directly on Shopify's API rather than against the theme, for a catalog where a workstation is assembled from hardware, software, and accessories. Options update the running total instantly, and checkout hands off to Shopify's own secure flow — so payments, orders, and fulfillment never had to be rebuilt or re-secured.",
+    whatMadeItInteresting:
+      "knowing which part not to build. The interesting engineering is the configurator; the payment stack already existed and was already trusted, so the job was joining the two cleanly rather than replacing either.",
     tryIt:
       'The demo is fully sandboxed. Check out for real using `1` as the card number and any other test details.',
-    howItsBuilt:
-      "Headless storefront on Shopify's API with live price computation, handing off to Shopify Checkout for payment and fulfillment.",
     title: 'TEKGUYZ | Bundle Builder — Custom Shopify Storefront',
     description:
       "A configurable product storefront built directly on Shopify's API. Build a bundle, watch the total update instantly, then check out for real in the live demo.",
   },
-  {
-    slug: 'ai-audio-file-insights',
-    kind: 'case-study',
-    name: 'AI Audio & File Insights',
-    tag: 'SMART OPERATIONS',
-    solution: 'smart-operations',
-    headline: 'Turn your files and recordings into automatic summaries and a searchable archive.',
-    url: 'https://crunch-wrap.netlify.app',
-    poster: '/media/crunch-wrap-dashboard.webp',
-    alt: 'AI Audio & File Insights workspace showing automatic summaries, action items, and a searchable archive',
-    embeddable: false,
-    updatedAt: AUTHORED,
-    challenge:
-      "Consultants and ops teams were losing details buried in audio recordings and documents. The information existed — it just wasn't findable, so the same questions got re-asked and the same recordings got re-listened to.",
-    approach:
-      'We built a workspace that listens to your files, pulls out what matters, and organizes it automatically into summaries, action trackers, and an archive you can actually search.',
-    outcome:
-      'Details that used to be effectively lost the moment a recording ended are now findable in seconds by anyone on the team.',
-    pullQuote:
-      'Never lose track of a small but important detail buried in a long recording, ever again.',
-    tryIt: "There's a demo button at the bottom of the sign-in page — no account needed.",
-    howItsBuilt:
-      'Audio and document ingestion, automatic transcription and extraction, structured summaries and action items, full-text search across everything.',
-    title: 'TEKGUYZ | AI Audio & File Insights',
-    description:
-      'A digital workspace that turns recordings and documents into automatic summaries and a searchable archive. Try it — no account required.',
-  },
-
-  // ---- Projects (lighter by design; project-card never carries an image) ----
-
   {
     slug: 'team-performance',
     kind: 'project',
@@ -233,71 +265,42 @@ export const work: WorkEntry[] = [
     description:
       'Desk-phone logs connected straight to the CRM, plus a smart-limit SMS feedback loop that only surveys customers when it actually matters.',
   },
-  {
-    slug: 'meeting-organizer',
-    kind: 'project',
-    name: 'Automated Meeting & Research Organizer',
-    tag: 'SMART OPERATIONS',
-    solution: 'smart-operations',
-    headline: 'Record the meeting, get the follow-up automatically.',
-    url: 'https://crispy-bacon.netlify.app',
-    poster: '/media/meeting-organizer-thumb.webp',
-    alt: 'Automated Meeting & Research Organizer showing extracted takeaways and action items in a searchable archive',
-    embeddable: false,
-    updatedAt: AUTHORED,
-    builtFor: 'Professionals and teams who record meetings and need organized follow-up',
-    summary:
-      'A secure recording tool that pulls out takeaways and action items on its own, then files everything into a clean, searchable archive — so the notes exist whether or not anyone remembered to take them.',
-    whatMadeItInteresting:
-      'the archive matters more than the transcript. Anyone can transcribe a meeting; the value is being able to find the one thing that was said three weeks ago.',
-    tryIt: 'Sign up with your email to use it.',
-    title: 'TEKGUYZ | Automated Meeting & Research Organizer',
-    description:
-      "A secure recording tool that extracts takeaways and action items automatically, filed into a searchable archive you'll actually use later.",
-  },
-  {
-    slug: 'restaurant-menu',
-    kind: 'project',
-    name: 'Bilingual Restaurant Menu & WhatsApp Ordering',
-    tag: 'CUSTOM WEB APPS',
-    solution: 'custom-web-apps',
-    headline: 'A photo menu customers order from directly in WhatsApp.',
-    url: 'https://dragonfly-nica.netlify.app',
-    poster: '/media/dragonfly-nica-thumb.webp',
-    alt: 'Bilingual restaurant menu with a photo-rich item grid and WhatsApp ordering',
-    embeddable: false,
-    updatedAt: AUTHORED,
-    builtFor: 'Local restaurants, food vendors, bilingual markets',
-    summary:
-      'A bilingual ordering platform where customers browse a photo-rich menu and send their order straight through WhatsApp — no app to download, no account to make. Cart management, order notes, and instant confirmation keep it simple on both sides of the counter.',
-    whatMadeItInteresting:
-      "meeting customers where they already are. For a bilingual market, WhatsApp isn't a workaround — it's the primary channel, and building for it removed every step between hungry and ordered.",
-    title: 'TEKGUYZ | Bilingual Restaurant Menu & WhatsApp Ordering',
-    description:
-      'A photo-rich, bilingual ordering platform that takes real orders over WhatsApp — no app, no download, no account needed.',
-  },
-  {
-    slug: 'auto-detailer',
-    kind: 'project',
-    name: 'Auto Detailer Booking & Lead Tracker',
-    tag: 'CUSTOM WEB APPS',
-    solution: 'custom-web-apps',
-    headline: 'Booking, lead tracking, and the gallery that closes the sale.',
-    url: 'https://the-executivedetailer.vercel.app',
-    poster: '/media/executive-detailer-thumb.webp',
-    alt: 'Auto detailer booking platform with a request form, scheduling, and a work gallery',
-    embeddable: false,
-    updatedAt: AUTHORED,
-    builtFor: 'Premium vehicle detailing shops, mobile auto services',
-    summary:
-      "A booking platform for premium detailing with responsive request forms and built-in lead tracking, so an inquiry doesn't die in an inbox. Automated scheduling, a custom gallery, and review tools built to earn the second appointment, not just the first.",
-    whatMadeItInteresting:
-      'for premium detailing, the gallery is the pitch. Treating it as a first-class part of the booking flow rather than a separate page changed what the site was for.',
-    title: 'TEKGUYZ | Auto Detailer Booking & Lead Tracker',
-    description:
-      'A booking platform for premium vehicle detailing with automated scheduling, lead tracking, and review tools built to earn repeat business.',
-  },
+  /* RETIRED 2026-09-04, and the reason is worth keeping so nobody re-adds them.
+   *
+   * `meeting-organizer` (crispy-bacon.netlify.app) was the SAME PRODUCT as
+   * `ai-meeting-notes` one full rewrite earlier. Listing both showed a visitor
+   * one app twice, with the worse version presented as separate work.
+   *
+   * `restaurant-menu` (dragonfly-nica) and `auto-detailer` (the-executivedetailer)
+   * were retired by the owner as carrying no real value for the site. Their
+   * posters were deleted from `public/media/` in the same change, so
+   * `check:media` would fail the build if an entry came back without one.
+   */
 ];
+
+/**
+ * The number of live builds, SPELLED, for the two places copy says it out loud:
+ * `/work`'s page hero and the home fold board's "See all N builds" link.
+ *
+ * Both of those read "eight" as a hand-typed word from 2026-08-29 until
+ * 2026-09-04, when the lineup dropped to six and both sentences became false at
+ * once. Nothing in the build could see it — a count typed into a string is
+ * invisible to tsc, to ESLint, and to `check:media`, and the only reader who
+ * would ever catch it is a visitor counting the cards.
+ *
+ * So it is derived. Prose spells counts under ten; past nine the digit is
+ * correct anyway, and returning `String(n)` there is deliberate rather than a
+ * gap. Callers capitalize at the sentence start themselves — this returns
+ * lowercase, because that is what the mid-sentence caller needs and the
+ * sentence-start caller is the one that can afford a helper.
+ */
+const SPELLED = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+
+export const buildCountWord = SPELLED[work.length] ?? String(work.length);
+
+/** Sentence-start form of `buildCountWord`. */
+export const buildCountWordCapitalized =
+  buildCountWord.charAt(0).toUpperCase() + buildCountWord.slice(1);
 
 export const caseStudies = work.filter((w): w is CaseStudy => w.kind === 'case-study');
 export const projects = work.filter((w): w is Project => w.kind === 'project');
@@ -347,9 +350,20 @@ export const featured = featuredSlugs
  * build the verified Google review describes, so the fold's review fact and its
  * amber card are no longer the same claim from two directions. The review fact
  * still stands on its own — it links to Google, which is where it is checkable.
+ *
+ * [amended 2026-09-04] TWO OF THE FOUR SLOTS CHANGED, and the "every slot is a
+ * case study" rule above now has ONE EXCEPTION that is named rather than
+ * quietly broken. `ai-audio-file-insights` became `ai-meeting-notes` — the same
+ * product one full rewrite later, so the smart-operations slot is unchanged in
+ * kind. `bundle-builder` moved from case study to PROJECT in the same change,
+ * at the owner's direction, and it is the only build on the custom-web-apps
+ * line, so the teal slot is now a project card. The alternative was leaving
+ * teal empty, which destroys the four-accent legend this board exists to be —
+ * a thinner fourth card is the cheaper cost. If a second custom-web-apps case
+ * study ever ships, this slot should take it.
  */
 export const foldSlugs = [
-  'ai-audio-file-insights',
+  'ai-meeting-notes',
   'ai-voice-receptionist',
   'field-photo-reports',
   'bundle-builder',

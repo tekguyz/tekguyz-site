@@ -48,7 +48,7 @@ export const solutions: Solution[] = [
       'Task and workflow automation across your tools',
       'Real-time operational alerts when something needs you',
     ],
-    relatedWork: ['AI Audio & File Insights', 'Automated Meeting & Research Organizer'],
+    relatedWork: ['AI Meeting Notes & Transcription'],
     cta: { label: 'Talk about automating this', href: '/contact?interest=smart-operations' },
     serviceDescription:
       'Custom AI assistants, automated data sorting, and workflow automation that handle the repetitive work your business generates every hour.',
@@ -98,6 +98,7 @@ export const solutions: Solution[] = [
     ],
     relatedWork: [
       'Field Photo Reports & Quality Tracking',
+      'Lead & Pipeline CRM',
       'Team Performance & Automated Customer Feedback',
     ],
     cta: { label: 'Talk about consolidating this', href: '/contact?interest=business-systems' },
@@ -123,11 +124,7 @@ export const solutions: Solution[] = [
       'Appointment and scheduling portals',
       'Client-facing dashboards',
     ],
-    relatedWork: [
-      'Shopify Bundle Builder & Storefront',
-      'Bilingual Restaurant Menu & WhatsApp Ordering',
-      'Auto Detailer Booking & Lead Tracker',
-    ],
+    relatedWork: ['Shopify Bundle Builder & Storefront'],
     cta: { label: 'Describe what you need built', href: '/contact?interest=custom-web-apps' },
     serviceDescription:
       'Ordering and cart systems, headless e-commerce, scheduling and booking portals, and client-facing dashboards.',

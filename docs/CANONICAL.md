@@ -136,7 +136,17 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
    `ai-audio-file-insights`) each carry `challenge`, `approach`, `outcome`,
    `pullQuote`, `tryIt` and `howItsBuilt`; the 4 projects (`team-performance`,
    `meeting-organizer`, `restaurant-menu`, `auto-detailer`) each carry
-   `builtFor`, `summary` and `whatMadeItInteresting`. All verbatim from
+   `builtFor`, `summary` and `whatMadeItInteresting`.
+
+   **[amended 2026-09-04] Six of those eight slugs no longer exist, and the
+   RULE this row records is unaffected — every entry still carries full
+   narrative content, which is what was being asserted.** The lineup is now 4
+   case studies (`field-photo-reports`, `ai-meeting-notes`, `tekguyz-crm`,
+   `ai-voice-receptionist`) and 2 projects (`bundle-builder`,
+   `team-performance`). `ai-audio-file-insights` → `ai-meeting-notes` is the
+   same product one full rewrite later; `bundle-builder` moved tier;
+   `meeting-organizer`, `restaurant-menu` and `auto-detailer` were retired.
+   **Read `content/work.ts` for the live set — never this paragraph.** All verbatim from
    `docs/COPY.md`; renders at `/work/[slug]`. The one copy defect found in the
    same pass — Field Photo Reports' Outcome/Pull Quote — was reworded in
    `content/work.ts` and `COPY.md` in the same commit, with **no invented

@@ -50,15 +50,13 @@ const WORK = [
   'field-photo-reports',
   'ai-voice-receptionist',
   'bundle-builder',
-  'ai-audio-file-insights',
+  'ai-meeting-notes',
+  'tekguyz-crm',
   'team-performance',
-  'meeting-organizer',
-  'restaurant-menu',
-  'auto-detailer',
 ];
 const SOLUTIONS = ['smart-operations', 'ai-voice-agents', 'business-systems', 'custom-web-apps'];
 
-/** All 18 rendered routes. */
+/** All 16 rendered routes. */
 const ROUTES: string[] = [
   '/',
   '/solutions',

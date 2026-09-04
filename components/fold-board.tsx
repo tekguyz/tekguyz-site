@@ -7,7 +7,7 @@ import { AccentDot } from '@/components/solution-tag';
 import { StatusLine } from '@/components/status-line';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { site } from '@/lib/site';
-import type { WorkEntry } from '@/content/work';
+import { buildCountWord, type WorkEntry } from '@/content/work';
 import type { StatusResult } from '@/lib/status';
 
 /**
@@ -256,7 +256,12 @@ export function FoldBoard({
             href="/work"
             className="tap-44 tg-rule tg-rule-rest text-[length:var(--text-body)] font-semibold"
           >
-            See all eight builds
+            {/* Counted, never typed. This label read "See all eight builds" from
+                2026-08-29 until 2026-09-04, when the lineup dropped to six and
+                the sentence became a lie no linter could see. A hand-typed
+                count of a list that lives in another file is a stale claim
+                waiting to happen, so it is derived. */}
+            See all {buildCountWord} builds
           </Link>
 
           <div className="text-secondary flex flex-wrap items-center gap-x-[22px] gap-y-[10px] text-[length:var(--text-sm)] leading-[1.55] max-[766px]:flex-col max-[766px]:items-start">
