@@ -32,7 +32,7 @@ previous session's and is **not** carried forward — read this one first.
 | `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
 | `bun run build` | **passes.** 6 `/work/[slug]` pages + 6 OG images generated | `bun run build` |
 | Typecheck | **clean, exit 0** | `bunx tsc --noEmit` |
-| Push state | **UNPUSHED at the time of writing.** Push means production here | `git status -sb` |
+| Push state | **PUSHED and LIVE.** `fed530e` deployed to production, Ready in 32s. Measured after: `/work` 200, `/work/tekguyz-crm` 200, `/work/ai-meeting-notes` 200, `/work/auto-detailer` **404**, `/work/ai-audio-file-insights` **404**, and the live `sitemap.xml` lists exactly the 6 current work routes and none of the retired ones | `git log origin/master` · `vercel ls` · `curl -o /dev/null -w '%{http_code}'` |
 
 ### The lineup change
 
