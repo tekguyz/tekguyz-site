@@ -27,7 +27,7 @@ a new person the shape of the portfolio without opening five repositories.
 | Doc | Product | Site entry | Public? |
 | --- | --- | --- | --- |
 | [`squid-ink.md`](squid-ink.md) | AI meeting notepad (working name "Squid Ink") | `/work/ai-meeting-notes` | Sign-in required |
-| [`tekguyz-crm.md`](tekguyz-crm.md) | Lead & pipeline CRM | `/work/tekguyz-crm` | **No** — login-gated, no public route |
+| [`tekguyz-crm.md`](tekguyz-crm.md) | Lead & pipeline CRM | `/work/tekguyz-crm` | **`/demo` only** — one click, read-only. The bare origin is still login-gated |
 | [`field-ops.md`](field-ops.md) | Field Ops / StoneApp Operations Hub | *(see caveat in that doc)* | — |
 | [`reporter-resource.md`](reporter-resource.md) | Reporter Resource storefront | `/work/bundle-builder` | Yes, sandboxed |
 

@@ -413,10 +413,12 @@ A lead cannot quietly go cold without showing it, and closed work carries a reco
 The contact form on this page posts into it. This is the system we run our own business on.
 
 **TRY IT**
-This one is private by design — a login-gated internal tool with no public route, so the link opens a sign-in screen. Ask us for a walkthrough and we will show you the whole thing.
+One click puts you inside a live, seeded copy — no signup, no password, no email. It is read-only, so browse the whole thing: the day's agenda, the pipeline board, a lead's full timeline, the revenue report. Nothing to save, nothing to break.
+
+*(Rewritten 2026-09-04, replacing a line that apologised for a login wall. **The read-only promise is a factual constraint, not a hedge** — the demo visitor is a Postgres role holding SELECT and nothing else, so a write is refused by the database rather than by the UI. Never write copy here that invites a visitor to create, save, or edit: they would be describing a thing the visitor is about to be denied. Demo link is `https://tekguyz-crm.vercel.app/demo`, **never the bare origin**, which is still login-gated.)*
 
 **HOW IT'S BUILT**
-Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself.
+Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.
 
 > **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Reports view, but the org shown is **TEKGUYZ Demo** and every figure on it — open pipeline, realized revenue, win rate — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
 

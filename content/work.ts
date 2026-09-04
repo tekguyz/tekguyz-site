@@ -153,7 +153,15 @@ export const work: WorkEntry[] = [
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
     headline: 'Track every lead from first enquiry to closed deal, in one pipeline.',
-    url: 'https://tekguyz-crm.vercel.app',
+    // `/demo`, never the bare origin. The origin is login-gated with no public
+    // route, so it resolved to a sign-in wall while the status line beside it
+    // read "Live" — true, and not what "Live demo" promises. `/demo` signs the
+    // visitor into a seeded instance in one click. Verified 2026-09-04: the
+    // bare origin 307s to `/login`; `/demo` 307s to `/` and lands on the real
+    // app. **Check it without `curl -L`** — following the redirect reports a
+    // misleading 200 from the login page, which is what made this look ready a
+    // day before it was.
+    url: 'https://tekguyz-crm.vercel.app/demo',
     poster: '/media/tekguyz-crm.webp',
     alt: 'Lead and pipeline CRM reporting view showing open pipeline by stage, closed leads by outcome, and a win-rate figure',
     embeddable: false,
@@ -166,10 +174,15 @@ export const work: WorkEntry[] = [
       'A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
     pullQuote:
       'The contact form on this page posts into it. This is the system we run our own business on.',
+    // Promises BROWSING, never editing, and that is a factual constraint rather
+    // than a hedge: the demo visitor is a Postgres role holding SELECT and
+    // nothing else, so a write is refused by the database, not by the UI. Copy
+    // that implied "create a lead and see what happens" would be describing a
+    // thing the visitor is about to be denied.
     tryIt:
-      'This one is private by design — a login-gated internal tool with no public route, so the link opens a sign-in screen. Ask us for a walkthrough and we will show you the whole thing.',
+      'One click puts you inside a live, seeded copy — no signup, no password, no email. It is read-only, so browse the whole thing: the day’s agenda, the pipeline board, a lead’s full timeline, the revenue report. Nothing to save, nothing to break.',
     howItsBuilt:
-      'Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself.',
+      'Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.',
     title: 'TEKGUYZ | Lead & Pipeline CRM',
     description:
       'A multi-tenant CRM that captures website enquiries over a signed webhook, flags follow-ups before they go cold, and records what the pipeline was actually worth.',

@@ -18,7 +18,7 @@
 | Compiled | 2026-09-03 |
 | Deployed | `tekguyz-crm.vercel.app` |
 | Site entry | `/work/tekguyz-crm` (case study) |
-| Public access | **None.** Login-gated, `robots: { index: false, follow: false }`, and middleware redirects every path outside a small crawler allowlist to `/login`. |
+| Public access | **`/demo` only, shipped 2026-09-04.** One GET signs a visitor into a live seeded instance and redirects to `/` — no signup, no password, no email. The identity behind it is a **`demo_readonly` Postgres role holding SELECT and nothing else**, so a write is refused by the database, not the UI. `/demo` is **explicitly allowlisted** in `src/lib/supabase/middleware.ts` rather than inheriting the `/api/` exemption, because an accidental exemption is not a decision. **Everything else is unchanged:** the bare origin still 307s to `/login`, `robots: { index: false, follow: false }` still stands, and `/api/dev-login` keeps its `NODE_ENV === "development"` guard — that identity is an OWNER and stays development-only. |
 
 > **Screenshot caveat — carry this into any copy.**
 > `public/media/tekguyz-crm.webp` on the site is the real product's real Reports
