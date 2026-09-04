@@ -125,7 +125,7 @@ EYEBROW: OUR WORK
 HEADLINE: Two we're proud of.
 DESCRIPTION: Both are running right now. Open either one and use it yourself.
 
-*(Field Photo Reports, then AI Voice Receptionist. Full set on /work.)*
+*(Field Photo Reports, then AI Meeting Notes. **Changed 2026-09-04** — these are the first two of `caseStudies` in array order, which is what /work shows one click later; the pair had been left untouched when the lineup was rewritten, so the two pages disagreed about which builds lead. It also removes a third appearance of AI Voice Receptionist on this one page — it is already the hero poster and the violet fold card. Full set on /work.)*
 
 ## Testimonial
 
@@ -401,13 +401,15 @@ TAG: Business Systems
 HEADLINE: Track every lead from first enquiry to closed deal, in one pipeline.
 
 **THE CHALLENGE**
-Enquiries arrive in an inbox, a phone log, and a form notification, and the follow-up lives in somebody's head. Nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.
+Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody's head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.
 
 **THE APPROACH**
-We built the CRM we run TEKGUYZ on. The contact form on this site posts straight into it over a signed webhook, so a new enquiry becomes a tracked lead with nobody re-typing anything. Every lead carries a next-action date, and one that slips past it visibly changes state and surfaces on the day's agenda.
+We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, a lead-finding pipeline we built alongside it goes and finds qualified local businesses, and those land in their own staging lane — cold prospects, never leads, until a real conversation promotes one across.
+
+*(Rewritten 2026-09-04. **The poster is the Reports view, which counts prospects that arrived through the OUTBOUND half**, and this paragraph described only the inbound form — so the page was explaining a system its own picture was not showing. **Never write "leads flow in automatically" here.** A scraped business is a `prospects` row and becomes a `leads` row only when a human presses Promote after a real conversation; the automated path is deliberately not built. Source: `docs/kb/leadgen.md`.)*
 
 **THE OUTCOME**
-A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.
+Everything worth chasing lives in one pipeline instead of an inbox and a spreadsheet. A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.
 
 **PULL QUOTE**
 The contact form on this page posts into it. This is the system we run our own business on.
@@ -418,12 +420,12 @@ One click puts you inside a live, seeded copy — no signup, no password, no ema
 *(Rewritten 2026-09-04, replacing a line that apologised for a login wall. **The read-only promise is a factual constraint, not a hedge** — the demo visitor is a Postgres role holding SELECT and nothing else, so a write is refused by the database rather than by the UI. Never write copy here that invites a visitor to create, save, or edit: they would be describing a thing the visitor is about to be denied. Demo link is `https://tekguyz-crm.vercel.app/demo`, **never the bare origin**, which is still login-gated.)*
 
 **HOW IT'S BUILT**
-Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.
+Multi-tenant Postgres with row-level security, signed webhook lead capture, a prospect-import path fed by our own lead-finding pipeline, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.
 
 > **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Reports view, but the org shown is **TEKGUYZ Demo** and every figure on it — open pipeline, realized revenue, win rate — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
 
 METADATA — TITLE: `TEKGUYZ | Lead & Pipeline CRM`
-DESCRIPTION: `A multi-tenant CRM that captures website enquiries over a signed webhook, flags follow-ups before they go cold, and records what the pipeline was actually worth.`
+DESCRIPTION: `A multi-tenant CRM fed by website enquiries and by our own lead-finding pipeline, that flags follow-ups before they go cold and records what the pipeline was actually worth.`
 
 ---
 

@@ -63,10 +63,16 @@ Three concrete problems it exists to solve:
 What the repository actually records about origin, and nothing more:
 
 - It was built for **TEKGUYZ** and named for it.
-- It has **one real external caller**: the contact form on tekguyz.com, whose
-  code lives in this repository. That form was updated here when webhook signing
-  changed on 2026-08-18, and a real submission confirmed the deploy on
-  2026-08-19.
+- It has **one real external caller** over the webhook: the contact form on
+  tekguyz.com, whose code lives in this repository. That form was updated here
+  when webhook signing changed on 2026-08-18, and a real submission confirmed
+  the deploy on 2026-08-19.
+- **A second inbound path exists and is not a caller.** `tekguyz-leadgen`
+  produces CSVs that a human imports at `/prospects/import`. It is a **file
+  handoff, not an integration** — nothing writes to `import_prospects_chunk`
+  automatically, by decision, and that repo's own status file says nothing will
+  until a conversion signal exists. See [`leadgen.md`](leadgen.md). **Site copy
+  must never describe this as automatic.**
 - It was **multi-tenant from the schema up**, not retrofitted — tenancy was
   Prompt 2 of the original build, and a Principal Architect audit of that first
   schema produced the security rules in §6 before feature work continued.
@@ -160,7 +166,7 @@ Authoritative detail — every column, policy and index — is that repo's
 | `lead_submissions` | Immutable, append-only. One row per inbound enquiry — what that enquiry actually said. |
 | `tasks` | Per-lead follow-ups. Carries `dismissed`; no DELETE grant and no DELETE policy exist. |
 | `activity_logs` | Timeline events per lead, including the SYSTEM_ALERT rows the spam shield writes. |
-| `prospects` | Cold-outreach staging, keyed on `place_id`. `promoted_lead_id` is the **only** truth about whether a prospect became a lead. |
+| `prospects` | Cold-outreach staging, keyed on `place_id`. `promoted_lead_id` is the **only** truth about whether a prospect became a lead. **Fed by `tekguyz-leadgen`** — see [`leadgen.md`](leadgen.md); its CSV header row is a two-repo contract copied verbatim into `src/lib/validation/csv-prospect-schema.ts`, and `place_id` is compared case-sensitively on both sides. |
 | `report_sends` | Weekly-report send tracking. Service-role only. |
 
 ### SECURITY DEFINER RPCs

@@ -167,11 +167,23 @@ export const work: WorkEntry[] = [
     embeddable: false,
     updatedAt: REVISED,
     challenge:
-      'Enquiries arrive in an inbox, a phone log, and a form notification, and the follow-up lives in somebody’s head. Nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
+      'Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody’s head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
+    // BOTH DIRECTIONS ARE NAMED, and that is a correction rather than an
+    // expansion. The poster is the Reports view, which counts prospects that
+    // arrived through the OUTBOUND half, and this paragraph described only the
+    // inbound form — so the page was explaining a system its own picture was
+    // not showing.
+    //
+    // The staging lane is stated rather than smoothed over, because it is the
+    // load-bearing part. A scraped business is a `prospects` row and becomes a
+    // `leads` row only when a human presses Promote after a real conversation.
+    // "Leads flow in automatically" would describe something deliberately NOT
+    // built, and would put uncontacted strangers into the pipeline the business
+    // actually runs on. See docs/kb/leadgen.md.
     approach:
-      'We built the CRM we run TEKGUYZ on. The contact form on this site posts straight into it over a signed webhook, so a new enquiry becomes a tracked lead with nobody re-typing anything. Every lead carries a next-action date, and one that slips past it visibly changes state and surfaces on the day’s agenda.',
+      'We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, a lead-finding pipeline we built alongside it goes and finds qualified local businesses, and those land in their own staging lane — cold prospects, never leads, until a real conversation promotes one across.',
     outcome:
-      'A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
+      'Everything worth chasing lives in one pipeline instead of an inbox and a spreadsheet. A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
     pullQuote:
       'The contact form on this page posts into it. This is the system we run our own business on.',
     // Promises BROWSING, never editing, and that is a factual constraint rather
@@ -182,10 +194,10 @@ export const work: WorkEntry[] = [
     tryIt:
       'One click puts you inside a live, seeded copy — no signup, no password, no email. It is read-only, so browse the whole thing: the day’s agenda, the pipeline board, a lead’s full timeline, the revenue report. Nothing to save, nothing to break.',
     howItsBuilt:
-      'Multi-tenant Postgres with row-level security, signed webhook lead capture, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.',
+      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a prospect-import path fed by our own lead-finding pipeline, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.',
     title: 'TEKGUYZ | Lead & Pipeline CRM',
     description:
-      'A multi-tenant CRM that captures website enquiries over a signed webhook, flags follow-ups before they go cold, and records what the pipeline was actually worth.',
+      'A multi-tenant CRM fed by website enquiries and by our own lead-finding pipeline, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
   },
   {
     slug: 'ai-voice-receptionist',
@@ -318,8 +330,22 @@ export const buildCountWordCapitalized =
 export const caseStudies = work.filter((w): w is CaseStudy => w.kind === 'case-study');
 export const projects = work.filter((w): w is Project => w.kind === 'project');
 
-/** Home shows exactly two, in this order (CANONICAL §4). */
-export const featuredSlugs = ['field-photo-reports', 'ai-voice-receptionist'] as const;
+/**
+ * Home shows exactly two, in this order (CANONICAL §4).
+ *
+ * [changed 2026-09-04] The second slot was `ai-voice-receptionist` and is now
+ * `ai-meeting-notes` — **the first two of `caseStudies` in array order**, which
+ * is what `/work` shows a visitor one click later. The old pair was left
+ * untouched when the lineup was rewritten earlier the same day, so the home
+ * band and the work index disagreed about which builds lead.
+ *
+ * It also fixes a repeat this page could not afford: `ai-voice-receptionist` is
+ * ALREADY the hero's poster and the violet card on the fold board. Holding the
+ * ink band as well made it three appearances on one page while
+ * `ai-meeting-notes` had one. The voice build loses nothing — it is still the
+ * hero, still on the board, still a case study.
+ */
+export const featuredSlugs = ['field-photo-reports', 'ai-meeting-notes'] as const;
 export const featured = featuredSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is CaseStudy => w?.kind === 'case-study');

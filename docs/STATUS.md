@@ -70,6 +70,33 @@ alternative was an empty teal slot, which destroys the four-accent legend the
 board exists to be. Recorded at the constant in `content/work.ts`; if a second
 custom-web-apps case study ever ships, that slot should take it.
 
+### Two corrections after the lineup shipped, both from the owner
+
+**1 · The home ink band still led with the old pair.** `featuredSlugs` was
+`['field-photo-reports', 'ai-voice-receptionist']` and was never touched when
+the lineup was rewritten, so the home page and `/work` disagreed about which
+builds lead. It is now `['field-photo-reports', 'ai-meeting-notes']` — **the
+first two of `caseStudies` in array order**, which is what a visitor sees one
+click later. It also removes a third appearance of `ai-voice-receptionist` on
+one page; that build is already the hero poster and the violet fold card.
+
+**2 · The CRM copy described only half the system its own poster shows.** The
+poster is the Reports view, which counts prospects that arrived through the
+OUTBOUND half, and the copy named only the inbound contact form. `challenge`,
+`approach`, `outcome`, `howItsBuilt` and the meta `description` now name both
+directions. **The staging lane is stated rather than smoothed over:** a scraped
+business is a `prospects` row and becomes a `leads` row only when a human
+presses Promote after a real conversation. **"Leads flow in automatically" is
+banned copy here** — it would describe something deliberately not built, and
+`tekguyz-leadgen`'s own status file says nothing writes to the CRM until a
+conversion signal exists. Today it is a CSV handoff a human runs.
+
+**New: `docs/kb/leadgen.md`**, the sixth KB document. `tekguyz-leadgen` gets
+**no `/work` entry, deliberately** — it is a local CLI with no UI and nothing a
+visitor can open, and every `/work` entry is "open it and use it yourself". Its
+unit economics are internal and unpublishable. Recorded in PLAYBOOK §7 so the
+absence reads as a decision rather than an oversight.
+
 ### Open, from this change
 
 | Item | Note |
