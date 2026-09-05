@@ -28,21 +28,23 @@ Skills do not load themselves. Invoke the one that matches **before** starting, 
 
 | Situation | Skill |
 | --- | --- |
-| Deciding how something **looks or feels** — layout, motion, type, density, a component's treatment | `frontend-design` |
-| **Inventing** behavior that isn't already specified in `docs/DESIGN.md` | `superpowers:brainstorming` **first**, then `frontend-design` |
+| Deciding how something **looks or feels** — layout, motion, type, density, a component's treatment | `impeccable` |
+| **Inventing** behavior that isn't already specified in `docs/DESIGN.md` | `superpowers:brainstorming` **first**, then build it |
 | A bug, a test failure, anything behaving unexpectedly | `superpowers:systematic-debugging` |
 | Before a push, or after a batch of edits | `/code-review` |
 | Implementing a decision that is already written down | none — just build it |
 | **Critiquing or polishing UI that already exists** — hierarchy, spacing, alignment, contrast, motion, empty and error states | `impeccable` — `/impeccable critique <file>` before finalizing, `/impeccable polish` after |
 | Reviewing React/Next performance, or Web Interface Guidelines compliance | `vercel-react-best-practices` · `web-design-guidelines` |
 
+**`frontend-design` was uninstalled on 2026-09-05 and every row above that named it now names `impeccable` or nothing.** The two are both opinionated visual-direction skills, and two design vocabularies in one session cancel each other out; `impeccable` is the one that stays because it also ships a deterministic detector. Related, and the reason this table is now shorter than it looks: a *prompt* should not name a skill at all — `engineering/workspace-instructions.md` v3.0 §7 in `tekguyz-one` carries the incident. This table is the repo's own record of what a session here can reach for, which is a different thing from a planning prompt ordering one.
+
 **`impeccable` costs 165 KB to boot here, and that is behaviour, not a bug.** Its `scripts/context.mjs` loader searches `docs/`, finds `docs/DESIGN.md`, and prints the whole file — roughly 42,000 tokens before it does any work. That is correct for a skill whose job is honouring an incumbent visual world, and this project has one. **So invoke it for real UI work, never to answer a question.**
 
 Two things it did **not** do, and one it must never do. It did not write `docs/DESIGN.md` — that is v2.6 of this project's own system and predates the skill; impeccable only finds it. It does not need `PRODUCT.md`: its `init` flow wants to write one at the repo root, but `CANONICAL.md`, `COPY.md` and `PLAYBOOK.md` already hold product truth, and a fifth authority is exactly what the authority order exists to prevent. **Never let it write a `PRODUCT.md` or a root `DESIGN.md` here** — its DESIGN.md format carries token values in YAML frontmatter, which would put a second copy of every number outside `TOKENS.md` and outside the `check:design` guard. Its narrow commands (`critique`, `polish`, `audit`, `layout`, `typeset`, `colorize`) read the CSS and components directly and run without either file.
 
-**The user is not a designer and cannot brief you in design vocabulary. Do not ask them to.** Bring options they can react to; that is what `brainstorming` and `frontend-design` are for. Asking the user to describe what they want in jargon they don't have is how this project ended up with one motion idea and a spec nobody designed.
+**The user is not a designer and cannot brief you in design vocabulary. Do not ask them to.** Bring options they can react to; that is what `brainstorming` and a rendered comparison are for. Asking the user to describe what they want in jargon they don't have is how this project ended up with one motion idea and a spec nobody designed.
 
-**Two tools, two vocabularies.** The user also runs a separate Claude.ai Project for early-stage conversations, with its own Workflow Gates — Discovery / Blueprint / Prompt-pack. That is unrelated to the Build Phases in `docs/STATUS.md`; if a prompt arrives referencing a "blueprint" or a decision "from Discovery," it's the output of that other tool — treat it as a direction already decided, not an instruction to re-run brainstorming here. The reverse also holds: an aesthetic decision belongs here, not there — Claude.ai's Discovery gate is text-only and can't render an option to react to, which is the entire reason `frontend-design` exists.
+**Two tools, two vocabularies.** The user also runs a separate Claude.ai Project for early-stage conversations, with its own Workflow Gates — Discovery / Blueprint / Prompt-pack. That is unrelated to the Build Phases in `docs/STATUS.md`; if a prompt arrives referencing a "blueprint" or a decision "from Discovery," it's the output of that other tool — treat it as a direction already decided, not an instruction to re-run brainstorming here. The reverse also holds: an aesthetic decision belongs here, not there — Claude.ai's Discovery gate is text-only and can't render an option to react to, which is the entire reason aesthetic work happens in Claude Code at all.
 
 ## Reading the docs — don't read them all
 
