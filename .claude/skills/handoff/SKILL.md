@@ -174,6 +174,7 @@ attached; do not re-derive them here.
 **Live:** <what tekguyz.com is serving — commit sha + one line, from `vercel ls`>
 **Repo:** <clean / N uncommitted files> · <in sync with origin / N unpushed>
 **Gates:** <build / test / lint — real result, or "not run this session">
+**Docs changed this audit:** <file · file, or "none — every claim measured accurate">
 
 ### Shipped since last handoff
 - <one line per batch, with the measured figure that matters>
@@ -207,6 +208,10 @@ Rules for the block:
   that, and it is the highest-value part of the block.
 - **No hedging, no filler.** "Wave 3 shipped" or "Wave 3 is uncommitted" — never
   "Wave 3 is essentially complete".
-- **A handoff block means the attachments are stale.** It is generated after the
-  docs were audited and repaired, so they have almost certainly changed. End the
-  response by telling the user to re-upload the three.
+- **Never claim the attachments are stale on the strength of the block
+  existing.** This bullet used to read "a handoff block means the attachments
+  are stale ... end the response by telling the user to re-upload the three,"
+  and it fired unconditionally -- including on an audit that measured everything
+  accurate and changed nothing. An always-on warning is an ignored warning. The
+  `Docs changed this audit:` line above is the fact; name only the files it
+  names, and say plainly that the rest are current.
