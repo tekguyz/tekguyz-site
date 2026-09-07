@@ -37,6 +37,13 @@ Two instructions were in tension: *keep the current visual direction, elevated* 
 
 Stays (real equity, also live in GBP, social, and the CRM product): the four accents and their locked mapping to Solution lines; ink-on-white with no accent ever filling a button; Geist as the single typeface (Inter dropped in DESIGN.md §2 — the two were redundant); the Connected Nodes mark; every anti-template rule from Design System v1.2 — none relaxed.
 
+**[amended 2026-09-07] Every "eight" below and in §2/§9 is the ORIGINAL PLAN'S
+count, not a current one.** The work lineup became **six** on 2026-09-04 — four
+case studies, two projects. Those sentences are left standing because they are
+the reasoning that produced `/work/[slug]`, and that reasoning is unchanged by
+the count; only the number aged. **Read `content/work.ts` for the live set, and
+never take a build count from this document.**
+
 Changes, and this is why it won't look like today's site:
 
 - **Type scale.** The current hero is 46px on desktop — that's a section header. Moving to fluid `clamp()` topping near 96px, tracking −0.04em, body steady at ~17px. A 5–6× hero-to-body ratio reads as confident; 2.7× reads as cautious. Single highest-impact change on the list.
@@ -95,7 +102,7 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
 
 1. Signature stripe
 2. **Hero** — headline at full scale, subhead, dual CTA, static `sarah-poster.webp` (16:9). There is no video loop — the old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28; see §1.
-3. **Proof line** — one sentence, no card: *Eight live builds. Open any of them right now.*
+3. ~~**Proof line** — one sentence, no card: *Eight live builds. Open any of them right now.*~~ **Superseded twice; this row was stale until 2026-09-07.** The proof line became the three-fact proof strip on 2026-08-14, and the strip was cut on 2026-08-29. What ships now is the **fold build board** — four live builds with a measured status on each — plus one link, `See all six builds`, whose count is derived from `work.length` in `components/fold-board.tsx` and never typed. See `docs/COPY.md`, "The fold — build board caption". **A hard-typed build count does not belong in this document either**; the lineup has changed twice and a number here cannot be checked by anything.
 4. **Solutions** — four cards, accent dot, one-line hook, → `/solutions/[slug]`
 5. **Featured Work** — 2 case studies, alternating full-width rows, LiveFrame + pull-quote
 6. **Testimonial** — see §5
