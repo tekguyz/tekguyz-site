@@ -20,25 +20,37 @@ planning tool has to read.
 
 ---
 
-## Measured 2026-09-04 — the work lineup changed from 8 builds to 6
+## Measured 2026-09-07 — doc audit; the work lineup is still 6
 
-Every row run this session, and **re-run at the end of it** — the first version of
-this table was written four commits before the session ended and its push row was
-already false on arrival. The previous session's "Measured 2026-09-01" block moved
-verbatim to `docs/archive/HISTORY.md` on 2026-09-04; it was never carried forward.
+Every row re-run today. The lineup change itself shipped 2026-09-04 and its
+narrative is kept below, because the Open rows it produced are still open.
 
-| | Measured 2026-09-04 | Command |
+| | Measured 2026-09-07 | Command |
 | --- | --- | --- |
-| HEAD | `9a85f9d` | `git rev-parse --short HEAD` |
-| Working tree | **clean** | `git status --short` |
-| Tests | **101 pass, 4 files, 1.16s** | `bun run test` |
+| HEAD | `9c23f0b` | `git rev-parse --short HEAD` |
+| Working tree | **8 doc files modified, uncommitted at the time of measurement** — this audit's repairs, plus the owner's deletion of `docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md`. No code touched | `git status --short` |
+| Tests | **101 pass, 4 files, 1.90s** | `bun run test` |
 | Lint | **clean — no output, zero findings** | `bun run lint` |
 | `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
-| `check:media` | **6 entries, all posters present, ZERO off-ratio** (was 4 of 8 off) | `bun run check:media` |
-| `check:claude` | **OK — 7 claim groups match** | `bun run check:claude` |
-| `bun run build` | **passes.** 6 `/work/[slug]` pages + 6 OG images generated | `bun run build` |
-| Typecheck | **clean, exit 0** | `bunx tsc --noEmit` |
-| Push state | **PUSHED and LIVE, through `9a85f9d`.** `origin/master` == HEAD, 0 ahead. The newest Ready Production deployment is aliased to `tekguyz.com`, `www`, and `git-master`; **the live HTML serves `tekguyz-crm.vercel.app/demo`**, which only `9a85f9d`'s parent introduced, so the alias is confirmed by content and not by timestamp. Live codes: `/` 200, `/work` 200, `/work/tekguyz-crm` 200, `/work/ai-meeting-notes` 200, `/work/auto-detailer` **404** | `git status -sb` · `vercel ls` · `vercel inspect` · `curl` |
+| `check:media` | **6 entries, all posters present, ZERO off-ratio** | `bun run check:media` |
+| `check:claude` | **OK — 7 claim groups match.** It FAILED at the start of this session on `engineering/workspace-instructions.md`, a path in the sibling `tekguyz-one` repo that `CLAUDE.md` had written in backticks. The backticks were removed; the reference stays | `bun run check:claude` |
+| `bun run build` | **passes, exit 0** | `bun run build` |
+| Push state | **PUSHED and LIVE, through `9c23f0b`.** `origin/master` == HEAD, 0 ahead / 0 behind. The newest Ready Production deployment (`dpl_52x7poQD3kLvDB34qub1gmAfBSQ4`, created 2026-09-05 04:45 EDT, 30s) is aliased to `tekguyz.com`, `www`, `tekguyz-site.vercel.app` and `git-master`. `tekguyz.com/work` returns **200** | `git status -sb` · `vercel ls` · `vercel inspect` · `curl` |
+
+### Doc audit 2026-09-07 — six files repaired, all by measurement
+
+Nothing below was a code defect. Every one was a document asserting a state the
+code had already left behind, and **none of them could be caught by a script** —
+which is the whole argument for this audit existing.
+
+| File | What was wrong | Measured against |
+| --- | --- | --- |
+| `CLAUDE.md` | Named a sibling-repo path in backticks, so `check:claude` read it as a missing file in THIS repo and failed | `bun run check:claude` |
+| `docs/CANONICAL.md` | §4 still specified the **proof line** — *"Eight live builds. Open any of them right now."* — which was replaced by the proof strip on 2026-08-14 and cut on 2026-08-29. As the highest authority it was the most dangerous stale line in the tree. Also: every "eight" in §2/§4/§9 is the original plan's count, now flagged as such in one place rather than edited in four | `components/fold-board.tsx` · `docs/COPY.md` |
+| `docs/COPY.md` | (1) `/work`'s DESCRIPTION read "Eight live builds" while the code has derived that word from `work.length` since 2026-09-04, and the group counts read 4+4 instead of 4+2. (2) The **CONFIRMATION EMAIL** section was headed *"(new — currently missing entirely)"* and said the submitter hears nothing until a human replies. **Both false** — it ships | `app/work/page.tsx` · `app/actions/contact.ts` |
+| `docs/DESIGN.md` | No provenance for the document itself. Now recorded honestly: **v1's origin is unrecorded and nobody can name it**, and `impeccable` did NOT write it | owner, 2026-09-07 |
+| `docs/kb/field-ops.md` · `docs/kb/README.md` | Carried a blocking caveat that it might not describe the build `/work/field-photo-reports` links to. **Owner-confirmed: it is the same product.** The narrower scope caveat stands | owner, 2026-09-07 |
+| `docs/STATUS.md` | The attach section pointed at `docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md`, deleted by the owner this session | `git status --short` |
 
 ### The lineup change
 
@@ -108,7 +120,7 @@ absence reads as a decision rather than an oversight.
 | Item | Note |
 | --- | --- |
 | **The CRM poster shows seeded demo figures.** | `tekguyz-crm.webp` is the real product's real Reports view, but the tenant is `TEKGUYZ Demo` and its pipeline / revenue / win-rate numbers are **seeded verification data, not a client result.** It satisfies PLAYBOOK §12 (real production UI, not a simulator) and it licenses **no number** in copy. Recorded at the entry in `docs/COPY.md` and in `docs/kb/tekguyz-crm.md`. |
-| **`docs/kb/` is new — 6 files**, measured 2026-09-04: five product documents plus `README.md`, the index. (This row said 5 while the prose above it called `leadgen.md` the sixth document; `ls docs/kb/` settles it.) | Product reference documents compiled from four other repositories, plus an index. **They are source material, not an authority** — the `CANONICAL > DESIGN > COPY > SEO` order is unchanged and this folder sits outside it. `docs/kb/field-ops.md` carries a blocking caveat: it may or may not describe the build `/work/field-photo-reports` actually links to. |
+| **`docs/kb/` is new — 6 files**, measured 2026-09-04: five product documents plus `README.md`, the index. (This row said 5 while the prose above it called `leadgen.md` the sixth document; `ls docs/kb/` settles it.) | Product reference documents compiled from four other repositories, plus an index. **They are source material, not an authority** — the `CANONICAL > DESIGN > COPY > SEO` order is unchanged and this folder sits outside it. **`docs/kb/field-ops.md`'s identity caveat is CLOSED** — the owner confirmed 2026-09-07 that it is the build behind `/work/field-photo-reports`. The narrower caveat stands: it claims features (offline sync, GPS watermarking, CSV ingestion, inventory, crew) that were never read off the running demo, so none of them may become copy unmeasured. |
 | **Retired routes have no redirects.** | `/work/ai-audio-file-insights`, `/work/meeting-organizer`, `/work/restaurant-menu`, `/work/auto-detailer` now 404. They were live on tekguyz.com. If any has inbound links worth keeping, that is a `next.config` redirect and it is not written. |
 
 ---
@@ -125,9 +137,11 @@ absence reads as a decision rather than an oversight.
 `docs/PLAYBOOK.md` (writing new brand-voice copy) ·
 `docs/SEO.md` (JSON-LD).
 
-The Claude.ai Project instructions themselves live at
-`docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md` — the repo is the source, the Project
-holds a copy. When that file changes, paste it over the Project Instructions field.
+**There is no repo copy of the Project Instructions any more.**
+`docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md` was deleted 2026-09-07 at the owner's
+direction. The Project Instructions field in Claude.ai is now the only copy, and
+this repo does not mirror it. Do not re-create that file — a second copy that
+nothing syncs is exactly the drift this section exists to prevent.
 
 **Never attach `docs/archive/*`** — it is the record of how we got here and
 contains claims that are now false, by design.
@@ -151,21 +165,27 @@ different numbering. A Build Phase is execution; a Workflow Gate produces the
 words-shaped direction a Build Phase might start from. Aesthetic decisions
 (this list's Phase 1, Phase 2) skip the Discovery gate entirely — it's
 text-only and can't render an option to react to, which is the whole reason
-`frontend-design` exists. Words-shaped work (Phase 3) is a legitimate fit for
-Claude.ai first.*
+aesthetic work happens in Claude Code at all. Words-shaped work (Phase 3) is a
+legitimate fit for Claude.ai first.*
+
+*[corrected 2026-09-07] This paragraph and the Phase 1 row below both named
+`frontend-design`, **uninstalled 2026-09-05**. `impeccable` replaced it —
+see `CLAUDE.md`'s skill table. The history is not rewritten: Phase 1 really was
+executed with `frontend-design`, and that is now said in the past tense.*
 
 | Build Phase | What | State |
 | --- | --- | --- |
 | **0** | Truth-up: archive dead docs, close decided items, wire tests, CLAUDE.md skill table | **Shipped 2026-08-12**, `1b9cec8` |
-| **1** | **Design + motion system.** `brainstorming` → `frontend-design` → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see `docs/archive/HISTORY.md` |
+| **1** | **Design + motion system.** `brainstorming` → *(`frontend-design`, the skill this ran under in August; `impeccable` today)* → rewrite DESIGN.md → build | **Partly shipped 2026-08-12** — see `docs/archive/HISTORY.md` |
 | **2** | Concierge UX/UI redo (absorbs D-04) | **Partly shipped 2026-08-12** — D-04 + panel presence motion done; see `docs/archive/HISTORY.md` |
 | **3** | Copy: privacy policy, 8 detail narratives, FAQ review | ~~**Shipped 2026-08-13 except the legal review**~~ **Shipped. Closed 2026-08-29** — privacy rewrite, FAQ rewrite and all 8 detail narratives shipped 2026-08-13, and the last open item, `/privacy`'s review, was closed 2026-08-29 **as a self-review against the CCPA thresholds, not by a lawyer** — see the row in "Open — needs the user" for the assessment and its three reopen triggers. See Build Phase 3 below |
 | **4** | Recaptured images land + verify (absorbs D-07, D-08) | Blocked on capture |
 | **5** | Refactor — **rescoped 2026-08-13 by measurement**, see the component-audit section in `docs/archive/HISTORY.md`. Not "split the big files": re-measured 2026-09-04, `components/concierge/concierge.tsx` **787** (~~755 on 2026-08-28~~ — `3d170f7` added the role avatar and the reply-length work), `components/contact-form.tsx` **516**, `app/actions/contact.ts` **463** (~~709 / 428 / 393~~ — stale, and they never reconciled with `git show` for their own date either, which read 751/457/423). Two of the audit's dedup items shipped 2026-08-13 and **three more shipped 2026-08-14** in `a60392e`; the rest is repetition and coupling, not size | Last — five items shipped, across 2026-08-13 and 2026-08-14 |
 
-**Phase 1 was the real work.** DESIGN.md was assembled ad-hoc, the Claude Design
-export was never fully implemented, and `frontend-design` had never been invoked
-on this project. The site had exactly **one motion idea** — fade in + rise 8px —
+**Phase 1 was the real work.** DESIGN.md was assembled ad-hoc — **and 2026-09-07
+established that nobody can name where its v1 came from at all**, which is now
+recorded at the top of `docs/DESIGN.md`. The Claude Design export was never fully
+implemented, and no visual-direction skill had ever been invoked on this project. The site had exactly **one motion idea** — fade in + rise 8px —
 applied everywhere. *Past tense as of 2026-08-12:* Phase 1 added the state layer
 (`.tg-rule`, `.tg-collapse`, `.tg-mark`) and Phase 2 added the presence layer
 (DESIGN.md §4.13). The three layers §6 names — entrance, state, feedback — plus
@@ -177,7 +197,9 @@ presence now all exist.
 
 | Item | Note |
 | --- | --- |
-| **Recapture the 16:9 hero, `sarah-poster.webp`** | **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot. **Measured 2026-08-28: the file already is 1600×900 (ratio 1.778) and `git log` shows it untouched since `c94695f` on 2026-08-13 — so the size half of "wanted" was already met when this row was written. What is open is only the two content defects.** |
+| **Recapture the 16:9 hero, `sarah-poster.webp`** | **[2026-09-07] OWNER-OWNED AND IN PROGRESS. Do not raise this again, in any session or any handoff.** The owner is recapturing it. It has been re-asked in three separate sessions and the answer has not changed. It stays in this table because D-07 and D-08 below both close on it — **but it is a status line, not a question.** Everything after this sentence is the original 2026-08-13 record, kept because it is the spec for the recapture. **New 2026-08-13, and it supersedes the "leave it" below.** Two defects found in the existing capture while reworking the hero, neither fixable in code. (1) The **phone mockup is cut mid-sentence at y=0 of the source itself** — "…your device immediately? Anything else I can assist with?" — so it can never be shown whole at any width. (2) The bottom-right panel carries a visible **"Demo Mode" badge**, a direct PLAYBOOK §12 violation on the most prominent image on the site. The 2026-08-13 mobile crop excludes the badge; **desktop still shows it.** Wanted: 1600×900+ native 16:9, phone mockup entirely inside frame, no demo/simulator affordance anywhere in shot. **Measured 2026-08-28: the file already is 1600×900 (ratio 1.778) and `git log` shows it untouched since `c94695f` on 2026-08-13 — so the size half of "wanted" was already met when this row was written. What is open is only the two content defects.** |
+
+| **The `tekguyz/tekguyz` GitHub profile README is stale and was never touched** | **Raised by the owner 2026-09-04, unaddressed, re-raised 2026-09-07.** `https://github.com/tekguyz/tekguyz` — the profile README. It is a **different repository**, so nothing in this tree measures it and no check here can see it go stale. It almost certainly still names the retired builds. **Not started deliberately:** editing it is publishing to a public profile, which needs the owner's explicit go-ahead per request, and the content should be derived from `content/work.ts` rather than written fresh. Say the word and it gets drafted here for review first, never pushed blind |
 
 ## Open — code
 
