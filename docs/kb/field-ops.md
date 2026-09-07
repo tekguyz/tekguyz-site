@@ -7,11 +7,15 @@
 > the status table in §7 is the source's own wording rather than a measured
 > result.
 >
-> **It is therefore NOT confirmed to be the same build as `/work/field-photo-reports`
-> on tekguyz.com**, which points at `rs-field-ops.netlify.app`. The two describe
-> the same product idea — field photo evidence with an admin view — at
-> different levels of ambition. **Do not update the site entry from this
-> document without confirming which build the live demo actually serves.**
+> **[owner-confirmed 2026-09-07] This IS the product behind
+> `/work/field-photo-reports`** on tekguyz.com, which points at
+> `rs-field-ops.netlify.app`. That half of the caveat is closed and is not open
+> again. What is still open is narrower and still blocking for copy: this
+> document describes a **larger feature set** than the live demo has been
+> measured to serve — offline sync, GPS watermarking, StoneApp CSV ingestion,
+> inventory and crew management are the source's claims, not readings off the
+> running build. **Do not put a feature from this document into site copy
+> without opening the live demo and seeing it.**
 
 ---
 
@@ -23,7 +27,7 @@
 | Source | Google AI Studio applet reference, September 2026 |
 | Repo / commit | **Not recorded** |
 | Deploy URL | **Not recorded** |
-| Related site entry | `/work/field-photo-reports` — **relationship unconfirmed, see caveat above** |
+| Related site entry | `/work/field-photo-reports` — **confirmed by the owner, 2026-09-07** |
 | Audience | TEKGUYZ core team, field operations leads, engineering maintainers |
 
 ---
@@ -314,12 +318,13 @@ this KB.** No test count, commit or deploy check backs them.
 - **The status table in §9 is claimed, not measured.** "Operational" is the
   source's word. There is no test count, no build log and no live check behind
   any row.
-- **The relationship to `/work/field-photo-reports` is unresolved.** That site
-  entry points at `rs-field-ops.netlify.app` and describes a simpler product —
-  photo capture, structured reports, an admin view, an account switcher in the
-  demo. This document describes offline sync, GPS watermarking, StoneApp CSV
-  ingestion, inventory and crew management. **They may be the same build at two
-  stages, or two different builds.** Confirm against the live demo before
-  changing site copy.
+- **The relationship to `/work/field-photo-reports` is RESOLVED — same product,
+  owner-confirmed 2026-09-07.** What remains is a scope gap, not an identity
+  question. The site entry points at `rs-field-ops.netlify.app` and describes
+  photo capture, structured reports, an admin view and an account switcher.
+  This document adds offline sync, GPS watermarking, StoneApp CSV ingestion,
+  inventory and crew management — **claimed by the source, never read off the
+  running demo.** Confirm any one of those against the live demo before it
+  becomes site copy.
 - **No client name, price, timeline or metric appears in the source**, and none
   has been added.

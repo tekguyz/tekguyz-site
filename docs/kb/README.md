@@ -28,7 +28,7 @@ a new person the shape of the portfolio without opening five repositories.
 | --- | --- | --- | --- |
 | [`squid-ink.md`](squid-ink.md) | AI meeting notepad (working name "Squid Ink") | `/work/ai-meeting-notes` | Sign-in required |
 | [`tekguyz-crm.md`](tekguyz-crm.md) | Lead & pipeline CRM | `/work/tekguyz-crm` | **`/demo` only** — one click, read-only. The bare origin is still login-gated |
-| [`field-ops.md`](field-ops.md) | Field Ops / StoneApp Operations Hub | *(see caveat in that doc)* | — |
+| [`field-ops.md`](field-ops.md) | Field Ops / StoneApp Operations Hub | `/work/field-photo-reports` — owner-confirmed 2026-09-07 | Yes, `rs-field-ops.netlify.app` |
 | [`reporter-resource.md`](reporter-resource.md) | Reporter Resource storefront | `/work/bundle-builder` | Yes, sandboxed |
 | [`leadgen.md`](leadgen.md) | Lead-finding pipeline (Apify) | **none** — feeds `/work/tekguyz-crm` | No, local CLI |
 
