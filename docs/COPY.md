@@ -278,10 +278,16 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Not screenshots of things that used to work. Eight live builds — click into any one and open it yourself.
+DESCRIPTION: Not screenshots of things that used to work. Six live builds — click into any one and open it yourself.
+
+**The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
+`work.length`, so this line is a transcript of what renders, not a value to
+edit. It read "Eight" here and in the code until 2026-09-04, four days after the
+lineup became six. *[corrected 2026-09-07 — the code was already right; this
+document was the stale half.]*
 
 **Case Studies** *(4, full-width)* — the deep-dive builds.
-**Projects** *(4, compact grid)* — lighter builds, same standard.
+**Projects** *(2, compact grid)* — lighter builds, same standard.
 
 ## Metadata
 
@@ -601,9 +607,11 @@ Every one. They're live applications, not screenshots — we check their status 
 
 ---
 
-# CONFIRMATION EMAIL (new — currently missing entirely)
+# CONFIRMATION EMAIL — BUILT AND SHIPPING
 
-*Sent to the person who submitted, from both the contact form and the concierge. Today only the internal inbox gets notified and the submitter hears nothing until a human replies — a gap worth closing on a site whose Process page promises "no disappearing acts."*
+*Sent to the person who submitted, from both the contact form and the concierge. Implemented in `app/actions/contact.ts` — the notification and the confirmation are two Resend sends, kicked off together and settled together, and the subject line below is the one in the code.*
+
+**[corrected 2026-09-07] This heading read "(new — currently missing entirely)" and the note below it said the submitter hears nothing until a human replies. Both were false** — measured in `app/actions/contact.ts`, which sends `We got your message — TEKGUYZ` to the submitter. The stale wording survived because nothing in the build reads this file.
 
 FROM: TEKGUYZ <hello@tekguyz.com>
 SUBJECT: We got your message — TEKGUYZ
