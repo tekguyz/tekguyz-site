@@ -4,6 +4,37 @@
 
 **Governed by:** `docs/CANONICAL.md` · **Copy:** `docs/COPY.md`
 
+## Where this document came from — the honest answer
+
+**[recorded 2026-09-07] Nobody can name the origin of v1, and pretending
+otherwise would break the provenance rule this file is built on.** The owner's
+recollection: the first version came from inspiration material and screenshots
+of some other app, possibly by way of Claude Design, possibly hand-assembled —
+unrecorded either way. What IS certain: **the `impeccable` skill did not write
+it.** That skill was installed later and only *finds* this file. Any claim that
+it authored the design system is false.
+
+What that costs, and what it does not: it costs the *provenance of the original
+aesthetic direction*, which is why no §4 value may be cited as "from the
+export" unless it carries the `[export]` marker and a real line in
+`TEKGUYZ Site.dc.html`. It costs nothing numeric — every token moved to
+[`TOKENS.md`](TOKENS.md) on 2026-08-12 and is asserted against `app/globals.css`
+on every `prebuild`, so the numbers are checked regardless of who first chose
+them.
+
+**Do not run `impeccable init` to "fix" this.** Its init flow wants a root
+`PRODUCT.md` and a root `DESIGN.md`, and its DESIGN.md format carries token
+values in YAML frontmatter — a second copy of every number, outside `TOKENS.md`
+and outside the `check:design` guard. That is the one failure mode this project
+has already paid for. `CLAUDE.md` bans it. Its narrow commands (`critique`,
+`polish`, `audit`, `layout`, `typeset`, `colorize`) read the CSS directly and
+need neither file — those are the ones to use.
+
+**New inspiration screenshots are a `superpowers:brainstorming` input, not an
+init input.** When they arrive, they get compared against what ships and the
+deltas get written here as `[decided]` rows with a date. That is how a direction
+enters this document with a provenance instead of without one.
+
 ## How to read a value in this document
 
 This document has been wrong in public more than once — §4 claimed the nav
