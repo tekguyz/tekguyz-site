@@ -46,3 +46,8 @@ npm-debug.log*
 # local Claude Code tooling config (per-machine, not project source)
 .claude/settings.json
 .claude/settings.local.json
+
+# This repo installs with bun; bun.lock is the tracked lockfile.
+# An `npm install` here drops a second, competing package-lock.json —
+# two lockfiles for one project resolve differently and drift silently.
+package-lock.json
