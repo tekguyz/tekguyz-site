@@ -115,7 +115,7 @@ Pitch: if you can describe the workflow, we can build it.
 
 **Team Performance & Automated Customer Feedback** Connects desk-phone logs directly to the CRM for automatic job credit, plus a smart-limit SMS feedback loop that only surveys customers when it's actually useful.
 
-**Not on the site, on purpose: `tekguyz-leadgen`.** The lead-finding pipeline behind the outbound half of the CRM story is a local command-line tool — no UI, no deploy, nothing a visitor can open. Every `/work` entry is "open it and use it yourself", so it earns no entry of its own; it appears only inside the CRM's narrative, which is where its output actually lands. Full reference: `docs/kb/leadgen.md`. **Its unit economics are internal and never publishable** — this site quotes no prices and no metrics.
+**Not on the site, on purpose: `tekguyz-leadgen`.** The lead-finding pipeline behind the outbound half of the CRM story is a local command-line tool — no UI, no deploy, nothing a visitor can open. Every `/work` entry is "open it and use it yourself", so it earns no entry of its own; it appears only inside the CRM's narrative, which is where its output actually lands. Full reference: `engineering/projects kb/leadgen.md` in the tekguyz-one repo. **Its unit economics are internal and never publishable** — this site quotes no prices and no metrics.
 
 *Retired 2026-09-04: `Automated Meeting & Research Organizer` (crispy-bacon.netlify.app — the predecessor of the meeting notepad above, so it showed one product twice), `Bilingual Restaurant Menu & WhatsApp Ordering` (dragonfly-nica.netlify.app) and `Auto Detailer Booking & Lead Tracker` (the-executivedetailer.vercel.app), the last two at the owner's direction as carrying no real value for the site.*
 

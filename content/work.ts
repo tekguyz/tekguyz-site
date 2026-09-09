@@ -179,7 +179,7 @@ export const work: WorkEntry[] = [
     // `leads` row only when a human presses Promote after a real conversation.
     // "Leads flow in automatically" would describe something deliberately NOT
     // built, and would put uncontacted strangers into the pipeline the business
-    // actually runs on. See docs/kb/leadgen.md.
+    // actually runs on. See `engineering/projects kb/leadgen.md` in tekguyz-one.
     approach:
       'We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, a lead-finding pipeline we built alongside it goes and finds qualified local businesses, and those land in their own staging lane — cold prospects, never leads, until a real conversation promotes one across.',
     outcome:
