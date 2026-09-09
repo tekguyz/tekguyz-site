@@ -51,8 +51,20 @@ read its lines.
    bun run check:media
    ```
 
-2. `git log --oneline -15` and `git log origin/master --oneline -5`.
-3. `git status --short` and `git status -sb`.
+2. **`git fetch origin` FIRST, before any other git command.** Then
+   `git log --oneline -15` and `git log origin/master --oneline -5`.
+
+   The fetch is not optional. `origin/master` is a **cached local ref**:
+   without a fetch it holds whatever the last fetch on THIS machine saw. The
+   user works from two laptops against one repo, so on the laptop that did not
+   do the work `git status -sb` reports "in sync with origin/master" while the
+   remote is many commits ahead — a confident, wrong, measured-looking claim,
+   which is the worst kind a handoff block can carry.
+3. `git status --short` and `git status -sb`, **after the fetch**. Report three
+   states separately and never merge them: **uncommitted in the working tree**
+   (not shipped), **ahead of origin** (committed here, not pushed), and
+   **behind origin** — say "behind origin/master by N commits — run `git pull`
+   before working here", and do not describe the tree as current.
 4. **What production is serving.** Use the Vercel connector — `list_projects`,
    `list_deployments` — or the `vercel` CLI. **Never cite a doc for hosting or
    deployment state.** The Vercel MCP plugin was removed on 2026-08-28; do not
