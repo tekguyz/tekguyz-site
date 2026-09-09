@@ -341,34 +341,6 @@ DESCRIPTION: `A live field-photo capture system that replaces site visits with i
 
 ---
 
-## `/work/ai-voice-receptionist` — AI Voice Receptionist & Call Booking
-
-TAG: AI Voice Agents
-HEADLINE: Answer every after-hours call like your best employee would, live, in real time.
-
-**THE CHALLENGE**
-A stone fabrication shop was losing leads to after-hours calls. The voicemail box was a dead end — callers with a real project either waited until morning or called someone else, and there was no way to know how many did which.
-
-**THE APPROACH**
-We built a real-time AI voice agent that answers, holds an actual conversation, captures the project details, and books the consultation on the spot. Alongside it, a live dashboard shows the call transcript, the CRM sync, and the follow-up email firing as it happens.
-
-**THE OUTCOME**
-Calls that used to end in voicemail now end in a booked consultation and a record in the CRM — with nothing left for anyone to type up in the morning.
-
-**PULL QUOTE**
-Watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact.
-
-**TRY IT**
-Start a call in the demo and watch the dashboard on the same screen. Everything you see happening is happening.
-
-**HOW IT'S BUILT**
-Real-time conversational voice AI with live transcription, structured lead extraction, calendar booking, and CRM write-through — all in one pass, no post-processing.
-
-METADATA — TITLE: `TEKGUYZ | AI Voice Receptionist — Live Demo`
-DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.`
-
----
-
 ## `/work/ai-meeting-notes` — AI Meeting Notes & Transcription
 
 *Added 2026-09-04. Supersedes `/work/ai-audio-file-insights` — the same product one full rewrite later. The old route and its copy were removed, not redirected.*
@@ -432,6 +404,40 @@ Multi-tenant Postgres with row-level security, signed webhook lead capture, a pr
 
 METADATA — TITLE: `TEKGUYZ | Lead & Pipeline CRM`
 DESCRIPTION: `A multi-tenant CRM fed by website enquiries and by our own lead-finding pipeline, that flags follow-ups before they go cold and records what the pipeline was actually worth.`
+
+---
+
+## `/work/ai-voice-receptionist` — AI Voice Receptionist & Call Booking
+
+*Moved to fourth 2026-09-09. It sat second here while `content/work.ts` has had it
+fourth, so this deck and the live `/work` page disagreed about the running order.
+**The array is the source of truth** — verified against `content/work.ts` and
+against the rendered page at `tekguyz.com/work` on the same day. No copy on this
+page changed; only its position in this file.*
+
+TAG: AI Voice Agents
+HEADLINE: Answer every after-hours call like your best employee would, live, in real time.
+
+**THE CHALLENGE**
+A stone fabrication shop was losing leads to after-hours calls. The voicemail box was a dead end — callers with a real project either waited until morning or called someone else, and there was no way to know how many did which.
+
+**THE APPROACH**
+We built a real-time AI voice agent that answers, holds an actual conversation, captures the project details, and books the consultation on the spot. Alongside it, a live dashboard shows the call transcript, the CRM sync, and the follow-up email firing as it happens.
+
+**THE OUTCOME**
+Calls that used to end in voicemail now end in a booked consultation and a record in the CRM — with nothing left for anyone to type up in the morning.
+
+**PULL QUOTE**
+Watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact.
+
+**TRY IT**
+Start a call in the demo and watch the dashboard on the same screen. Everything you see happening is happening.
+
+**HOW IT'S BUILT**
+Real-time conversational voice AI with live transcription, structured lead extraction, calendar booking, and CRM write-through — all in one pass, no post-processing.
+
+METADATA — TITLE: `TEKGUYZ | AI Voice Receptionist — Live Demo`
+DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.`
 
 ---
 
