@@ -1565,9 +1565,10 @@ line-height 1.55, 0.04em tracking, tabular numerals, 8px gap.
 verified state: opacity 1 → 0.4 → 1 over 1600ms, infinite.
 `prefers-reduced-motion` kills the animation and holds it at 0.85.
 
-**[measured 2026-08-12 `lib/status.ts:22–48`]** Data is a server-side `HEAD`
-request per demo URL: `next: { revalidate: 3600 }`, `AbortSignal.timeout(3000)`,
-`Promise.allSettled`. **[decided v2.1]** Never a client-side fetch to eight
+**[measured 2026-09-08 `lib/status.ts`]** Data is a server-side `HEAD`
+request per demo URL: `next: { revalidate: 300 }`, `AbortSignal.timeout(8000)`,
+two attempts, `Promise.allSettled`. The budget and the retry are both cold-start
+allowances — see CANONICAL §3 for why 3s and a single attempt were wrong. **[decided v2.1]** Never a client-side fetch to eight
 origins, and never `Promise.all` — one hang must not block the page.
 
 **[measured 2026-08-12 `status-line.tsx:16–54`] The stamp is absolute on the

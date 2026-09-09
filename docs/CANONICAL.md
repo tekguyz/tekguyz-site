@@ -58,13 +58,15 @@ Changes, and this is why it won't look like today's site:
 
 Every agency site has a "LIVE" badge that is a graphic asserting a fact. Yours measures it.
 
-**Mechanic.** A server component issues a HEAD request per demo URL on an hourly `revalidate`, rendering the actual result: `Live · verified 14 minutes ago`. Down or slow renders honestly as `Temporarily unreachable` with the link still available.
+**Mechanic.** A server component issues a HEAD request per demo URL on a 5-minute `revalidate`, rendering the actual result: `Live · verified 14 minutes ago`. Down or slow renders honestly as `Temporarily unreachable` with the link still available.
 
 **Why it fits:** "Proof Over Claims" is a stated brand value, and this is the only version of the live-demo badge on the internet that is literally true at render time rather than asserted at design time.
 
 **Tradeoff, stated plainly:** if a demo breaks, your homepage says so. Argument for accepting it: you learn before a prospect does, and honest failure states are more credible than a badge that lies. This is a real decision, not a free win.
 
-**Implementation:** server-side only (never client fetches to 8 origins), `next: { revalidate: 3600 }`, 3s timeout per check, `Promise.allSettled` so one hang can't block the page, cached result shared across all renders in the window.
+**Implementation:** server-side only (never client fetches to 8 origins), `next: { revalidate: 300 }`, 8s timeout and **two attempts** per check, `Promise.allSettled` so one hang can't block the page, cached result shared across all renders in the window.
+
+**The check must be patient, and 3s was not (fixed 2026-09-08).** Every demo is a scale-to-zero deployment, so the first request after an idle window pays a cold start the second does not — `rs-field-ops.netlify.app` answered a cold HEAD in 4.7s and the next in 0.4s. A single 3s attempt therefore called a healthy demo down for being asleep. Worse, each route freezes its own snapshot for the whole revalidate window, so home and `/work` printed different verdicts for the same demo at the same moment for the better part of an hour. Retry is immediate on purpose: the first attempt is what woke the host. The 5-minute window does not stop a wrong answer — a network probe can always be wrong — it bounds how long one survives on the page.
 
 ### The deferred embed — architected for, not built
 
