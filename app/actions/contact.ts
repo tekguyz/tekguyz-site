@@ -319,9 +319,21 @@ async function sendToCrm(
    * (key order, whitespace, unicode escaping), and the mismatch fails 100% of
    * the time with a 401 rather than intermittently. Do not inline this back
    * into the fetch call.
+   *
+   * TIMESTAMPED SINCE 2026-09-14 (hard cutover — the CRM no longer accepts a
+   * body-only signature). The HMAC covers `${timestamp}.${body}`, and the same
+   * timestamp travels in X-TekGuyz-Timestamp. Unix SECONDS, plain digits: a
+   * milliseconds value is refused. The CRM rejects a timestamp more than five
+   * minutes from its clock and any signature it has already seen, so this is
+   * computed per request and never reused — a retry must re-sign, not resend.
+   * The spec is `src/lib/webhooks/signature.ts` in the CRM repo.
    */
   const body = JSON.stringify(payload);
-  const signature = createHmac('sha256', signingSecret).update(body, 'utf8').digest('hex');
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const signature = createHmac('sha256', signingSecret)
+    .update(`${timestamp}.`, 'utf8')
+    .update(body, 'utf8')
+    .digest('hex');
 
   try {
     /**
@@ -346,6 +358,7 @@ async function sendToCrm(
       headers: {
         'Content-Type': 'application/json',
         'X-TekGuyz-Signature': signature,
+        'X-TekGuyz-Timestamp': timestamp,
       },
       body,
       signal: AbortSignal.timeout(20_000),
@@ -353,7 +366,8 @@ async function sendToCrm(
 
     if (!response.ok) {
       // 401 means the endpoint URL's org id or the signing secret is wrong —
-      // most likely the secret was rotated in the CRM and not updated here. 429
+      // most likely the secret was rotated in the CRM and not updated here —
+      // or this server's clock is more than five minutes off. 429
       // is per-organization rather than per-IP, so the status is worth keeping.
       await recordFailure(
         'crm',
