@@ -27,7 +27,7 @@
  * Run: bun run check:claude
  */
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const FILE = 'CLAUDE.md';
@@ -118,7 +118,9 @@ claim('test count', /\(\s*(\d+)\s+cases\s+across\s+(\d+)\s+files/, (m) => {
    cries wolf gets deleted. */
 claim('.vercelignore vs docs/', /(~~)?`\.vercelignore` excludes `docs\/`/, (m) => {
   if (!existsSync('.vercelignore')) return 'CLAUDE.md describes .vercelignore, but the file does not exist';
-  const vi = execSync('cat .vercelignore', { encoding: 'utf8' });
+  // Read directly, never `cat`: execSync runs cmd.exe on Windows, where `cat`
+  // does not exist, and the throw took the whole guard down with it.
+  const vi = readFileSync('.vercelignore', 'utf8');
   const ignoresDocs = vi
     .split('\n')
     .map((l) => l.trim())
