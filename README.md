@@ -42,7 +42,10 @@ scripts/      generate-icons.ts
 - **Every CRM triage POST must be signed** (2026-08-18). `CRM_TRIAGE_ENDPOINT`
   now ends in the plain organization id and is not a credential;
   `CRM_SIGNING_SECRET` is. `sendToCrm` serializes the payload **once** and signs
-  that exact string — signing a re-serialized copy 401s every request. Rotating
+  that exact string — signing a re-serialized copy 401s every request. Since
+  2026-09-14 the HMAC covers `${timestamp}.${body}`, with the Unix-seconds
+  timestamp sent as `X-TekGuyz-Timestamp`; the CRM refuses a stale (over 5
+  minutes), replayed or body-only signature. Rotating
   the secret in the CRM takes effect immediately, so update Vercel first.
   CORS is not involved: this is a server-side fetch, so there is no origin and
   no preflight. The CRM's allowed-origin list has never applied to it.
