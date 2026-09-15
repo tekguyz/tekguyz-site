@@ -137,10 +137,12 @@ absence reads as a decision rather than an oversight.
 `docs/PLAYBOOK.md` (writing new brand-voice copy) ·
 `docs/SEO.md` (JSON-LD).
 
-**There is no repo copy of the Project Instructions any more.**
+**This repo holds no copy of the Project Instructions.**
 `docs/CLAUDE-AI-PROJECT-INSTRUCTIONS.md` was deleted 2026-09-07 at the owner's
-direction. The Project Instructions field in Claude.ai is now the only copy, and
-this repo does not mirror it. Do not re-create that file — a second copy that
+direction. The source now lives in the tekguyz-one repo, at
+engineering/project-instructions-site.md (v3.1, 2026-09-15, built on
+engineering/workspace-instructions.md) — measured 2026-09-15, and written
+without backticks because it is not a path in this repo. Do not re-create that file — a second copy that
 nothing syncs is exactly the drift this section exists to prevent.
 
 **Never attach `docs/archive/*`** — it is the record of how we got here and
