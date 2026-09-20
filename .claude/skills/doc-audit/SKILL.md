@@ -1,6 +1,6 @@
 ---
 name: doc-audit
-description: Audit docs/STATUS.md, CLAUDE.md and docs/TOKENS.md against the real repo state and against each other, follow every citation, then repair whichever doc is stale and commit it. Use when the user asks for a doc audit, says a doc looks wrong, or when the handoff skill reports a finding it could not resolve. This is the heavy pass — the handoff skill does not run it.
+description: Audit docs/STATUS.md, CLAUDE.md and docs/TOKENS.md against the real repo state and against each other, follow every citation, then repair whichever doc is stale and commit it. Use when the user asks for a doc audit, says a doc looks wrong, or when the status-sync skill reports a finding it could not resolve. This is the heavy pass — the status-sync skill does not run it.
 ---
 
 # Doc audit — measure the docs against each other, repair what drifted
@@ -8,10 +8,10 @@ description: Audit docs/STATUS.md, CLAUDE.md and docs/TOKENS.md against the real
 Split out of `handoff` on 2026-09-08. The cheap half runs several times a day
 and was paying for this half every time.
 
-**Run this when a doc is actually suspect**, not on every handoff:
+**Run this when a doc is actually suspect**, not on every status sync:
 
 - a mechanical guard (`check:claude`, `check:design`, `check:media`) reported a
-  finding the `handoff` skill could not resolve from script output alone
+  finding the `status-sync` skill could not resolve from script output alone
 - a session shipped work that needs a STATUS.md row or an archive move
 - the user asks for a doc audit, or says something in the docs looks wrong
 
@@ -76,7 +76,7 @@ closed it.
 
 `wc -l docs/STATUS.md`. It was restructured to ~180 lines on 2026-09-01, from
 971. If it has grown past roughly 300, shipped history has crept back in; move
-it out before printing a handoff. **A status file that is 70% history is a
+it out before the next status sync. **A status file that is 70% history is a
 status file nobody reads to the end of.**
 
 
@@ -89,7 +89,7 @@ even if other work is in progress, and never two audited docs in one commit, so
 each stays separately reviewable. The message names the measurement, e.g.
 `"STATUS.md: check:media 7 off-ratio -> 4, measured"`. Rationale: STATUS.md's own
 rule is that a decision only exists once it is in `docs/STATUS.md` or committed
-code — an audit that ends with an uncommitted repair leaves the handoff block
+code — an audit that ends with an uncommitted repair leaves `status-sync`
 citing a doc state that is not actually in the repo. **This is a doc-audit
 commit, not a push.** The push gate in `CLAUDE.md` is untouched.
 
