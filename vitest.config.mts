@@ -11,6 +11,23 @@ import { defineConfig } from 'vitest/config';
  * `tsconfig.json`'s `paths`.
  */
 export default defineConfig({
+  test: {
+    /**
+     * `.claude/worktrees/` holds full checkouts of this same repo, so every
+     * test file in it is a duplicate of one in the tree. Vitest's default
+     * exclude does not cover it, and `check:claude` measured 214 cases across
+     * 10 files against `CLAUDE.md`'s correct 107 across 5 — a guard failing on
+     * a figure that was never wrong. Vitest replaces `exclude` rather than
+     * merging it, so the defaults are restated here.
+     */
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/.{idea,git,cache,output,temp}/**',
+      '**/.next/**',
+      '**/.claude/worktrees/**',
+    ],
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('.', import.meta.url)),
