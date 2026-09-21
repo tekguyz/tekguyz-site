@@ -1,0 +1,86 @@
+<!-- @dsCard group="Wayfinding" height=180 subtitle="Four lines, four accents, no fifth" -->
+<div class="wrap">
+  <div class="row">
+    <span class="tag blue">Smart Operations</span>
+    <span class="tag violet">AI Voice Agents</span>
+    <span class="tag amber">Business Systems</span>
+    <span class="tag teal">Custom Web Apps</span>
+  </div>
+  <div class="row tight">
+    <span class="tag card blue">Card variant</span>
+    <span class="dots">
+      <i class="dot blue"></i><i class="dot violet"></i><i class="dot amber"></i><i class="dot teal"></i>
+    </span>
+    <span class="note">AccentDot · 10px, plain accent, never theme-swaps</span>
+  </div>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6, 24px);
+    padding: var(--space-6, 24px);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3, 12px);
+  }
+  .tag {
+    display: inline-block;
+    border-radius: var(--radius-tag, 6px);
+    border: 1px solid;
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tag.card { padding: 4px 9px; }
+  .blue {
+    color: var(--tg-accent-blue-on-bg);
+    border-color: color-mix(in srgb, var(--tg-accent-blue) 35%, transparent);
+    background: color-mix(in srgb, var(--tg-accent-blue) 12%, transparent);
+  }
+  .violet {
+    color: var(--tg-accent-violet-on-bg);
+    border-color: color-mix(in srgb, var(--tg-accent-violet) 35%, transparent);
+    background: color-mix(in srgb, var(--tg-accent-violet) 12%, transparent);
+  }
+  .amber {
+    color: var(--tg-accent-amber-on-bg);
+    border-color: color-mix(in srgb, var(--tg-accent-amber) 35%, transparent);
+    background: color-mix(in srgb, var(--tg-accent-amber) 12%, transparent);
+  }
+  .teal {
+    color: var(--tg-accent-teal-on-bg);
+    border-color: color-mix(in srgb, var(--tg-accent-teal) 35%, transparent);
+    background: color-mix(in srgb, var(--tg-accent-teal) 12%, transparent);
+  }
+  .tag.card.blue { background: color-mix(in srgb, var(--tg-accent-blue) 14%, transparent); }
+  .dots { display: inline-flex; gap: 9px; align-items: center; }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    display: block;
+  }
+  .dot.blue { background: var(--tg-accent-blue); border: 0; }
+  .dot.violet { background: var(--tg-accent-violet); border: 0; }
+  .dot.amber { background: var(--tg-accent-amber); border: 0; }
+  .dot.teal { background: var(--tg-accent-teal); border: 0; }
+  .note {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--tg-secondary);
+  }
+</style>

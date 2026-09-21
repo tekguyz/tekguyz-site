@@ -1,0 +1,63 @@
+<!-- @dsCard group="Brand" height=240 subtitle="Three stripes a page, one flourish a page" -->
+<div class="wrap">
+  <div class="stripe" aria-hidden="true">
+    <span style="background: var(--tg-accent-blue)"></span>
+    <span style="background: var(--tg-accent-violet)"></span>
+    <span style="background: var(--tg-accent-amber)"></span>
+    <span style="background: var(--tg-accent-teal)"></span>
+  </div>
+  <p class="cap">SignatureStripe · 6px, full bleed, three per page</p>
+
+  <div class="flourish" aria-hidden="true">
+    <span style="background: var(--tg-accent-blue)"></span>
+    <span style="background: var(--tg-accent-violet)"></span>
+    <span style="background: var(--tg-accent-amber)"></span>
+    <span style="background: var(--tg-accent-teal)"></span>
+  </div>
+  <p class="cap">FlourishMark · 9px dots, 9px gap, once per page, every route</p>
+
+  <p class="facts">Fixed scope · Named lead · Code in your repo</p>
+  <p class="cap">And the counter-example: separators are muted dots, never accents</p>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap { padding: var(--space-6, 24px) 0; }
+  .stripe {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 6px;
+    width: 100%;
+  }
+  .flourish {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: var(--space-8, 32px) var(--space-6, 24px) 0;
+  }
+  .flourish > span {
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+  }
+  .cap {
+    margin: var(--space-3, 12px) var(--space-6, 24px) 0;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tg-secondary);
+  }
+  .facts {
+    margin: var(--space-8, 32px) var(--space-6, 24px) 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--tg-secondary);
+  }
+</style>

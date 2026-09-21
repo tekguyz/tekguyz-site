@@ -1,0 +1,74 @@
+<!-- @dsCard group="Foundations" height=220 subtitle="One gesture: hover me, and look at the drawn ones" -->
+<div class="wrap">
+  <nav class="nav">
+    <a class="rule on" href="#">Work</a>
+    <a class="rule" href="#">Solutions</a>
+    <a class="rule" href="#">Process</a>
+    <a class="rule" href="#">Contact</a>
+  </nav>
+  <div class="rail">
+    <span class="rule drawn step">Step 01 · Scope</span>
+    <span class="rule half step">Step 02 · Build</span>
+    <span class="rule step">Step 03 · Hand over</span>
+  </div>
+  <p class="legend">Ink = you are here · grey = hover, focus, or drawn · partial = progress</p>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8, 32px);
+    padding: var(--space-6, 24px);
+  }
+  .nav, .rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8, 32px);
+  }
+  .rule {
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    padding-bottom: 4px;
+  }
+  .rule::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--tg-border-strong);
+    transform: scaleX(var(--tg-rule-scale, 0));
+    transform-origin: left center;
+    transition: transform var(--dur-base, 240ms) var(--ease-state, ease);
+  }
+  .rule:hover,
+  .rule:focus-visible,
+  .rule.drawn { --tg-rule-scale: 1; }
+  .rule.half { --tg-rule-scale: 0.5; }
+  .rule.on { --tg-rule-scale: 1; }
+  .rule.on::after { background: var(--tg-fg); }
+  .step {
+    font-weight: 400;
+    color: var(--tg-secondary);
+  }
+  .legend {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--tg-secondary);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rule::after { transition-duration: 0s; }
+  }
+</style>

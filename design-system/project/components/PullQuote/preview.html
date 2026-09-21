@@ -1,0 +1,39 @@
+<!-- @dsCard group="Content" height=280 subtitle="The one place an accent grows past a dot" -->
+<div class="wrap">
+  <blockquote class="quote display">Two systems became one, and nobody reconciles anything by hand any more.</blockquote>
+  <blockquote class="quote band">The phone stopped being the bottleneck.</blockquote>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12, 48px);
+    padding: var(--space-6, 24px);
+  }
+  .quote {
+    margin: 0;
+    max-width: 22ch;
+    padding-left: var(--space-6, 24px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--tg-fg);
+    text-wrap: pretty;
+  }
+  .display {
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    line-height: 1.05;
+    border-left: 2px solid var(--tg-accent-violet);
+  }
+  .band {
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    line-height: 1.08;
+    border-left: 2px solid var(--tg-accent-amber);
+  }
+</style>

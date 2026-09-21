@@ -1,0 +1,50 @@
+<!-- @dsCard group="Signals" height=240 subtitle="The dot is never the only signal" -->
+<div class="wrap">
+  <div class="block">
+    <p class="head"><span class="dot ok"></span><span class="label">Inquiry sent</span></p>
+    <p class="body">We read every one. Expect a reply from a person, not a queue.</p>
+  </div>
+  <div class="block">
+    <p class="head"><span class="dot err"></span><span class="label">That did not go through</span></p>
+    <p class="body">Nothing was lost. Try again, or write to us directly.</p>
+  </div>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8, 32px);
+    padding: var(--space-6, 24px);
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2, 8px);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    letter-spacing: 0.04em;
+  }
+  .label { font-weight: 600; }
+  .dot {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 9999px;
+  }
+  .dot.ok { background: var(--tg-success); }
+  .dot.err { background: var(--tg-error); }
+  .body {
+    margin: 14px 0 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--tg-secondary);
+  }
+</style>

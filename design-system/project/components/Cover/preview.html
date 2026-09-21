@@ -1,0 +1,83 @@
+<!-- @dsCard height=300 -->
+<!--
+  Derivation
+  Blocks: tg-fg slab 176x252 (space-32 + space-12 wide) anchoring the right box, with four
+    satellites at full accent value - blue 128x128, violet 144x128 bleeding off the right edge,
+    amber 64x108, teal 208x108 also bleeding. Corners rx = radius-container (16) on the large
+    blocks, radius-card (12) on the low pair. All sides are spacing-scale steps or sums of them.
+  Arrangement: one tall slab with satellites, two of which bleed off the right edge - the way the
+    hero media panel composes, and the reason the picture is weighted left-to-right into the name.
+  Pattern row: a literal motif. The brand mark IS four accent nodes joined by hairline connectors,
+    so the pattern is that mark repeated on a 64px pitch - six units, 24 nodes, 24 connectors.
+    A generic technical system would land on the dot grid; only this one has the diamond.
+  Steps and radii: pitch 64 (space-16), node offset 22, node r 5, block sides 48/64/108/128/144/176/252
+    off the 4px base scale, rx 16 (radius-container) and 12 (radius-card), left inset 48 (space-12).
+-->
+<svg class="cover" viewBox="0 0 960 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TEKGUYZ design system">
+  <rect class="ground" x="0" y="0" width="960" height="300" />
+
+  <rect class="slab" x="496" y="24" width="176" height="252" rx="16" />
+  <rect class="blue" x="688" y="24" width="128" height="128" rx="16" />
+  <rect class="violet" x="832" y="24" width="144" height="128" rx="16" />
+  <rect class="amber" x="688" y="168" width="64" height="108" rx="12" />
+  <rect class="teal" x="768" y="168" width="208" height="108" rx="12" />
+
+  <g class="wire">
+    <g transform="translate(552 86)"><path d="M0 -22 L-22 0 L0 22 L22 0 Z" /></g>
+    <g transform="translate(616 86)"><path d="M0 -22 L-22 0 L0 22 L22 0 Z" /></g>
+    <g transform="translate(552 150)"><path d="M0 -22 L-22 0 L0 22 L22 0 Z" /></g>
+    <g transform="translate(616 150)"><path d="M0 -22 L-22 0 L0 22 L22 0 Z" /></g>
+    <g transform="translate(552 214)"><path d="M0 -22 L-22 0 L0 22 L22 0 Z" /></g>
+    <g transform="translate(616 214)"><path d="M0 -22 L-22 0 L0 22 L22 0 Z" /></g>
+  </g>
+
+  <g class="nodes">
+    <g transform="translate(552 86)"><circle class="blue" cy="-22" r="5" /><circle class="violet" cx="22" r="5" /><circle class="amber" cy="22" r="5" /><circle class="teal" cx="-22" r="5" /></g>
+    <g transform="translate(616 86)"><circle class="blue" cy="-22" r="5" /><circle class="violet" cx="22" r="5" /><circle class="amber" cy="22" r="5" /><circle class="teal" cx="-22" r="5" /></g>
+    <g transform="translate(552 150)"><circle class="blue" cy="-22" r="5" /><circle class="violet" cx="22" r="5" /><circle class="amber" cy="22" r="5" /><circle class="teal" cx="-22" r="5" /></g>
+    <g transform="translate(616 150)"><circle class="blue" cy="-22" r="5" /><circle class="violet" cx="22" r="5" /><circle class="amber" cy="22" r="5" /><circle class="teal" cx="-22" r="5" /></g>
+    <g transform="translate(552 214)"><circle class="blue" cy="-22" r="5" /><circle class="violet" cx="22" r="5" /><circle class="amber" cy="22" r="5" /><circle class="teal" cx="-22" r="5" /></g>
+    <g transform="translate(616 214)"><circle class="blue" cy="-22" r="5" /><circle class="violet" cx="22" r="5" /><circle class="amber" cy="22" r="5" /><circle class="teal" cx="-22" r="5" /></g>
+  </g>
+
+  <text class="name" x="48" y="228">TEKGUYZ</text>
+  <text class="tagline" x="48" y="262">Systems that report their own state.</text>
+</svg>
+
+<style>
+  body { margin: 0; background: var(--tg-bg); }
+  .cover { display: block; width: 100%; height: auto; }
+
+  .ground { fill: var(--tg-bg); }
+  .slab { fill: var(--tg-fg); }
+
+  rect.blue { fill: var(--tg-accent-blue); }
+  rect.violet { fill: var(--tg-accent-violet); }
+  rect.amber { fill: var(--tg-accent-amber); }
+  rect.teal { fill: var(--tg-accent-teal); }
+
+  circle.blue { fill: var(--tg-accent-blue); }
+  circle.violet { fill: var(--tg-accent-violet); }
+  circle.amber { fill: var(--tg-accent-amber); }
+  circle.teal { fill: var(--tg-accent-teal); }
+
+  .wire path {
+    fill: none;
+    stroke: var(--tg-muted-dark);
+    stroke-width: 1.5;
+  }
+
+  .name {
+    fill: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+    font-size: 100px;
+    font-weight: 700;
+    letter-spacing: -4.5px;
+  }
+  .tagline {
+    fill: var(--tg-secondary);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+  }
+</style>

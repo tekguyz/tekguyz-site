@@ -1,0 +1,76 @@
+<!-- @dsCard group="Actions" height=200 subtitle="Two variants, four sizes, one inverting fill" -->
+<div class="wrap">
+  <div class="row">
+    <button class="btn primary sz-default">Start a build</button>
+    <button class="btn secondary sz-nav">See the work</button>
+    <button class="btn primary sz-default" disabled>Sending…</button>
+  </div>
+  <div class="row">
+    <button class="btn primary sz-nav">nav · 14/24</button>
+    <button class="btn primary sz-form">form · 15/28</button>
+    <button class="btn primary sz-large">large · 18/32</button>
+  </div>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6, 24px);
+    padding: var(--space-6, 24px);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3, 12px);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2, 8px);
+    font-family: inherit;
+    font-size: 14.5px;
+    line-height: 1;
+    font-weight: 600;
+    white-space: nowrap;
+    border-radius: var(--radius-button, 8px);
+    border: 0;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast, 120ms) var(--ease-hover, ease),
+      border-color var(--dur-base, 240ms) var(--ease-hover, ease),
+      transform var(--dur-fast, 120ms) var(--ease-hover, ease);
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:focus-visible {
+    outline: 2px solid var(--tg-fg);
+    outline-offset: 3px;
+  }
+  .primary {
+    background: var(--tg-cta-bg);
+    color: var(--tg-cta-fg);
+  }
+  .primary:hover { background: var(--tg-cta-hover); }
+  .secondary {
+    background: transparent;
+    color: var(--tg-fg);
+    border: 1px solid var(--tg-border);
+  }
+  .secondary:hover { border-color: var(--tg-border-strong); }
+  .btn[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .sz-nav { padding: 14px 24px; }
+  .sz-default { padding: 15px 24px; }
+  .sz-form { padding: 15px 28px; }
+  .sz-large { padding: 18px 32px; font-size: 16px; }
+</style>

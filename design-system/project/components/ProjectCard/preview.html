@@ -1,0 +1,106 @@
+<!-- @dsCard group="Content" height=340 subtitle="Compact tier: no image, ever" -->
+<div class="wrap">
+  <a class="card" href="#">
+    <span class="tag teal">Custom Web Apps</span>
+    <h3 class="title">A booking desk that stopped double-selling the same slot</h3>
+    <p class="summary">One shared calendar, one source of truth, and a hold that expires on its own. Staff stopped reconciling two systems by hand.</p>
+    <p class="status">
+      <span class="dot"></span><span class="strong">Live</span><span class="muted"> · checked 4 minutes ago</span>
+    </p>
+    <span class="cta">Read the full story →</span>
+  </a>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    background: var(--tg-bg);
+    color: var(--tg-fg);
+    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+  }
+  .wrap { padding: var(--space-6, 24px); max-width: 420px; }
+  .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-card, 12px);
+    border: 1px solid var(--tg-border);
+    background: var(--tg-surface);
+    padding: var(--pad-card, 24px);
+    transition:
+      transform var(--dur-base, 240ms) var(--ease-hover, ease),
+      border-color var(--dur-base, 240ms) var(--ease-hover, ease);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--tg-border-strong);
+  }
+  .card:focus-visible {
+    outline: 2px solid var(--tg-fg);
+    outline-offset: 3px;
+  }
+  .tag {
+    align-self: flex-start;
+    border-radius: var(--radius-tag, 6px);
+    border: 1px solid color-mix(in srgb, var(--tg-accent-teal) 35%, transparent);
+    background: color-mix(in srgb, var(--tg-accent-teal) 14%, transparent);
+    color: var(--tg-accent-teal-on-bg);
+    padding: 4px 9px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .title {
+    margin: 18px 0 0;
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: pretty;
+  }
+  .summary {
+    margin: 14px 0 0;
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--tg-secondary);
+    text-wrap: pretty;
+  }
+  .status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2, 8px);
+    margin: 22px 0 0;
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 1.55;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 9999px;
+    background: var(--tg-success);
+  }
+  .strong { font-weight: 600; }
+  .muted { color: var(--tg-secondary); }
+  .cta {
+    align-self: flex-start;
+    margin-top: var(--space-6, 24px);
+    font-size: 14.5px;
+    font-weight: 600;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 180ms var(--ease-hover, ease);
+  }
+  .card:hover .cta,
+  .card:focus-visible .cta { background-size: 100% 1px; }
+</style>
