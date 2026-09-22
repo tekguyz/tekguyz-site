@@ -39,17 +39,21 @@ is recorded in the commit.
 | `check:media` | **6 entries, all posters present** | `bun run check:media` |
 | Tests | **107 pass, 5 files, 0.59s** | `bun run test` |
 | Lint | **clean — no output** | `bun run lint` |
+| `/skill-doctor` | **This repo's own two skills cost ~220 tokens of system prompt per turn** — `status-sync` ~90, `doc-audit` ~130. `status-sync` reads 0 uses, which is expected: it was renamed from `handoff` on 2026-09-20 and has not had a sitting yet. **Neither is waste and neither was removed.** The 15 never-invoked plugin skills it flags come from `anthropic-skills` and `cowork-plugin-management`, both user scope — not this repo's to disable | `/skill-doctor`, run by the user |
 
 ### Open from this sitting
 
-- **`CLAUDE.md` is 9,561 bytes against an aim of about 8,000.** Everything still
+- **`CLAUDE.md` was the per-turn cost in this repo, not the skills.** Measured
+  2026-09-21: the old file was 41,258 bytes, roughly 10,000 tokens on every
+  turn. The two repo skills together are ~220. **Do not disable `status-sync`
+  or `doc-audit` on a never-invoked reading** — a skill that has not had a
+  sitting yet is not a skill worth cutting, and `status-sync` is what this
+  repo's status discipline runs on.
+- **`CLAUDE.md` is 9,578 bytes against an aim of about 8,000.** Everything still
   in it is a hard rule, a never-do, the authority order, the skill table, the
   doc map, the definition of done, or the `next dev` block, which that tool
   rewrites. Closing the last 1,500 bytes means deleting a rule. **Not done on
   purpose.** Requeue only with a named rule to move and a reason.
-- **`/skill-doctor` was not run.** It is a UI slash command and cannot be
-  invoked from an agent session. Real per-session skill cost and any
-  never-invoked skill are therefore unmeasured here. **The user runs it.**
 - **One rule was mined from the retired notes and NOT added, pending the
   user's call:** *"Build the current unit in isolation. When a feature's design
   depends on a second consumer that does not exist yet, build the current
