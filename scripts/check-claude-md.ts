@@ -27,16 +27,33 @@
  * Run: bun run check:claude
  */
 import { readFile } from 'node:fs/promises';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 
 const FILE = 'CLAUDE.md';
+
+/* CORPUS, not one file. Job 4 (2026-09-21) moved the bulk of CLAUDE.md into
+   `.claude/rules/*.md` (path-scoped, loaded only when a matching file is read)
+   and `docs/agents/*.md` (read on demand). The rules did not change; their
+   home did. Every claim below is asserted against the concatenation, so a
+   sentence that moved does not silently kill its own check. */
+function mdIn(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith('.md'))
+    .sort()
+    .map((f) => `${dir}/${f}`);
+}
+const SOURCES = [FILE, ...mdIn('.claude/rules'), ...mdIn('docs/agents')];
 
 type Problem = { claim: string; detail: string };
 const problems: Problem[] = [];
 const checked: string[] = [];
 
-const md = await readFile(FILE, 'utf8');
+const SEP = String.fromCharCode(10, 10);
+const md = (
+  await Promise.all(SOURCES.map((f) => readFile(f, 'utf8')))
+).join(SEP);
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
 
 /** Run a command and return stdout, or null if it fails. */

@@ -20,6 +20,52 @@ planning tool has to read.
 
 ---
 
+## Measured 2026-09-21 — CLAUDE.md slimmed (Job 4)
+
+`CLAUDE.md` loads into every message. Job 4 of the tekguyz-one workflow plan
+moved its bulk into path-scoped rule files and on-demand docs. **No rule was
+dropped** — a line-by-line diff of the old file against the new set was run and
+is recorded in the commit.
+
+| | Measured 2026-09-21 | Command |
+| --- | --- | --- |
+| `CLAUDE.md` before | **41,258 bytes, 190 lines** | `wc -c -l CLAUDE.md` |
+| `CLAUDE.md` after | **9,578 bytes, 154 lines** — a 77% cut | `wc -c -l CLAUDE.md` |
+| New path-scoped rules | **4 files**, 27,526 bytes, loaded only on a `paths:` match | `wc -c .claude/rules/*.md` |
+| New on-demand docs | **2 files**, `docs/agents/working-with-this-repo.md` and `docs/agents/verification.md` | `wc -c docs/agents/*.md` |
+| Globs | **19 `paths:` entries, every one matches at least one real file.** Zero dead rules | shell glob expansion |
+| `check:claude` | **OK — 7 claim groups.** The script now reads a CORPUS: `CLAUDE.md` plus `.claude/rules/*.md` plus `docs/agents/*.md`, so a claim that moved does not kill its own check | `bun run check:claude` |
+| `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
+| `check:media` | **6 entries, all posters present** | `bun run check:media` |
+| Tests | **107 pass, 5 files, 0.59s** | `bun run test` |
+| Lint | **clean — no output** | `bun run lint` |
+
+### Open from this sitting
+
+- **`CLAUDE.md` is 9,561 bytes against an aim of about 8,000.** Everything still
+  in it is a hard rule, a never-do, the authority order, the skill table, the
+  doc map, the definition of done, or the `next dev` block, which that tool
+  rewrites. Closing the last 1,500 bytes means deleting a rule. **Not done on
+  purpose.** Requeue only with a named rule to move and a reason.
+- **`/skill-doctor` was not run.** It is a UI slash command and cannot be
+  invoked from an agent session. Real per-session skill cost and any
+  never-invoked skill are therefore unmeasured here. **The user runs it.**
+- **One rule was mined from the retired notes and NOT added, pending the
+  user's call:** *"Build the current unit in isolation. When a feature's design
+  depends on a second consumer that does not exist yet, build the current
+  consumer as its own unit first."* It is in
+  `docs/_archive/claude-ai-projects/project-instructions-site.md` in the
+  tekguyz-one repo. Adding it would have been inventing a rule this repo never
+  carried.
+- **The § Attach to the Claude.ai planning Project section below is stale in one
+  fact.** It points at `engineering/project-instructions-site.md` in tekguyz-one;
+  Job 2 moved that file to `docs/_archive/claude-ai-projects/`, and the Claude.ai
+  Project loop is retired for all code work. Not repaired here — Job 4's scope
+  was `CLAUDE.md`, and the replacement section needs the user's decision on
+  whether that Project still exists.
+
+---
+
 ## Measured 2026-09-07 — doc audit; the work lineup is still 6
 
 Every row re-run today. The lineup change itself shipped 2026-09-04 and its
