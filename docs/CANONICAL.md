@@ -296,6 +296,9 @@ earlier docs as the project serving the live domain — **does not exist.**
 Consequently **every push to `master` auto-deploys straight to production**;
 there is no preview project standing between the repo and live traffic, and
 there has not been one since Prompt 4. Anything that says otherwise is stale.
+*(Added 2026-09-25:* a pushed **branch** does get a preview deployment of this
+same project — measured on PR #3. It never touches `tekguyz.com`. Work now
+lands through PRs; the merge into `master` is the deploy.*)*
 
 7. **Remaining before launch:** add the privacy disclosures (see Known Gaps) and
    recapture the compact-context images. *(The domain is pointed and live.)*

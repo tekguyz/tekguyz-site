@@ -6,11 +6,15 @@ The tekguyz.com rebuild — **live. `https://tekguyz.com` serves this build.**
 TEKGUYZ is a small, technical team that builds custom software systems, AI
 assistants, and automated workflows for operational businesses.
 
-**Push means push to `master`, and a push to `master` IS a production deploy to
-`tekguyz.com`.** There is **no preview project** between the repo and live
-traffic. The user issues both the commit and the push instruction; you do not
-decide to push, and you do not substitute a branch for a push that was asked
-for. Branch and PR only when asked.
+**Work lands through a pull request, as in every other repo** — the global
+rules' *Landing the work* section applies here unchanged. Branch, push the
+branch, open a PR against `master`, wait for CI. A branch push builds a Vercel
+**preview deployment** of the same project; `tekguyz.com` is untouched.
+
+**Merging into `master` is the production deploy.** Every merge or push to
+`master` auto-deploys `tekguyz.com`. The user approves each merge in chat;
+once they have, merge with `gh pr merge <N> --merge --delete-branch`. Never push
+straight to `master` unless the user asks for exactly that.
 
 **After any push, confirm it** — `git log origin/master`, or the Vercel
 connector's `list_deployments`. A denied push is not a push that didn't happen.
