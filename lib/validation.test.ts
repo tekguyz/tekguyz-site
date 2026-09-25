@@ -22,7 +22,7 @@ import { DEFAULT_DETAILS_PLACEHOLDER } from '../content/solutions';
  * so a silent loosening here reaches the CRM — which is exactly how the two
  * documented garbage inputs got through the first time.
  *
- * Run with `bun run test`. Pure functions, no DOM, no network.
+ * Run with `bun run test:unit`. Pure functions, no DOM, no network.
  */
 
 describe('isPlausibleWebsite', () => {

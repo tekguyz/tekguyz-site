@@ -37,7 +37,7 @@ is recorded in the commit.
 | `check:claude` | **OK — 7 claim groups.** The script now reads a CORPUS: `CLAUDE.md` plus `.claude/rules/*.md` plus `docs/agents/*.md`, so a claim that moved does not kill its own check | `bun run check:claude` |
 | `check:design` | **40 tokens** match `docs/TOKENS.md` | `bun run check:design` |
 | `check:media` | **6 entries, all posters present** | `bun run check:media` |
-| Tests | **107 pass, 5 files, 0.59s** | `bun run test` |
+| Tests | **107 pass, 5 files, 0.59s** | `bun run test:unit` |
 | Lint | **clean — no output** | `bun run lint` |
 | `/skill-doctor` | **This repo's own two skills cost ~220 tokens of system prompt per turn** — `status-sync` ~90, `doc-audit` ~130. `status-sync` reads 0 uses, which is expected: it was renamed from `handoff` on 2026-09-20 and has not had a sitting yet. **Neither is waste and neither was removed.** The 15 never-invoked plugin skills it flags come from `anthropic-skills` and `cowork-plugin-management`, both user scope — not this repo's to disable | `/skill-doctor`, run by the user |
 

@@ -94,10 +94,10 @@ function claim(
    1. Test count — "N cases across M files"
 ------------------------------------------------------------------------- */
 claim('test count', /\(\s*(\d+)\s+cases\s+across\s+(\d+)\s+files/, (m) => {
-  const out = run('bun run test 2>&1') ?? '';
+  const out = run('bun run test:unit 2>&1') ?? '';
   const tests = out.match(/Tests\s+(\d+)\s+passed/);
   const files = out.match(/Test Files\s+(\d+)\s+passed/);
-  if (!tests || !files) return 'could not read a count out of `bun run test` — did the runner change?';
+  if (!tests || !files) return 'could not read a count out of `bun run test:unit` — did the runner change?';
   const realCases = tests[1];
   const realFiles = files[1];
   if (m[1] === realCases && m[2] === realFiles) return null;
