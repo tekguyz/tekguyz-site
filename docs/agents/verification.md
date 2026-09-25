@@ -5,12 +5,14 @@ imperatives stay in `CLAUDE.md`; this file holds the mechanism and the history.
 
 ## Pushing, previews and hosting topology
 
-Branch and PR only when asked:
+Every change lands through a PR (changed 2026-09-25, issue #1 rollout; before
+that, branches were used only when asked):
 
 ```
-git checkout -b <type>/<slug>   # fix/ feat/ docs/
-git push -u origin <branch>     # Vercel builds a PREVIEW; tekguyz.com untouched
-gh pr create --fill             # gh 2.96, authenticated as tekguyz
+git checkout -b <type>/<slug>          # fix/ feat/ docs/
+git push -u origin <branch>            # Vercel builds a PREVIEW; tekguyz.com untouched
+gh pr create --fill                    # CI (.github/workflows/ci.yml) runs on the PR
+gh pr merge <N> --merge --delete-branch   # after green CI and the user's yes: DEPLOYS PRODUCTION
 ```
 
 **After any push, confirm it** — `git log origin/master`, or the Vercel connector's `list_deployments`. **A denied push is not a push that didn't happen:** on 2026-08-10 one reached production while the session was still describing it as pending. Measure it, never infer it from the command's output.

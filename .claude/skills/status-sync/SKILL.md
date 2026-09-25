@@ -75,8 +75,8 @@ Gates (`bun run build`, `bun run test`, `bun run lint`) only if the findings
 will call something done. Otherwise report them as not run.
 
 Work in the tree is **not** shipped — say "uncommitted in the working tree"
-explicitly. A commit not on `origin/master` has not deployed. **Push means
-production here.**
+explicitly. A commit not on `origin/master` has not deployed. **A merge or push
+to `master` means production here.**
 
 ## The exclusion pass
 
