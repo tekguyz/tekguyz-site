@@ -311,7 +311,7 @@ element (matters only if the SVG goes to an external vendor).
 - **GBP Services is not an open item** and never was a website task.
 - **The testimonial is on the site** — home and `/work/[slug]`.
 - **Footer location is "South Florida"** everywhere, in code and in COPY.md.
-- **`bun run test` now gates the build** via `prebuild` (**101 cases across 4
+- **`bun run test:unit` now gates the build** via `prebuild` (**101 cases across 4
   files, ~1.8s, re-measured 2026-09-01**).
 
 ## Known and accepted about this environment
