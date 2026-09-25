@@ -10,7 +10,7 @@ import { PANEL_DUR, PANEL_EASE } from './panel-motion';
  * hardcoded 240ms agrees with `--dur-base` by coincidence rather than by
  * reference and would keep the old value if the token moved.
  *
- * `bun run test` gates `prebuild`, so drift fails the build rather than
+ * `bun run test:unit` gates `prebuild`, so drift fails the build rather than
  * shipping a panel animating on a duration the design system retired.
  */
 

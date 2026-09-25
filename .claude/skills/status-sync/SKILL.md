@@ -71,7 +71,7 @@ read its lines.
    suggest re-installing it.
 5. `docs/STATUS.md` Open tables, by grep where possible.
 
-Gates (`bun run build`, `bun run test`, `bun run lint`) only if the findings
+Gates (`bun run build`, `bun run test:unit`, `bun run lint`) only if the findings
 will call something done. Otherwise report them as not run.
 
 Work in the tree is **not** shipped — say "uncommitted in the working tree"
