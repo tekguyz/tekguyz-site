@@ -210,7 +210,7 @@ Native CSS now covers the whole scroll-reveal category — the 30–50KB animati
 
 **Not adding:** Lenis, GSAP, a CMS, Three.js. **Not using 21st.dev** — it's a registry of community shadcn components, structurally a source of the exact generic patterns this design system names and bans. Fine later for CRM internals where distinctiveness doesn't matter; wrong here.
 
-**Using the `frontend-design` skill** — Anthropic-authored, available in Claude Code, enforces a plan-and-critique pass before code and names the aesthetic defaults AI design falls into. Its own rule is that an explicit brief wins over its general guidance, so it reinforces these tokens rather than overriding them. Invoke explicitly in the master prompt.
+**Design skill:** `impeccable`. It replaced `frontend-design`, which was uninstalled on 2026-09-05. See `docs/agents/working-with-this-repo.md`.
 
 ### Carrying forward the existing code
 
