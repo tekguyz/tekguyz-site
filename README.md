@@ -1,68 +1,85 @@
-# TEKGUYZ
+<p align="center"><img src="docs/banner.svg" alt="TEKGUYZ" width="100%"></p>
 
-The tekguyz.com site. Next.js 16 (App Router) · TypeScript · Tailwind v4 · Bun.
+<p align="center">
+  <img alt="status" src="https://img.shields.io/badge/status-live-3b6fe0?labelColor=111111">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-111111?labelColor=111111">
+  <img alt="Tailwind" src="https://img.shields.io/badge/Tailwind-v4-3b6fe0?labelColor=111111">
+  <img alt="tests" src="https://img.shields.io/badge/tests-vitest-3b6fe0?labelColor=111111">
+</p>
 
-**Read `CLAUDE.md` first.** The authority order for every decision is
-`docs/CANONICAL.md` > `docs/DESIGN.md` > `docs/COPY.md` > `docs/SEO.md`, and
-`docs/archive/HISTORY.md` records what's already built and what's deliberately deferred.
+**The tekguyz.com site: a small, technical team that builds custom software, AI assistants and automated workflows for operational businesses.**
 
-## Getting started
+[Live site](https://tekguyz.com)
+
+## Status
+
+| | |
+|---|---|
+| Phase | Live. `tekguyz.com` serves this build. |
+| Shipped | Full site, AI concierge, lead capture to the CRM, `/work` lineup of 6 (pass 2 of #13). |
+| Next | Open items are in [`docs/STATUS.md`](docs/STATUS.md). |
+| Updated | 2026-09-29 |
+
+## What it does
+
+- Shows what TEKGUYZ builds: solution lines, a `/work` lineup, process and FAQ.
+- Takes leads through one shared contact action, used by the form and the concierge.
+- Sends each lead to the CRM as a signed request.
+- Runs an AI concierge (Gemini) that answers questions and can start a lead.
+- Rate-limits public actions with Upstash or Vercel KV.
+- Works in light and dark mode, with reduced-motion support.
+
+## What it never does
+
+- The concierge never states a price and never promises a timeline.
+- It never invents metrics, client names or prices in copy.
+- No accent color ever fills a button. Primary buttons are ink.
+- It never exposes a secret: every env var is server-only.
+- It never ships parallax, marquees, particles, glassmorphism or cursor-followers.
+
+## Stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · Bun · Motion · React Hook Form + Zod · Resend · Gemini · Upstash · Vercel
+
+## Run it locally
+
+You need [Bun](https://bun.sh).
 
 ```bash
 bun install
-cp .env.example .env.local   # then fill it in
+cp .env.example .env.local
 bun run dev
 ```
 
-| Script | What it does |
-| --- | --- |
-| `bun run dev` | Dev server on :3000 |
-| `bun run build` | Production build — must pass with zero type errors |
-| `bun run start` | Serve the production build |
-| `bun run icons` | Regenerate the favicon/manifest set from `public/brand/icon-master.svg` |
+The dev server runs on `http://localhost:3000`. Every variable in `.env.example` is server-only; never prefix one with `NEXT_PUBLIC_`. The build passes with none set.
 
-Package manager is **Bun**. Keep `bun.lock` committed; never mix in npm or pnpm.
+| Variable | Where it comes from |
+|---|---|
+| `RESEND_API_KEY` | Resend dashboard |
+| `CRM_TRIAGE_ENDPOINT` | CRM, Settings → Organization → "Endpoint URL" |
+| `CRM_SIGNING_SECRET` | CRM, same panel, "Signing secret" |
+| `GEMINI_API_KEY` | Google AI Studio |
+| `GEMINI_MODEL` | Optional. Defaults to `gemini-3.6-flash`. |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Vercel KV or Upstash (or `UPSTASH_REDIS_REST_*`) |
 
-## Layout
+More scripts, the folder layout and known traps: [`docs/SETUP.md`](docs/SETUP.md).
 
+## Tests
+
+```bash
+bun run test:unit
 ```
-app/          routes, the shared lead action, the concierge API route
-components/   every component in DESIGN.md §4
-config/       solutions.ts — THE accent-to-solution mapping, imported everywhere
-content/      work.ts (8 builds), solutions.ts (4 lines), faq.ts, process.ts
-lib/          seo, status checks, rate limiting, the concierge LLM seam
-scripts/      generate-icons.ts
-```
 
-## Things that will bite you
+Never `bun run test`: it is set to fail on purpose. CI runs `typecheck`, `test:unit` and `build` on every PR, with no secrets.
 
-- **The honeypot is `hp_confirm`, never `website`.** `website` is a real CRM
-  column; naming the honeypot the same thing silently drops legitimate leads as
-  suspected bots, with nothing shown to them and nothing logged.
-- **Every CRM triage POST must be signed** (2026-08-18). `CRM_TRIAGE_ENDPOINT`
-  now ends in the plain organization id and is not a credential;
-  `CRM_SIGNING_SECRET` is. `sendToCrm` serializes the payload **once** and signs
-  that exact string — signing a re-serialized copy 401s every request. Since
-  2026-09-14 the HMAC covers `${timestamp}.${body}`, with the Unix-seconds
-  timestamp sent as `X-TekGuyz-Timestamp`; the CRM refuses a stale (over 5
-  minutes), replayed or body-only signature. Rotating
-  the secret in the CRM takes effect immediately, so update Vercel first.
-  CORS is not involved: this is a server-side fetch, so there is no origin and
-  no preflight. The CRM's allowed-origin list has never applied to it.
-- **Accent colors come from `config/solutions.ts` only.** The single documented
-  exception is the home ink band, which sets literal values via `.ink-band` in
-  `globals.css` because it is dark in both themes.
-- **Scroll reveals sit inside `@supports (animation-timeline: view())`.** The
-  resting state is `opacity: 0`; without that guard, a browser lacking
-  scroll-driven animation renders those sections permanently invisible.
-- **Without KV/Upstash credentials the rate limiter is in-memory**, which resets
-  on cold start and is not real protection. It warns once when that happens.
-- **The concierge must never state a price or commit to a timeline.** That's a
-  hard constraint in the system prompt, not a style preference.
-- **The four-color moving treatment appears in exactly one place** — the
-  concierge's thinking state. Don't extend it.
+## Docs
 
-## Environment
+- [`CLAUDE.md`](CLAUDE.md): rules for working in this repo
+- [`docs/STATUS.md`](docs/STATUS.md): what is open now
+- [`docs/CANONICAL.md`](docs/CANONICAL.md) · [`docs/DESIGN.md`](docs/DESIGN.md) · [`docs/TOKENS.md`](docs/TOKENS.md) · [`docs/COPY.md`](docs/COPY.md) · [`docs/SEO.md`](docs/SEO.md)
+- [`docs/SETUP.md`](docs/SETUP.md): scripts, layout, gotchas
+- [`docs/archive/HISTORY.md`](docs/archive/HISTORY.md): what was built, and why
 
-See `.env.example`. Every variable is server-only; none may be prefixed
-`NEXT_PUBLIC_`, and `GEMINI_API_KEY` especially would let anyone spend the quota.
+---
+
+<p align="center"><sub>Built by <a href="https://tekguyz.com">TEKGUYZ</a></sub></p>
