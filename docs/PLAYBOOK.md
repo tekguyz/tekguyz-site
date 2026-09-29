@@ -92,11 +92,11 @@ Ordering and cart systems, headless e-commerce, scheduling and booking portals, 
 
 Pitch: if you can describe the workflow, we can build it.
 
-## 6. Case Studies (the deep-dive four)
+## 6. Case Studies (the deep-dive five)
 
 *Lineup changed 2026-09-04. `AI Audio & File Insights` (crunch-wrap.netlify.app) was replaced by `AI Meeting Notes & Transcription` — the same product one full rewrite later. `Lead & Pipeline CRM` was added. `Shopify Bundle Builder & Storefront` moved down to Section 7. The old entries are in git history, not archived here.*
 
-*Changed again 2026-09-28 (#13). Field Photo Reports moved to its v2 build, with new copy. The client stays unnamed here. `Private Meetup App` joins as a fifth case study in pass 2, once its screenshots exist.*
+*Changed again 2026-09-28 (#13). Field Photo Reports moved to its v2 build, with new copy. The client stays unnamed here. `Private Meetup App` joined as the fifth case study on 2026-09-29 (pass 2).*
 
 **Field Photo Reports & Quality Tracking** (Business Systems) A stone fabrication shop sent its installers out with paper, photos went through one app and messages through another, and sales often waited 3 to 5 days to bill. We built one place for the whole Visit: the Installer sends one Report from their phone — photos stamped with job number, time, place and Installer, a note, any Issues, and a sign-off from whoever is on site — in English or Spanish, and the office sees it live. Marking it Reviewed tells the Salesperson to bill. No result is measured yet, so none is stated. Link: **realstone-field-ops.vercel.app** — the landing page, with two one-click demo buttons, As Office staff and As an Installer. *(Changed 2026-09-28. The v1 link, rs-field-ops.netlify.app, is dead.)*
 
@@ -105,6 +105,8 @@ Pitch: if you can describe the workflow, we can build it.
 **Lead & Pipeline CRM** (Business Systems) Enquiries arrive in an inbox, a phone log and a form notification, the businesses you went out and found sit in a spreadsheet nobody opens twice, and nothing records what the pipeline was worth once it closed. We built the CRM we run TEKGUYZ on, and work reaches it from both directions — inbound, this site's contact form posts in over a signed webhook; outbound, a lead-finding pipeline we built alongside it finds qualified local businesses that land in their own staging lane as cold prospects, never leads, until a real conversation promotes one across. Result: everything worth chasing lives in one pipeline, and a lead cannot quietly go cold without showing it. Link: **tekguyz-crm.vercel.app/demo** — one click into a live, seeded, **read-only** instance, no signup. *(Changed 2026-09-04. The bare origin is still login-gated with no public route; the `/demo` path is the only one that works, and the demo identity is a Postgres role holding SELECT and nothing else.)*
 
 **AI Voice Receptionist & Call Booking** (AI Voice Agents) A stone fabrication shop was losing leads to after-hours calls and a dead-end voicemail box. We built a real-time AI voice agent that captures project details and books consultations on the spot, while a live dashboard shows the call, the CRM sync, and the follow-up email happening as it happens. Result: watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact. Link: tekguyz-sarah.vercel.app
+
+**Private Meetup App** (Custom Web Apps) A members-only app for small private meetups at home, for verified Florida medical cannabis patients, 21 or older. A person reviews every member's live card and face capture; AI lists concerns but never decides. Hosts approve every guest by hand, and the exact address stays hidden behind a half-mile circle until they do. Card and face photos are deleted on the reviewer's decision, within 7 days at most. The app never handles a sale. No member count and no result is stated: it launches small and private. **The app's brand name never appears on this site** except inside its url. Link: **meet4weed.vercel.app** — the landing page, with one "Try the demo" button. *(Added 2026-09-29, #13 pass 2.)*
 
 ## 7. Projects (the lighter tier)
 
@@ -177,13 +179,14 @@ Current set, all `.webp`:
 - `field-reports-thumb.webp` — Field Photo Reports v2. 1440×900, cropped from the app's own `showcase/office-visit-desktop-light.png`: one Visit with a stamped Live photo, an open Issue and Mark Reviewed. Replaced `field-ops-thumb.webp` (v1) on 2026-09-28.
 - `squid-ink.webp` — AI Meeting Notes & Transcription. 1440×900. Keeps the source repo's working name as a filename; the **page never uses that name**, because the product's public name is unconfirmed upstream. Replaced `crunch-wrap-dashboard.webp` on 2026-09-04.
 - `tekguyz-crm.webp` — Lead & Pipeline CRM. 1440×900. **Read this before writing any copy near it:** it is the real product's real Reports view, but the tenant shown is `TEKGUYZ Demo` and every figure on it is **seeded verification data, not a client result.** It satisfies this section's hard rule (real production UI, not a simulator) and it does **not** license a single number on the page.
+- `meetup-thumb.webp` — Private Meetup App. 1440×900, from the app's own `showcase/sesh-desktop-light.png`: one meetup, with the address hidden until the host approves. Taken in the demo, so every person in it is invented. The app's name shows in its own header, as the client's logo does in `field-reports-thumb.webp`. Added 2026-09-29 (#13 pass 2).
 - `advantage-teams-thumb.webp` — Team Performance
 
 **Deleted 2026-09-04** along with their entries: `crunch-wrap-dashboard.webp`, `meeting-organizer-thumb.webp`, `dragonfly-nica-thumb.webp`, `executive-detailer-thumb.webp`. **Deleted 2026-09-28 (#13):** `field-ops-thumb.webp` and `shopify-configurator.webp`. They are gone from `public/media/`, which is deliberate — `check:media` fails the build on a missing poster, so a re-added entry cannot ship a blank frame.
 
 **Project thumbs are rendered**, not just wired: `/work/[slug]` project pages carry a `LiveFrame` as of 2026-08-07. They were previously referenced in `content/work.ts` and displayed nowhere, since `project-card` has no image by design and the project detail page had none either.
 
-**Ratio state, measured 2026-09-28 by `bun run check:media`: 5 entries, all posters present, ZERO off-ratio.** The three 4:3 stragglers that used to sit here left with their entries; the remaining set is all 1440×900 or 1600×900. This is the first time the whole set has been on-ratio, so a future off-ratio warning is a real regression rather than the standing state.
+**Ratio state, measured 2026-09-29 by `bun run check:media`: 6 entries, all posters present, ZERO off-ratio.** The three 4:3 stragglers that used to sit here left with their entries; the remaining set is all 1440×900 or 1600×900. This is the first time the whole set has been on-ratio, so a future off-ratio warning is a real regression rather than the standing state.
 
 **Capture method** (this took several failed attempts to get right — use it): OS screenshot tool, not DevTools. Mac `Cmd+Shift+4`, Windows `Win+Shift+S`. ShareX's "Fixed size region mode" with width/height set is ideal if you have it. Arrange multiple cards in the browser first (resize the window, use real browser zoom) so they sit together cleanly, *then* capture — you compose the shot visually rather than asking software to do it. Edit in PNG (lossless), convert to `.webp` at ~quality 90 as the final step only.
 

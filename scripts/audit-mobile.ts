@@ -51,6 +51,7 @@ const WORK = [
   'ai-voice-receptionist',
   'ai-meeting-notes',
   'tekguyz-crm',
+  'private-meetup-app',
   'team-performance',
 ];
 const SOLUTIONS = ['smart-operations', 'ai-voice-agents', 'business-systems', 'custom-web-apps'];
