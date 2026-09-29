@@ -2,9 +2,9 @@
 
 <p align="center">
   <img alt="status" src="https://img.shields.io/badge/status-live-3b6fe0?labelColor=111111">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-111111?labelColor=111111">
-  <img alt="Tailwind" src="https://img.shields.io/badge/Tailwind-v4-3b6fe0?labelColor=111111">
-  <img alt="tests" src="https://img.shields.io/badge/tests-vitest-3b6fe0?labelColor=111111">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-7c6fe0?labelColor=111111">
+  <img alt="Tailwind" src="https://img.shields.io/badge/Tailwind-v4-f2a93c?labelColor=111111">
+  <img alt="tests" src="https://img.shields.io/badge/tests-vitest-2fa679?labelColor=111111">
 </p>
 
 **The tekguyz.com site: a small, technical team that builds custom software, AI assistants and automated workflows for operational businesses.**
