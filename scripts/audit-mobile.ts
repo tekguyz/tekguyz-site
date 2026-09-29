@@ -49,14 +49,13 @@ const OUT = '.audit';
 const WORK = [
   'field-photo-reports',
   'ai-voice-receptionist',
-  'bundle-builder',
   'ai-meeting-notes',
   'tekguyz-crm',
   'team-performance',
 ];
 const SOLUTIONS = ['smart-operations', 'ai-voice-agents', 'business-systems', 'custom-web-apps'];
 
-/** All 16 rendered routes. */
+/** Every rendered route. */
 const ROUTES: string[] = [
   '/',
   '/solutions',

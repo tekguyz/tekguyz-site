@@ -29,4 +29,4 @@ Moved out of `CLAUDE.md` on 2026-09-21 (Job 4). Text is unchanged.
 
 ## Content model
 
-`content/work.ts` drives the `/work` index, all 6 detail pages, `generateStaticParams`, JSON-LD, OG images, and live status checks. `content/solutions.ts` does the same for `/solutions`. Adding an entry must produce a page with no template work.
+`content/work.ts` drives the `/work` index, every detail page, `generateStaticParams`, JSON-LD, OG images, and live status checks. `content/solutions.ts` does the same for `/solutions`. Adding an entry must produce a page with no template work.

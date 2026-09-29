@@ -20,6 +20,25 @@ planning tool has to read.
 
 ---
 
+## Measured 2026-09-28 — /work lineup refresh, pass 1 (#13)
+
+Pass 1 of issue #13. Pass 2 (Private Meetup App) waits for real screenshots in
+the meet4weed repo's `showcase/`.
+
+| | Measured 2026-09-28 | Command |
+| --- | --- | --- |
+| Lineup | **4 case studies + 1 project = 5.** Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM, AI Voice Receptionist; Team Performance | `content/work.ts` |
+| Field Photo Reports | **v2 build.** `realstone-field-ops.vercel.app` answers 200; the v1 host `rs-field-ops.netlify.app` answers 404. New copy, new poster `field-reports-thumb.webp` (1440×900) | `curl -s -o /dev/null -w '%{http_code}'` |
+| AI Meeting Notes | Try it line now describes the one-click "Try the demo" button | `content/work.ts` |
+| Bundle Builder | **Removed**, with its poster. Its store was cancelled and the demo showed a real company's products and prices | `content/work.ts` |
+| Fold board | **3 cards.** The teal slot is empty until pass 2 | `content/work.test.ts` |
+| Build count | **"five"**, derived from `work.length` | `content/work.test.ts` |
+| Redirects | **5 permanent (308)** in `next.config.ts` | `next.config.test.ts` |
+| `check:media` | **5 entries, all posters present** | `bun run check:media` |
+| Tests | **117 pass, 7 files** | `bun run test:unit` |
+
+---
+
 ## Measured 2026-09-21 — CLAUDE.md slimmed (Job 4)
 
 `CLAUDE.md` loads into every message. Job 4 of the tekguyz-one workflow plan
@@ -131,6 +150,8 @@ the array wrong.**
 
 ### One fold-board invariant bent, deliberately and namedly
 
+*[superseded 2026-09-28, #13] `bundle-builder` is removed and the teal slot is empty; the board shows 3 cards until pass 2 puts `private-meetup-app` there. The paragraph below is the 2026-09-04 state.*
+
 `foldSlugs` is one build per solution line, and a 2026-08-29 decision made every
 slot a case study. `bundle-builder` is the only build on the custom-web-apps
 line and is now a project, so **the teal slot is a project card.** The
@@ -171,7 +192,7 @@ absence reads as a decision rather than an oversight.
 | --- | --- |
 | **The CRM poster shows seeded demo figures.** | `tekguyz-crm.webp` is the real product's real Reports view, but the tenant is `TEKGUYZ Demo` and its pipeline / revenue / win-rate numbers are **seeded verification data, not a client result.** It satisfies PLAYBOOK §12 (real production UI, not a simulator) and it licenses **no number** in copy. Recorded at the entry in `docs/COPY.md` and in `docs/kb/tekguyz-crm.md`. **2026-09-14:** `docs/kb/` no longer exists here (removed in `c36b0cd`); that record is now `engineering/projects kb/tekguyz-crm.md` in tekguyz-one. The `docs/COPY.md` half still holds. |
 | **~~`docs/kb/` is new — 6 files~~ — MOVED OUT 2026-09-14, measured: `docs/kb/` does not exist in this repo.** All six documents live in tekguyz-one at `engineering/projects kb/` (`c36b0cd`), where they are maintained; the caveats below travel with them. Original row, measured 2026-09-04: five product documents plus `README.md`, the index. (This row said 5 while the prose above it called `leadgen.md` the sixth document; `ls docs/kb/` settles it.) | Product reference documents compiled from four other repositories, plus an index. **They are source material, not an authority** — the `CANONICAL > DESIGN > COPY > SEO` order is unchanged and this folder sits outside it. **`docs/kb/field-ops.md`'s identity caveat is CLOSED** — the owner confirmed 2026-09-07 that it is the build behind `/work/field-photo-reports`. The narrower caveat stands: it claims features (offline sync, GPS watermarking, CSV ingestion, inventory, crew) that were never read off the running demo, so none of them may become copy unmeasured. |
-| **Retired routes have no redirects.** | `/work/ai-audio-file-insights`, `/work/meeting-organizer`, `/work/restaurant-menu`, `/work/auto-detailer` now 404. They were live on tekguyz.com. If any has inbound links worth keeping, that is a `next.config` redirect and it is not written. |
+| ~~**Retired routes have no redirects.**~~ **Closed 2026-09-28 (#13).** | `/work/ai-audio-file-insights` and `/work/meeting-organizer` 308 to `/work/ai-meeting-notes`; `/work/restaurant-menu`, `/work/auto-detailer` and `/work/bundle-builder` 308 to `/work`. In `next.config.ts`, pinned by `next.config.test.ts`. Confirm on production without `curl -L` after the merge. |
 
 ---
 

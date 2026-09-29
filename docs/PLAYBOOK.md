@@ -96,7 +96,9 @@ Pitch: if you can describe the workflow, we can build it.
 
 *Lineup changed 2026-09-04. `AI Audio & File Insights` (crunch-wrap.netlify.app) was replaced by `AI Meeting Notes & Transcription` — the same product one full rewrite later. `Lead & Pipeline CRM` was added. `Shopify Bundle Builder & Storefront` moved down to Section 7. The old entries are in git history, not archived here.*
 
-**Field Photo Reports & Quality Tracking** (Business Systems) Project managers couldn't verify field work without driving to the site, and crew notes were too messy to share. We built a photo-capture system that feeds straight into digital reports — no site visit required. Result: fewer return trips, faster dispute resolution, and invoices that go out the same day instead of waiting on paperwork from the field. Link: rs-field-ops.netlify.app
+*Changed again 2026-09-28 (#13). Field Photo Reports moved to its v2 build, with new copy. The client stays unnamed here. `Private Meetup App` joins as a fifth case study in pass 2, once its screenshots exist.*
+
+**Field Photo Reports & Quality Tracking** (Business Systems) A stone fabrication shop sent its installers out with paper, photos went through one app and messages through another, and sales often waited 3 to 5 days to bill. We built one place for the whole Visit: the Installer sends one Report from their phone — photos stamped with job number, time, place and Installer, a note, any Issues, and a sign-off — in English or Spanish, and the office sees it live. Marking it Reviewed tells the Salesperson to bill. No result is measured yet, so none is stated. Link: **realstone-field-ops.vercel.app** — the landing page, with two one-click demo buttons, As Office staff and As an Installer. *(Changed 2026-09-28. The v1 link, rs-field-ops.netlify.app, is dead.)*
 
 **AI Meeting Notes & Transcription** (Smart Operations) Meeting notes either don't get written or don't get read, and the tools that fix it send a bot into the call — awkward in front of a client, blocked by plenty of IT policies, and still just a wall of transcript. We built a notepad that records straight from the browser with nothing joining the meeting, transcribes with the speakers separated, and writes the summary, takeaways and action items with every line linked back to the moment in the transcript that supports it. Result: no bot joins the call, and every takeaway can be checked against what was actually said. Link: squid-ink.vercel.app
 
@@ -104,20 +106,19 @@ Pitch: if you can describe the workflow, we can build it.
 
 **AI Voice Receptionist & Call Booking** (AI Voice Agents) A stone fabrication shop was losing leads to after-hours calls and a dead-end voicemail box. We built a real-time AI voice agent that captures project details and books consultations on the spot, while a live dashboard shows the call, the CRM sync, and the follow-up email happening as it happens. Result: watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact. Link: tekguyz-sarah.vercel.app
 
-## 7. Projects (the lighter two)
+## 7. Projects (the lighter tier)
 
 | **Project** | **Solution Line** | **Built For** | **Link** |
 | --- | --- | --- | --- |
-| Shopify Bundle Builder & Storefront | Custom Web Apps | Retailers selling configurable, bundled, or made-to-order products | reporter-resource-temp.vercel.app |
 | Team Performance & Automated Customer Feedback | Business Systems | Service businesses with phone-based teams and customer follow-up surveys | advantage-teams.vercel.app/dashboard |
-
-**Shopify Bundle Builder & Storefront** A headless storefront built directly on Shopify's API rather than against the theme. Options update the running total instantly, and checkout hands off to Shopify's own secure flow, so payments and fulfillment never had to be rebuilt.
 
 **Team Performance & Automated Customer Feedback** Connects desk-phone logs directly to the CRM for automatic job credit, plus a smart-limit SMS feedback loop that only surveys customers when it's actually useful.
 
 **Not on the site, on purpose: `tekguyz-leadgen`.** The lead-finding pipeline behind the outbound half of the CRM story is a local command-line tool — no UI, no deploy, nothing a visitor can open. Every `/work` entry is "open it and use it yourself", so it earns no entry of its own; it appears only inside the CRM's narrative, which is where its output actually lands. Full reference: `engineering/projects kb/leadgen.md` in the tekguyz-one repo. **Its unit economics are internal and never publishable** — this site quotes no prices and no metrics.
 
 *Retired 2026-09-04: `Automated Meeting & Research Organizer` (crispy-bacon.netlify.app — the predecessor of the meeting notepad above, so it showed one product twice), `Bilingual Restaurant Menu & WhatsApp Ordering` (dragonfly-nica.netlify.app) and `Auto Detailer Booking & Lead Tracker` (the-executivedetailer.vercel.app), the last two at the owner's direction as carrying no real value for the site.*
+
+*Retired 2026-09-28 (#13): `Shopify Bundle Builder & Storefront`. The owner cancelled the Shopify store, so checkout said the store was closed, and the demo showed a real company's products and prices. All five retired slugs redirect (308) in `next.config.ts`.*
 
 ## 8. Process (How We Work)
 
@@ -173,13 +174,12 @@ Current set, all `.webp`:
 
 - `sarah-poster.webp` — AI Voice Receptionist, **hero (16:9) only.** Real desktop dashboard: customer profile, live conversation feed, confirmation email. 1600×900. Also the poster for the future video loop, which is why it keeps the `-poster` name rather than being folded into the `-thumb` convention.
 - `sarah-thumb.webp` — AI Voice Receptionist, **compact 16:10 contexts** (case-study row, detail page). **Decided 2026-08-07 and wired; the file itself is pending the recapture.** It replaces `sarah-project-thumb.webp`, which was never documented here and was a crop of the retired phone-call simulator — a violation of this section's own hard rule, not merely a naming gap. `bun run check:media` fails the build until the file lands, which is the guard working as intended.
-- `field-ops-thumb.webp` — Field Photo Reports. The one app with both an admin and installer/mobile view; the desktop admin view is the primary capture.
-- `shopify-configurator.webp` — Bundle Builder
+- `field-reports-thumb.webp` — Field Photo Reports v2. 1440×900, cropped from the app's own `showcase/office-visit-desktop-light.png`: one Visit with a stamped Live photo, an open Issue and Mark Reviewed. Replaced `field-ops-thumb.webp` (v1) on 2026-09-28.
 - `squid-ink.webp` — AI Meeting Notes & Transcription. 1440×900. Keeps the source repo's working name as a filename; the **page never uses that name**, because the product's public name is unconfirmed upstream. Replaced `crunch-wrap-dashboard.webp` on 2026-09-04.
 - `tekguyz-crm.webp` — Lead & Pipeline CRM. 1440×900. **Read this before writing any copy near it:** it is the real product's real Reports view, but the tenant shown is `TEKGUYZ Demo` and every figure on it is **seeded verification data, not a client result.** It satisfies this section's hard rule (real production UI, not a simulator) and it does **not** license a single number on the page.
 - `advantage-teams-thumb.webp` — Team Performance
 
-**Deleted 2026-09-04** along with their entries: `crunch-wrap-dashboard.webp`, `meeting-organizer-thumb.webp`, `dragonfly-nica-thumb.webp`, `executive-detailer-thumb.webp`. They are gone from `public/media/`, which is deliberate — `check:media` fails the build on a missing poster, so a re-added entry cannot ship a blank frame.
+**Deleted 2026-09-04** along with their entries: `crunch-wrap-dashboard.webp`, `meeting-organizer-thumb.webp`, `dragonfly-nica-thumb.webp`, `executive-detailer-thumb.webp`. **Deleted 2026-09-28 (#13):** `field-ops-thumb.webp` and `shopify-configurator.webp`. They are gone from `public/media/`, which is deliberate — `check:media` fails the build on a missing poster, so a re-added entry cannot ship a blank frame.
 
 **Project thumbs are rendered**, not just wired: `/work/[slug]` project pages carry a `LiveFrame` as of 2026-08-07. They were previously referenced in `content/work.ts` and displayed nowhere, since `project-card` has no image by design and the project detail page had none either.
 

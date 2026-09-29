@@ -134,12 +134,16 @@ export default async function SolutionDetailPage({
             </ul>
 
             <div className="mt-8 flex flex-wrap items-baseline justify-between gap-8">
-              <p className="text-[0.875rem] leading-[1.55] text-secondary">
-                <span className="tg-eyebrow">
-                  Related work
-                </span>{' '}
-                &nbsp;{solution.relatedWork.join(', ')}
-              </p>
+              {/* Resolved names only, and no label at all when none resolve —
+                  an empty "Related work" reads as a broken page (#13). */}
+              {related.length > 0 && (
+                <p className="text-[0.875rem] leading-[1.55] text-secondary">
+                  <span className="tg-eyebrow">
+                    Related work
+                  </span>{' '}
+                  &nbsp;{related.map((w) => w.name).join(', ')}
+                </p>
+              )}
               <Link
                 href={solution.cta.href}
                 className="tap-44 link-underline flex-none text-[14.5px] font-semibold"
