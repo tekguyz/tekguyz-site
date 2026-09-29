@@ -124,8 +124,8 @@ export const solutions: Solution[] = [
       'Appointment and scheduling portals',
       'Client-facing dashboards',
     ],
-    // Empty since #13 pass 1 removed Bundle Builder; pass 2 adds Private Meetup App.
-    relatedWork: [],
+    // #13 pass 1 removed Bundle Builder; pass 2 added Private Meetup App.
+    relatedWork: ['Private Meetup App'],
     cta: { label: 'Describe what you need built', href: '/contact?interest=custom-web-apps' },
     serviceDescription:
       'Ordering and cart systems, headless e-commerce, scheduling and booking portals, and client-facing dashboards.',

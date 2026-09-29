@@ -20,7 +20,23 @@ planning tool has to read.
 
 ---
 
-## Measured 2026-09-28 — /work lineup refresh, pass 1 (#13)
+## Measured 2026-09-29 — /work lineup refresh, pass 2 (#13)
+
+Pass 2 closes issue #13.
+
+| | Measured 2026-09-29 | Command |
+| --- | --- | --- |
+| Lineup | **5 case studies + 1 project = 6.** Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM, AI Voice Receptionist, Private Meetup App; Team Performance | `content/work.ts` |
+| Private Meetup App | **Added**, custom-web-apps line. `meet4weed.vercel.app` answers 200 (HEAD too) and shows "Try the demo". Poster `meetup-thumb.webp` (1440×900) from the app's `showcase/sesh-desktop-light.png` | `curl -s -I -o /dev/null -w '%{http_code}'` |
+| Fold board | **4 cards, all case studies.** Teal slot is Private Meetup App | `content/work.test.ts` |
+| Build count | **"six"**, derived from `work.length` | `content/work.test.ts` |
+| Custom Web Apps related work | **Private Meetup App** | `content/work.test.ts` |
+| `check:media` | **6 entries, all posters present** | `bun run check:media` |
+| Tests | **117 pass, 7 files** | `bun run test:unit` |
+
+After the merge: resubmit the sitemap in Search Console. Request removal of nothing.
+
+## Measured 2026-09-28 — /work lineup refresh, pass 1 (#13) — superseded by pass 2 above
 
 Pass 1 of issue #13. Pass 2 (Private Meetup App) waits for real screenshots in
 the meet4weed repo's `showcase/`.

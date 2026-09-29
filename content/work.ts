@@ -93,6 +93,9 @@ const REVISED = '2026-09-04';
  */
 const LINEUP_2026_09_28 = '2026-09-28';
 
+/** Date of #13 pass 2: `private-meetup-app` added as the fifth case study. */
+const LINEUP_2026_09_29 = '2026-09-29';
+
 export const work: WorkEntry[] = [
   {
     slug: 'field-photo-reports',
@@ -258,6 +261,45 @@ export const work: WorkEntry[] = [
     description:
       'A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.',
   },
+  {
+    slug: 'private-meetup-app',
+    kind: 'case-study',
+    name: 'Private Meetup App',
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
+    headline: 'Small private meetups, where a person checks every card and the address stays hidden until the host says yes.',
+    // The bare origin is the landing page; only its "Try the demo" button signs
+    // a visitor in (DEMO-STANDARD). The app's brand name is in this url and
+    // nowhere else on the site — `content/work.test.ts` fails if it leaks into
+    // any other field.
+    url: 'https://meet4weed.vercel.app',
+    // 1440x900, from the app's own `showcase/sesh-desktop-light.png`, taken in
+    // the demo: every member and meetup in it is invented. Its brand name shows
+    // in the app's own header, as the client's logo does in the Field Photo
+    // Reports poster: an honest capture, not copy.
+    poster: '/media/meetup-thumb.webp',
+    alt: 'Private Meetup App page for one meetup: the time, the neighborhood and the spots left, with the exact address hidden until the host approves the guest',
+    embeddable: false,
+    updatedAt: LINEUP_2026_09_29,
+    // Written 2026-09-29 (#13 pass 2), in sync with COPY.md, from the app's
+    // PRODUCT.md and CONTEXT.md. No member count and no result is stated,
+    // because none exists: it launches small and private.
+    challenge:
+      'Florida law lets medical cannabis patients consume at a private home. A meetup there only works if everyone in the room is a verified patient, 21 or older. An ordinary event app cannot promise that: it checks nobody’s card, and anyone who finds the page can find the house.',
+    approach:
+      'We built a members-only app around the gate. Every new member takes a live photo of their card, then of their face with a random challenge, and a person reviews each one by eye. AI reads the card and lists concerns, but it never decides. Hosts approve every guest by hand. Until they do, the map shows only a circle about half a mile across. The app never handles a sale of any kind.',
+    outcome:
+      'Every member at a meetup was checked by a person, and nobody outside the guest list knows where it is. Card and face photos are deleted when the reviewer decides, within 7 days at most, and the app forgets the address a week after the meetup.',
+    pullQuote:
+      'Hide by default, reveal by approval: nobody sees who or where until a person has said yes.',
+    tryIt:
+      'Press Try the demo on its landing page. One click opens your own visitor account among sample members and meetups — no card, no sign-up, and it is deleted after 7 days. Browse the list and the map, open a meetup, and see what stays hidden until a host says yes.',
+    howItsBuilt:
+      'A phone-first web app that installs to the home screen, on one database where every row is locked to who may see it. Verification is a one-step-per-screen camera flow with no gallery upload. Notifications name no member and no meetup, and the app stores no data on the phone. The demo runs in a sealed copy that can never reach a real member. Light and dark mode throughout.',
+    title: 'TEKGUYZ | Private Meetup App',
+    description:
+      'A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.',
+  },
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
   {
@@ -379,9 +421,11 @@ export const featured = featuredSlugs
  * `bundle-builder` held it as a project — the one named exception to the rule
  * above — and was removed because its store was cancelled and its demo showed
  * a real company's products and prices. The owner chose three cards over
- * keeping that data up while the replacement waits for its screenshots.
- * Pass 2 puts `private-meetup-app`, a custom-web-apps case study, in the teal
- * slot and restores the four-accent legend with no exception left.
+ * keeping that data up while the replacement waited for its screenshots.
+ *
+ * [2026-09-29, #13 pass 2] `private-meetup-app`, a custom-web-apps case study,
+ * holds the teal slot. Four cards, four lines, and every one a case study: the
+ * named exception is gone.
  *
  * `content/work.test.ts` fails if a slug here stops resolving, or if two cards
  * share a line or leave stripe order.
@@ -390,6 +434,7 @@ export const foldSlugs = [
   'ai-meeting-notes',
   'ai-voice-receptionist',
   'field-photo-reports',
+  'private-meetup-app',
 ] as const;
 
 export const foldBoard = foldSlugs

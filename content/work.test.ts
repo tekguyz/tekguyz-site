@@ -34,9 +34,10 @@ describe('work lineup', () => {
     expect(order).toEqual([...order].sort((a, b) => a - b));
   });
 
-  // Pass 1 of #13 empties the teal slot; pass 2 fills it with the meetup app.
-  it('the fold board shows three cards', () => {
-    expect(foldBoard).toHaveLength(3);
+  // Pass 2 of #13 fills the teal slot with the meetup app: four lines, four cards.
+  it('the fold board shows four cards, all case studies', () => {
+    expect(foldBoard).toHaveLength(4);
+    for (const w of foldBoard) expect(w.kind, w.slug).toBe('case-study');
   });
 
   it('every solution’s Related work name resolves to an entry', () => {
@@ -58,7 +59,7 @@ describe('work lineup', () => {
   });
 
   it('the build count word matches the entry count', () => {
-    expect(buildCountWord).toBe('five');
-    expect(work).toHaveLength(5);
+    expect(buildCountWord).toBe('six');
+    expect(work).toHaveLength(6);
   });
 });

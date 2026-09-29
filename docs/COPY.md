@@ -91,13 +91,12 @@ MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. 
 **[changed 2026-08-29]** The elevated three-fact proof strip is deleted. Its
 "Eight live builds" claim is not written anywhere any more — the board below the
 hero *is* the live builds, one per solution line, with a measured status on
-each, and `See all five builds` is the link directly beneath them. *(2026-09-28,
-#13: the board shows three cards — the teal slot is empty until the Private
-Meetup App case study lands.)* The other two facts are now one muted
+each, and `See all six builds` is the link directly beneath them. *(2026-09-29,
+#13 pass 2: four cards again — Private Meetup App holds the teal slot.)* The other two facts are now one muted
 caption line beside that link, in the site's standard trust-fact pattern (one
 `--text-sm` secondary row, 3px `muted-soft` mid-dots, stacked below 766px).
 
-LINK: See all five builds — the label is derived from `work.length` in `components/fold-board.tsx`, never typed → /work
+LINK: See all six builds — the label is derived from `work.length` in `components/fold-board.tsx`, never typed → /work
 FACT: A verified Google review. **Read it on Google →** (`site.gbp`)
 FACT: South Florida, remote nationwide (`site.locationLong`, read from
 `lib/site.ts` — never retyped here)
@@ -268,7 +267,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: *(none — removed 2026-09-28, #13. The page hides the label when the list is empty. Private Meetup App fills it in pass 2.)*
+RELATED WORK: Private Meetup App *(added 2026-09-29, #13 pass 2. Bundle Builder was removed 2026-09-28.)*
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -280,7 +279,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Not screenshots of things that used to work. Five live builds — click into any one and open it yourself.
+DESCRIPTION: Not screenshots of things that used to work. Six live builds — click into any one and open it yourself.
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -288,11 +287,11 @@ edit. It read "Eight" here and in the code until 2026-09-04, four days after the
 lineup became six. *[corrected 2026-09-07 — the code was already right; this
 document was the stale half.]*
 
-**Case Studies** *(4, full-width)* — the deep-dive builds.
+**Case Studies** *(5, full-width)* — the deep-dive builds.
 **Projects** *(1, compact grid)* — lighter builds, same standard.
 
 *(2026-09-28, #13: Bundle Builder removed — the store behind it was cancelled.
-Pass 2 adds Private Meetup App as a fifth case study.)*
+2026-09-29, pass 2: Private Meetup App added as the fifth case study.)*
 
 ## Metadata
 
@@ -434,6 +433,36 @@ Real-time conversational voice AI with live transcription, structured lead extra
 
 METADATA — TITLE: `TEKGUYZ | AI Voice Receptionist — Live Demo`
 DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.`
+
+---
+
+## `/work/private-meetup-app` — Private Meetup App
+
+*Written 2026-09-29 (#13 pass 2) from the app's own PRODUCT.md and CONTEXT.md. The app's brand name never appears in copy, name, alt or metadata; it is only in the url, and `content/work.test.ts` enforces that. It launches small and private, so no member count and no result is stated. The site says "meetup", not the app's own word "sesh". The poster is the app's `showcase/sesh-desktop-light.png`, taken in the demo: every person and meetup in it is invented.*
+
+TAG: Custom Web Apps
+HEADLINE: Small private meetups, where a person checks every card and the address stays hidden until the host says yes.
+
+**THE CHALLENGE**
+Florida law lets medical cannabis patients consume at a private home. A meetup there only works if everyone in the room is a verified patient, 21 or older. An ordinary event app cannot promise that: it checks nobody's card, and anyone who finds the page can find the house.
+
+**THE APPROACH**
+We built a members-only app around the gate. Every new member takes a live photo of their card, then of their face with a random challenge, and a person reviews each one by eye. AI reads the card and lists concerns, but it never decides. Hosts approve every guest by hand. Until they do, the map shows only a circle about half a mile across. The app never handles a sale of any kind.
+
+**THE OUTCOME**
+Every member at a meetup was checked by a person, and nobody outside the guest list knows where it is. Card and face photos are deleted when the reviewer decides, within 7 days at most, and the app forgets the address a week after the meetup.
+
+**PULL QUOTE**
+Hide by default, reveal by approval: nobody sees who or where until a person has said yes.
+
+**TRY IT**
+Press Try the demo on its landing page. One click opens your own visitor account among sample members and meetups — no card, no sign-up, and it is deleted after 7 days. Browse the list and the map, open a meetup, and see what stays hidden until a host says yes.
+
+**HOW IT'S BUILT**
+A phone-first web app that installs to the home screen, on one database where every row is locked to who may see it. Verification is a one-step-per-screen camera flow with no gallery upload. Notifications name no member and no meetup, and the app stores no data on the phone. The demo runs in a sealed copy that can never reach a real member. Light and dark mode throughout.
+
+METADATA — TITLE: `TEKGUYZ | Private Meetup App`
+DESCRIPTION: `A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.`
 
 ---
 
