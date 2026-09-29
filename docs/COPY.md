@@ -90,12 +90,14 @@ MEDIA: static `sarah-poster.webp` (1600×900, 16:9). Live-status chip attached. 
 
 **[changed 2026-08-29]** The elevated three-fact proof strip is deleted. Its
 "Eight live builds" claim is not written anywhere any more — the board below the
-hero *is* four live builds with a measured status on each, and `See all six
-builds` is the link directly beneath them. The other two facts are now one muted
+hero *is* the live builds, one per solution line, with a measured status on
+each, and `See all five builds` is the link directly beneath them. *(2026-09-28,
+#13: the board shows three cards — the teal slot is empty until the Private
+Meetup App case study lands.)* The other two facts are now one muted
 caption line beside that link, in the site's standard trust-fact pattern (one
 `--text-sm` secondary row, 3px `muted-soft` mid-dots, stacked below 766px).
 
-LINK: See all six builds — the label is derived from `work.length` in `components/fold-board.tsx`, never typed → /work
+LINK: See all five builds — the label is derived from `work.length` in `components/fold-board.tsx`, never typed → /work
 FACT: A verified Google review. **Read it on Google →** (`site.gbp`)
 FACT: South Florida, remote nationwide (`site.locationLong`, read from
 `lib/site.ts` — never retyped here)
@@ -266,7 +268,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Shopify Bundle Builder & Storefront
+RELATED WORK: *(none — removed 2026-09-28, #13. The page hides the label when the list is empty. Private Meetup App fills it in pass 2.)*
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -278,7 +280,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Not screenshots of things that used to work. Six live builds — click into any one and open it yourself.
+DESCRIPTION: Not screenshots of things that used to work. Five live builds — click into any one and open it yourself.
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -287,7 +289,10 @@ lineup became six. *[corrected 2026-09-07 — the code was already right; this
 document was the stale half.]*
 
 **Case Studies** *(4, full-width)* — the deep-dive builds.
-**Projects** *(2, compact grid)* — lighter builds, same standard.
+**Projects** *(1, compact grid)* — lighter builds, same standard.
+
+*(2026-09-28, #13: Bundle Builder removed — the store behind it was cancelled.
+Pass 2 adds Private Meetup App as a fifth case study.)*
 
 ## Metadata
 
@@ -304,46 +309,37 @@ DESCRIPTION: `Every project here is real, running software you can open and try 
 
 ## `/work/field-photo-reports` — Field Photo Reports & Quality Tracking
 
+*Rewritten 2026-09-28 (#13) for the new build at `realstone-field-ops.vercel.app`. The v1 copy (admin/installer switcher, `rs-field-ops.netlify.app`) described a build that no longer runs; it is in git history. Terms follow the app's own landing page: Visit, Report, Issue, Live photo, Office staff, Installer. The client stays unnamed here, as on the voice receptionist page; its logo stays in the poster because the poster is an honest capture. "3 to 5 days" is the shop's documented starting point, not a result. No result is stated as measured, because none is.*
+
 TAG: Business Systems
-HEADLINE: Capture instant photo proof from the field to guarantee job quality.
+HEADLINE: One Report from the job site, with the proof printed on every photo.
 
 **THE CHALLENGE**
-Project managers couldn't verify field work without driving to the site. Crew notes came back too messy to share with a client, so any dispute about what was actually done turned into someone's word against someone else's — and usually a return trip to find out.
+A stone fabrication shop sent its installers out with paper. Photos went through one app, messages to the office through another, and the owners got an email somewhere else. The office pieced the job together afterward, and sales often waited 3 to 5 days before they could bill for work that was already done.
 
 **THE APPROACH**
-We built a photo-capture system that installers use on their phones in the field. Photos feed straight into structured digital reports, tied to the job and timestamped, so the record exists before anyone leaves the site. Admins see everything from the office in real time.
+We built one place for the whole Visit. At the end of a job, the Installer sends one Report from their phone: photos, a note, any Issues, and a sign-off from whoever is on site. The crews are Spanish-first and often work with dirty hands, so every screen reads in English or Spanish and the key actions fit without long scrolling. In the office, each Report arrives live, with nothing to refresh.
 
 **THE OUTCOME**
-Fewer return trips, faster dispute resolution, and invoices that go out the same day instead of waiting on paperwork from the field.
-
-*(**Closed 2026-08-13 — the reword is written and the marker is retired.**
-History: on 2026-08-10 this line ended in `[NEEDS REAL DATA — add one concrete
-number here if you have it]`, and the resolution then was that the marker stays,
-because **no real number exists** and `[NEEDS REAL DATA]` is **never filled and
-never rendered**, per the hard rule. That reasoning still governs — **no figure
-was invented here.** The scheduled reword has now landed: the "seeing / what
-they're seeing" repetition is gone and the **faster-billing** outcome is stated.
-**A stated qualitative outcome the client reported is permitted; a fabricated
-figure is not** — the reword operates entirely on the permitted side of that
-line, which is why the sentence no longer needs a marker to stand.)*
+Marking a Report Reviewed is the signal to bill: the Salesperson knows the job is done and proven, without waiting on paper from the field. The photos, the note, the Issues and the sign-off stay together on one record instead of across paper, two apps and an email.
 
 **PULL QUOTE**
-Fewer return trips, faster dispute resolution, and invoices that don't wait on paperwork.
+Every Live photo carries its own proof: job, time, place and Installer, printed into the picture.
 
 **TRY IT**
-The demo has a switcher at the top — toggle between the Admin view and two different Installer accounts to see both sides of the same job.
+Pick a side on the landing page: As Office staff, or As an Installer. Either button opens your own workspace with sample Visits — no sign-up, and it is deleted after 7 days. Try both to see each end of the job.
 
 **HOW IT'S BUILT**
-Mobile-first capture with a desktop admin view, structured job records, and role-based access so installers see their work and admins see all of it.
+A phone-first Installer app and a dense desktop Office view on one live database. Every photo carries its time, place and source, and says so honestly when it has none. English and Spanish throughout, light and dark mode, installable to the home screen, and built to sit beside the shop's existing business system rather than replace it.
 
 METADATA — TITLE: `TEKGUYZ | Field Photo Reports & Quality Tracking`
-DESCRIPTION: `A live field-photo capture system that replaces site visits with instant, shareable reports. Try the real Admin and Installer views yourself.`
+DESCRIPTION: `Installers send one Report with stamped photos from the job site, and the office sees it live. Try it yourself as Office staff or as an Installer.`
 
 ---
 
 ## `/work/ai-meeting-notes` — AI Meeting Notes & Transcription
 
-*Added 2026-09-04. Supersedes `/work/ai-audio-file-insights` — the same product one full rewrite later. The old route and its copy were removed, not redirected.*
+*Added 2026-09-04. Supersedes `/work/ai-audio-file-insights` — the same product one full rewrite later. The old route and its copy were removed. Since 2026-09-28 (#13) the old route, and `/work/meeting-organizer`, redirect here with a 308.*
 
 TAG: Smart Operations
 HEADLINE: Get the notes, the takeaways, and the action items without sending a bot to the call.
@@ -361,7 +357,7 @@ A written record of the meeting exists whether or not anyone took notes, and eve
 No bot joins the call — and every takeaway links back to the second of the transcript it came from.
 
 **TRY IT**
-Sign in with your email. It sends a link back, so there is no password to make up.
+Press Try the demo on its landing page. One click opens the sample notes — no email, no password. Follow any takeaway back to the line it came from, or ask the notes a question.
 
 **HOW IT'S BUILT**
 In-browser system and microphone capture, batch transcription with speaker separation, and a second pass that turns the transcript into a summary, takeaways, and traceable action items. Reading lenses change how the same recording is analyzed without re-recording it.
@@ -444,25 +440,6 @@ DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations
 # PROJECT DETAIL PAGES
 
 *Lighter structure by design: tag · headline · Built For · what it does · what made it interesting · LiveFrame + status.*
-
-## `/work/bundle-builder` — Shopify Bundle Builder & Storefront
-
-*Moved from case study to project 2026-09-04, at the owner's direction. The Challenge / Approach / Outcome / Pull Quote copy that used to sit here was cut, not archived — it is in git history. `builtFor`, `summary` and `whatMadeItInteresting` below are new writing in its place, and `tryIt` is carried over unchanged.*
-
-TAG: Custom Web Apps
-BUILT FOR: Retailers selling configurable, bundled, or made-to-order products
-HEADLINE: A custom storefront built directly on Shopify's API for bundled products.
-
-A headless storefront built directly on Shopify's API rather than against the theme, for a catalog where a workstation is assembled from hardware, software, and accessories. Options update the running total instantly, and checkout hands off to Shopify's own secure flow — so payments, orders, and fulfillment never had to be rebuilt or re-secured.
-
-**WHAT MADE IT INTERESTING:** knowing which part not to build. The interesting engineering is the configurator; the payment stack already existed and was already trusted, so the job was joining the two cleanly rather than replacing either.
-
-**TRY IT:** The demo is fully sandboxed. Check out for real using `1` as the card number and any other test details.
-
-METADATA — TITLE: `TEKGUYZ | Bundle Builder — Custom Shopify Storefront`
-DESCRIPTION: `A configurable product storefront built directly on Shopify's API. Build a bundle, watch the total update instantly, then check out for real in the live demo.`
-
----
 
 ## `/work/team-performance` — Team Performance & Automated Customer Feedback
 
@@ -699,4 +676,4 @@ DESCRIPTION: `What information TEKGUYZ collects through this website, why, and h
 1. ~~`[NEEDS REAL DATA]` on the Field Photo Reports outcome~~ **Closed 2026-08-13.** Resolved 2026-08-10 as "the marker stays" — no real number exists, so it is never filled and never rendered — and the scheduled reword (drop the "seeing" repetition, add a faster-billing outcome) **has now been written**, in `docs/COPY.md` and `content/work.ts` in the same commit. The marker is retired because the sentence stands on a qualitative outcome; **still no invented figure**. See the section itself.
 2. ~~GBP review permalink for the testimonial attribution link~~ **Resolved 2026-08-10.** `https://www.google.com/maps?cid=13204262572880001655`, verified that day. Google offers no durable per-review permalink; the profile URL is the stable substitute, by decision.
 2b. ~~**The concierge footer disclaimer is now an open slot** (2026-08-10)~~ **Closed 2026-08-12: the disclaimer is deleted, not replaced.** Removed from the panel on the user's instruction. The slot no longer exists and is not to be re-drafted. See the Concierge microcopy section.
-3. Confirm the Field Photo Reports demo still exposes the admin/installer switcher as described, and that the Bundle Builder sandbox still accepts `1` as the test card — both are stated as fact in copy and would be embarrassing if stale.
+3. ~~Confirm the Field Photo Reports switcher and the Bundle Builder test card~~ **Closed 2026-09-28 (#13).** The switcher is gone with the v1 build, and Bundle Builder is removed. The new Try it lines were checked against each app's live landing page that day.

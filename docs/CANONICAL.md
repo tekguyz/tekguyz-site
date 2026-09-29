@@ -19,7 +19,7 @@ Source of truth hierarchy: **Brand Playbook v2 > this brief > Design System > Co
 | --- | --- |
 | Icon direction | **Resolved.** `icon-master.svg` — Connected Nodes: four accent circles (top blue, right violet, bottom amber, left teal) joined by hairline connectors, no container. Diamond arrangement, floating. |
 | Brand asset set | **Done**, generated from the two masters. |
-| Case-study imagery | **Done**, with one open item. `field-ops-thumb.webp` recaptured. `sarah-poster.webp` recaptured as the real AI Voice Receptionist dashboard (transcript, CRM sync, follow-up email) — replacing an earlier version that showed a sandboxed phone-call simulator, which was never the actual product. |
+| Case-study imagery | **Done**, with one open item. `field-reports-thumb.webp` (Field Photo Reports v2, 2026-09-28) cut from the app's own showcase capture. `sarah-poster.webp` recaptured as the real AI Voice Receptionist dashboard (transcript, CRM sync, follow-up email) — replacing an earlier version that showed a sandboxed phone-call simulator, which was never the actual product. |
 | Hero media | **Resolved — static image, video deferred.** New `sarah-poster.webp` captured at 1600×900 (16:9) showing the real dashboard: customer profile, live conversation feed, and confirmation email. Launching with the static image; a looped `.mp4` is a later enhancement, not a launch blocker. (The old `sarah-demo.mp4` showed the retired phone-call simulator and was **deleted 2026-08-28** — a video hero starts from a fresh capture, never from that file.) Hero uses its own 16:9 ratio, distinct from the 16:10 used in compact card contexts — see DESIGN.md `LiveFrame`. |
 | Lead capture | **Built and live in this repo.** `app/actions/contact.ts` — Zod validation (including format checks on the optional `phone` and `website`), honeypot named `hp_confirm`, min-fill-time, parallel Resend notification + submitter confirmation + CRM dispatch via `Promise.allSettled`. Exercised end to end against real credentials. |
 | AI concierge | **Built and live in this repo.** `app/api/concierge/route.ts` — tool-calling lead capture through the same shared action, session cap, shared durable rate limit, Gemini 3.6 Flash behind `lib/concierge/llm.ts`. |
@@ -64,9 +64,11 @@ Every agency site has a "LIVE" badge that is a graphic asserting a fact. Yours m
 
 **Tradeoff, stated plainly:** if a demo breaks, your homepage says so. Argument for accepting it: you learn before a prospect does, and honest failure states are more credible than a badge that lies. This is a real decision, not a free win.
 
-**Implementation:** server-side only (never client fetches to 8 origins), `next: { revalidate: 300 }`, 8s timeout and **two attempts** per check, `Promise.allSettled` so one hang can't block the page, cached result shared across all renders in the window.
+**Implementation:** server-side only (never client fetches to the demo origins), `next: { revalidate: 300 }`, 8s timeout and **two attempts** per check, `Promise.allSettled` so one hang can't block the page, cached result shared across all renders in the window.
 
 **The check must be patient, and 3s was not (fixed 2026-09-08).** Every demo is a scale-to-zero deployment, so the first request after an idle window pays a cold start the second does not — `rs-field-ops.netlify.app` answered a cold HEAD in 4.7s and the next in 0.4s. A single 3s attempt therefore called a healthy demo down for being asleep. Worse, each route freezes its own snapshot for the whole revalidate window, so home and `/work` printed different verdicts for the same demo at the same moment for the better part of an hour. Retry is immediate on purpose: the first attempt is what woke the host. The 5-minute window does not stop a wrong answer — a network probe can always be wrong — it bounds how long one survives on the page.
+
+**What it probes.** Each entry's `url` in `content/work.ts`, so the probe follows the data and never needs its own list. As of 2026-09-28 (#13) that is `realstone-field-ops.vercel.app`, `squid-ink.vercel.app`, `tekguyz-crm.vercel.app/demo`, `tekguyz-sarah.vercel.app` and `advantage-teams.vercel.app/dashboard`. `rs-field-ops.netlify.app` above is the dead v1 host; the 4.7s measurement stands as history. Hosting drifts, so re-measure before trusting this list.
 
 ### The deferred embed — architected for, not built
 
@@ -155,6 +157,10 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
    `team-performance`). `ai-audio-file-insights` → `ai-meeting-notes` is the
    same product one full rewrite later; `bundle-builder` moved tier;
    `meeting-organizer`, `restaurant-menu` and `auto-detailer` were retired.
+   **[amended 2026-09-28, #13]** `bundle-builder` is removed (its store was
+   cancelled), leaving 4 case studies and 1 project, `team-performance`.
+   `private-meetup-app` joins as a fifth case study in pass 2. All five
+   retired slugs 308 in `next.config.ts`.
    **Read `content/work.ts` for the live set — never this paragraph.** All verbatim from
    `docs/COPY.md`; renders at `/work/[slug]`. The one copy defect found in the
    same pass — Field Photo Reports' Outcome/Pull Quote — was reworded in

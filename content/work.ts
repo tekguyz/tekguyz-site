@@ -1,7 +1,7 @@
 import type { SolutionSlug } from '@/config/solutions';
 
 /**
- * The typed array that drives /work, all 6 detail pages, generateStaticParams,
+ * The typed array that drives /work, every detail page, generateStaticParams,
  * JSON-LD, per-slug OG images, the live status checks, and sitemap lastModified.
  *
  * Adding an entry here must produce a complete page with no template work.
@@ -85,6 +85,14 @@ const AUTHORED = '2026-08-05';
  */
 const REVISED = '2026-09-04';
 
+/**
+ * Date of the 2026-09-28 lineup change (#13, pass 1): `field-photo-reports`
+ * moved to its v2 build with new copy and poster, `ai-meeting-notes` got a new
+ * Try it line, and `bundle-builder` was removed — its Shopify store was
+ * cancelled and the demo showed a real company's products and prices.
+ */
+const LINEUP_2026_09_28 = '2026-09-28';
+
 export const work: WorkEntry[] = [
   {
     slug: 'field-photo-reports',
@@ -92,31 +100,38 @@ export const work: WorkEntry[] = [
     name: 'Field Photo Reports & Quality Tracking',
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
-    headline: 'Capture instant photo proof from the field to guarantee job quality.',
-    url: 'https://rs-field-ops.netlify.app',
-    poster: '/media/field-ops-thumb.webp',
-    alt: 'Field Photo Reports admin dashboard showing structured job reports with timestamped installer photos',
+    headline: 'One Report from the job site, with the proof printed on every photo.',
+    // The v2 build (#13). The v1 origin, `rs-field-ops.netlify.app`, 404s. The
+    // bare origin is the landing page, and only its two buttons sign a visitor
+    // in — DEMO-STANDARD's "a link opens the landing page" rule.
+    url: 'https://realstone-field-ops.vercel.app',
+    // 1440x900, cropped from the app's own `showcase/office-visit-desktop-light.png`
+    // (1440x944, bottom 44px dropped). The client's logo and the demo "Guest"
+    // label are in it on purpose: it is an honest capture, and demo mode is by
+    // design.
+    poster: '/media/field-reports-thumb.webp',
+    alt: 'Field Photo Reports office view of one Visit: a stamped Live photo, an open Issue flagged by the Installer, and the Mark Reviewed button',
     embeddable: false,
-    updatedAt: AUTHORED,
+    updatedAt: LINEUP_2026_09_28,
+    // Rewritten 2026-09-28, in sync with COPY.md. The client stays unnamed, as
+    // on the voice receptionist page. "3 to 5 days" is the shop's documented
+    // starting point (the app's PRODUCT.md), not a result — no result is
+    // stated as measured, because none is.
     challenge:
-      "Project managers couldn't verify field work without driving to the site. Crew notes came back too messy to share with a client, so any dispute about what was actually done turned into someone's word against someone else's — and usually a return trip to find out.",
+      'A stone fabrication shop sent its installers out with paper. Photos went through one app, messages to the office through another, and the owners got an email somewhere else. The office pieced the job together afterward, and sales often waited 3 to 5 days before they could bill for work that was already done.',
     approach:
-      'We built a photo-capture system that installers use on their phones in the field. Photos feed straight into structured digital reports, tied to the job and timestamped, so the record exists before anyone leaves the site. Admins see everything from the office in real time.',
-    // Reworded 2026-08-13, in sync with COPY.md: the "seeing / what they're
-    // seeing" repetition is gone and the faster-billing outcome is stated.
-    // Still no statistic — the [NEEDS REAL DATA] marker was never filled and
-    // is now retired, because a qualitative outcome carries the sentence.
+      'We built one place for the whole Visit. At the end of a job, the Installer sends one Report from their phone: photos, a note, any Issues, and a sign-off from whoever is on site. The crews are Spanish-first and often work with dirty hands, so every screen reads in English or Spanish and the key actions fit without long scrolling. In the office, each Report arrives live, with nothing to refresh.',
     outcome:
-      'Fewer return trips, faster dispute resolution, and invoices that go out the same day instead of waiting on paperwork from the field.',
+      'Marking a Report Reviewed is the signal to bill: the Salesperson knows the job is done and proven, without waiting on paper from the field. The photos, the note, the Issues and the sign-off stay together on one record instead of across paper, two apps and an email.',
     pullQuote:
-      "Fewer return trips, faster dispute resolution, and invoices that don't wait on paperwork.",
+      'Every Live photo carries its own proof: job, time, place and Installer, printed into the picture.',
     tryIt:
-      'The demo has a switcher at the top — toggle between the Admin view and two different Installer accounts to see both sides of the same job.',
+      'Pick a side on the landing page: As Office staff, or As an Installer. Either button opens your own workspace with sample Visits — no sign-up, and it is deleted after 7 days. Try both to see each end of the job.',
     howItsBuilt:
-      'Mobile-first capture with a desktop admin view, structured job records, and role-based access so installers see their work and admins see all of it.',
+      'A phone-first Installer app and a dense desktop Office view on one live database. Every photo carries its time, place and source, and says so honestly when it has none. English and Spanish throughout, light and dark mode, installable to the home screen, and built to sit beside the shop’s existing business system rather than replace it.',
     title: 'TEKGUYZ | Field Photo Reports & Quality Tracking',
     description:
-      'A live field-photo capture system that replaces site visits with instant, shareable reports. Try the real Admin and Installer views yourself.',
+      'Installers send one Report with stamped photos from the job site, and the office sees it live. Try it yourself as Office staff or as an Installer.',
   },
   {
     slug: 'ai-meeting-notes',
@@ -129,7 +144,7 @@ export const work: WorkEntry[] = [
     poster: '/media/squid-ink.webp',
     alt: 'AI meeting notepad showing generated takeaways with timestamp citations, per-speaker stats, and the diarized transcript alongside',
     embeddable: false,
-    updatedAt: REVISED,
+    updatedAt: LINEUP_2026_09_28,
     challenge:
       "Meeting notes either don't get written or don't get read. The tools that promise to fix it send a bot to sit in the call — which is awkward in front of a client, blocked outright by plenty of IT policies, and still leaves you with a wall of transcript nobody goes back to.",
     approach:
@@ -139,7 +154,7 @@ export const work: WorkEntry[] = [
     pullQuote:
       'No bot joins the call — and every takeaway links back to the second of the transcript it came from.',
     tryIt:
-      'Sign in with your email. It sends a link back, so there is no password to make up.',
+      'Press Try the demo on its landing page. One click opens the sample notes — no email, no password. Follow any takeaway back to the line it came from, or ask the notes a question.',
     howItsBuilt:
       'In-browser system and microphone capture, batch transcription with speaker separation, and a second pass that turns the transcript into a summary, takeaways, and traceable action items. Reading lenses change how the same recording is analyzed without re-recording it.',
     title: 'TEKGUYZ | AI Meeting Notes & Transcription',
@@ -246,29 +261,6 @@ export const work: WorkEntry[] = [
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
   {
-    slug: 'bundle-builder',
-    kind: 'project',
-    name: 'Shopify Bundle Builder & Storefront',
-    tag: 'CUSTOM WEB APPS',
-    solution: 'custom-web-apps',
-    headline: "A custom storefront built directly on Shopify's API for bundled products.",
-    url: 'https://reporter-resource-temp.vercel.app',
-    poster: '/media/shopify-configurator.webp',
-    alt: 'Bundle Builder storefront with product options and a running total that updates as the bundle is assembled',
-    embeddable: false,
-    updatedAt: REVISED,
-    builtFor: 'Retailers selling configurable, bundled, or made-to-order products',
-    summary:
-      "A headless storefront built directly on Shopify's API rather than against the theme, for a catalog where a workstation is assembled from hardware, software, and accessories. Options update the running total instantly, and checkout hands off to Shopify's own secure flow — so payments, orders, and fulfillment never had to be rebuilt or re-secured.",
-    whatMadeItInteresting:
-      "knowing which part not to build. The interesting engineering is the configurator; the payment stack already existed and was already trusted, so the job was joining the two cleanly rather than replacing either.",
-    tryIt:
-      'The demo is fully sandboxed. Check out for real using `1` as the card number and any other test details.',
-    title: 'TEKGUYZ | Bundle Builder — Custom Shopify Storefront',
-    description:
-      "A configurable product storefront built directly on Shopify's API. Build a bundle, watch the total update instantly, then check out for real in the live demo.",
-  },
-  {
     slug: 'team-performance',
     kind: 'project',
     name: 'Team Performance & Automated Customer Feedback',
@@ -300,6 +292,14 @@ export const work: WorkEntry[] = [
    * were retired by the owner as carrying no real value for the site. Their
    * posters were deleted from `public/media/` in the same change, so
    * `check:media` would fail the build if an entry came back without one.
+   *
+   * RETIRED 2026-09-28 (#13): `bundle-builder`. The
+   * owner cancelled its Shopify store, so checkout said the store was closed,
+   * and the demo showed a real company's products and prices, which the demo
+   * standard bans. Its poster went with it.
+   *
+   * All five retired slugs 308 to their replacement in `next.config.ts`, because
+   * Google still lists some of them.
    */
 ];
 
@@ -363,49 +363,33 @@ export const featured = featuredSlugs
  * these breaks that; adding a fifth is impossible by construction, since there
  * is no fifth line.
  *
- * WHY THESE FOUR SPECIFICALLY. Every slot is a CASE STUDY, and that is the
- * rule now — the board is four builds with a story behind each, so the tier a
- * card links into is the same for all four.
+ * WHY THESE SPECIFICALLY. Every slot on the board is a CASE STUDY, so the tier
+ * a card links into is the same for all of them.
  *
- * [decided 2026-08-29, replacing the 2026-08-14 selection] The amber slot was
- * `team-performance`, a PROJECT, chosen so the homepage would not repeat
- * itself: the ink band below carries `field-photo-reports` at full size. Two
- * things unwound that argument.
+ * [2026-08-29] The amber slot moved from `team-performance` (a project) to
+ * `field-photo-reports`, which then appears twice on home: a tagged entry
+ * here and a full-size row in the ink band. The voice build already appeared
+ * three times, so a no-repeat rule was buying nothing, and one thinner project
+ * card among case studies led somewhere lighter than its neighbours. The cost:
+ * `team-performance` is the build the verified Google review describes, so the
+ * fold's review fact and its amber card no longer make the same claim. The
+ * review fact still stands alone — it links to Google, where it is checkable.
  *
- * 1. THE NO-REPEAT RULE WAS ALREADY BROKEN, and by more than this. Measured:
- *    `ai-voice-receptionist` is the hero's poster, the violet card here, AND
- *    the second row of the ink band — three appearances on one page. Holding
- *    the amber slot to a standard the flagship never met was buying nothing.
- * 2. IT WAS THE ONE PROJECT AMONG THREE CASE STUDIES. On a row of four
- *    identically-shaped cards that difference is invisible to the visitor and
- *    real in the content — one card led somewhere thinner than the others.
+ * [2026-09-28, #13 pass 1] THE TEAL SLOT IS EMPTY, SO THE BOARD SHOWS THREE.
+ * `bundle-builder` held it as a project — the one named exception to the rule
+ * above — and was removed because its store was cancelled and its demo showed
+ * a real company's products and prices. The owner chose three cards over
+ * keeping that data up while the replacement waits for its screenshots.
+ * Pass 2 puts `private-meetup-app`, a custom-web-apps case study, in the teal
+ * slot and restores the four-accent legend with no exception left.
  *
- * `field-photo-reports` now appears twice, in two registers: a tagged index
- * entry here, a full-size row with a poster and a pull-quote below. That is the
- * same trade already accepted for the voice build, and it is the cheaper of the
- * two costs.
- *
- * WHAT THIS GIVES UP, stated rather than buried: `team-performance` is the
- * build the verified Google review describes, so the fold's review fact and its
- * amber card are no longer the same claim from two directions. The review fact
- * still stands on its own — it links to Google, which is where it is checkable.
- *
- * [amended 2026-09-04] TWO OF THE FOUR SLOTS CHANGED, and the "every slot is a
- * case study" rule above now has ONE EXCEPTION that is named rather than
- * quietly broken. `ai-audio-file-insights` became `ai-meeting-notes` — the same
- * product one full rewrite later, so the smart-operations slot is unchanged in
- * kind. `bundle-builder` moved from case study to PROJECT in the same change,
- * at the owner's direction, and it is the only build on the custom-web-apps
- * line, so the teal slot is now a project card. The alternative was leaving
- * teal empty, which destroys the four-accent legend this board exists to be —
- * a thinner fourth card is the cheaper cost. If a second custom-web-apps case
- * study ever ships, this slot should take it.
+ * `content/work.test.ts` fails if a slug here stops resolving, or if two cards
+ * share a line or leave stripe order.
  */
 export const foldSlugs = [
   'ai-meeting-notes',
   'ai-voice-receptionist',
   'field-photo-reports',
-  'bundle-builder',
 ] as const;
 
 export const foldBoard = foldSlugs

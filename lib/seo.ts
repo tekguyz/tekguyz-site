@@ -24,7 +24,7 @@ export function buildMetadata({
 }: {
   title: string;
   description: string;
-  /** Route path with a leading slash, e.g. "/work/bundle-builder". "" for home. */
+  /** Route path with a leading slash, e.g. "/work/team-performance". "" for home. */
   path: string;
   /** Defaults to the route's own opengraph-image if one exists. */
   ogImage?: string;
