@@ -120,9 +120,9 @@ export const work: WorkEntry[] = [
     challenge:
       'A stone fabrication shop sent its installers out with paper. Photos went through one app, messages to the office through another, and the owners got an email somewhere else. The office pieced the job together afterward, and sales often waited 3 to 5 days before they could bill for work that was already done.',
     approach:
-      'We built one place for the whole Visit. At the end of a job, the Installer sends one Report from their phone: photos, a note, any Issues, and a sign-off if the customer is there. The crews are Spanish-first and often work with dirty hands, so every screen reads in English or Spanish and the key actions fit without long scrolling. In the office, each Report arrives live, with nothing to refresh.',
+      'We built one place for the whole Visit. At the end of a job, the Installer sends one Report from their phone: photos, a note, any Issues, and a sign-off from whoever is on site. The crews are Spanish-first and often work with dirty hands, so every screen reads in English or Spanish and the key actions fit without long scrolling. In the office, each Report arrives live, with nothing to refresh.',
     outcome:
-      'Marking a Report Reviewed is the signal to bill: the Salesperson knows the job is done and proven, without waiting on paper from the field. The photos, the note, the Issues and the sign-off stay together on one record instead of across three apps.',
+      'Marking a Report Reviewed is the signal to bill: the Salesperson knows the job is done and proven, without waiting on paper from the field. The photos, the note, the Issues and the sign-off stay together on one record instead of across paper, two apps and an email.',
     pullQuote:
       'Every Live photo carries its own proof: job, time, place and Installer, printed into the picture.',
     tryIt:
@@ -370,7 +370,10 @@ export const featured = featuredSlugs
  * `field-photo-reports`, which then appears twice on home: a tagged entry
  * here and a full-size row in the ink band. The voice build already appeared
  * three times, so a no-repeat rule was buying nothing, and one thinner project
- * card among case studies led somewhere lighter than its neighbours.
+ * card among case studies led somewhere lighter than its neighbours. The cost:
+ * `team-performance` is the build the verified Google review describes, so the
+ * fold's review fact and its amber card no longer make the same claim. The
+ * review fact still stands alone — it links to Google, where it is checkable.
  *
  * [2026-09-28, #13 pass 1] THE TEAL SLOT IS EMPTY, SO THE BOARD SHOWS THREE.
  * `bundle-builder` held it as a project — the one named exception to the rule
