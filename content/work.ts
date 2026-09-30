@@ -186,20 +186,14 @@ export const work: WorkEntry[] = [
     updatedAt: REVISED,
     challenge:
       'Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody’s head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
-    // BOTH DIRECTIONS ARE NAMED, and that is a correction rather than an
-    // expansion. The poster is the Reports view, which counts prospects that
-    // arrived through the OUTBOUND half, and this paragraph described only the
-    // inbound form — so the page was explaining a system its own picture was
-    // not showing.
+    // BOTH DIRECTIONS ARE NAMED. The poster is the Reports view, which counts
+    // the outbound half as well as the inbound form.
     //
-    // The staging lane is stated rather than smoothed over, because it is the
-    // load-bearing part. A scraped business is a `prospects` row and becomes a
-    // `leads` row only when a human presses Promote after a real conversation.
-    // "Leads flow in automatically" would describe something deliberately NOT
-    // built, and would put uncontacted strangers into the pipeline the business
-    // actually runs on. See `engineering/projects kb/leadgen.md` in tekguyz-one.
+    // Outbound is stated as it really works since 2026-09-30: researched leads
+    // arrive as a file and are imported by hand. NEVER write "automatic" here,
+    // and never name the research tool — the site names no tools or apps.
     approach:
-      'We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, a lead-finding pipeline we built alongside it goes and finds qualified local businesses, and those land in their own staging lane — cold prospects, never leads, until a real conversation promotes one across.',
+      'We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, we research local businesses worth a call and import them into the CRM as a file, so the ones we went out and found sit in the same pipeline as the enquiries.',
     outcome:
       'Everything worth chasing lives in one pipeline instead of an inbox and a spreadsheet. A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
     pullQuote:
@@ -212,10 +206,10 @@ export const work: WorkEntry[] = [
     tryIt:
       'One click puts you inside a live, seeded copy — no signup, no password, no email. It is read-only, so browse the whole thing: the day’s agenda, the pipeline board, a lead’s full timeline, the revenue report. Nothing to save, nothing to break.',
     howItsBuilt:
-      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a prospect-import path fed by our own lead-finding pipeline, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.',
+      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.',
     title: 'TEKGUYZ | Lead & Pipeline CRM',
     description:
-      'A multi-tenant CRM fed by website enquiries and by our own lead-finding pipeline, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
+      'A multi-tenant CRM fed by website enquiries and by researched lead lists, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
   },
   {
     slug: 'ai-voice-receptionist',
