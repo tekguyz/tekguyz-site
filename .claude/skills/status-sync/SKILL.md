@@ -31,8 +31,8 @@ there.
 - **Read guard output, never the docs the guards check.** `check:claude` and
   `check:design` already name the exact wrong figure. That naming is the
   finding.
-- **`docs/STATUS.md` may be read** — it is ~6,000 tokens and it is the live
-  status. Prefer grepping its Open tables to reading it whole.
+- **`docs/KNOWN_GAPS.md` may be read** — it is about 3,000 tokens and it is the
+  register of open work. Prefer grepping its Open items to reading it whole.
 - **Never repair a doc here.** If a guard reports drift, name it in the findings
   and tell the user to run `doc-audit`. Repair is that skill's job, and
   `doc-audit` commits the repaired doc alone.
@@ -69,7 +69,7 @@ read its lines.
    `vercel inspect https://tekguyz.com`. **Never cite a doc for hosting or
    deployment state.** The Vercel MCP plugin was removed on 2026-08-28; do not
    suggest re-installing it.
-5. `docs/STATUS.md` Open tables, by grep where possible.
+5. `docs/KNOWN_GAPS.md` Open items, by grep where possible.
 
 Gates (`bun run build`, `bun run test:unit`, `bun run lint`) only if the findings
 will call something done. Otherwise report them as not run.
@@ -80,7 +80,7 @@ to `master` means production here.**
 
 ## The exclusion pass
 
-`docs/STATUS.md` marks some rows owner-owned, parked, or closed to further
+`docs/KNOWN_GAPS.md` marks some items owner-owned, parked, or closed to further
 questions. **An item marked that way is struck from this audit's findings.** It
 is not raised as open work and not routed back to the user, no matter which
 check surfaced it. Surfacing is expected; reporting is the bug. Apply the filter
