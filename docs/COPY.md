@@ -396,7 +396,7 @@ One click puts you inside a live, seeded copy — no signup, no password, no ema
 **HOW IT'S BUILT**
 Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.
 
-> **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Reports view, but the org shown is **TEKGUYZ Demo** and every figure on it — open pipeline, realized revenue, win rate — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
+> **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Reports view, but the workspace shown is **Demo Workspace** and every figure on it — open pipeline, realized revenue, win rate — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
 
 METADATA — TITLE: `TEKGUYZ | Lead & Pipeline CRM`
 DESCRIPTION: `A multi-tenant CRM fed by website enquiries and by researched lead lists, that flags follow-ups before they go cold and records what the pipeline was actually worth.`

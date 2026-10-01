@@ -155,7 +155,7 @@ export const work: WorkEntry[] = [
     headline: 'Get the notes, the takeaways, and the action items without sending a bot to the call.',
     url: 'https://squid-ink.vercel.app',
     poster: '/media/squid-ink.webp',
-    alt: 'AI meeting note showing a written summary, takeaways with timestamp citations, and the cited transcript lines with each speaker separated alongside',
+    alt: 'AI meeting note showing a written summary, takeaways and action items with timestamp citations, and the transcript with each speaker separated alongside',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     challenge:
