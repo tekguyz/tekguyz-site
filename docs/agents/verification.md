@@ -15,17 +15,19 @@ gh pr create --fill                    # CI (.github/workflows/ci.yml) runs on t
 gh pr merge <N> --merge --delete-branch   # after green CI and the user's yes: DEPLOYS PRODUCTION
 ```
 
-**After any push, confirm it** — `git log origin/master`, or the Vercel connector's `list_deployments`. **A denied push is not a push that didn't happen:** on 2026-08-10 one reached production while the session was still describing it as pending. Measure it, never infer it from the command's output.
+**After any push, confirm it** — `git log origin/master`, or `vercel ls --project tekguyz-site`. **A denied push is not a push that didn't happen:** on 2026-08-10 one reached production while the session was still describing it as pending. Measure it, never infer it from the command's output.
 
 One thing about previews, not a bug: Vercel SSO gates `*.vercel.app` links. **This line used to add that CRM CORS was locked to `https://tekguyz.com` so lead capture failed closed on every preview. That is false** — see the CRM bullet under Lead capture: `sendToCrm` is a server-side fetch from a Server Action, so no origin and no preflight are involved and the CRM's allowed-origin list has never applied to it. Whether lead capture works on a given preview is a question about which env vars that environment has, and it is measurable — do not answer it from this file.
 
 **Hosting topology is external state that drifts without touching the repo, so re-measure it and never cite a doc for it.** It was wrong in two docs for four prompts and got quoted back to the user as a safety claim.
 
-## Checking production — the Vercel connector is available, use it
+## Checking production — use the `vercel` CLI
 
-**Hosting and runtime state are measurable, so measure them instead of citing a doc.** `list_projects` / `get_project` give the real project, domains and latest deployment target; `list_deployments` gives what each push actually did.
+The Vercel MCP plugin is not installed, on purpose. The CLI does the same reads. Add `--project tekguyz-site`: this checkout is not linked to a Vercel project.
 
-**Environment variables are deliberately unreadable, and that does not make them unverifiable.** The connector exposes no env-var tool by design — one that could read them is a hop from a key landing in a transcript. But a *missing* secret throws at runtime and **`get_runtime_errors` reads that**, which is how "are the 5 env vars set?" got answered in one read-only call after being written off as human-only work. `get_runtime_logs` with `group_by: statusCode` is the cheap health check. **Ask what observable a thing produces before declaring it unknowable.**
+**Hosting and runtime state are measurable, so measure them instead of citing a doc.** `vercel project ls` and `vercel inspect https://tekguyz.com` give the real project, target and status of what the domain serves; `vercel ls --project tekguyz-site` gives what each push actually did.
+
+**Environment variables are deliberately unreadable, and that does not make them unverifiable.** `vercel env ls production --project tekguyz-site` lists each variable's name, environments and age, and shows every value as `Hidden`. That answers "are the env vars set?" without a key landing in a transcript. A *missing* secret also throws at runtime, and `vercel logs --project tekguyz-site --environment production --level error --since 1h` reads that. `vercel logs ... --status-code 5xx` is the cheap health check. **Ask what observable a thing produces before declaring it unknowable.**
 
 ## Verifying visually — read this before claiming you did
 
