@@ -19,7 +19,7 @@ import type { StatusResult } from '@/lib/status';
  * so the panel visibly runs off the page rather than sitting politely inset.
  * Inside it: a 16:9 poster (its own ratio, distinct from the 16:10 used
  * everywhere else) that also drops its right border and right radius, then the
- * status line, the demo link, and the hourly-check note.
+ * status line and the demo link.
  *
  * The earlier "empty space around the hero image" complaint was a ratio
  * mismatch inside the image container, not this panel — `aspect-ratio:16/9`
@@ -200,9 +200,6 @@ export function HomeHero({
                 >
                   Open it in a new tab
                 </a>
-                <p className="text-[0.875rem] leading-[1.55] text-secondary italic">
-                  We check every demo hourly. This is the real status, not a badge.
-                </p>
               </div>
             </div>
           </SequenceItem>

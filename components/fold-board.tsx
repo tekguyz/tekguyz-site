@@ -75,7 +75,7 @@ import type { StatusResult } from '@/lib/status';
  *
  * `/work/<slug>` keeps them here and loses nothing: the detail page carries the
  * live link, the ink band below carries two builds at full size, and this
- * card's status line is still the live proof — it is measured hourly, which is
+ * card's status line is still the live proof — it is measured, which is
  * the whole claim, and the claim does not need the visitor to leave to be true.
  *
  * It also makes the row internally consistent. All four cards and the "See all

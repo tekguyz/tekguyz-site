@@ -56,7 +56,7 @@ Unreachable state: `Temporarily unreachable · checked {n} minutes ago`
 First paint (server HTML, before the page hydrates): `Live · checked at {HH:MM} UTC`. The stamp swaps to `{n} minutes ago` once the page loads. Both are real; the clock time is deliberate, because a relative stamp differs between prerender and hydration (#418). Measured on https://tekguyz.com 2026-10-01.
 Compact variant (homepage build cards): `Live · {n} minutes ago` and `Unreachable`. No word "checked", and no stamp on the unreachable state.
 Link label: **Open it in a new tab**
-Tooltip / helper: *We check every demo hourly. This is the real status, not a badge.*
+Tooltip / helper: none. The line "We check every demo hourly" was removed 2026-10-01; the check runs every 5 minutes, and the status line is the proof.
 
 ## Footer
 
@@ -618,7 +618,7 @@ Usually, yes — that's most of what we do. Integrating with tools you already p
 We make sure everything works the way it's supposed to, and we stay available when questions come up. We don't hand over a login and disappear.
 
 **Are the demos on this site real?**
-Every one. They're live applications, not screenshots — we check their status hourly and show you the result. Open any of them and use it yourself.
+Every one. They're live applications, not screenshots. Open any of them and use it yourself.
 
 ---
 

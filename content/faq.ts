@@ -37,6 +37,6 @@ export const faq: FaqItem[] = [
   {
     question: 'Are the demos on this site real?',
     answer:
-      'Every one. They’re live applications, not screenshots — we check their status hourly and show you the result. Open any of them and use it yourself.',
+      'Every one. They’re live applications, not screenshots. Open any of them and use it yourself.',
   },
 ];

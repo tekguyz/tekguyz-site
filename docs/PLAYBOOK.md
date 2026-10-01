@@ -52,7 +52,7 @@ A near-monochrome system — white canvas, black ink — built to feel confident
 
 **Signature stripe:** a thin four-segment bar, one stripe per accent color, appears in exactly three places on every page — top of hero, above the closing CTA band, bottom of footer. Never anywhere else.
 
-**Live-demo signature:** ~~a pulsing "LIVE — TRY IT YOURSELF" badge~~ **— replaced, and the replacement is the whole idea.** A measured status line: the server issues a real HEAD request per demo on an hourly revalidate and renders what actually came back — `Live · checked at 14:20 UTC`, or `Temporarily unreachable` with the link still available. Plus a real preview of the actual product on every case study. **Confirmed 2026-08-28: the badge string appears nowhere in the repo**, and `components/status-line.tsx` describes itself as replacing it. See CANONICAL §3 for the argument and DESIGN.md §5 for the treatment.
+**Live-demo signature:** ~~a pulsing "LIVE — TRY IT YOURSELF" badge~~ **— replaced, and the replacement is the whole idea.** A measured status line: the server issues a real HEAD request per demo on a 5-minute revalidate and renders what actually came back — `Live · checked at 14:20 UTC`, or `Temporarily unreachable` with the link still available. Plus a real preview of the actual product on every case study. **Confirmed 2026-08-28: the badge string appears nowhere in the repo**, and `components/status-line.tsx` describes itself as replacing it. See CANONICAL §3 for the argument and DESIGN.md §5 for the treatment.
 
 **Explicitly avoided:** cyberpunk or terminal aesthetics, a fifth accent color, any accent color on a button, engineering jargon in visible copy, generic template patterns.
 
