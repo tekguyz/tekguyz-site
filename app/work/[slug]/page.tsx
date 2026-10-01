@@ -69,9 +69,6 @@ function MetaRail({
           Status
         </p>
         <StatusLine result={status} />
-        <p className="mt-[14px] text-[0.875rem] leading-[1.55] text-secondary italic">
-          We check every demo hourly. This is the real status, not a badge.
-        </p>
       </div>
 
       <div className="mt-7 border-t border-border pt-5">
