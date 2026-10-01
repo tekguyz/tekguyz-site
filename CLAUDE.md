@@ -61,7 +61,7 @@ code are enough for most tasks.
 
 | Need | Read |
 | --- | --- |
-| **What is open right now** | `docs/STATUS.md` — short, and the only live status |
+| **What is open right now** | `docs/KNOWN_GAPS.md` — open and deferred work, and what was permanently rejected |
 | An architecture or CRM-contract decision | `docs/CANONICAL.md` (highest authority) |
 | **An exact token value** — a colour, a duration, an easing, a radius, the type scale, the density scale | **`docs/TOKENS.md`. Small, read it whole, and quote it freely — 40 tokens are asserted against `app/globals.css` on every `prebuild`, so it cannot be silently wrong.** |
 | **Why** a value is what it is, or a component's mechanism | `docs/DESIGN.md` §-by-§, not whole |
@@ -117,6 +117,17 @@ apply to your case.
 Mechanism, incident and full text for every rule above: the matching
 `.claude/rules/` file.
 
+## Decided — do not reopen
+
+Full reasoning for each: `docs/KNOWN_GAPS.md` § Permanently rejected.
+
+- **A secondary link briefly overlapped by the concierge launcher is not a defect.** Primary-CTA overlap stays at 0, and that is the criterion.
+- **The concierge has no disclaimer strip.** "A starting sketch, not a quote." is deleted, not replaced.
+- **Modals and sheets are accepted.** The concierge sheet is `aria-modal` with a focus trap, and the nav drawer exists.
+- **No `--gap-group` density step.** `footer-dark.tsx` and `faq-accordion.tsx` are out of density scope for good. Requeue only on a new measurement.
+- **Footer location is "South Florida"** everywhere, in code and in `docs/COPY.md`.
+- **There is deliberately no STATUS file.** Open work is `docs/KNOWN_GAPS.md`, rules are here, dated history is `docs/archive/HISTORY.md`. One status file that did all three is what made the old one 971 lines. Do not create one.
+
 ## Definition of done
 
 Acceptance criteria — not a checklist to narrate:
@@ -129,7 +140,7 @@ Acceptance criteria — not a checklist to narrate:
 - Report what you did **not** finish. Never describe unfinished work as complete.
 
 ## Working notes
-- A decision only exists once it’s in `docs/STATUS.md` or committed code. Chat is one `/clear` from gone.
+- A decision only exists once it’s in `CLAUDE.md`, `docs/KNOWN_GAPS.md` or committed code. Chat is one `/clear` from gone.
 - Never assume a prior instruction landed — check `git status`, `git diff`, or read the file.
 - When an attached file path points into another project, that file is the scope. Don't go exploring the surrounding repo.
 

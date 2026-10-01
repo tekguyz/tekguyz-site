@@ -214,7 +214,7 @@ Site-wide, social links (LinkedIn, Instagram, Facebook, GitHub) appear in the fo
 Full ready-to-paste copy (Description, Services, Posts, Q&A) lives in TEKGUYZ-LinkedIn-GBP-Copy.md. Strategic priorities:
 
 1. Fix NAP consistency — **Resolved.** Hours confirmed Mon–Fri 9AM–5PM and consistent across GBP, LinkedIn, and Facebook. Location standardized to "South Florida" everywhere (no exact address published). Service-area model confirmed intentional (see Internal Notes).
-2. ~~**Complete the Services section** — still pending.~~ **Resolved** — live in GBP, confirmed by measurement 2026-08-12 (STATUS.md). Maps directly to the 4 Solutions. If Pomelli's Keywords field still shows empty, that's isolated to the Section 10 keyword-list entry now, not this item.
+2. ~~**Complete the Services section** — still pending.~~ **Resolved** — live in GBP, confirmed by measurement 2026-08-12. Maps directly to the 4 Solutions. If Pomelli's Keywords field still shows empty, that's isolated to the Section 10 keyword-list entry now, not this item.
 3. **Post weekly, minimum** — profiles that post consistently get pulled into Google's AI Overviews; ones that don't, don't. The 8 live demos are a built-in content calendar most competitors can't match.
 4. ~~**Seed the Q&A section**~~ — **not an action anyone can take.** Google shut the GBP Q&A API on 2025-11-03 and is removing the Q&A section from listings. Its AI "Ask Maps" answers draw on profile fields, website content, reviews and photos, not on seeded threads. The four drafted answers now live in the GBP Description, the GBP Services section and the site FAQ (`content/faq.ts`).
 5. **Enable GBP messaging** — response time is now a measured ranking factor.

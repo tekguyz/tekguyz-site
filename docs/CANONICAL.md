@@ -131,7 +131,7 @@ The eventual live-iframe embed (visitor opens the real app inline) remains the e
    Verified Google review" with a cross-link to the build being described. It has
    been there since the master build. **What is actually open is its mobile
    treatment** — it occupies ~500px of a 360px-wide viewport; that is a Phase 1
-   density item, tracked in `docs/STATUS.md`.
+   density item.
 2. ~~**No FAQ.**~~ **False — measured 2026-08-12.** `content/faq.ts` carries six
    items, verbatim from `docs/COPY.md`, rendered at the bottom of `/contact` and
    feeding the `FAQPage` JSON-LD from the *same strings* (SEO.md forbids a
@@ -322,7 +322,7 @@ made deliberately *after* the export (Geist-only typography, the
 - Hero video loop (static image ships first).
 - `lockup-master.svg` wordmark → outlined paths.
 - Cal.com scheduling embed (see §10).
-- ~~GBP Services section — not a website task, but the highest-leverage open SEO item.~~ **Resolved** — live in the GBP profile; was never blocked on a website deliverable. See STATUS.md and PLAYBOOK.md §14.
+- ~~GBP Services section — not a website task, but the highest-leverage open SEO item.~~ **Resolved** — live in the GBP profile; was never blocked on a website deliverable. See PLAYBOOK.md §14.
 
 ---
 

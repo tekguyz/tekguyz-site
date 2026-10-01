@@ -17,8 +17,8 @@
 |---|---|
 | Phase | Live. `tekguyz.com` serves this build. |
 | Shipped | Full site, AI concierge, lead capture to the CRM, `/work` lineup of 6 (pass 2 of #13). |
-| Next | Open items are in [`docs/STATUS.md`](docs/STATUS.md). |
-| Updated | 2026-09-29 |
+| Next | Open items are in [`docs/KNOWN_GAPS.md`](docs/KNOWN_GAPS.md). |
+| Updated | 2026-10-01 |
 
 ## What it does
 
@@ -75,7 +75,7 @@ Never `bun run test`: it is set to fail on purpose. CI runs `typecheck`, `test:u
 ## Docs
 
 - [`CLAUDE.md`](CLAUDE.md): rules for working in this repo
-- [`docs/STATUS.md`](docs/STATUS.md): what is open now
+- [`docs/KNOWN_GAPS.md`](docs/KNOWN_GAPS.md): what is open now
 - [`docs/CANONICAL.md`](docs/CANONICAL.md) · [`docs/DESIGN.md`](docs/DESIGN.md) · [`docs/TOKENS.md`](docs/TOKENS.md) · [`docs/COPY.md`](docs/COPY.md) · [`docs/SEO.md`](docs/SEO.md)
 - [`docs/SETUP.md`](docs/SETUP.md): scripts, layout, gotchas
 - [`docs/archive/HISTORY.md`](docs/archive/HISTORY.md): what was built, and why
