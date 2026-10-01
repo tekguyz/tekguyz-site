@@ -2,7 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import { SOLUTION_ACCENT, STRIPE_ORDER } from '@/config/solutions';
 import { solutions } from './solutions';
-import { buildCountWord, featured, featuredSlugs, foldBoard, foldSlugs, getWork, work } from './work';
+import {
+  buildCountWord,
+  featured,
+  featuredSlugs,
+  foldBoard,
+  foldSlugs,
+  footerSlugs,
+  footerWork,
+  getWork,
+  work,
+} from './work';
 
 /**
  * Lineup invariants (#13). Every place that names a build by slug or by name
@@ -25,6 +35,17 @@ describe('work lineup', () => {
   it('every fold slug resolves to an entry', () => {
     for (const slug of foldSlugs) expect(getWork(slug), slug).toBeDefined();
     expect(foldBoard).toHaveLength(foldSlugs.length);
+  });
+
+  // The owner's order, 2026-10-01: the four builds with a one-click demo lead.
+  it('the work list leads with the four demo builds, in the owner’s order', () => {
+    expect(work.slice(0, 4).map((w) => w.slug)).toEqual([...footerSlugs]);
+  });
+
+  it('the footer Work column resolves every slug and gives each a short label', () => {
+    for (const slug of footerSlugs) expect(getWork(slug), slug).toBeDefined();
+    expect(footerWork).toHaveLength(footerSlugs.length);
+    for (const w of footerWork) expect(w.shortName, w.slug).toBeTruthy();
   });
 
   it('the fold board has at most one card per solution line, in stripe order', () => {

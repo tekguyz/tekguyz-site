@@ -16,6 +16,8 @@ interface WorkBase {
   slug: string;
   kind: WorkKind;
   name: string;
+  /** Short label for tight spots such as the footer. Falls back to `name`. */
+  shortName?: string;
   /** Uppercase tag label, e.g. "BUSINESS SYSTEMS". */
   tag: string;
   solution: SolutionSlug;
@@ -76,31 +78,38 @@ export type WorkEntry = CaseStudy | Project;
  */
 const AUTHORED = '2026-08-05';
 
-/**
- * Date the 2026-09-04 lineup change was authored: three builds retired
- * (`restaurant-menu`, `auto-detailer`, `meeting-organizer`), `bundle-builder`
- * moved from case study to project, and two entries added — `ai-meeting-notes`
- * (which supersedes the retired `ai-audio-file-insights`, the same product one
- * full rewrite later) and `tekguyz-crm`.
+/*
+ * Lineup history. The dates below were constants until 2026-10-01, when the
+ * refresh below touched every entry that used them; the record stays here.
+ *
+ * 2026-09-04: three builds retired (`restaurant-menu`, `auto-detailer`,
+ * `meeting-organizer`), `bundle-builder` moved from case study to project, and
+ * two entries added — `ai-meeting-notes` (which supersedes the retired
+ * `ai-audio-file-insights`, the same product one full rewrite later) and
+ * `tekguyz-crm`.
+ *
+ * 2026-09-28 (#13, pass 1): `field-photo-reports` moved to its v2 build with new
+ * copy and poster, `ai-meeting-notes` got a new Try it line, and
+ * `bundle-builder` was removed — its Shopify store was cancelled and the demo
+ * showed a real company's products and prices.
+ *
+ * 2026-09-29 (#13, pass 2): `private-meetup-app` added as the fifth case study.
  */
-const REVISED = '2026-09-04';
 
 /**
- * Date of the 2026-09-28 lineup change (#13, pass 1): `field-photo-reports`
- * moved to its v2 build with new copy and poster, `ai-meeting-notes` got a new
- * Try it line, and `bundle-builder` was removed — its Shopify store was
- * cancelled and the demo showed a real company's products and prices.
+ * Date of the 2026-10-01 refresh: five posters re-captured, and the work list
+ * reordered so the four builds with a one-click demo lead (Field Photo Reports,
+ * AI Meeting Notes, Lead & Pipeline CRM, Private Meetup App), then the voice
+ * receptionist, then Team Performance.
  */
-const LINEUP_2026_09_28 = '2026-09-28';
-
-/** Date of #13 pass 2: `private-meetup-app` added as the fifth case study. */
-const LINEUP_2026_09_29 = '2026-09-29';
+const REFRESH_2026_10_01 = '2026-10-01';
 
 export const work: WorkEntry[] = [
   {
     slug: 'field-photo-reports',
     kind: 'case-study',
     name: 'Field Photo Reports & Quality Tracking',
+    shortName: 'Field Photo Reports',
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
     headline: 'One Report from the job site, with the proof printed on every photo.',
@@ -115,7 +124,7 @@ export const work: WorkEntry[] = [
     poster: '/media/field-reports-thumb.webp',
     alt: 'Field Photo Reports office view of one Visit: a stamped Live photo, an open Issue flagged by the Installer, and the Mark Reviewed button',
     embeddable: false,
-    updatedAt: LINEUP_2026_09_28,
+    updatedAt: REFRESH_2026_10_01,
     // Rewritten 2026-09-28, in sync with COPY.md. The client stays unnamed, as
     // on the voice receptionist page. "3 to 5 days" is the shop's documented
     // starting point (the app's PRODUCT.md), not a result — no result is
@@ -140,14 +149,15 @@ export const work: WorkEntry[] = [
     slug: 'ai-meeting-notes',
     kind: 'case-study',
     name: 'AI Meeting Notes & Transcription',
+    shortName: 'AI Meeting Notes',
     tag: 'SMART OPERATIONS',
     solution: 'smart-operations',
     headline: 'Get the notes, the takeaways, and the action items without sending a bot to the call.',
     url: 'https://squid-ink.vercel.app',
     poster: '/media/squid-ink.webp',
-    alt: 'AI meeting notepad showing generated takeaways with timestamp citations, per-speaker stats, and the diarized transcript alongside',
+    alt: 'AI meeting note showing a written summary, takeaways and action items with timestamp citations, and the transcript with each speaker separated alongside',
     embeddable: false,
-    updatedAt: LINEUP_2026_09_28,
+    updatedAt: REFRESH_2026_10_01,
     challenge:
       "Meeting notes either don't get written or don't get read. The tools that promise to fix it send a bot to sit in the call — which is awkward in front of a client, blocked outright by plenty of IT policies, and still leaves you with a wall of transcript nobody goes back to.",
     approach:
@@ -168,6 +178,7 @@ export const work: WorkEntry[] = [
     slug: 'tekguyz-crm',
     kind: 'case-study',
     name: 'Lead & Pipeline CRM',
+    shortName: 'Lead & Pipeline CRM',
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
     headline: 'Track every lead from first enquiry to closed deal, in one pipeline.',
@@ -183,7 +194,7 @@ export const work: WorkEntry[] = [
     poster: '/media/tekguyz-crm.webp',
     alt: 'Lead and pipeline CRM reporting view showing open pipeline by stage, closed leads by outcome, and a win-rate figure',
     embeddable: false,
-    updatedAt: REVISED,
+    updatedAt: REFRESH_2026_10_01,
     challenge:
       'Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody’s head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
     // BOTH DIRECTIONS ARE NAMED. The poster is the Reports view, which counts
@@ -212,6 +223,46 @@ export const work: WorkEntry[] = [
       'A multi-tenant CRM fed by website enquiries and by researched lead lists, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
   },
   {
+    slug: 'private-meetup-app',
+    kind: 'case-study',
+    name: 'Private Meetup App',
+    shortName: 'Private Meetup App',
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
+    headline: 'Small private meetups, where a person checks every card and the address stays hidden until the host says yes.',
+    // The bare origin is the landing page; only its "Try the demo" button signs
+    // a visitor in (DEMO-STANDARD). The app's brand name is in this url and
+    // nowhere else on the site — `content/work.test.ts` fails if it leaks into
+    // any other field.
+    url: 'https://meet4weed.vercel.app',
+    // 1440x900, from the app's own `showcase/sesh-desktop-light.png`, taken in
+    // the demo: every member and meetup in it is invented. Its brand name shows
+    // in the app's own header, as the client's logo does in the Field Photo
+    // Reports poster: an honest capture, not copy.
+    poster: '/media/meetup-thumb.webp',
+    alt: 'Private Meetup App list view: category filters, a search box, and a meetup card with its time, neighborhood and spots left, and no exact address shown',
+    embeddable: false,
+    updatedAt: REFRESH_2026_10_01,
+    // Written 2026-09-29 (#13 pass 2), in sync with COPY.md, from the app's
+    // PRODUCT.md and CONTEXT.md. No member count and no result is stated,
+    // because none exists: it launches small and private.
+    challenge:
+      'Florida law lets medical cannabis patients consume at a private home. A meetup there only works if everyone in the room is a verified patient, 21 or older. An ordinary event app cannot promise that: it checks nobody’s card, and anyone who finds the page can find the house.',
+    approach:
+      'We built a members-only app around the gate. Every new member takes a live photo of their card, then of their face with a random challenge, and a person reviews each one by eye. AI reads the card and lists concerns, but it never decides. Hosts approve every guest by hand. Until they do, the map shows only a circle about half a mile across. The app never handles a sale of any kind.',
+    outcome:
+      'Every member at a meetup was checked by a person, and nobody outside the guest list knows where it is. Card and face photos are deleted when the reviewer decides, within 7 days at most, and the app forgets the address a week after the meetup.',
+    pullQuote:
+      'Hide by default, reveal by approval: nobody sees who or where until a person has said yes.',
+    tryIt:
+      'Press Try the demo on its landing page. One click opens your own visitor account among sample members and meetups — no card, no sign-up, and it is deleted after 7 days. Browse the list and the map, open a meetup, and see what stays hidden until a host says yes.',
+    howItsBuilt:
+      'A phone-first web app that installs to the home screen, on one database where every row is locked to who may see it. Verification is a one-step-per-screen camera flow with no gallery upload. Notifications name no member and no meetup, and the app stores no data on the phone. The demo runs in a sealed copy that can never reach a real member. Light and dark mode throughout.',
+    title: 'TEKGUYZ | Private Meetup App',
+    description:
+      'A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.',
+  },
+  {
     slug: 'ai-voice-receptionist',
     kind: 'case-study',
     name: 'AI Voice Receptionist & Call Booking',
@@ -236,9 +287,9 @@ export const work: WorkEntry[] = [
     // §12 is satisfied by construction, and it is 33KB against the source's
     // 117KB, so mobile also pays less.
     heroPosterMobile: '/media/sarah-poster-mobile.webp',
-    alt: 'AI Voice Receptionist dashboard showing a customer profile, live conversation feed, and the confirmation email',
+    alt: 'AI Voice Receptionist dashboard panel listing live CRM sync: a caller just saved to a profile, and earlier callers already synced to the CRM',
     embeddable: false,
-    updatedAt: AUTHORED,
+    updatedAt: REFRESH_2026_10_01,
     challenge:
       'A stone fabrication shop was losing leads to after-hours calls. The voicemail box was a dead end — callers with a real project either waited until morning or called someone else, and there was no way to know how many did which.',
     approach:
@@ -254,45 +305,6 @@ export const work: WorkEntry[] = [
     title: 'TEKGUYZ | AI Voice Receptionist — Live Demo',
     description:
       'A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.',
-  },
-  {
-    slug: 'private-meetup-app',
-    kind: 'case-study',
-    name: 'Private Meetup App',
-    tag: 'CUSTOM WEB APPS',
-    solution: 'custom-web-apps',
-    headline: 'Small private meetups, where a person checks every card and the address stays hidden until the host says yes.',
-    // The bare origin is the landing page; only its "Try the demo" button signs
-    // a visitor in (DEMO-STANDARD). The app's brand name is in this url and
-    // nowhere else on the site — `content/work.test.ts` fails if it leaks into
-    // any other field.
-    url: 'https://meet4weed.vercel.app',
-    // 1440x900, from the app's own `showcase/sesh-desktop-light.png`, taken in
-    // the demo: every member and meetup in it is invented. Its brand name shows
-    // in the app's own header, as the client's logo does in the Field Photo
-    // Reports poster: an honest capture, not copy.
-    poster: '/media/meetup-thumb.webp',
-    alt: 'Private Meetup App page for one meetup: the time, the neighborhood and the spots left, with the exact address hidden until the host approves the guest',
-    embeddable: false,
-    updatedAt: LINEUP_2026_09_29,
-    // Written 2026-09-29 (#13 pass 2), in sync with COPY.md, from the app's
-    // PRODUCT.md and CONTEXT.md. No member count and no result is stated,
-    // because none exists: it launches small and private.
-    challenge:
-      'Florida law lets medical cannabis patients consume at a private home. A meetup there only works if everyone in the room is a verified patient, 21 or older. An ordinary event app cannot promise that: it checks nobody’s card, and anyone who finds the page can find the house.',
-    approach:
-      'We built a members-only app around the gate. Every new member takes a live photo of their card, then of their face with a random challenge, and a person reviews each one by eye. AI reads the card and lists concerns, but it never decides. Hosts approve every guest by hand. Until they do, the map shows only a circle about half a mile across. The app never handles a sale of any kind.',
-    outcome:
-      'Every member at a meetup was checked by a person, and nobody outside the guest list knows where it is. Card and face photos are deleted when the reviewer decides, within 7 days at most, and the app forgets the address a week after the meetup.',
-    pullQuote:
-      'Hide by default, reveal by approval: nobody sees who or where until a person has said yes.',
-    tryIt:
-      'Press Try the demo on its landing page. One click opens your own visitor account among sample members and meetups — no card, no sign-up, and it is deleted after 7 days. Browse the list and the map, open a meetup, and see what stays hidden until a host says yes.',
-    howItsBuilt:
-      'A phone-first web app that installs to the home screen, on one database where every row is locked to who may see it. Verification is a one-step-per-screen camera flow with no gallery upload. Notifications name no member and no meetup, and the app stores no data on the phone. The demo runs in a sealed copy that can never reach a real member. Light and dark mode throughout.',
-    title: 'TEKGUYZ | Private Meetup App',
-    description:
-      'A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.',
   },
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
@@ -432,6 +444,22 @@ export const foldSlugs = [
 ] as const;
 
 export const foldBoard = foldSlugs
+  .map((slug) => work.find((w) => w.slug === slug))
+  .filter((w): w is WorkEntry => Boolean(w));
+
+/**
+ * The footer's Work column: the four builds with a one-click demo, in the order
+ * the owner set on 2026-10-01. Content, not layout, like `featuredSlugs`.
+ * `content/work.test.ts` fails if a slug stops resolving.
+ */
+export const footerSlugs = [
+  'field-photo-reports',
+  'ai-meeting-notes',
+  'tekguyz-crm',
+  'private-meetup-app',
+] as const;
+
+export const footerWork = footerSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is WorkEntry => Boolean(w));
 

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ConnectedNodes } from '@/components/logo-lockup';
 import { SignatureStripe } from '@/components/signature-stripe';
 import { solutions } from '@/content/solutions';
+import { footerWork } from '@/content/work';
 import { accentForSolution } from '@/config/solutions';
 import { site } from '@/lib/site';
 
@@ -10,8 +11,9 @@ import { site } from '@/lib/site';
  * border in the scope's own `--tg-border`.
  *
  * Structure per the export: masthead (40px top padding, 40px mark + 26px
- * wordmark + tagline left, 44x44 social row right) -> hairline -> 3-column nav
- * on the 12-col grid (1/5, 5/9, 9/13) -> bottom bar -> signature stripe.
+ * wordmark + tagline left, 44x44 social row right) -> hairline -> 4-column nav
+ * on the 12-col grid (1/4, 4/7, 7/10, 10/13) -> bottom bar -> signature stripe.
+ * The Work column was added 2026-10-01; before that it was three columns.
  *
  * The bottom bar carries the copyright ONLY. No second Privacy link, no
  * repeated tagline — Privacy already lives in the Company column, and the
@@ -126,14 +128,19 @@ export function FooterDark() {
           </div>
         </div>
 
-        {/* 3-column nav on the 12-col grid */}
+        {/* 4-column nav on the 12-col grid */}
         <div
           className="tg-grid mt-8 border-t pt-10"
           style={{ borderTopColor: HAIRLINE }}
         >
-          {/* 768–1023: 4/4/4 of 12 becomes 3/2/3 of 8. Company gets the narrow
-              track because its longest item is `Process` at 51px; Solutions
-              (136px) and the email address (126px) both need the wide one.
+          {/* 1024+: four columns of 3 tracks. 768–1023: two rows of two, each
+              4 of 8 tracks. The old 3/2/3 split cannot hold a fourth column:
+              Solutions (136px), the longest Work label (`Lead & Pipeline CRM`)
+              and the email address (126px) each need 3 tracks, and 3+3+2+3 is
+              11 of 8. Source order is Solutions, Work, Company, Get In Touch,
+              so the rows read left to right in that order. The second row's
+              column start sits behind the placement cursor, so auto-flow drops
+              it to a new row without any `grid-row` pin.
 
               M-10, and the arithmetic is the whole decision. The links are
               22.4px tall, so a 44px target needs 10.8px above AND below. At the
@@ -150,7 +157,7 @@ export function FooterDark() {
               cost 74px of footer height per column instead of 30px, and
               DESIGN.md §4 is explicit that this row must not inherit
               section-level spacing. 22px is the tightest value that works. */}
-          <div className="[grid-column:1/5] max-lg:[grid-column:1/4]">
+          <div className="[grid-column:1/4] max-lg:[grid-column:1/5]">
             <p className="text-secondary mb-5 tg-eyebrow">
               Solutions
             </p>
@@ -174,7 +181,24 @@ export function FooterDark() {
             </div>
           </div>
 
-          <div className="[grid-column:5/9] max-lg:[grid-column:4/6]">
+          <div className="[grid-column:4/7] max-lg:[grid-column:5/9]">
+            <p className="text-secondary mb-5 tg-eyebrow">
+              Work
+            </p>
+            <div className="flex flex-col items-start gap-[22px]">
+              {footerWork.map((w) => (
+                <Link
+                  key={w.slug}
+                  href={`/work/${w.slug}`}
+                  className="tap-44 link-underline text-fg text-[0.875rem]"
+                >
+                  {w.shortName ?? w.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="[grid-column:7/10] max-lg:[grid-column:1/5]">
             <p className="text-secondary mb-5 tg-eyebrow">
               Company
             </p>
@@ -196,7 +220,7 @@ export function FooterDark() {
             </div>
           </div>
 
-          <div className="[grid-column:9/13] max-lg:[grid-column:6/9]">
+          <div className="[grid-column:10/13] max-lg:[grid-column:5/9]">
             <p className="text-secondary mb-5 tg-eyebrow">
               Get In Touch
             </p>
