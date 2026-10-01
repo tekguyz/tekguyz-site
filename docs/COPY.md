@@ -388,12 +388,12 @@ Everything worth chasing lives in one pipeline instead of an inbox and a spreads
 The contact form on this page posts into it. This is the system we run our own business on.
 
 **TRY IT**
-One click puts you inside a live, seeded copy — no signup, no password, no email. It is read-only, so browse the whole thing: the day's agenda, the pipeline board, a lead's full timeline, the revenue report. Nothing to save, nothing to break.
+One click puts you inside your own live, seeded copy — no signup, no password, no email. It is yours alone and fully writable, so add a lead, move it down the pipeline, log a note, and watch the revenue report change. Anything that sends email or costs money is switched off, and it all clears itself after a week.
 
-*(Rewritten 2026-09-04, replacing a line that apologised for a login wall. **The read-only promise is a factual constraint, not a hedge** — the demo visitor is a Postgres role holding SELECT and nothing else, so a write is refused by the database rather than by the UI. Never write copy here that invites a visitor to create, save, or edit: they would be describing a thing the visitor is about to be denied. Demo link is `https://tekguyz-crm.vercel.app/demo`, **never the bare origin**, which is still login-gated.)*
+*(Rewritten 2026-10-01 for the CRM's new demo (tekguyz-crm#29). Each visitor presses "Try the demo" on the CRM's Landing Page and gets their own writable workspace, deleted after 7 days; email, import, invites and the like show "Not available in the demo." Do not call the demo read-only: it no longer is. The link is the bare origin `https://tekguyz-crm.vercel.app`, which is now the Landing Page; `/demo` only redirects to it.)*
 
 **HOW IT'S BUILT**
-Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.
+Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. Each demo visitor gets their own sealed workspace, so the tour cannot reach anything real or anyone else's changes.
 
 > **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Reports view, but the org shown is **TEKGUYZ Demo** and every figure on it — open pipeline, realized revenue, win rate — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
 

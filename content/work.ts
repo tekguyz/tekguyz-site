@@ -171,15 +171,11 @@ export const work: WorkEntry[] = [
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
     headline: 'Track every lead from first enquiry to closed deal, in one pipeline.',
-    // `/demo`, never the bare origin. The origin is login-gated with no public
-    // route, so it resolved to a sign-in wall while the status line beside it
-    // read "Live" — true, and not what "Live demo" promises. `/demo` signs the
-    // visitor into a seeded instance in one click. Verified 2026-09-04: the
-    // bare origin 307s to `/login`; `/demo` 307s to `/` and lands on the real
-    // app. **Check it without `curl -L`** — following the redirect reports a
-    // misleading 200 from the login page, which is what made this look ready a
-    // day before it was.
-    url: 'https://tekguyz-crm.vercel.app/demo',
+    // The bare origin: since 2026-10-01 it is the CRM's Landing Page, which
+    // says what the app does and has a "Try the demo" button. Opening a link
+    // never signs anyone in; only pressing the button does (DEMO-STANDARD.md).
+    // `/demo` is no longer the link: it only redirects here.
+    url: 'https://tekguyz-crm.vercel.app',
     poster: '/media/tekguyz-crm.webp',
     alt: 'Lead and pipeline CRM reporting view showing open pipeline by stage, closed leads by outcome, and a win-rate figure',
     embeddable: false,
@@ -204,9 +200,9 @@ export const work: WorkEntry[] = [
     // that implied "create a lead and see what happens" would be describing a
     // thing the visitor is about to be denied.
     tryIt:
-      'One click puts you inside a live, seeded copy — no signup, no password, no email. It is read-only, so browse the whole thing: the day’s agenda, the pipeline board, a lead’s full timeline, the revenue report. Nothing to save, nothing to break.',
+      'One click puts you inside your own live, seeded copy — no signup, no password, no email. It is yours alone and fully writable, so add a lead, move it down the pipeline, log a note, and watch the revenue report change. Anything that sends email or costs money is switched off, and it all clears itself after a week.',
     howItsBuilt:
-      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. The public demo is a separate read-only database role, so the tour cannot reach anything real.',
+      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. Each demo visitor gets their own sealed workspace, so the tour cannot reach anything real or anyone else’s changes.',
     title: 'TEKGUYZ | Lead & Pipeline CRM',
     description:
       'A multi-tenant CRM fed by website enquiries and by researched lead lists, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
