@@ -30,7 +30,7 @@ has already paid for. `CLAUDE.md` bans it. Its narrow commands (`critique`,
 `polish`, `audit`, `layout`, `typeset`, `colorize`) read the CSS directly and
 need neither file — those are the ones to use.
 
-**New inspiration screenshots are a `superpowers:brainstorming` input, not an
+**New inspiration screenshots are a `mattpocock-skills:grilling` input, not an
 init input.** When they arrive, they get compared against what ships and the
 deltas get written here as `[decided]` rows with a date. That is how a direction
 enters this document with a provenance instead of without one.

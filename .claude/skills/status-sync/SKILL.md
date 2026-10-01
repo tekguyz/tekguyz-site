@@ -65,8 +65,8 @@ read its lines.
    (not shipped), **ahead of origin** (committed here, not pushed), and
    **behind origin** — say "behind origin/master by N commits — run `git pull`
    before working here", and do not describe the tree as current.
-4. **What production is serving.** Use the Vercel connector — `list_projects`,
-   `list_deployments` — or the `vercel` CLI. **Never cite a doc for hosting or
+4. **What production is serving.** Use the `vercel` CLI — `vercel ls --project tekguyz-site`,
+   `vercel inspect https://tekguyz.com`. **Never cite a doc for hosting or
    deployment state.** The Vercel MCP plugin was removed on 2026-08-28; do not
    suggest re-installing it.
 5. `docs/STATUS.md` Open tables, by grep where possible.

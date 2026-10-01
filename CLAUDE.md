@@ -17,13 +17,13 @@ once they have, merge with `gh pr merge <N> --merge --delete-branch`. Never push
 straight to `master` unless the user asks for exactly that.
 
 **After any push, confirm it** — `git log origin/master`, or the Vercel
-connector's `list_deployments`. A denied push is not a push that didn't happen.
+`vercel ls`. A denied push is not a push that didn't happen.
 Measure it; never infer it from the command's output.
 
 **Hosting topology is external state that drifts without touching the repo, so
 re-measure it and never cite a doc for it.**
 
-Branch commands, preview behaviour, the CORS myth, the Vercel connector and the
+Branch commands, preview behaviour, the CORS myth, the Vercel CLI and the
 visual-verification rules: `docs/agents/verification.md`.
 
 Stack: Next.js 16 App Router · TypeScript · Tailwind v4 (CSS-first `@theme`) ·
@@ -40,8 +40,8 @@ and say which one you're using.
 | Situation | Skill |
 | --- | --- |
 | Deciding how something **looks or feels** — layout, motion, type, density, a component's treatment | `impeccable` |
-| **Inventing** behavior that isn't already specified in `docs/DESIGN.md` | `superpowers:brainstorming` **first**, then build it |
-| A bug, a test failure, anything behaving unexpectedly | `superpowers:systematic-debugging` |
+| **Inventing** behavior that isn't already specified in `docs/DESIGN.md` | `mattpocock-skills:grilling` **first**, then build it |
+| A bug, a test failure, anything behaving unexpectedly | `mattpocock-skills:diagnosing-bugs` |
 | Before a push, or after a batch of edits | `/code-review` |
 | Implementing a decision that is already written down | none — just build it |
 | **Critiquing or polishing UI that already exists** — hierarchy, spacing, alignment, contrast, motion, empty and error states | `impeccable` — `/impeccable critique <file>` before finalizing, `/impeccable polish` after |
