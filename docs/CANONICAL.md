@@ -58,7 +58,7 @@ Changes, and this is why it won't look like today's site:
 
 Every agency site has a "LIVE" badge that is a graphic asserting a fact. Yours measures it.
 
-**Mechanic.** A server component issues a HEAD request per demo URL on a 5-minute `revalidate`, rendering the actual result: `Live · verified 14 minutes ago`. Down or slow renders honestly as `Temporarily unreachable` with the link still available.
+**Mechanic.** A server component issues a HEAD request per demo URL on a 5-minute `revalidate`, rendering the actual result: `Live · checked 14 minutes ago`. Down or slow renders honestly as `Temporarily unreachable` with the link still available.
 
 **Why it fits:** "Proof Over Claims" is a stated brand value, and this is the only version of the live-demo badge on the internet that is literally true at render time rather than asserted at design time.
 

@@ -53,6 +53,8 @@ SMART OPERATIONS · AI VOICE AGENTS · BUSINESS SYSTEMS · CUSTOM WEB APPS
 
 Verified state: `Live · checked {n} minutes ago`
 Unreachable state: `Temporarily unreachable · checked {n} minutes ago`
+First paint (server HTML, before the page hydrates): `Live · checked at {HH:MM} UTC`. The stamp swaps to `{n} minutes ago` once the page loads. Both are real; the clock time is deliberate, because a relative stamp differs between prerender and hydration (#418). Measured on https://tekguyz.com 2026-10-01.
+Compact variant (homepage build cards): `Live · {n} minutes ago` and `Unreachable`. No word "checked", and no stamp on the unreachable state.
 Link label: **Open it in a new tab**
 Tooltip / helper: *We check every demo hourly. This is the real status, not a badge.*
 
