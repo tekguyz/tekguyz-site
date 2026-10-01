@@ -59,6 +59,7 @@ Tooltip / helper: *We check every demo hourly. This is the real status, not a ba
 ## Footer
 
 **Solutions** — Smart Operations / AI Voice Agents / Business Systems / Custom Web Apps
+**Work** — Field Photo Reports / AI Meeting Notes / Lead & Pipeline CRM / Private Meetup App *(added 2026-10-01; each links to its `/work/<slug>` page, in this order)*
 **Company** — Work / Process / Contact / Privacy
 **Get In Touch** — hello@tekguyz.com / South Florida / Mon–Fri, 9am–5pm
 

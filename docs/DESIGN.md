@@ -1216,8 +1216,9 @@ gradient.
 **[measured 2026-08-12 `components/footer-dark.tsx`, `globals.css:115`]** Always
 dark regardless of the toggle (`.footer-dark` sets its own `--tg-bg`, `--tg-fg`,
 `--tg-border`, `--tg-secondary`), separated by a persistent 1px `#2A2A2C` top
-border. Structure: masthead → hairline divider → 3-column nav on the 12-col grid
-(1–4 / 5–8 / 9–12) → bottom bar → signature stripe.
+border. Structure: masthead → hairline divider → 4-column nav on the 12-col grid
+(1–3 / 4–6 / 7–9 / 10–12; a Work column was added 2026-10-01) → bottom bar →
+signature stripe.
 
 **[measured 2026-08-12 `footer-dark.tsx:66,127`]** Masthead padding is **40px
 top**, and the divider that closes it is 32px below the masthead content — the
@@ -2059,7 +2060,7 @@ exists to avoid.
 | `/process` steps | `4/13` | **`1/-1`** |
 | `/contact` trust column / form card | `1/6` + `7/13` | both **`1/-1`** |
 | `/solutions/[slug]` title / body | `1/6` + `7/13` | both **`1/-1`** |
-| Footer nav — Solutions / Company / Get In Touch | `1/5` + `5/9` + `9/13` | **`1/4`** + **`4/6`** + **`6/9`** |
+| Footer nav — Solutions / Work / Company / Get In Touch | `1/4` + `4/7` + `7/10` + `10/13` | two rows of two: **`1/5`** + **`5/9`**, then **`1/5`** + **`5/9`** *(2026-10-01; was 3/2/3 for three columns, which cannot hold a fourth)* |
 
 **Why some rows go full-width instead of splitting.** A hero- or display-scale
 heading has no second column to sit beside — `--text-hero` resolves to 46.08px at

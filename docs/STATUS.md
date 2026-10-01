@@ -20,6 +20,23 @@ planning tool has to read.
 
 ---
 
+## Measured 2026-10-01 — work order, footer Work column, five new posters
+
+| | Measured 2026-10-01 | Command |
+| --- | --- | --- |
+| `/work` order | **Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM, Private Meetup App, AI Voice Receptionist, Team Performance.** The owner's order. Home's featured pair and fold board are unchanged | `content/work.test.ts` |
+| Footer | **Four columns:** Solutions, Work, Company, Get In Touch. The Work column lists the first four builds, each linking to its `/work/<slug>` page. 1024+ is 4 × 3 tracks in one row; 768 to 1023 is two rows of two on 8 tracks, 0 implicit columns; below 768 it stacks | `getComputedStyle` in the preview at 1280, 768, 390 |
+| Posters | **Five replaced** from the owner's new captures (`field-reports-thumb`, `squid-ink`, `tekguyz-crm`, `meetup-thumb`, `sarah-thumb`), each trimmed at the bottom to 1440×900, WebP quality 90 | `bun run check:media` |
+| Tests | **119 pass, 7 files** | `bun run test:unit` |
+
+### Open from this sitting
+
+- **The CRM link stays `/demo`.** tekguyz/tekguyz-crm#33 changes it to the Landing Page, but that waits on #32. Measured 2026-10-01: the CRM origin still 307s to `/login`. Change the link and the "read-only" copy in `content/work.ts` and `docs/COPY.md` only when #32 ships.
+- **Not used yet:** the owner's new `tekguyz-crm1` (lead drawer), the Field Photo Reports video (MP4 and WebM) and its poster. They wait for a decision on the home hero (#20) and the gallery (#11).
+- **A tool name shows in two posters.** `sarah-thumb.webp` ("StoneApp database synchronization ledger") and `field-reports-thumb.webp` ("Sales can bill it in StoneApp"). The site names no tools or apps in its copy. Left as captured; the owner decides whether to recapture.
+- **`meetup-thumb.webp` shows a dated meetup** ("Thu, Oct 1"), which reads stale after that day.
+- **The new CRM capture shows the "You're in the demo" bar.** The CRM's own #33 plans demo-free showcase shots with the banner hidden.
+
 ## Measured 2026-09-29 — /work lineup refresh, pass 2 (#13)
 
 Pass 2 closes issue #13.
