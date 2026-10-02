@@ -62,10 +62,6 @@ to the user as current state. Assert nothing you have not just measured.
 
 ### Links and copy
 
-- ⬜ **The CRM link stays `/demo` (#9).** The CRM landing page is live at
-  `https://tekguyz-crm.vercel.app/` (tekguyz-crm#32 is closed). The link, the
-  "read-only" copy in `content/work.ts` and `docs/COPY.md`, and the health check
-  in `docs/CANONICAL.md` still need to switch. 2026-10-01.
 - ⬜ **`/privacy` was reviewed by its owner, not by a lawyer.** Closed 2026-08-29
   as a self-review against the CCPA thresholds. Re-open if that matters.
 
