@@ -56,6 +56,19 @@ for (const entry of work) {
   if (entry.heroPoster) checks.push([entry.heroPoster, '16:9', 16 / 9]);
   if (entry.heroPosterMobile) checks.push([entry.heroPosterMobile, '16:9', 16 / 9]);
 
+  // Hero extras are plain files with no locked ratio. They only have to exist:
+  // the video is invisible until it plays, so a missing one breaks nothing the
+  // eye can see on a developer's own screen.
+  const hm = entry.heroMedia;
+  const extras = [hm?.video?.mp4, hm?.video?.webm, hm?.phone?.src].filter(
+    (p): p is string => Boolean(p),
+  );
+  for (const path of extras) {
+    if (!existsSync(join(PUBLIC, path))) {
+      missing.push(`${entry.slug}: ${path} — no such file under public/`);
+    }
+  }
+
   for (const [path, label, target] of checks) {
     const file = join(PUBLIC, path);
     if (!existsSync(file)) {

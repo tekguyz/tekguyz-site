@@ -27,7 +27,7 @@ export const metadata = buildMetadata({
 
 export default async function HomePage() {
   const statuses = await getAllStatuses();
-  const hero = getWork('ai-voice-receptionist')!;
+  const hero = getWork('field-photo-reports')!;
 
   return (
     <div>
@@ -49,6 +49,7 @@ export default async function HomePage() {
         posterMobile={hero.heroPosterMobile}
         url={hero.url}
         alt={hero.alt}
+        media={hero.heroMedia}
         status={statuses[hero.slug]!}
       />
 

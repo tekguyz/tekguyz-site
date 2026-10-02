@@ -1,6 +1,7 @@
 'use client';
 
-import { Frame } from '@/components/live-frame';
+import { HeroMedia } from '@/components/hero-media';
+import type { HeroMedia as HeroMediaData } from '@/content/work';
 import { StatusLine } from '@/components/status-line';
 import { ButtonLink } from '@/components/button';
 import { SequenceRoot, SequenceItem, SequenceDots } from '@/components/load-sequence';
@@ -67,21 +68,25 @@ import type { StatusResult } from '@/lib/status';
  * always `.tg-hero-frame`'s own `margin-top`, and it is left there, alone, so
  * one number means one thing.
  *
- * Media is a static poster. The retired phone-call-simulator video loop was
- * deleted 2026-08-28 rather than left on disk to be picked up by mistake; a
- * video hero, if it ever happens, starts from a fresh capture.
+ * Media is a real desktop poster, a short loop of the same screen over it, and
+ * a real phone capture overlapping its corner — see `hero-media.tsx`. The
+ * retired phone-call-simulator video loop was deleted 2026-08-28; the current
+ * loop is a fresh capture from `tools/capture` (2026-10-02).
  */
 export function HomeHero({
   poster,
   posterMobile,
   url,
   alt,
+  media,
   status,
 }: {
   poster: string;
   posterMobile?: string;
   url: string;
   alt: string;
+  /** Optional video loop and phone capture layered on the poster. */
+  media?: HeroMediaData;
   status: StatusResult;
 }) {
   // `pb-16 md:pb-20` (64/80), not the section rhythm's `pb-20 md:pb-32`. The
@@ -181,13 +186,11 @@ export function HomeHero({
           <SequenceItem role="media" className="[grid-column:7/13] max-lg:[grid-column:1/-1]">
             <div data-hero-frame className="tg-hero-frame">
               <div data-hero-poster className="tg-hero-poster">
-                <Frame
+                <HeroMedia
                   poster={poster}
                   posterMobile={posterMobile}
                   alt={alt}
-                  ratio="16/9"
-                  priority
-                  className="tg-hero-img"
+                  media={media}
                 />
               </div>
               <div className="flex max-w-[52ch] flex-col gap-[14px]">

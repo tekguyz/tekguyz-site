@@ -622,6 +622,21 @@
   }
 }
 
+/* The phone capture that overlaps the hero poster. A flat ring in the colour of
+   whatever is behind the poster cuts it out of the desktop picture without a
+   shadow. Behind the poster that is the panel's surface on desktop, and the
+   page itself below 1024px, where there is no panel. */
+.tg-hero-phone {
+  border-color: var(--tg-border);
+  background: var(--tg-surface);
+  outline: 4px solid var(--tg-surface);
+}
+@media (max-width: 1023px) {
+  .tg-hero-phone {
+    outline-color: var(--tg-bg);
+  }
+}
+
 /* ---------------------------------------------------------------------------
    Scroll reveals — IntersectionObserver + a plain CSS transition.
 

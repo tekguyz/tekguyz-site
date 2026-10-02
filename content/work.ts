@@ -12,6 +12,16 @@ import type { SolutionSlug } from '@/config/solutions';
 
 export type WorkKind = 'case-study' | 'project';
 
+/**
+ * What the home hero layers on its poster. Both parts are optional.
+ * `video` is a loop of under 5 seconds, no sound, whose first frame is the
+ * poster. `phone` is a real phone capture, about 0.62 wide to tall.
+ */
+export interface HeroMedia {
+  video?: { mp4: string; webm: string };
+  phone?: { src: string; alt: string };
+}
+
 interface WorkBase {
   slug: string;
   kind: WorkKind;
@@ -37,6 +47,8 @@ interface WorkBase {
    * `check:media` at 16:9 like the other two.
    */
   heroPosterMobile?: string;
+  /** Optional extras layered on the home hero poster. */
+  heroMedia?: HeroMedia;
   alt: string;
   /**
    * Live-iframe embeds are architected for but not enabled. Flipping this to
@@ -122,6 +134,22 @@ export const work: WorkEntry[] = [
     // label are in it on purpose: it is an honest capture, and demo mode is by
     // design.
     poster: '/media/field-reports-thumb.webp',
+    // The home hero (#20). `field-reports-hero.webp` is 1440x810, the top of the
+    // same office Visit view, cropped from the first frame of the loop
+    // `tools/capture` made on 2026-10-02 (the loop scrolls that page). The phone
+    // is `installer-visits-phone-light.png` from the app's `showcase/`, cropped
+    // to 780x1250. Real captures, never restyled.
+    heroPoster: '/media/field-reports-hero.webp',
+    heroMedia: {
+      video: {
+        mp4: '/media/field-reports-hero.mp4',
+        webm: '/media/field-reports-hero.webm',
+      },
+      phone: {
+        src: '/media/field-reports-phone.webp',
+        alt: 'Field Photo Reports Installer app on a phone: today’s Visit, an upcoming Visit, and past Visits with their state',
+      },
+    },
     alt: 'Field Photo Reports office view of one Visit: a stamped Live photo, an open Issue flagged by the Installer, and the Mark Reviewed button',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
