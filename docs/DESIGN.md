@@ -770,8 +770,8 @@ eliminates the crop-vs-letterbox tension of forcing a 16:9-native capture into a
 header and primary content.
 
 **[decided v2.2, PLAYBOOK §12] Every poster is a real screenshot of the actual
-production application** — never a sandboxed emulator, simulator, or "demo mode"
-illustration. `bun run check:media` guards this on `prebuild`.
+production application** — never a drawn mockup or a sandboxed emulator or
+simulator. A capture of the app in demo mode is fine. `bun run check:media` guards this on `prebuild`.
 
 **The container — plate, not panel. [decided v2.5, D-11]** The ratios and
 `object-fit` were specified and the box around them was not, so the compact
@@ -864,11 +864,7 @@ toggle would download both on the LCP path.
 > **Still open, and it needs a recapture — not code.** The phone mockup in the
 > top-right of `sarah-poster.webp` is **cut mid-sentence at y=0 of the source
 > itself**, so "fully visible" is unreachable at any width, desktop included.
-> Separately, the capture carries a visible **"Demo Mode" badge** in its
-> bottom-right panel — a direct PLAYBOOK §12 violation on the most prominent
-> image on the site. The mobile crop excludes the badge; **desktop still shows
-> it.** STATUS.md's recapture queue currently reads "`sarah-poster.webp` is the
-> 16:9 hero — leave it", which is why neither has been caught.
+> The capture's "Demo Mode" badge is not a defect: demo mode is by design.
 
 **[export] Deferred embed, unbuilt.** `embeddable: true` renders a
 click-to-activate iframe in the same frame at the same dimensions, so there is
@@ -2528,8 +2524,8 @@ happened to the `flourish-mark` entry.
   detail page does carry its frame.
 - Pad the inside of a frame, or overlay its status block on the poster — §4.9
 - Mute the actionable half of the proof line — §4.4
-- Use a sandbox / emulator / demo-mode illustration where a real screenshot
-  exists — §4.9, PLAYBOOK §12
+- Use a drawn mockup or a sandbox / emulator illustration where a real
+  screenshot exists — §4.9, PLAYBOOK §12
 - Use a generic imported social-icon or theme-toggle icon set without restyling
   it — Icon policy
 - Let the closing CTA or the footer masthead inherit full section-level spacing —

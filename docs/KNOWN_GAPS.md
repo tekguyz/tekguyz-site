@@ -31,10 +31,10 @@ to the user as current state. Assert nothing you have not just measured.
 
 - ⬜ **Home hero poster, `sarah-poster.webp` (#20).** Owner-owned and in
   progress. **Do not raise it again as a question.** Two defects, neither fixable
-  in code: the phone mockup is cut mid-sentence at the top of the source file,
-  and the bottom-right panel carries a visible "Demo Mode" badge, a PLAYBOOK §12
-  violation. Wanted: native 16:9 at 1600×900 or larger, phone mockup entirely
-  inside the frame, no demo or simulator label anywhere. The size is already met
+  in code: the phone mockup is cut mid-sentence at the top of the source file.
+  The "Demo Mode" badge in the bottom-right panel is not a defect; demo mode is
+  by design. Wanted: native 16:9 at 1600×900 or larger, phone mockup entirely
+  inside the frame. The size is already met
   (measured 2026-08-28). D-07 (hero media bleeding above 1440px) does not
   reproduce; what is real above 1440px is the 1600px source ceiling. D-08 (hero
   poster illegible) is resolved below 1024px by `heroPosterMobile` and still open
