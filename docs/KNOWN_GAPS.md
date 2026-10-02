@@ -29,16 +29,16 @@ to the user as current state. Assert nothing you have not just measured.
 
 ### Images and the home hero
 
-- ⬜ **Home hero poster, `sarah-poster.webp` (#20).** Owner-owned and in
-  progress. **Do not raise it again as a question.** Two defects, neither fixable
-  in code: the phone mockup is cut mid-sentence at the top of the source file.
-  The "Demo Mode" badge in the bottom-right panel is not a defect; demo mode is
-  by design. Wanted: native 16:9 at 1600×900 or larger, phone mockup entirely
-  inside the frame. The size is already met
-  (measured 2026-08-28). D-07 (hero media bleeding above 1440px) does not
-  reproduce; what is real above 1440px is the 1600px source ceiling. D-08 (hero
-  poster illegible) is resolved below 1024px by `heroPosterMobile` and still open
-  at desktop-narrow. Both close on this recapture.
+- ⬜ **Home hero, shipped 2026-10-02 (#20); four loose ends.** The hero is Field
+  Photo Reports: a 1440×810 desktop capture, a phone capture overlapping it, and
+  a 4.5 s loop from `tools/capture` (`components/hero-media.tsx`). The old voice
+  poster and its two defects are gone from the hero. Open: (1) the hero source is
+  1440 wide, so above 1440px it upscales; D-07 and D-08 (hero legibility at
+  desktop-narrow) were not re-measured on the new picture. (2) The loop hard-cuts
+  from its last frame to its first. (3) The featured band lower on the home page
+  also leads with Field Photo Reports; the owner decides whether to swap one.
+  (4) `sarah-poster.webp` and `sarah-poster-mobile.webp` are no longer used by
+  the hero.
 - ⬜ **The voice poster shows the client's name.** Every new capture of the voice
   demo shows "Real Stone & Granite", and the voice page keeps the client
   unnamed, so `sarah-thumb.webp` is still the old file (the CRM-sync panel, with
@@ -51,10 +51,10 @@ to the user as current state. Assert nothing you have not just measured.
   within days. The capture set's map and meetup pictures are phone-shaped and
   would crop to a fragment in a 16:10 slot. Fix: seed the demo with relative
   dates, then retake. 2026-10-01.
-- ⬜ **Capture-set files not used yet:** the videos (WebM and MP4, with posters),
-  the phone pictures and the extra desktop pictures. They wait on the home hero
-  (#20) and the gallery (#11). Only files the site uses are in the repo; the
-  source folder is outside git. 2026-10-01.
+- ⬜ **Capture-set files not used yet:** every video except Field Photo Reports'
+  (used in the home hero since 2026-10-02), the other phone pictures and the
+  extra desktop pictures. They wait on the gallery (#11). Only files the site
+  uses are in the repo; the source folder is outside git. 2026-10-01.
 - ⬜ **The CRM poster is demo data.** `tekguyz-crm.webp` is the real product's
   Reports view, but the figures are seeded demo data, not a client result. It
   satisfies PLAYBOOK §12 and licenses **no number** in copy. The 2026-10-01
