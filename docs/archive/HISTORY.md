@@ -3335,3 +3335,7 @@ element (matters only if the SVG goes to an external vendor).
   still works.
 - A stale dev server can hold a port and serve a previous build. Kill by port and
   confirm the referenced stylesheet returns 200 before trusting a measurement.
+
+## Cal.com booking link — 2026-10-03 (#33)
+
+The owner set up https://cal.com/tekguyz/free-conversation (30 min, Cal Video, Mon–Fri 9–5 ET, one required question). The site now links to it from `/contact` (quiet text link) and the concierge offers it next to lead capture. The old deferral reason, "measure the form first", was overruled by the owner. Cal.com is the booking tool for every TEKGUYZ app. An embed is still not built.

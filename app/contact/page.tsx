@@ -88,6 +88,24 @@ export default function ContactPage() {
             take it from there.
           </p>
 
+          {/* The calendar is the quieter way in, not a second CTA: one text link
+              in `secondary`, the same treatment as the closing band's concierge
+              link, and the form stays the page's only button. It leaves the site,
+              so it opens in a new tab and the form is still here when they
+              come back. Sentence case, because it starts something they can
+              abandon. */}
+          <p className="mt-6 text-[0.875rem] leading-[1.55] text-secondary">
+            Prefer to skip the form?{' '}
+            <a
+              href={site.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tap-24 link-underline font-semibold text-fg"
+            >
+              Book a free first conversation
+            </a>
+          </p>
+
           {/* M-04's sub-767 half. Prompt 8 fixed this row's 768 and 844 cases
               via the 8-column grid; below 767 the cause is different and the
               fix is the same one `closing-cta` uses — see the long note there

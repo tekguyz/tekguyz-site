@@ -321,7 +321,7 @@ made deliberately *after* the export (Geist-only typography, the
 **Deferred, deliberately, not forgotten:**
 - Hero video loop (static image ships first).
 - `lockup-master.svg` wordmark → outlined paths.
-- Cal.com scheduling embed (see §10).
+- Cal.com scheduling **embed** (see §10). The booking **link** shipped 2026-10-03 (#33).
 - ~~GBP Services section — not a website task, but the highest-leverage open SEO item.~~ **Resolved** — live in the GBP profile; was never blocked on a website deliverable. See PLAYBOOK.md §14.
 
 ---
@@ -331,4 +331,4 @@ made deliberately *after* the export (Geist-only typography, the
 - **Verified live status** — **resolved: yes**, accepting that a broken demo shows publicly. Honest failure states beat a badge that lies, and you find out before a prospect does.
 - **Testimonial attribution** — **resolved.** "Joe M. · Verified Google review," with a link to the GBP listing. Third-party verifiability carries more weight than a full name would; also cross-linked from the Team Performance project page, since that's the build he's describing.
 - **Embed scope when you get there** — 4 case studies only, not all 8. Preserves the case-study/project distinction the design system deliberately protects.
-- **Cal.com scheduling** — open, deferred past launch on purpose. Reasoning: the current funnel problem is follow-up on warm leads, not booking friction, and the form already routes into the CRM where that follow-up happens. Adding a second, parallel conversion path before the first one is measured risks splitting the funnel and muddying which one actually works. Ship, watch real inbound for a few weeks, then decide — and if it goes in, the natural home is `/contact` as an alternative to the form ("prefer to just grab time?"), not a replacement for it, self-hosted or theme-overridden to match the token system rather than shipping Cal's default styling.
+- **Cal.com scheduling** — **resolved 2026-10-03 (#33): shipped as a plain link, not an embed.** One quiet text link on `/contact` and an offer in the concierge; the form stays the page's only button. The owner decided to add it before the inbound measurement below. The text that follows is the record of why it waited, and its "natural home" guess is what was built. Was: open, deferred past launch on purpose. Reasoning: the current funnel problem is follow-up on warm leads, not booking friction, and the form already routes into the CRM where that follow-up happens. Adding a second, parallel conversion path before the first one is measured risks splitting the funnel and muddying which one actually works. Ship, watch real inbound for a few weeks, then decide — and if it goes in, the natural home is `/contact` as an alternative to the form ("prefer to just grab time?"), not a replacement for it, self-hosted or theme-overridden to match the token system rather than shipping Cal's default styling.

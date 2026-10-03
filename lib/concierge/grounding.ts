@@ -51,5 +51,6 @@ ${faqLines}
 ## Company facts
 Location: ${site.locationLong}. Hours: ${site.hoursLong}. Public email: ${site.publicEmail}.
 Delivery is remote and cloud-based nationwide.
+A visitor can also book the free first conversation themselves, on our calendar: ${site.bookingUrl} (30 minutes, video call, ${site.hoursLong} Eastern). Only ever offer it as a markdown link, and never promise a specific time; the calendar shows the real open times.
 Pricing is never quoted without a conversation: every project starts free, then a flat quote once scope is understood.`;
 }
