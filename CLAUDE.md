@@ -28,7 +28,8 @@ visual-verification rules: `docs/agents/verification.md`.
 
 Stack: Next.js 16 App Router · TypeScript · Tailwind v4 (CSS-first `@theme`) ·
 Bun · Motion · React Hook Form + Zod · Resend · Gemini 3.6 Flash · Upstash ·
-Vercel.
+Vercel. **Bookings use Cal.com** (`site.bookingUrl`, one source) — never Calendly
+or another scheduler; a plain link, no embed.
 Package manager is **Bun**. `bun install` / `bun add`. Keep `bun.lock`
 committed. Never npm or pnpm.
 

@@ -12,6 +12,13 @@ export const site = {
   /** Internal inbox the contact form actually delivers to. */
   formDeliveryEmail: 'contact@tekguyz.com',
 
+  /**
+   * The Cal.com page for the free first conversation (30 min, video, Mon–Fri
+   * 9–5 ET). Cal.com is the booking tool for every TEKGUYZ app; one source, so
+   * the contact page and the concierge cannot disagree about the address.
+   */
+  bookingUrl: 'https://cal.com/tekguyz/free-conversation',
+
   location: 'South Florida',
   locationLong: 'South Florida, remote nationwide',
   hours: 'Mon–Fri, 9am–5pm',

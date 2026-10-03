@@ -90,7 +90,7 @@ to the user as current state. Assert nothing you have not just measured.
 ### Deferred on purpose (post-launch)
 
 Hero video loop (needs a new recording) · live iframe embeds (needs
-`frame-ancestors` CSP per demo app) · Cal.com (until real inbound is measured) ·
+`frame-ancestors` CSP per demo app) · Cal.com **embed** (the plain booking link shipped 2026-10-03, #33) ·
 Terms of Service (no checkout or accounts to need one) · `/privacy` ships zero
 scroll reveals (arguably correct) · `lockup-master.svg` wordmark is still a
 `<text>` element (matters only if the SVG goes to an external vendor).
