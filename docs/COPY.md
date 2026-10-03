@@ -521,7 +521,7 @@ TRUST LINES: Free first conversation · A flat quote before anything starts · W
 
 DIRECT: hello@tekguyz.com · Mon–Fri, 9:00 AM–5:00 PM · South Florida, remote nationwide
 
-BOOKING LINE (added 2026-10-03, #33; **drafted, not transcribed** — written from PLAYBOOK §4 and the trust line, sentence case because it starts something the visitor can abandon): Prefer to skip the form? **Book a free first conversation** → `site.bookingUrl` (Cal.com, new tab). Sits under the description, above the trust lines. One text link, never a button.
+BOOKING LINE (added 2026-10-03, #33; **drafted, not transcribed** — written from PLAYBOOK §4 and the trust line, sentence case because it starts something the visitor can abandon): Prefer to skip the form? **Book a free first conversation** → `site.bookingUrl` (Cal.com, new tab). Sits directly under the form card (the first placement, between the intro and the trust lines, read as an orphan on the owner's test). One text link, never a button.
 
 ## Form — two steps
 
