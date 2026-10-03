@@ -854,6 +854,12 @@ PLAYBOOK §12 is satisfied by construction, and it is 33KB against the source's
 other two — a `<picture>` `media` miss is invisible at desktop and breaks only
 the phone.
 
+**[changed 2026-10-02, #20]** The hero is no longer that capture. It is Field
+Photo Reports, with no `heroPosterMobile`: below 1024px it shows the same 16:9
+desktop capture with a phone capture overlapping it (`hero-media.tsx`). The
+`posterMobile` mechanism below is unchanged and still works for any entry that
+sets it. Whether the new hero reads at 330px was only looked at, not measured.
+
 `Frame`'s `posterMobile` prop is **optional and off for every compact context**,
 which renders exactly the `<Image>` it always did. Where it is set, `Frame`
 switches to `getImageProps` feeding a `<picture>` — Next's documented art-
@@ -861,7 +867,8 @@ direction pattern, and the reason it is not two `<Image>`s toggled with `hidden`
 is that the browser evaluates `media` and fetches **one** variant where the
 toggle would download both on the LCP path.
 
-> **Still open, and it needs a recapture — not code.** The phone mockup in the
+> **[closed 2026-10-02 by replacing the hero picture, #20]** This was about
+> `sarah-poster.webp`, which the hero no longer uses. The phone mockup in the
 > top-right of `sarah-poster.webp` is **cut mid-sentence at y=0 of the source
 > itself**, so "fully visible" is unreachable at any width, desktop included.
 > The capture's "Demo Mode" badge is not a defect: demo mode is by design.
