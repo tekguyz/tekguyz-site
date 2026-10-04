@@ -44,7 +44,6 @@ npm-debug.log*
 
 
 # local Claude Code tooling config (per-machine, not project source)
-.claude/settings.json
 .claude/settings.local.json
 
 # This repo installs with bun; bun.lock is the tracked lockfile.
