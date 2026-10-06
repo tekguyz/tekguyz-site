@@ -311,7 +311,7 @@ DESCRIPTION: `Every project here is real, running software you can open and try 
 
 ## `/work/field-photo-reports` — Field Photo Reports & Quality Tracking
 
-*Rewritten 2026-09-28 (#13) for the new build at `realstone-field-ops.vercel.app`. The v1 copy (admin/installer switcher, `rs-field-ops.netlify.app`) described a build that no longer runs; it is in git history. Terms follow the app's own landing page: Visit, Report, Issue, Live photo, Office staff, Installer. The client stays unnamed here, as on the voice receptionist page; its logo stays in the poster because the poster is an honest capture. "3 to 5 days" is the shop's documented starting point, not a result. No result is stated as measured, because none is.*
+*Rewritten 2026-09-28 (#13) for the new build at `realstone-field-ops.vercel.app`. The v1 copy (admin/installer switcher, `rs-field-ops.netlify.app`) described a build that no longer runs; it is in git history. Terms follow the app's own landing page: Visit, Report, Issue, Live photo, Office staff, Installer. The client stays unnamed here, as on the voice receptionist page; since 2026-10-05 the link is `field-photo-reports.vercel.app`, a demo that plays the made-up Seagrape Stone Co., so the poster shows no client logo (tekguyz/tekguyz-one#22). "3 to 5 days" is the shop's documented starting point, not a result. No result is stated as measured, because none is.*
 
 TAG: Business Systems
 HEADLINE: One Report from the job site, with the proof printed on every photo.
