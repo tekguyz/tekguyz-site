@@ -168,3 +168,10 @@ Default five: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`
 ### Domain docs
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root, created lazily as terms/decisions resolve. See `docs/agents/domain.md`.
+
+## Status work
+
+- Run the global `status-sync` skill. Then run `bun run check:claude`, `bun run check:design` and `bun run check:media`. `check:media` warns instead of failing, so read its lines. A green exit code is not a pass.
+- If a guard reports doc drift, name it and run the `doc-audit` skill. Do not repair docs during a status sync.
+- Never open `docs/DESIGN.md` (about 39,700 tokens), `docs/COPY.md`, `docs/CANONICAL.md` or `docs/archive/*` for a status sync.
+- For what production serves, use the `vercel` CLI (`vercel ls --project tekguyz-site`, `vercel inspect https://tekguyz.com`). Never cite a doc for hosting or deploy state. Do not suggest the Vercel MCP plugin; it was removed 2026-08-28.

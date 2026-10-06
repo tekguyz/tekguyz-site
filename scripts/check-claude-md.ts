@@ -22,7 +22,7 @@
  * NOT WIRED INTO `prebuild`, ON PURPOSE. `check:design` gates the build because
  * a wrong token value ships a visual defect. A stale sentence in a doc must not
  * be able to block a production deploy. This runs on demand, and from the
- * `status-sync` skill.
+ * status-sync skill (global), per `CLAUDE.md` § Status work.
  *
  * Run: bun run check:claude
  */
