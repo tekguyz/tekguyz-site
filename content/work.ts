@@ -125,18 +125,19 @@ export const work: WorkEntry[] = [
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
     headline: 'One Report from the job site, with the proof printed on every photo.',
-    // The v2 build (#13). The v1 origin, `rs-field-ops.netlify.app`, 404s. The
-    // bare origin is the landing page, and only its two buttons sign a visitor
-    // in — DEMO-STANDARD's "a link opens the landing page" rule.
-    url: 'https://realstone-field-ops.vercel.app',
-    // 1440x900, cropped from the app's own `showcase/office-visit-desktop-light.png`
-    // (1440x944, bottom 44px dropped). The client's logo and the demo "Guest"
-    // label are in it on purpose: it is an honest capture, and demo mode is by
+    // The public demo deploy (tekguyz/realstone-field-ops#64): it plays the
+    // made-up Seagrape Stone Co., never the real shop. The bare origin is the
+    // landing page, and only its two buttons sign a visitor in —
+    // DEMO-STANDARD's "a link opens the landing page" rule.
+    url: 'https://field-photo-reports.vercel.app',
+    // 1440x900, the app's own `showcase/visit-desktop-light.png`, taken from
+    // the Seagrape demo with `tools/capture` on 2026-10-05. The demo "Guest"
+    // label is in it on purpose: it is an honest capture, and demo mode is by
     // design.
     poster: '/media/field-reports-thumb.webp',
     // The home hero (#20). `field-reports-hero.webp` is 1440x810, the top of the
     // same office Visit view, cropped from the first frame of the loop
-    // `tools/capture` made on 2026-10-02 (the loop scrolls that page). The phone
+    // `tools/capture` made on 2026-10-05 (the loop scrolls that page). The phone
     // is `installer-visits-phone-light.png` from the app's `showcase/`, cropped
     // to 780x1250. Real captures, never restyled.
     heroPoster: '/media/field-reports-hero.webp',

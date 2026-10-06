@@ -45,8 +45,11 @@ to the user as current state. Assert nothing you have not just measured.
   a tool name "StoneApp" in its text). The owner decides: retake with the name
   hidden, or allow the name the way the Field Photo Reports poster allows the
   logo. Measured 2026-10-01.
-- ⬜ **The Field Photo Reports poster shows the client's logo and "StoneApp".**
-  Left as captured, as the file it replaced did. 2026-10-01.
+- ✅ **The Field Photo Reports poster no longer shows the client's logo.** Fixed
+  2026-10-05 (tekguyz/tekguyz-one#22): the thumb, hero, phone and loop are
+  retaken from the made-up-name demo, `field-photo-reports.vercel.app`
+  (Seagrape Stone Co.). "StoneApp" stays: it is the trade's job software, not
+  the client's name.
 - ⬜ **`meetup-thumb.webp` shows meetups dated Oct 1 to 4**, so it reads stale
   within days. The capture set's map and meetup pictures are phone-shaped and
   would crop to a fragment in a 16:10 slot. Fix: seed the demo with relative
