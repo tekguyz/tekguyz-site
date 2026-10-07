@@ -95,31 +95,21 @@ export function HomeHero({
             <SequenceDots className="mb-6" />
 
             <SequenceItem role="headline">
-              {/* A LOCAL CLAMP, NOT `--text-hero`, and the token is deliberately
-                  left alone: `page-hero` sets every other route's h1 from it, and
-                  the constraint TOKENS.md attaches to the 72px ceiling — three
-                  lines maximum on desktop with the CTA row inside the first
-                  viewport — is a HOME constraint being paid for by six routes
-                  that do not have a bleeding media panel next to their headline.
-                  Raising it here only is the honest scope.
-
-                  44 → 76px, against the token's 40 → 72. It is affordable
-                  because the copy got shorter, not because the constraint moved:
-                  43 characters at 76px wraps to 3 lines in the 564px text column
-                  (the old 51-character line needed 4 at 72px), and the subhead
-                  below dropped a sentence. Measured at 1280x720 after the change
-                  — see DESIGN.md §4.18. If this copy ever grows, re-measure
-                  against the three-line rule before assuming the ceiling holds.
-
-                  0.92 leading and -0.05em tracking, from 0.95 / -0.045em. The
-                  block reads as one mass rather than three stacked lines, which
-                  is where most of the added confidence actually comes from —
-                  more than the 4px. */}
+              {/* A LOCAL CLAMP, NOT `--text-hero`; the token stays for the other
+                  routes. Four short lines, one phrase per line: "Messy
+                  paperwork." is the widest and must not wrap. Measured at
+                  1280x720: 70px is the largest size that holds it on one line in
+                  the 588px column, so the clamp tops out at 68px. Four lines
+                  keep the CTA row inside the first viewport (TOKENS.md hero
+                  constraint). If the copy changes, re-measure both. */}
               <h1
-                className="text-[clamp(2.75rem,6.6vw,4.75rem)] min-[1024px]:text-[clamp(2.75rem,calc(6vw-2px),4.75rem)] leading-[0.92] font-bold tracking-[-0.05em]"
+                className="text-[clamp(2.25rem,5.2vw,4.25rem)] leading-[0.92] font-bold tracking-[-0.05em]"
                 style={{ textWrap: 'pretty' }}
               >
-                We build the systems your business runs on.
+                <span className="block">Missed calls.</span>
+                <span className="block">Messy paperwork.</span>
+                <span className="block">Too many tools.</span>
+                <span className="block">We fix it.</span>
               </h1>
             </SequenceItem>
 
@@ -135,8 +125,7 @@ export function HomeHero({
                 className="text-secondary mt-8 max-w-[46ch] text-[length:var(--text-body)]"
                 style={{ textWrap: 'pretty' }}
               >
-                Most businesses don&rsquo;t need more software. They need the right system, built
-                correctly.
+                Tell us which one costs you the most. We reply within one business day.
               </p>
             </SequenceItem>
 
@@ -159,9 +148,9 @@ export function HomeHero({
                   stay inside the first viewport. The hero was underweighted in
                   its SPACING, not its button. */}
               <div data-primary-cta className="mt-12 flex flex-wrap gap-3 md:mt-16">
-                <ButtonLink href="/work">See Our Work</ButtonLink>
-                <ButtonLink href="/contact" variant="secondary" size="nav">
-                  Let&rsquo;s Talk
+                <ButtonLink href="/contact">Let&rsquo;s Talk</ButtonLink>
+                <ButtonLink href="/work" variant="secondary" size="nav">
+                  See Our Work
                 </ButtonLink>
               </div>
               {/* No status line here. COPY.md's hero spec attaches it to the

@@ -83,10 +83,12 @@ Copyright: © [Year] TEKGUYZ. Built by TEKGUYZ.
 
 ## Hero
 
-HEADLINE: We build tech that actually works for your business.
-SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
-CTA PRIMARY: See Our Work → /work
-CTA SECONDARY: Let's Talk → /contact
+HEADLINE (four lines, one phrase each): Missed calls. / Messy paperwork. / Too many tools. / We fix it.
+SUBHEAD: Tell us which one costs you the most. We reply within one business day.
+CTA PRIMARY: Let's Talk → /contact
+CTA SECONDARY: See Our Work → /work
+
+*(Changed 2026-10-06, #40. The founder picked this headline from three options. The old headline, "We build the systems your business runs on.", described TEKGUYZ and not the owner's problem; the playbook marks it the old message. The buttons swapped because the site's one job is that an owner makes contact. "We reply within one business day" is the promise already on `/contact`.)*
 MEDIA: `field-reports-hero.webp` (1040×585, 16:9) with a phone capture and a 4.5 s loop over it. Live-status chip attached, for Field Photo Reports. Changed 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
 
 ## The fold — build board caption
