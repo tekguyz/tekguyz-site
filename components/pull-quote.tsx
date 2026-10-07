@@ -3,13 +3,15 @@ import { cn } from '@/lib/utils';
 
 /**
  * Geist 600, 2px left border in that build's accent, 24px left padding,
- * max-width 22ch, no quotation marks — the copy is a stated outcome, not
- * dialogue. (The testimonial is the opposite case: someone else's words, so
- * that one DOES carry real quotation marks.)
+ * no quotation marks — the copy is a stated outcome, not dialogue. (The
+ * testimonial is the opposite case: someone else's words, so that one DOES
+ * carry real quotation marks.)
  *
- * The export runs two sizes: `display` on canvas contexts (work index, detail
- * pages) and a slightly tighter `band` size on the home ink band, where the
- * quote sits in a narrower column.
+ * Two sizes: `display` on canvas contexts (work index, detail pages) and a
+ * larger `band` size on the home ink band, where the quote sits in a narrower
+ * column. `display` moved from `--text-display` (56px, 22ch) to `--text-subhead`
+ * (36px, 30ch) on 2026-10-07: a 95-character quote wrapped to 6-7 lines and
+ * was 353-412px tall, about 40% of each /work row.
  *
  * The only place accent touches anything larger than a dot or tag.
  */
@@ -28,10 +30,10 @@ export function PullQuote({
   return (
     <blockquote
       className={cn(
-        'max-w-[22ch] pl-6 font-semibold tracking-[-0.03em]',
+        'pl-6 font-semibold tracking-[-0.03em]',
         size === 'display'
-          ? 'text-[length:var(--text-display)] leading-[1.05]'
-          : 'text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08]',
+          ? 'max-w-[30ch] text-[length:var(--text-subhead)] leading-[1.15]'
+          : 'max-w-[22ch] text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08]',
         className,
       )}
       style={{

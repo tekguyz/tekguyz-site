@@ -187,7 +187,7 @@ export const work: WorkEntry[] = [
     headline: 'Get the notes, the takeaways, and the action items without sending a bot to the call.',
     url: 'https://squid-ink.vercel.app',
     poster: '/media/squid-ink.webp',
-    alt: 'AI meeting note showing a written summary, takeaways and action items with timestamp citations, and the transcript with each speaker separated alongside',
+    alt: 'AI Meeting Notes, close up: the reading lenses (Neutral Analyst, Sales Coach, Investor), quick actions, and the title of a sample meeting note',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     challenge:
@@ -220,7 +220,7 @@ export const work: WorkEntry[] = [
     // **Check it without `curl -L`** — following a redirect hides where it went.
     url: 'https://tekguyz-crm.vercel.app/',
     poster: '/media/tekguyz-crm.webp',
-    alt: 'Lead and pipeline CRM Today view: tasks due, leads past their follow-up date, high-value and starred leads, each with a coloured stage badge and a dollar value',
+    alt: 'Lead and pipeline CRM Today view, close up: the Tasks Due list with the first two tasks and how many days overdue each one is',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     challenge:
