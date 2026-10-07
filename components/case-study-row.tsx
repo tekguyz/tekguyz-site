@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ViewTransition } from 'react';
-import { Frame, FrameMeta, BuildNarrative } from '@/components/live-frame';
+import { Frame, FrameMeta } from '@/components/live-frame';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
 import type { CaseStudy } from '@/content/work';
@@ -15,10 +15,10 @@ import type { StatusResult } from '@/lib/status';
  *
  * 80px vertical padding, hairline between rows, `align-items:start`.
  *
- * The media column carries frame -> status + demo link -> the "Try it" note ->
- * "How it's built". That last block belongs HERE as well as on the standalone
- * detail pages: the index shows the identical full-length content and had the
- * identical trailing-empty-space problem without it.
+ * The media column carries frame -> status + demo link -> the "Try it" note.
+ * "Try it" stays: trying the live demo is the pitch. "How it's built" lives on
+ * the detail page only (founder, 2026-10-07): it repeated it word for word, and
+ * with it the media column ran 70-123px taller than the text column at 1259px.
  *
  * Text and media as one unit — one idea, not two — so the class
  * sits on the row, never on the halves.
@@ -86,7 +86,6 @@ export function CaseStudyRow({
       </ViewTransition>
       <FrameMeta status={status} url={entry.url} />
       <p className="mt-5 text-[0.875rem] leading-[1.55] text-secondary">{entry.tryIt}</p>
-      <BuildNarrative>{entry.howItsBuilt}</BuildNarrative>
     </div>
   );
 
