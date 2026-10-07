@@ -217,13 +217,15 @@ export const work: WorkEntry[] = [
     // **Check it without `curl -L`** — following a redirect hides where it went.
     url: 'https://tekguyz-crm.vercel.app/',
     poster: '/media/tekguyz-crm.webp',
-    alt: 'Lead and pipeline CRM reporting view showing open pipeline by stage, closed leads by outcome, and a win-rate figure',
+    alt: 'Lead and pipeline CRM Today view: tasks due, leads past their follow-up date, high-value and starred leads, each with a coloured stage badge and a dollar value',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     challenge:
       'Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody’s head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
-    // BOTH DIRECTIONS ARE NAMED. The poster is the Reports view, which counts
-    // the outbound half as well as the inbound form.
+    // BOTH DIRECTIONS ARE NAMED, in the copy below. The poster is the Today view
+    // (swapped from the Reports view on 2026-10-06, after the Today and
+    // Pipeline redesign, tekguyz-crm#47), so it no longer proves the outbound
+    // half by itself; the words carry that.
     //
     // Outbound is stated as it really works since 2026-09-30: researched leads
     // arrive as a file and are imported by hand. NEVER write "automatic" here,
