@@ -130,10 +130,10 @@ export const work: WorkEntry[] = [
     // landing page, and only its two buttons sign a visitor in —
     // DEMO-STANDARD's "a link opens the landing page" rule.
     url: 'https://field-photo-reports.vercel.app',
-    // 1440x900, the app's own `showcase/visit-desktop-light.png`, taken from
-    // the Seagrape demo with `tools/capture` on 2026-10-05. The demo "Guest"
-    // label is in it on purpose: it is an honest capture, and demo mode is by
-    // design.
+    // 1080x675, the top of the app's own `showcase/visit-feed-light.png` (cut at
+    // y=108), taken from the Seagrape demo with `tools/capture` on 2026-10-05.
+    // The feed picture shows the app in its phone layout, so it fills a 16:10
+    // frame; the desktop picture left wide gray sides. Swapped 2026-10-06.
     poster: '/media/field-reports-thumb.webp',
     // The home hero (#20). `field-reports-hero.webp` is 1440x810, the top of the
     // same office Visit view, cropped from the first frame of the loop
@@ -151,7 +151,7 @@ export const work: WorkEntry[] = [
         alt: 'Field Photo Reports Installer app on a phone: today’s Visit, an upcoming Visit, and past Visits with their state',
       },
     },
-    alt: 'Field Photo Reports office view of one Visit: a stamped Live photo, an open Issue flagged by the Installer, and the Mark Reviewed button',
+    alt: 'Field Photo Reports office view of one Visit: the job, customer, Installer and address, a Submitted stamp, and a Report flagged No Before photo',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     // Rewritten 2026-09-28, in sync with COPY.md. The client stays unnamed, as
@@ -259,12 +259,12 @@ export const work: WorkEntry[] = [
     // nowhere else on the site — `content/work.test.ts` fails if it leaks into
     // any other field.
     url: 'https://meet4weed.vercel.app',
-    // 1440x900, from the app's own `showcase/sesh-desktop-light.png`, taken in
-    // the demo: every member and meetup in it is invented. Its brand name shows
-    // in the app's own header, as the client's logo does in the Field Photo
-    // Reports poster: an honest capture, not copy.
+    // 1080x675, cut from the app's own `showcase/list-feed-light.png` (at y=270),
+    // taken in the demo: every member and meetup in it is invented. The app is
+    // one phone-width column, so its desktop picture left wide empty sides; the
+    // feed picture fills the frame. Swapped 2026-10-06.
     poster: '/media/meetup-thumb.webp',
-    alt: 'Private Meetup App list view: category filters, a search box, and a meetup card with its time, neighborhood and spots left, and no exact address shown',
+    alt: 'Private Meetup App list view: category filters, a search box, a List and Map switch, and the first meetup card with its date and time',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     // Written 2026-09-29 (#13 pass 2), in sync with COPY.md, from the app's
