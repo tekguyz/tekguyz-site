@@ -127,7 +127,7 @@ export function HomeHero({
                   is where most of the added confidence actually comes from —
                   more than the 4px. */}
               <h1
-                className="text-[clamp(2.75rem,6.6vw,4.75rem)] leading-[0.92] font-bold tracking-[-0.05em]"
+                className="text-[clamp(2.75rem,6.6vw,4.75rem)] min-[1024px]:text-[clamp(2.75rem,calc(6vw-2px),4.75rem)] leading-[0.92] font-bold tracking-[-0.05em]"
                 style={{ textWrap: 'pretty' }}
               >
                 We build the systems your business runs on.

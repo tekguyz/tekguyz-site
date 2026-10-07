@@ -193,7 +193,7 @@ split.
 
 | Where | Ceiling | Leading | Tracking | Source |
 | --- | --- | --- | --- | --- |
-| Home `h1` | **76px** — a local `clamp(2.75rem, 6.6vw, 4.75rem)`, not the token | 0.92 | −0.05em | `components/home-hero.tsx` |
+| Home `h1` | **76px** — a local `clamp(2.75rem, 6.6vw, 4.75rem)`, not the token. From 1024px up it is `clamp(2.75rem, calc(6vw - 2px), 4.75rem)`: measured 2026-10-06, the 6.6vw ramp wrapped to four lines at 1024–1200px, past the three-line rule | 0.92 | −0.05em | `components/home-hero.tsx` |
 | The six `page-hero` routes | **72px** — `--text-hero` | 0.95 | −0.045em | `components/page-hero.tsx:40` |
 
 ~~72px, because the first correction to 76px wrapped to 4 lines, not 3.~~ **That
