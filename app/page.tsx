@@ -152,7 +152,7 @@ function BandRow({
     >
       <SolutionTag solution={entry.solution} label={entry.tag} onInk />
       <h3
-        className="text-fg mt-6 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+        className="text-fg mt-4 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
         style={{ textWrap: 'pretty' }}
       >
         {entry.headline}
