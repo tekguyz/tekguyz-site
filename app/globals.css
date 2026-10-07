@@ -554,87 +554,46 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Home hero media panel — a surface-filled frame that bleeds off the right
-   viewport edge. Values are the design export's, literally.
+   Home hero media — a plain plate at every width. No panel, no bleed.
+
+   It was a surface-filled panel that ran off the right viewport edge (and 10vw
+   past it). Measured 2026-10-06 on the live site: that hid 13% to 18% of the
+   picture at every desktop width and cut "You (Guest)" mid-word, and the panel's
+   gray sat on the picture's own near-identical gray margin, which read as a
+   strange border and padding. Under 1024px it had already been removed for the
+   same reasons (DESIGN.md §4.9: a plate has zero padding), so desktop now uses
+   the same rule: `Frame` carries the 12px radius and 1px hairline, and the
+   status block sits 12px beneath it.
 --------------------------------------------------------------------------- */
 .tg-hero-frame {
-  /* 1216px is the container's inner width (1280 - 2 x 32 padding). The panel
-     runs to the viewport edge and then a further 10vw past it. */
-  margin-right: calc(-1 * max(0px, (100vw - 1216px) / 2) - 10vw);
-  background: var(--tg-surface);
-  border: 1px solid var(--tg-border);
-  border-right: none;
-  border-radius: 16px 0 0 16px;
-  padding: 32px 0 32px 32px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
 }
 
 .tg-hero-poster,
 .tg-hero-poster .tg-hero-img {
-  border-radius: 12px 0 0 12px;
-}
-.tg-hero-poster .tg-hero-img {
-  border-right: none;
+  border-radius: 12px;
 }
 
-/* Under 1024px there is NO PANEL — not a narrower one.
+/* Under 1024px the media stacks under the text.
 
-   The bleed IS the panel's argument, and a 327px column cannot bleed. What this
-   block used to do was keep the surface, the border and the radius and shrink
-   the padding to 24px, which is the exact thing DESIGN.md §4.9 forbids: a panel
-   ported to card scale, where the mat becomes most of what you see. Measured at
-   375px before removal — panel 327x346 wrapping a 278x156 poster, 33.2% of the
-   box empty `--tg-surface`, the poster only 45% of the panel's height.
-
-   So the panel is desktop-only and the media below 1024px is just the media:
-   `Frame` already carries the plate treatment §4.9 specifies everywhere else —
-   12px radius, 1px hairline, zero padding — so removing the wrapper's own
-   surface leaves a correct component rather than a bare image. The poster gains
-   49px of width at 375px (+38% area) purely from deleting the mat.
-
-   `gap` drops 24 -> 12 to match §4.9's `FrameMeta` beat: 12px reads as
-   belonging to the frame above, 18px+ reads as the next block starting. Inside
-   the desktop panel 24px is right, because the panel's own padding is what
-   supplies the containment; with no panel, 24px orphans the status line.
-
-   `margin-top` stays 56px and is now the ONLY declaration behind the 80px
-   text-to-media gap (24 grid + 56). The `gap-y-14` that used to sit on the grid
-   never applied — `.tg-grid`'s `gap` is unlayered and beats a layered
-   `row-gap`, the same silent drop as the case-study rows' `gap-y-12`. */
+   `margin-top` is the ONLY declaration behind the 80px text-to-media gap
+   (24 grid + 56). The `gap-y-14` that used to sit on the grid never applied —
+   `.tg-grid`'s `gap` is unlayered and beats a layered `row-gap`, the same
+   silent drop as the case-study rows' `gap-y-12`. */
 @media (max-width: 1023px) {
   .tg-hero-frame {
-    margin-right: 0;
     margin-top: 56px;
-    padding: 0;
-    background: none;
-    border: none;
-    border-radius: 0;
-    gap: 12px;
-  }
-  .tg-hero-poster,
-  .tg-hero-poster .tg-hero-img {
-    border-radius: 12px;
-  }
-  .tg-hero-poster .tg-hero-img {
-    border-right: 1px solid var(--tg-border);
   }
 }
 
-/* The phone capture that overlaps the hero poster. A flat ring in the colour of
-   whatever is behind the poster cuts it out of the desktop picture without a
-   shadow. Behind the poster that is the panel's surface on desktop, and the
-   page itself below 1024px, where there is no panel. */
+/* The phone capture that overlaps the hero poster. A flat ring in the page
+   colour cuts it out of the desktop picture without a shadow. */
 .tg-hero-phone {
   border-color: var(--tg-border);
   background: var(--tg-surface);
-  outline: 4px solid var(--tg-surface);
-}
-@media (max-width: 1023px) {
-  .tg-hero-phone {
-    outline-color: var(--tg-bg);
-  }
+  outline: 4px solid var(--tg-bg);
 }
 
 /* ---------------------------------------------------------------------------

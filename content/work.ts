@@ -135,9 +135,12 @@ export const work: WorkEntry[] = [
     // The feed picture shows the app in its phone layout, so it fills a 16:10
     // frame; the desktop picture left wide gray sides. Swapped 2026-10-06.
     poster: '/media/field-reports-thumb.webp',
-    // The home hero (#20). `field-reports-hero.webp` is 1440x810, the top of the
+    // The home hero (#20). `field-reports-hero.webp` is 1040x585, the top of the
     // same office Visit view, cropped from the first frame of the loop
-    // `tools/capture` made on 2026-10-05 (the loop scrolls that page). The phone
+    // `tools/capture` made on 2026-10-05 (the loop scrolls that page). On
+    // 2026-10-06 it was cut tight to the app (x=196, 1040 wide) so the app's own
+    // gray side margin is gone and its text reads about 40% larger; the loop
+    // files got the same cut so the poster and the video still match. The phone
     // is `installer-visits-phone-light.png` from the app's `showcase/`, cropped
     // to 780x1250. Real captures, never restyled.
     heroPoster: '/media/field-reports-hero.webp',

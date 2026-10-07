@@ -87,7 +87,7 @@ HEADLINE: We build tech that actually works for your business.
 SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
 CTA PRIMARY: See Our Work → /work
 CTA SECONDARY: Let's Talk → /contact
-MEDIA: `field-reports-hero.webp` (1440×810, 16:9) with a phone capture and a 4.5 s loop over it. Live-status chip attached, for Field Photo Reports. Changed 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
+MEDIA: `field-reports-hero.webp` (1040×585, 16:9) with a phone capture and a 4.5 s loop over it. Live-status chip attached, for Field Photo Reports. Changed 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
 
 ## The fold — build board caption
 
