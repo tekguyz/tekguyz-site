@@ -25,8 +25,9 @@ import { cn } from '@/lib/utils';
  * page while the image decodes. Inside `.ink-band` the same token already
  * resolves to #1A1A1C, so no branch is needed.
  *
- * The hero's `tg-hero-frame` is a different thing on purpose: a surface panel
- * with 32px padding that bleeds off the viewport edge. Don't port it down.
+ * The hero's `tg-hero-frame` used to be a surface panel with 32px padding that
+ * bled off the viewport edge. Since 2026-10-06 it is a plain plate like this
+ * one (see DESIGN.md §4.9).
  *
  * This is a real `aspect-ratio` property, not a padding-top percentage hack.
  *

@@ -110,7 +110,7 @@ The current site is a *correct* implementation of the brand tokens and still rea
 | 1 | Hero headline 46px | **Hero headline dramatically larger** — see §2 for the corrected scale. Body stays ~17px. |
 | 2 | All-white page, dark footer only | **A full-bleed ink section mid-page.** Featured Work sits on `#111111`, edge to edge. The page reads white → ink → white → ink footer. Completely different scroll rhythm. |
 | 3 | Four identical solution cards in a row | **Four full-width rows**, hairline-separated, each with a large display-size title. The identical-card-grid is a named anti-pattern; stop using it. |
-| 4 | Symmetric centered container | **Asymmetric 12-column grid.** Hero text spans cols 1–6; media spans 7–12 and **bleeds past the right viewport edge.** Nothing is centered except the closing CTA. |
+| 4 | Symmetric centered container | **Asymmetric 12-column grid.** Hero text spans cols 1–6; media spans 7–12 (it bled past the right viewport edge until 2026-10-06; see §4.9). Nothing is centered except the closing CTA. |
 | 5 | Decorative "LIVE" badge | **Measured status line** with a real timestamp in tabular numerals. See §5. |
 
 **Also forbidden, explicitly:** do not consult, fetch, or imitate the current tekguyz.com layout. It's the thing being replaced.
@@ -244,7 +244,7 @@ Hierarchy comes from weight and size, never from switching families. All numeral
 the 768–1023px band, tabulated in **§8** — read both before placing anything, because
 a 12-column span left to run on an 8-track grid silently creates implicit tracks
 rather than erroring:
-- Hero: text cols 1–6, media cols 7–12 **bleeding past the right viewport edge** (media container extends beyond the 1280px cap). Column spans are unchanged by the v2.2 type-scale fix — see §2 for why the fix was in font-size, not column width.
+- Hero: text cols 1–6, media cols 7–12, inside the container (it bled past the right viewport edge until 2026-10-06; see §4.9). Column spans are unchanged by the v2.2 type-scale fix — see §2 for why the fix was in font-size, not column width.
 - Solution rows: accent dot + title cols 1–5, hook + arrow cols 7–12. The gap at col 6 is intentional.
 - Featured Work rows alternate: text 1–5 / media 7–12, then media 1–6 / text 8–12. Not mirrored — offset. **The alternation is `grid-column` only. DOM order is reading order — text, then media — on every row, and both halves are pinned to `grid-row: 1`.** The pin is not decoration: with sparse auto-flow, an item whose column-start sits *behind* the placement cursor is pushed to the next row, so the odd row's left-hand media would drop below its text if the DOM stayed in reading order without it. That is why these two components alternated their source order for months, and **that alternation is what put two posters back to back below 768px** — one column, so source order is all that survives of the layout: the row ended on its image and the next opened with the following one. On `/work` it was worse than cosmetic, because the media column carries the status line and "How it's built": the odd rows opened with a screenshot and a build note for a project the visitor had not been introduced to yet. Pin the row, place the columns, leave the DOM alone.
 - Detail pages, and `/work` index case-study rows: content cols 1–8, sticky meta rail cols 10–12. The media column (image, status-line, caption, `build-narrative`) should read as intentionally composed against the text column, not trail off into empty space — see `build-narrative` in §4.
@@ -840,6 +840,8 @@ beat: inside the desktop panel 24px is right because the panel's own padding
 supplies the containment; with no panel, 24px orphans the status line. Desktop is
 untouched and was re-measured — 32px padding, 136px of bleed past a 1440px
 viewport, poster 819 × 461.
+
+**[decided 2026-10-06] The panel and the bleed are removed at every width.** Measured on the live site that day: the bleed hid 13% to 18% of the hero picture at 1024 to 1920px wide and cut "You (Guest)" mid-word at 1280, 1440 and 1920; and the panel's gray (`rgb(245,245,245)`) sat on the capture's own near-identical gray margin (`rgb(235,236,233)`, 32% of the picture's width), which the owner read as a strange border and padding. `.tg-hero-frame` is now a plain flex column with a 12px gap, and the poster is a plate (12px radius, 1px hairline, zero padding) at every width, the same rule as below 1024px. The desktop capture was also cut tight to the app (1040 × 585), so its text reads about 40% larger. The phone overlay sits 12px outside the picture's left edge and 16px below it at every width, with a 4px ring in the page colour. This replaces the 2026-08-13 "panel is now desktop-only" decision directly above, and the 2026-08-12 note that called the bleed "specified, deliberate".
 
 **[shipped 2026-08-13] Art direction below 1024px — `posterMobile`.** The hero
 capture is a four-panel dashboard, and at a ~330px column every panel is an
@@ -2034,9 +2036,9 @@ licensed the other three.
 | Breakpoint | Changes |
 | --- | --- |
 | < 768px | Hamburger drawer; hero at its clamp floor (40px); media stacks below text, no bleed; solution rows stack (dot+title, then hook); case studies stack; `LiveFrame` = poster + link always; **two rows stack deliberately at `≤ 766px` — see below** |
-| 768–1024px | Nav horizontal; asymmetric grid collapses to 8 columns — **spans below**; media bleed reduced |
-| 1024–1440px | Full asymmetric grid, all bleeds active |
-| > 1440px | Container caps at 1280px; the right-edge hero bleed extends further |
+| 768–1024px | Nav horizontal; asymmetric grid collapses to 8 columns — **spans below**; no media bleed |
+| 1024–1440px | Full asymmetric grid, no hero bleed |
+| > 1440px | Container caps at 1280px; the hero media stays inside the container |
 
 ### The 8-column spans, 768–1023px
 

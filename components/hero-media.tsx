@@ -19,8 +19,9 @@ import type { HeroMedia as HeroMediaData } from '@/content/work';
  *
  * The phone is a plain picture with a hairline, never a drawn bezel — "no fake
  * chrome" (DESIGN.md §4.9). It is separated from the desktop picture by a flat
- * ring of the surface colour, not a shadow: elevation on this site is flat,
- * with one scoped exception that is not the hero.
+ * ring of the page colour, not a shadow: elevation on this site is flat, with
+ * one scoped exception that is not the hero. It sits 12px outside the picture's
+ * left edge and 16px below it, at every width.
  */
 export function HeroMedia({
   poster,
@@ -45,7 +46,7 @@ export function HeroMedia({
       />
       {media?.video ? <HeroVideo mp4={media.video.mp4} webm={media.video.webm} /> : null}
       {media?.phone ? (
-        <div className="tg-hero-phone absolute bottom-[-16px] left-[-12px] w-[27%] overflow-hidden rounded-[14px] border lg:left-[-28px] lg:w-[20%]">
+        <div className="tg-hero-phone absolute bottom-[-16px] left-[-12px] w-[27%] overflow-hidden rounded-[14px] border lg:w-[20%]">
           <Image
             src={media.phone.src}
             alt={media.phone.alt}

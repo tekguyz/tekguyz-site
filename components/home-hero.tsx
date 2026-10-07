@@ -10,31 +10,20 @@ import type { StatusResult } from '@/lib/status';
 /**
  * The asymmetric hero.
  *
- * Text spans cols 1-7. The media column is a SURFACE-FILLED PANEL — not a bare
- * image — that bleeds off the right viewport edge:
+ * Text spans cols 1-7. The media column is a plain plate at EVERY width: a 16:9
+ * poster (its own ratio, distinct from the 16:10 used everywhere else) with its
+ * own 12px radius and 1px hairline, the status line and the demo link 12px
+ * beneath it, and no panel behind it.
  *
- *   margin-right: calc(-1 * max(0px, (100vw - 1216px) / 2) - 10vw)
- *   background surface · 1px hairline with NO right border
- *   border-radius 16px 0 0 16px · padding 32px 0 32px 32px
- *
- * so the panel visibly runs off the page rather than sitting politely inset.
- * Inside it: a 16:9 poster (its own ratio, distinct from the 16:10 used
- * everywhere else) that also drops its right border and right radius, then the
- * status line and the demo link.
- *
- * The earlier "empty space around the hero image" complaint was a ratio
- * mismatch inside the image container, not this panel — `aspect-ratio:16/9`
- * with `object-fit:cover` is what fixes it, and the panel is real design.
- *
- * BELOW 1024px THERE IS NO PANEL. The bleed is the panel's entire argument, and
- * the bleed cannot exist in a 327px column — so what survived the old ≤1023px
- * branch was a surface-filled card with a 24px mat, which is precisely the
- * "plate, not panel" failure DESIGN.md §4.9 forbids at card scale. Measured
- * before removal: 33.2% of the panel box at 375px was empty `--tg-surface`,
- * wrapping a 278px poster. Stripped, the poster is the media — its own 12px
- * radius and hairline, the status block 12px beneath it — and it gains 49px of
- * width at 375px (+38% area) for free. The panel is desktop-only now, which is
- * the only place it was ever describing something true.
+ * [changed 2026-10-06] It was a surface-filled panel that bled off the right
+ * viewport edge (`margin-right` of the container gutter plus 10vw, 16px radius,
+ * 32px padding). Measured on the live site, that hid 13% to 18% of the picture
+ * at 1024 to 1920px wide and cut "You (Guest)" mid-word, and the panel gray sat
+ * on the picture's own near-identical gray margin, which the owner read as a
+ * strange border and padding. Below 1024px the panel had already been removed
+ * for the reasons in DESIGN.md §4.9 (a plate has zero padding), so desktop now
+ * uses the same rule. The picture itself was also re-cut tight to the app
+ * (1040x585) so its text reads about 40% larger than before.
  *
  * INTERNAL RHYTHM — 24 · 32 · 48/64 · 80, and the numbers are the hierarchy.
  * It ran 36 / 32 / 40: a near-linear ramp in which every gap reads the same, so
