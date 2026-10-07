@@ -21,7 +21,9 @@ import type { HeroMedia as HeroMediaData } from '@/content/work';
  * chrome" (DESIGN.md §4.9). It is separated from the desktop picture by a flat
  * ring of the page colour, not a shadow: elevation on this site is flat, with
  * one scoped exception that is not the hero. It sits 12px outside the picture's
- * left edge and 16px below it, at every width.
+ * right edge and 16px below it, at every width. It is in the bottom-right
+ * corner because that is the empty part of the Office view in every frame of
+ * the loop; the bottom-left holds the photo, which the phone must not cover.
  */
 export function HeroMedia({
   poster,
@@ -46,7 +48,7 @@ export function HeroMedia({
       />
       {media?.video ? <HeroVideo mp4={media.video.mp4} webm={media.video.webm} /> : null}
       {media?.phone ? (
-        <div className="tg-hero-phone absolute bottom-[-16px] left-[-12px] w-[27%] overflow-hidden rounded-[14px] border lg:w-[20%]">
+        <div className="tg-hero-phone absolute bottom-[-16px] right-[-12px] w-[22%] overflow-hidden rounded-[14px] border lg:w-[17%]">
           <Image
             src={media.phone.src}
             alt={media.phone.alt}

@@ -140,7 +140,10 @@ export const work: WorkEntry[] = [
     // `tools/capture` made on 2026-10-05 (the loop scrolls that page). On
     // 2026-10-06 it was cut tight to the app (x=196, 1040 wide) so the app's own
     // gray side margin is gone and its text reads about 40% larger; the loop
-    // files got the same cut so the poster and the video still match. The phone
+    // files got the same cut so the poster and the video still match. On
+    // 2026-10-07 the app's showcase was retaken on a wider layout with no gray
+    // sides, so the hero is now the top 1440x810 of the new `visit-desktop`
+    // loop, scaled to 1040 wide, with no side cut. The phone
     // is `installer-visits-phone-light.png` from the app's `showcase/`, cropped
     // to 780x1250. Real captures, never restyled.
     heroPoster: '/media/field-reports-hero.webp',
