@@ -1,0 +1,27 @@
+<!-- @dsCard group="Lists" height=1180 subtitle="The only numerals on the site" -->
+<div id="root"></div>
+<script>
+(function () {
+  var T = window.TEKGUYZ, h = React.createElement, el;
+  function cell(node, caption) { return h('div', {className: 'cell'}, node, h('p', {className: 'cap'}, caption)); }
+  function cap(t) { return h('p', {className: 'cap'}, t); }
+  var steps = [
+  ['01', 'Discovery', 'We start by learning your business: your workflow, your pain points, and what success actually looks like for you. No templates. No assumptions. Most of this step is us asking questions and listening.', 'smart-operations'],
+  ['02', 'Blueprint', 'Before any building starts, we map out exactly what we’re creating and why. You’ll know what you’re getting, what it costs, and how long it takes — in plain language, not a spec document you need someone to translate.', 'ai-voice-agents'],
+  ['03', 'Build', 'You get regular check-ins throughout the build, not radio silence. We work fast, but we don’t cut corners. You’ll see it working before it’s done.', 'business-systems'],
+  ['04', 'Launch & Support', 'We don’t disappear after go-live. We make sure everything works the way it’s supposed to, and we’re here when questions come up — because they will.', 'custom-web-apps']
+];
+el = h('div', {className: 'pv', style: {paddingLeft: 40}}, steps.map(function (s, i) { return h(T.ProcessStep, {key: s[0], numeral: s[0], title: s[1], solution: s[3], last: i === 3}, s[2]); }));
+  ReactDOM.createRoot(document.getElementById('root')).render(el);
+})();
+</script>
+<style>
+  .pv { padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .row.pv, .col.pv { padding: 24px; }
+  .cell { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .cap { font-size: 12px; line-height: 1.55; color: var(--tg-secondary); margin: 0; }
+  .plate { padding: 16px; border-radius: 12px; }
+  .plate.surface { background: var(--tg-surface); }
+</style>
