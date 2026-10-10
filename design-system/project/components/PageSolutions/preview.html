@@ -1,0 +1,32 @@
+<!-- @dsCard group="Compositions" height=1940 subtitle="A page built only from this system" -->
+<div id="root"></div>
+<script>
+(function () {
+  var T = window.TEKGUYZ, h = React.createElement, el;
+  function cell(node, caption) { return h('div', {className: 'cell'}, node, h('p', {className: 'cap'}, caption)); }
+  function cap(t) { return h('p', {className: 'cap'}, t); }
+  var S = ['smart-operations', 'ai-voice-agents', 'business-systems', 'custom-web-apps'];
+el = h('div', null,
+  h(T.Nav, {current: 'Solutions'}),
+  h(T.SignatureStripe),
+  h('div', {style: {maxWidth: 1280, margin: '0 auto', padding: '96px 32px 128px'}},
+    h(T.Eyebrow, {}, 'Solutions'),
+    h('h1', {style: {margin: '16px 0 64px', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', lineHeight: 0.95, fontWeight: 700, letterSpacing: '-0.045em'}}, 'Four Solutions.'),
+    S.map(function (s, i) { return h(T.SolutionRow, {key: s, solution: s, last: i === 3}); })
+  ),
+  h(T.ClosingCta, {}),
+  h(T.Footer, {})
+);
+  ReactDOM.createRoot(document.getElementById('root')).render(el);
+})();
+</script>
+<style>
+  .pv { padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .row.pv, .col.pv { padding: 24px; }
+  .cell { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .cap { font-size: 12px; line-height: 1.55; color: var(--tg-secondary); margin: 0; }
+  .plate { padding: 16px; border-radius: 12px; }
+  .plate.surface { background: var(--tg-surface); }
+</style>

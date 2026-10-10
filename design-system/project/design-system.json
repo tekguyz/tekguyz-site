@@ -1,39 +1,196 @@
 {
   "v": 3,
   "layout": "files",
-  "createdOnFiles": { "v": 1, "at": "2026-09-21T09:00:00Z" },
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-10T05:24:59Z"
+  },
   "title": "TEKGUYZ",
   "namespace": "TEKGUYZ",
-  "libraries": [],
+  "libraries": [
+    {
+      "name": "react",
+      "version": "18"
+    },
+    {
+      "name": "react-dom",
+      "version": "18"
+    }
+  ],
   "sections": {},
-  "groups": ["Logos"],
+  "groups": [
+    "Logos",
+    "Social",
+    "Motion"
+  ],
   "assetGroups": {
     "Logos": {
       "name": "Logos",
       "tile": "l",
-      "order": ["tekguyz-icon.svg", "tekguyz-lockup.svg"],
+      "order": [
+        "icon-universal.svg",
+        "icon-mono-black.svg",
+        "icon-mono-white.svg",
+        "lockup-master.svg",
+        "lockup-universal-ink.svg",
+        "lockup-universal-white.svg",
+        "lockup-mono-black.svg",
+        "lockup-mono-white.svg",
+        "favicon.svg"
+      ],
       "files": {
-        "tekguyz-icon.svg": {
-          "name": "tekguyz-icon.svg",
-          "blob": "c6aed6414bd62c08d3d47353494285c1",
-          "size": 657,
+        "icon-universal.svg": {
+          "name": "icon-universal.svg",
+          "blob": "8aa12e550822df6bf50a9fc18758cd7f",
+          "size": 723,
           "type": "image/svg+xml"
         },
-        "tekguyz-lockup.svg": {
-          "name": "tekguyz-lockup.svg",
-          "blob": "d88b86a81398b1df8afe372a6dc610a6",
-          "size": 877,
+        "icon-mono-black.svg": {
+          "name": "icon-mono-black.svg",
+          "blob": "04a8f5955c5d5da28409c9c857898c85",
+          "size": 734,
           "type": "image/svg+xml"
+        },
+        "icon-mono-white.svg": {
+          "name": "icon-mono-white.svg",
+          "blob": "f1a7c64b47017caaac9d2ff5fc59e72c",
+          "size": 737,
+          "type": "image/svg+xml"
+        },
+        "lockup-master.svg": {
+          "name": "lockup-master.svg",
+          "blob": "3109abd52ea2f861f004a5e36cf5c7c9",
+          "size": 2146,
+          "type": "image/svg+xml"
+        },
+        "lockup-universal-ink.svg": {
+          "name": "lockup-universal-ink.svg",
+          "blob": "7f46ca0f22179a4ce9a2e5ed8070d87a",
+          "size": 2159,
+          "type": "image/svg+xml"
+        },
+        "lockup-universal-white.svg": {
+          "name": "lockup-universal-white.svg",
+          "blob": "840497cb8841b333917c262188c19f77",
+          "size": 2162,
+          "type": "image/svg+xml"
+        },
+        "lockup-mono-black.svg": {
+          "name": "lockup-mono-black.svg",
+          "blob": "991d7a49b661c4c085a364bf46a994c6",
+          "size": 2144,
+          "type": "image/svg+xml"
+        },
+        "lockup-mono-white.svg": {
+          "name": "lockup-mono-white.svg",
+          "blob": "9ced58b5c4dcc5845a639beb4f92ae18",
+          "size": 2138,
+          "type": "image/svg+xml"
+        },
+        "favicon.svg": {
+          "name": "favicon.svg",
+          "blob": "15c086ccd198c5aba2a50d18a67d7c56",
+          "size": 698,
+          "type": "image/svg+xml"
+        }
+      }
+    },
+    "Social": {
+      "name": "Social",
+      "tile": "m",
+      "order": [
+        "avatar-light-1080.png",
+        "avatar-dark-1080.png",
+        "og-image-1200x630.png",
+        "linkedin-cover-2256x382.png",
+        "facebook-cover-1702x630.png",
+        "gbp-cover-2048x1152.png"
+      ],
+      "files": {
+        "avatar-light-1080.png": {
+          "name": "avatar-light-1080.png",
+          "blob": "27c314951966fd6160ced5f44db9a596",
+          "size": 20962,
+          "type": "image/png"
+        },
+        "avatar-dark-1080.png": {
+          "name": "avatar-dark-1080.png",
+          "blob": "8d1b0daf0dd59999a3e3e1c4dc80d186",
+          "size": 21078,
+          "type": "image/png"
+        },
+        "og-image-1200x630.png": {
+          "name": "og-image-1200x630.png",
+          "blob": "d4db26a35824f9fcafee2766ded77b4e",
+          "size": 22546,
+          "type": "image/png"
+        },
+        "linkedin-cover-2256x382.png": {
+          "name": "linkedin-cover-2256x382.png",
+          "blob": "deae510be0c8428b4af7fda6bbd7a86c",
+          "size": 23416,
+          "type": "image/png"
+        },
+        "facebook-cover-1702x630.png": {
+          "name": "facebook-cover-1702x630.png",
+          "blob": "f7bb2effb76b65b16ecae42346826949",
+          "size": 23903,
+          "type": "image/png"
+        },
+        "gbp-cover-2048x1152.png": {
+          "name": "gbp-cover-2048x1152.png",
+          "blob": "e68ef7e69611a91dac8ab6e82207820d",
+          "size": 29293,
+          "type": "image/png"
+        }
+      }
+    },
+    "Motion": {
+      "name": "Motion",
+      "tile": "m",
+      "order": [
+        "tekguyz-logo-loop.gif",
+        "tekguyz-logo-loop-dark.gif",
+        "tekguyz-brand-feed-4x5.mp4",
+        "tekguyz-brand-dark-feed-4x5.mp4"
+      ],
+      "files": {
+        "tekguyz-logo-loop.gif": {
+          "name": "tekguyz-logo-loop.gif",
+          "blob": "034d5a0cf6a26131759fb06d9406b6ac",
+          "size": 129435,
+          "type": "image/gif"
+        },
+        "tekguyz-logo-loop-dark.gif": {
+          "name": "tekguyz-logo-loop-dark.gif",
+          "blob": "f079eeaf957186578e06684220e9d57c",
+          "size": 180178,
+          "type": "image/gif"
+        },
+        "tekguyz-brand-feed-4x5.mp4": {
+          "name": "tekguyz-brand-feed-4x5.mp4",
+          "blob": "b46bb558544bcf13b02b698ddf14e689",
+          "size": 1329737,
+          "type": "video/mp4"
+        },
+        "tekguyz-brand-dark-feed-4x5.mp4": {
+          "name": "tekguyz-brand-dark-feed-4x5.mp4",
+          "blob": "1b5b6b354527199d6d17c409b874b554",
+          "size": 1539515,
+          "type": "video/mp4"
         }
       }
     }
   },
   "blobs": {},
-  "docs": { "readme": "project/README.md", "sections": [] },
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
   "lastChange": {
     "by": "Claude",
-    "at": "2026-09-21T09:00:00Z",
+    "at": "2026-10-10T05:24:59Z",
     "via": "Claude Code",
-    "note": "Extracted from the tekguyz-site repository: tokens from app/globals.css and docs/TOKENS.md, Geist font files, both logo masters, and nine components as static renditions."
+    "note": "Rebuilt from tekguyz-site (globals.css, components) and tekguyz-one (playbook, media): live React component bundle, brand book with voice, solutions, motion, media and platform guides, current logos and social files."
   }
 }

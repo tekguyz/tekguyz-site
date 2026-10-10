@@ -1,39 +1,24 @@
-<!-- @dsCard group="Content" height=280 subtitle="The one place an accent grows past a dot" -->
-<div class="wrap">
-  <blockquote class="quote display">Two systems became one, and nobody reconciles anything by hand any more.</blockquote>
-  <blockquote class="quote band">The phone stopped being the bottleneck.</blockquote>
-</div>
-
+<!-- @dsCard group="Brand" height=300 subtitle="Our own claim, with the build's accent" -->
+<div id="root"></div>
+<script>
+(function () {
+  var T = window.TEKGUYZ, h = React.createElement, el;
+  function cell(node, caption) { return h('div', {className: 'cell'}, node, h('p', {className: 'cap'}, caption)); }
+  function cap(t) { return h('p', {className: 'cap'}, t); }
+  el = h('div', {className: 'pv col', style: {gap: 40}},
+  h(T.PullQuote, {solution: 'smart-operations'}, 'No bot joins the call — and every takeaway links back to the second of the transcript it came from.'),
+  h('div', {className: 'ink-band plate', style: {padding: 32}}, h(T.PullQuote, {solution: 'smart-operations', size: 'band'}, 'No bot joins the call.'))
+);
+  ReactDOM.createRoot(document.getElementById('root')).render(el);
+})();
+</script>
 <style>
-  body {
-    margin: 0;
-    background: var(--tg-bg);
-    color: var(--tg-fg);
-    font-family: Geist, ui-sans-serif, system-ui, sans-serif;
-  }
-  .wrap {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-12, 48px);
-    padding: var(--space-6, 24px);
-  }
-  .quote {
-    margin: 0;
-    max-width: 22ch;
-    padding-left: var(--space-6, 24px);
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    color: var(--tg-fg);
-    text-wrap: pretty;
-  }
-  .display {
-    font-size: clamp(2rem, 4.5vw, 3.5rem);
-    line-height: 1.05;
-    border-left: 2px solid var(--tg-accent-violet);
-  }
-  .band {
-    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
-    line-height: 1.08;
-    border-left: 2px solid var(--tg-accent-amber);
-  }
+  .pv { padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .row.pv, .col.pv { padding: 24px; }
+  .cell { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .cap { font-size: 12px; line-height: 1.55; color: var(--tg-secondary); margin: 0; }
+  .plate { padding: 16px; border-radius: 12px; }
+  .plate.surface { background: var(--tg-surface); }
 </style>

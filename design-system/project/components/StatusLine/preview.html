@@ -1,61 +1,27 @@
-<!-- @dsCard group="Signals" height=200 subtitle="Verified splits; unreachable stays one muted string" -->
-<div class="wrap">
-  <p class="line">
-    <span class="dot live"></span><span class="strong">Live</span><span class="muted"> · checked 4 minutes ago</span>
-  </p>
-  <p class="line">
-    <span class="dot off"></span><span class="muted">Temporarily unreachable · 32 minutes ago</span>
-  </p>
-  <p class="line compact">
-    <span class="dot live"></span><span class="strong">Live</span><span class="muted"> · 4 minutes ago</span>
-  </p>
-  <p class="line compact">
-    <span class="dot off"></span><span class="muted">Temporarily unreachable</span>
-  </p>
-</div>
-
+<!-- @dsCard group="Status" height=385 subtitle="Live is measured, and it says when" -->
+<div id="root"></div>
+<script>
+(function () {
+  var T = window.TEKGUYZ, h = React.createElement, el;
+  function cell(node, caption) { return h('div', {className: 'cell'}, node, h('p', {className: 'cap'}, caption)); }
+  function cap(t) { return h('p', {className: 'cap'}, t); }
+  el = h('div', {className: 'pv col'},
+  cell(h(T.StatusLine, {state: 'live', stamp: '4 minutes ago'}), 'Live'),
+  cell(h(T.StatusLine, {state: 'unreachable', stamp: '32 minutes ago'}), 'Temporarily unreachable'),
+  cell(h('div', {className: 'row', style: {gap: 32}}, h(T.StatusLine, {state: 'live', variant: 'compact', stamp: '4 minutes ago'}), h(T.StatusLine, {state: 'unreachable', variant: 'compact'})), 'Compact · for narrow cards'),
+  h('div', {className: 'ink-band plate'}, h(T.StatusLine, {state: 'live', stamp: '4 minutes ago'})),
+  cap('Times shown are specimens. The site prints the real result of its hourly check.')
+);
+  ReactDOM.createRoot(document.getElementById('root')).render(el);
+})();
+</script>
 <style>
-  body {
-    margin: 0;
-    background: var(--tg-bg);
-    color: var(--tg-fg);
-  }
-  .wrap {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4, 16px);
-    padding: var(--space-6, 24px);
-  }
-  .line {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2, 8px);
-    margin: 0;
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 14px;
-    line-height: 1.55;
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-  }
-  .line.compact { font-size: 12px; }
-  .strong { font-weight: 600; color: var(--tg-fg); }
-  .muted { color: var(--tg-secondary); }
-  .dot {
-    width: 6px;
-    height: 6px;
-    flex: none;
-    border-radius: 9999px;
-  }
-  .dot.live {
-    background: var(--tg-success);
-    animation: tg-pulse 1600ms var(--ease-hover, ease) infinite;
-  }
-  .dot.off { background: var(--tg-muted-soft); }
-  @keyframes tg-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .dot.live { animation: none; }
-  }
+  .pv { padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .row.pv, .col.pv { padding: 24px; }
+  .cell { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .cap { font-size: 12px; line-height: 1.55; color: var(--tg-secondary); margin: 0; }
+  .plate { padding: 16px; border-radius: 12px; }
+  .plate.surface { background: var(--tg-surface); }
 </style>

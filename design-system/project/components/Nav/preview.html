@@ -1,0 +1,21 @@
+<!-- @dsCard group="Page" height=90 subtitle="The mark, the links, one button" -->
+<div id="root"></div>
+<script>
+(function () {
+  var T = window.TEKGUYZ, h = React.createElement, el;
+  function cell(node, caption) { return h('div', {className: 'cell'}, node, h('p', {className: 'cap'}, caption)); }
+  function cap(t) { return h('p', {className: 'cap'}, t); }
+  el = h(T.Nav, {current: 'Solutions'});
+  ReactDOM.createRoot(document.getElementById('root')).render(el);
+})();
+</script>
+<style>
+  .pv { padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .row.pv, .col.pv { padding: 24px; }
+  .cell { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .cap { font-size: 12px; line-height: 1.55; color: var(--tg-secondary); margin: 0; }
+  .plate { padding: 16px; border-radius: 12px; }
+  .plate.surface { background: var(--tg-surface); }
+</style>
