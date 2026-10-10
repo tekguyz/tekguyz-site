@@ -82,7 +82,7 @@ type FormValues = z.infer<typeof schema>;
 
 const field =
   'w-full h-11 px-3 rounded-[4px] border border-border bg-transparent text-[1rem] ' +
-  'outline-none transition-colors duration-[240ms] focus-visible:border-border-strong';
+  'transition-[border-color] duration-[240ms] focus-visible:border-border-strong';
 
 /* A <select>'s popup list is painted by the browser, and Chrome takes its fill
    from the control's own computed background-color. `bg-transparent` therefore
@@ -420,13 +420,13 @@ export function ContactForm() {
               </Field>
 
               {serverError && (
-                <p role="alert" className="text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>
+                <ErrorText>
                   {serverError} Or email us directly at{' '}
                   <a href={`mailto:${site.publicEmail}`} className="tap-24 link-underline">
                     {site.publicEmail}
                   </a>
                   .
-                </p>
+                </ErrorText>
               )}
 
               <div className="mt-2 flex items-center gap-6">
@@ -508,9 +508,30 @@ function Optional() {
 }
 
 function FieldError({ children }: { children?: React.ReactNode }) {
+  return <ErrorText className="mt-2">{children}</ErrorText>;
+}
+
+/* Status is a 6px dot beside the text, and the text stays `fg` — the same
+   pattern as OutcomeBlock. `--tg-error` (#ef4444) is 3.76:1 on white, under the
+   4.5:1 floor for 14px text, so it is only ever the dot. */
+function ErrorText({
+  className = '',
+  children,
+}: {
+  className?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <p role="alert" className="mt-2 text-[0.875rem]" style={{ color: 'var(--tg-error)' }}>
-      {children}
+    <p
+      role="alert"
+      className={`flex items-start gap-2 text-[0.875rem] leading-[1.55] text-fg ${className}`}
+    >
+      <span
+        aria-hidden
+        className="mt-[calc((1.55em-6px)/2)] h-[6px] w-[6px] flex-none rounded-full"
+        style={{ background: 'var(--tg-error)' }}
+      />
+      <span>{children}</span>
     </p>
   );
 }
