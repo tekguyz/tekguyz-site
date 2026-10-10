@@ -165,6 +165,8 @@ Mapping lives in `config/solutions.ts` — never hardcoded per component (the in
 
 Semantic: `success` #10B981 · `warning` #F59E0B · `error` #EF4444.
 
+**Status colour is a 6px dot, never text colour.** `error` #EF4444 is 3.76:1 on white, below the 4.5:1 floor for 14px text. Form errors (`role="alert"`) render a 6px `--tg-error` dot beside the message, and the message itself stays `--tg-fg` — the `OutcomeBlock` pattern. Never set `color: var(--tg-error)` on text.
+
 ---
 
 ## 2. Typography — the biggest single change, recalibrated
@@ -2287,6 +2289,8 @@ target as still failing. `scripts/audit-mobile.ts taps` probes the tier box with
 against, and it is also what makes "no two hit areas overlap" a number.
 
 Inputs 44px tall. Visible keyboard focus rings throughout. Skip-to-content link.
+
+Form fields carry no `outline-none`: the global `:focus-visible` ring (2px `--tg-fg`, 3px offset) applies to them like every other focusable element. The `border-strong` colour change on focus is extra, not the indicator (it is about 1.5:1 on white).
 
 ### Concierge geometry
 
