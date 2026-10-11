@@ -145,23 +145,25 @@ export function HomeHero({
                   (M-15). Tagged on the row, not the two buttons, so the
                   launcher yields to the pair as one conversion moment.
 
-                  SIZE STAYS `default` (15×24), re-justified rather than
-                  inherited. `large` is `closing-cta`'s documented exception and
-                  does not belong here for three reasons, none of them padding:
-                  this ask is a PAIR, and the 14×24 secondary exists to paint
-                  the same height as a 15×24 primary — there is no `large`
-                  secondary to pair with, so bumping one half breaks the
-                  compensation `button.tsx` documents; the hero's ink button
-                  points at /work, so making it the loudest control on the site
-                  would put *browse* above *talk to us* and invert the narrative
-                  the closing band exists to finish; and a taller row pushes
-                  against TOKENS.md's standing hero constraint that the CTA row
-                  stay inside the first viewport. The hero was underweighted in
-                  its SPACING, not its button. */}
+                  [changed 2026-10-11, #40] The ink button is now the ask, not
+                  the browse link: `Start a Free Conversation` -> /contact is
+                  primary and `See Our Work` is the outline. The site has one
+                  job, an owner contacting the founder, so contact leads. The
+                  founder also said the buttons were not engaging enough; the
+                  words now say what happens and that it costs nothing (the
+                  same fact as the trust line on /contact).
+
+                  SIZE STAYS `default` (15×24). `large` is `closing-cta`'s
+                  documented exception. This ask is a PAIR, and the 14×24
+                  secondary exists to paint the same height as a 15×24 primary,
+                  so bumping one half breaks the compensation `button.tsx`
+                  documents. A taller row also pushes against TOKENS.md's
+                  standing hero constraint that the CTA row stay inside the
+                  first viewport. */}
               <div data-primary-cta className="mt-12 flex flex-wrap gap-3 md:mt-16">
-                <ButtonLink href="/work">See Our Work</ButtonLink>
-                <ButtonLink href="/contact" variant="secondary" size="nav">
-                  Let&rsquo;s Talk
+                <ButtonLink href="/contact">Start a Free Conversation</ButtonLink>
+                <ButtonLink href="/work" variant="secondary" size="nav">
+                  See Our Work
                 </ButtonLink>
               </div>
               {/* No status line here. COPY.md's hero spec attaches it to the

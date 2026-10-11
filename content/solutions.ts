@@ -139,14 +139,19 @@ export function getSolution(slug: string): Solution | undefined {
   return solutions.find((s) => s.slug === slug);
 }
 
-/** The Area of Interest options on the contact form (COPY.md step 1). */
+/**
+ * The contact form's step 1 menu (COPY.md step 1). `value` is what is saved and
+ * sent to the CRM and keys `detailsPlaceholder`, so it never changes with the
+ * wording. `label` is only what the visitor reads: plain words for the problem,
+ * not our Solution names (#40).
+ */
 export const interestOptions = [
-  { value: 'Smart Operations', slug: 'smart-operations' },
-  { value: 'AI Voice Agents', slug: 'ai-voice-agents' },
-  { value: 'Business Systems', slug: 'business-systems' },
-  { value: 'Custom Web Apps', slug: 'custom-web-apps' },
-  { value: 'Something else', slug: null },
-  { value: 'Not sure yet', slug: null },
+  { value: 'Smart Operations', label: 'Stop doing repeat work by hand', slug: 'smart-operations' },
+  { value: 'AI Voice Agents', label: 'Answer my phones', slug: 'ai-voice-agents' },
+  { value: 'Business Systems', label: 'Put everything in one place', slug: 'business-systems' },
+  { value: 'Custom Web Apps', label: 'Build a tool for how I work', slug: 'custom-web-apps' },
+  { value: 'Something else', label: 'Something else', slug: null },
+  { value: 'Not sure yet', label: 'Not sure yet', slug: null },
 ] as const;
 
 /** COPY.md step 2 — the project-details placeholder changes with the interest. */

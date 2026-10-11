@@ -3,6 +3,7 @@ import { SignatureStripe } from '@/components/signature-stripe';
 import { FlourishMark } from '@/components/flourish-mark';
 import { ContactForm } from '@/components/contact-form';
 import { FaqAccordion } from '@/components/faq-accordion';
+import { ButtonLink } from '@/components/button';
 import { site } from '@/lib/site';
 import { buildMetadata, breadcrumbs, faqNode, jsonLd } from '@/lib/seo';
 
@@ -122,25 +123,29 @@ export default function ContactPage() {
             <ContactForm />
           </Suspense>
 
-          {/* The calendar is the quieter way in, not a second CTA: one text link
-              in `secondary`, the same treatment as the closing band's concierge
-              link, and the form stays the page's only button. It sits directly
-              under the form because it is the alternative to the form — the
-              first version sat between the intro and the trust facts, where it
-              read as an orphan. It leaves the site, so it opens in a new tab and
-              the form is still here when they come back. Sentence case, because
-              it starts something they can abandon. */}
-          <p className="mt-5 text-[0.875rem] leading-[1.55] text-secondary">
-            Prefer to skip the form?{' '}
-            <a
+          {/* The calendar is the other way in, and since #40 (2026-10-06) it is a
+              real button: the founder's one job for this page is that an owner
+              makes contact, and a small text link under the form was easy to
+              miss. It is the `secondary` outline, so it stays quieter than the
+              ink `Continue` above it and the accents never fill it. It sits
+              directly under the form because it is the alternative to the form.
+              It leaves the site, so it opens in a new tab and the form is still
+              here when they come back. Not `data-primary-cta`: the form's
+              button owns that slot. */}
+          <div className="mt-6 flex flex-col items-start gap-3">
+            <p className="text-[0.875rem] leading-[1.55] text-secondary">
+              Prefer to skip the form?
+            </p>
+            <ButtonLink
               href={site.bookingUrl}
+              variant="secondary"
+              size="nav"
               target="_blank"
               rel="noopener noreferrer"
-              className="tap-24 link-underline font-semibold text-fg"
             >
               Book a free first conversation
-            </a>
-          </p>
+            </ButtonLink>
+          </div>
         </div>
       </div>
 
