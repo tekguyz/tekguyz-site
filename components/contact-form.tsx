@@ -38,7 +38,7 @@ import {
  * Step 1 qualifies (interest, name, email); step 2 collects the detail. The
  * split exists so the first ask is three short fields rather than a wall.
  *
- * Area of Interest arrives pre-selected from a solution CTA's ?interest= param
+ * The menu (labelled "What kind of help?") arrives pre-selected from a solution CTA's ?interest= param
  * and is SHOWN selected rather than hidden — the visitor should be able to see
  * and change what the link assumed about them.
  *
@@ -264,7 +264,7 @@ export function ContactForm() {
             className="tg-rule flex items-center justify-between gap-4 border-b border-border pb-6 max-sm:gap-3"
           >
             <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
-              {step === 1 ? 'What do you need?' : 'Tell us more.'}
+              {step === 1 ? 'What do you want fixed?' : 'Tell us more.'}
             </p>
             <span className="text-[0.875rem] tracking-[0.04em] whitespace-nowrap tabular-nums text-secondary">
               0{step} / 02
@@ -282,17 +282,17 @@ export function ContactForm() {
               collected (shouldUnregister is false), so Back still restores them. */}
           {step === 1 ? (
             <div key="step-1" className="mt-8 flex flex-col gap-6">
-              <Field id="projectType" label="Area of Interest" error={errors.projectType?.message}>
+              <Field id="projectType" label="What kind of help?" error={errors.projectType?.message}>
                 <select
                   id="projectType"
                   className={selectField}
                   autoComplete="off"
                   {...register('projectType')}
                 >
-                  <option value="">Select one</option>
+                  <option value="">Pick the closest one</option>
                   {interestOptions.map((o) => (
                     <option key={o.value} value={o.value}>
-                      {o.value}
+                      {o.label}
                     </option>
                   ))}
                 </select>

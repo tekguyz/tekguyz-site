@@ -19,7 +19,7 @@ import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/seo';
 
 export const metadata = buildMetadata({
-  title: 'TEKGUYZ | Smart Operations & AI Systems',
+  title: 'TEKGUYZ | AI Help for South Florida Small Businesses',
   description:
     'We build tech that actually works for your business. Smart operations, AI voice agents, and custom web apps designed for measurable impact.',
   path: '',
@@ -85,7 +85,7 @@ export default async function HomePage() {
         <SectionHead
           eyebrow="What We Do"
           headline="What We Do"
-          description="Four ways we help operational businesses run smarter."
+          description="Four kinds of problems we fix for small businesses. Find the one that sounds like yours."
         />
         <div className="tg-container mt-16">
           {solutions.map((s, i) => (

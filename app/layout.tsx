@@ -23,7 +23,7 @@ import { site } from '@/lib/site';
  */
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: 'TEKGUYZ | Smart Operations & AI Systems', template: '%s' },
+  title: { default: 'TEKGUYZ | AI Help for South Florida Small Businesses', template: '%s' },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

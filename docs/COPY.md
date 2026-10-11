@@ -85,8 +85,8 @@ Copyright: © [Year] TEKGUYZ. Built by TEKGUYZ.
 
 HEADLINE: We build tech that actually works for your business.
 SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
-CTA PRIMARY: See Our Work → /work
-CTA SECONDARY: Let's Talk → /contact
+CTA PRIMARY: Start a Free Conversation → /contact (changed 2026-10-11, #40: contact leads; **drafted**, from the trust line "Free first conversation")
+CTA SECONDARY: See Our Work → /work
 MEDIA: `field-reports-hero.webp` (1040×585, 16:9) with a phone capture and a 4.5 s loop over it. Live-status chip attached, for Field Photo Reports. Changed 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
 
 ## The fold — build board caption
@@ -116,7 +116,7 @@ team sits"* have no home in a one-line caption.
 
 EYEBROW: WHAT WE DO
 HEADLINE: What We Do
-DESCRIPTION: Four ways we help operational businesses run smarter.
+DESCRIPTION: Four kinds of problems we fix for small businesses. Find the one that sounds like yours. (changed 2026-10-11, #40; **drafted** from tekguyz-one `brand/playbook.md` v3 § 1–2)
 
 - **Smart Operations** (blue) — Your business makes data and tasks every hour. We build systems that handle them automatically. → /solutions/smart-operations
 - **AI Voice Agents** (violet) — Your phones don't stop ringing because your doors are closed. We answer them. → /solutions/ai-voice-agents
@@ -168,7 +168,7 @@ SECONDARY LINK (small, beneath the button, opens the concierge — not a second 
 
 ## Metadata
 
-TITLE: `TEKGUYZ | Smart Operations & AI Systems`
+TITLE: `TEKGUYZ | AI Help for South Florida Small Businesses` (changed 2026-10-11, #40; **drafted** from playbook v3 § 1; the OG card eyebrow reads `AI Help for Small Businesses`)
 DESCRIPTION: `We build tech that actually works for your business. Smart operations, AI voice agents, and custom web apps designed for measurable impact.`
 OG: same title/description, `og:type=website`
 
@@ -521,12 +521,12 @@ TRUST LINES: Free first conversation · A flat quote before anything starts · W
 
 DIRECT: hello@tekguyz.com · Mon–Fri, 9:00 AM–5:00 PM · South Florida, remote nationwide
 
-BOOKING LINE (added 2026-10-03, #33; **drafted, not transcribed** — written from PLAYBOOK §4 and the trust line, sentence case because it starts something the visitor can abandon): Prefer to skip the form? **Book a free first conversation** → `site.bookingUrl` (Cal.com, new tab). Sits directly under the form card (the first placement, between the intro and the trust lines, read as an orphan on the owner's test). One text link, never a button.
+BOOKING LINE (added 2026-10-03, #33; **drafted, not transcribed** — written from PLAYBOOK §4 and the trust line, sentence case because it starts something the visitor can abandon): Prefer to skip the form? **Book a free first conversation** → `site.bookingUrl` (Cal.com, new tab). Sits directly under the form card (the first placement, between the intro and the trust lines, read as an orphan on the owner's test). **Since 2026-10-11 (#40) it is a `secondary` outline button** (size `nav`) under the line "Prefer to skip the form?"; the founder's one job for the page is contact, and the small link was easy to miss. Never an accent fill.
 
 ## Form — two steps
 
-**Step 1 — What do you need?**
-- Area of Interest (required) — Smart Operations / AI Voice Agents / Business Systems / Custom Web Apps / Something else / Not sure yet
+**Step 1 — What do you want fixed?** (changed 2026-10-11, #40; **drafted** from playbook v3 § 3)
+- "What kind of help?" (required) — placeholder "Pick the closest one". Visitor reads: Stop doing repeat work by hand / Answer my phones / Put everything in one place / Build a tool for how I work / Something else / Not sure yet. Saved values are unchanged: Smart Operations / AI Voice Agents / Business Systems / Custom Web Apps / Something else / Not sure yet
   *(pre-selected when arriving from a solution CTA, shown selected, not hidden)*
 - Name (required) — placeholder: Your name
 - Email (required) — placeholder: you@company.com

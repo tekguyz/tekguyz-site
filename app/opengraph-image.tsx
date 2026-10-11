@@ -6,7 +6,7 @@ export const contentType = OG_CONTENT_TYPE;
 
 export default function Image() {
   return ogCard({
-    eyebrow: 'Smart Operations & AI Systems',
+    eyebrow: 'AI Help for Small Businesses',
     title: 'We build tech that actually works for your business.',
   });
 }
