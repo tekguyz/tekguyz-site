@@ -160,8 +160,8 @@ export const work: WorkEntry[] = [
     alt: 'Field Photo Reports office view of one Visit: the job, customer, Installer and address, a Submitted stamp, and a Report flagged No Before photo',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
-    // Rewritten 2026-09-28, in sync with COPY.md. The client stays unnamed, as
-    // on the voice receptionist page. "3 to 5 days" is the shop's documented
+    // Rewritten 2026-09-28, in sync with COPY.md. The client stays unnamed.
+    // "3 to 5 days" is the shop's documented
     // starting point (the app's PRODUCT.md), not a result — no result is
     // stated as measured, because none is.
     challenge:
@@ -300,43 +300,35 @@ export const work: WorkEntry[] = [
     name: 'AI Voice Receptionist & Call Booking',
     tag: 'AI VOICE AGENTS',
     solution: 'ai-voice-agents',
-    headline: 'Answer every after-hours call like your best employee would, live, in real time.',
-    url: 'https://tekguyz-sarah.vercel.app',
-    // Decided, and now documented in PLAYBOOK §12: the compact 16:10 asset is
-    // `sarah-thumb.webp`, matching the `-thumb` convention every other build
-    // uses. It replaces `sarah-project-thumb.webp`, which appeared in no doc and
-    // was a crop of the retired phone-call simulator — a PLAYBOOK §12 hard-rule
-    // violation, not just a naming problem. `bun run check:media` fails the
-    // build until the recaptured file lands; that is the guard working.
-    poster: '/media/sarah-thumb.webp',
-    // 1600x900 native — the hero's own 16:9 context, per DESIGN.md LiveFrame.
-    heroPoster: '/media/sarah-poster.webp',
-    // 1038x584, cropped from `sarah-poster.webp` at (12, 316) — the Live
-    // Conversation Feed panel, whole, with its own left and right edges intact.
-    // The full four-panel dashboard is unreadable below 1024px; this crop keeps
-    // the one thing the hero has to prove — the AI holding a real booking
-    // conversation, CALL ACTIVE — legible at ~330px. Same capture, so PLAYBOOK
-    // §12 is satisfied by construction, and it is 33KB against the source's
-    // 117KB, so mobile also pays less.
-    heroPosterMobile: '/media/sarah-poster-mobile.webp',
-    alt: 'AI Voice Receptionist dashboard panel listing live CRM sync: a caller just saved to a profile, and earlier callers already synced to the CRM',
+    headline: 'An AI Receptionist that answers the phone, writes down the job, and books the visit.',
+    // The rebuilt demo (tekguyz/ai-voice-receptionist, live 2026-10-13). It
+    // plays the made-up Mangrove Air, an AC repair shop in South Florida, and
+    // its Receptionist is Luna. The old "Sarah" demo (tekguyz-sarah.vercel.app)
+    // is retired: tekguyz/tekguyz-one#22, tekguyz/ai-voice-receptionist#10.
+    // Copy below is from the app's README, PRODUCT.md and CONTEXT.md only.
+    url: 'https://ai-voice-receptionist-tekguyz.vercel.app',
+    // 1440x900, the app's own `showcase/sample-call-desktop-light.png`, taken
+    // with `tools/capture` on 2026-10-14, converted to webp at quality 85. No
+    // crop. No heroPoster: this entry is not the home hero.
+    poster: '/media/voice-receptionist-thumb.webp',
+    alt: 'AI Voice Receptionist Sample Call for the made-up Mangrove Air: what Luna and the caller said on the left, and the job details on the right: name, job, urgency, address and booked time',
     embeddable: false,
-    updatedAt: REFRESH_2026_10_01,
+    updatedAt: '2026-10-15',
     challenge:
-      'A stone fabrication shop was losing leads to after-hours calls. The voicemail box was a dead end — callers with a real project either waited until morning or called someone else, and there was no way to know how many did which.',
+      'A small shop or trade misses calls while the crew is out on a job or after the doors close. A caller with a broken AC often does not wait for a call back. They call the next name on the list.',
     approach:
-      'We built a real-time AI voice agent that answers, holds an actual conversation, captures the project details, and books the consultation on the spot. Alongside it, a live dashboard shows the call transcript, the CRM sync, and the follow-up email firing as it happens.',
+      'We built Luna, an AI Receptionist for Mangrove Air, a made-up AC repair shop in South Florida. She answers, asks for the name, the job, how urgent it is and the address with its zip code, then books one of two open times. While she talks, the work order fills in live. She answers in Spanish when the caller speaks Spanish.',
     outcome:
-      'Calls that used to end in voicemail now end in a booked consultation and a record in the CRM — with nothing left for anyone to type up in the morning.',
+      'The owner gets Call Notes for every call: a summary, the caller’s details, the job, the urgency and the booked time, plus a preview of the confirmation text. The Dashboard shows every call in one place. It is a demo, so no calendar is connected and nothing is sent.',
     pullQuote:
-      'Watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact.',
+      'You do not watch a video of an AI receptionist. You call one, in one press.',
     tryIt:
-      'Start a call in the demo and watch the dashboard on the same screen. Everything you see happening is happening.',
+      'Press Try the demo on its landing page, then Call now, and talk to Luna through your browser’s microphone. No sign-up, and no phone number is dialled. No microphone? Play the Sample Call: a real call to Luna, with an AI actor as the caller. Your Call Notes are deleted after 7 days.',
     howItsBuilt:
-      'Real-time conversational voice AI with live transcription, structured lead extraction, calendar booking, and CRM write-through — all in one pass, no post-processing.',
+      'A phone-first web app. The call runs in the browser, and the server gives each call a short-lived token that only works for Luna, so the browser never holds a key. Calls stop at 3 minutes and have daily limits. Only the words are kept, for 7 days, never the caller’s voice.',
     title: 'TEKGUYZ | AI Voice Receptionist — Live Demo',
     description:
-      'A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.',
+      'Talk to Luna, an AI Receptionist for a made-up AC repair shop, right in your browser. Watch her write down the job and book a time, then see the owner’s Call Notes.',
   },
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
