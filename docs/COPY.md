@@ -407,35 +407,36 @@ DESCRIPTION: `A multi-tenant CRM fed by website enquiries and by researched lead
 
 ## `/work/ai-voice-receptionist` — AI Voice Receptionist & Call Booking
 
-*Moved to fourth 2026-09-09. It sat second here while `content/work.ts` has had it
-fourth, so this deck and the live `/work` page disagreed about the running order.
-**The array is the source of truth** — verified against `content/work.ts` and
-against the rendered page at `tekguyz.com/work` on the same day. No copy on this
-page changed; only its position in this file.*
+*Rewritten 2026-10-15 for the rebuilt demo at
+`ai-voice-receptionist-tekguyz.vercel.app` (tekguyz/tekguyz-one#22,
+tekguyz/ai-voice-receptionist#10). It plays the made-up Mangrove Air (AC repair,
+South Florida); the Receptionist is Luna. The old "Sarah" demo and its stone-shop
+copy are retired; they are in git history. Facts come from the app's README,
+PRODUCT.md and CONTEXT.md. No result is stated, because none is measured.*
 
 TAG: AI Voice Agents
-HEADLINE: Answer every after-hours call like your best employee would, live, in real time.
+HEADLINE: An AI Receptionist that answers the phone, writes down the job, and books the visit.
 
 **THE CHALLENGE**
-A stone fabrication shop was losing leads to after-hours calls. The voicemail box was a dead end — callers with a real project either waited until morning or called someone else, and there was no way to know how many did which.
+A small shop or trade misses calls while the crew is out on a job or after the doors close. A caller with a broken AC often does not wait for a call back. They call the next name on the list.
 
 **THE APPROACH**
-We built a real-time AI voice agent that answers, holds an actual conversation, captures the project details, and books the consultation on the spot. Alongside it, a live dashboard shows the call transcript, the CRM sync, and the follow-up email firing as it happens.
+We built Luna, an AI Receptionist for Mangrove Air, a made-up AC repair shop in South Florida. She answers, asks for the name, the job, how urgent it is and the address with its zip code, then books one of two open times. While she talks, the work order fills in live. She answers in Spanish when the caller speaks Spanish.
 
 **THE OUTCOME**
-Calls that used to end in voicemail now end in a booked consultation and a record in the CRM — with nothing left for anyone to type up in the morning.
+The owner gets Call Notes for every call: a summary, the caller’s details, the job, the urgency and the booked time, plus a preview of the confirmation text. The Dashboard shows every call in one place. It is a demo, so no calendar is connected and nothing is sent.
 
 **PULL QUOTE**
-Watch the call, the CRM sync, and the follow-up email happen in real time — not after the fact.
+You do not watch a video of an AI receptionist. You call one, in one press.
 
 **TRY IT**
-Start a call in the demo and watch the dashboard on the same screen. Everything you see happening is happening.
+Press Try the demo on its landing page, then Call now, and talk to Luna through your browser’s microphone. No sign-up, and no phone number is dialled. No microphone? Play the Sample Call: a real call to Luna, with an AI actor as the caller. Your Call Notes are deleted after 7 days.
 
 **HOW IT'S BUILT**
-Real-time conversational voice AI with live transcription, structured lead extraction, calendar booking, and CRM write-through — all in one pass, no post-processing.
+A phone-first web app. The call runs in the browser, and the server gives each call a short-lived token that only works for Luna, so the browser never holds a key. Calls stop at 3 minutes and have daily limits. Only the words are kept, for 7 days, never the caller’s voice.
 
 METADATA — TITLE: `TEKGUYZ | AI Voice Receptionist — Live Demo`
-DESCRIPTION: `A real-time AI voice agent that answers calls, books consultations, and syncs your CRM automatically. Watch it happen live, or call it yourself.`
+DESCRIPTION: `Talk to Luna, an AI Receptionist for a made-up AC repair shop, right in your browser. Watch her write down the job and book a time, then see the owner’s Call Notes.`
 
 ---
 

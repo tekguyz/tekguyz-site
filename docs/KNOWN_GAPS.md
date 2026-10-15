@@ -37,14 +37,13 @@ to the user as current state. Assert nothing you have not just measured.
   desktop-narrow) were not re-measured on the new picture. (2) The loop hard-cuts
   from its last frame to its first. (3) The featured band lower on the home page
   also leads with Field Photo Reports; the owner decides whether to swap one.
-  (4) `sarah-poster.webp` and `sarah-poster-mobile.webp` are no longer used by
-  the hero.
-- ⬜ **The voice poster shows the client's name.** Every new capture of the voice
-  demo shows "Real Stone & Granite", and the voice page keeps the client
-  unnamed, so `sarah-thumb.webp` is still the old file (the CRM-sync panel, with
-  a tool name "StoneApp" in its text). The owner decides: retake with the name
-  hidden, or allow the name the way the Field Photo Reports poster allows the
-  logo. Measured 2026-10-01.
+  (4) Done 2026-10-15: `sarah-poster.webp` and `sarah-poster-mobile.webp` are
+  deleted with the retired "Sarah" demo (tekguyz/tekguyz-one#22).
+- ✅ **The voice poster no longer shows the client's name.** Fixed 2026-10-15
+  (tekguyz/tekguyz-one#22, tekguyz/ai-voice-receptionist#10): the voice page now
+  links the rebuilt demo, `ai-voice-receptionist-tekguyz.vercel.app`, which
+  plays the made-up Mangrove Air. `voice-receptionist-thumb.webp` is its own
+  Sample Call capture. The three `sarah-*` pictures are deleted.
 - ✅ **The Field Photo Reports poster no longer shows the client's logo.** Fixed
   2026-10-05 (tekguyz/tekguyz-one#22): the thumb, hero, phone and loop are
   retaken from the made-up-name demo, `field-photo-reports.vercel.app`

@@ -73,7 +73,7 @@ One per page, description drawn from that page's own COPY.md content. This is ac
   "@type": "SoftwareApplication",
   "name": "AI Voice Receptionist & Call Booking",
   "applicationCategory": "BusinessApplication",
-  "url": "https://tekguyz-sarah.vercel.app",
+  "url": "https://ai-voice-receptionist-tekguyz.vercel.app",
   "creator": { "@type": "Organization", "name": "TEKGUYZ" }
 }
 ```

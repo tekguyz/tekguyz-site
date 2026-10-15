@@ -863,6 +863,8 @@ Photo Reports, with no `heroPosterMobile`: below 1024px it shows the same 16:9
 desktop capture with a phone capture overlapping it (`hero-media.tsx`). The
 `posterMobile` mechanism below is unchanged and still works for any entry that
 sets it. Whether the new hero reads at 330px was only looked at, not measured.
+`sarah-poster.webp` and `sarah-poster-mobile.webp` were deleted 2026-10-15 with
+the retired "Sarah" demo (tekguyz/tekguyz-one#22).
 
 `Frame`'s `posterMobile` prop is **optional and off for every compact context**,
 which renders exactly the `<Image>` it always did. Where it is set, `Frame`
