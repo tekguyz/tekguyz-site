@@ -21,7 +21,7 @@ import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/se
 export const metadata = buildMetadata({
   title: 'TEKGUYZ | AI Help for South Florida Small Businesses',
   description:
-    'We build tech that actually works for your business. Smart operations, AI voice agents, and custom web apps designed for measurable impact.',
+    'AI help for South Florida small businesses. We answer your phones, cut repeat work and put everything in one place. Free first conversation, flat quote.',
   path: '',
 });
 

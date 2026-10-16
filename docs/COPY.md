@@ -169,7 +169,7 @@ SECONDARY LINK (small, beneath the button, opens the concierge — not a second 
 ## Metadata
 
 TITLE: `TEKGUYZ | AI Help for South Florida Small Businesses` (changed 2026-10-11, #40; **drafted** from playbook v3 § 1; the OG card eyebrow reads `AI Help for Small Businesses`)
-DESCRIPTION: `We build tech that actually works for your business. Smart operations, AI voice agents, and custom web apps designed for measurable impact.`
+DESCRIPTION: `AI help for South Florida small businesses. We answer your phones, cut repeat work and put everything in one place. Free first conversation, flat quote.` (changed 2026-10-16, #40; **drafted** from playbook v3 and the contact menu; replaces the "measurable impact" line)
 OG: same title/description, `og:type=website`
 
 ---
