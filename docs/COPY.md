@@ -61,7 +61,7 @@ Tooltip / helper: none. The line "We check every demo hourly" was removed 2026-1
 ## Footer
 
 **Solutions** — Smart Operations / AI Voice Agents / Business Systems / Custom Web Apps
-**Work** — Field Photo Reports / AI Meeting Notes / Lead & Pipeline CRM / Private Meetup App *(added 2026-10-01; each links to its `/work/<slug>` page, in this order)*
+**Work** — AI Voice Receptionist / Lead & Pipeline CRM / Field Photo Reports / AI Meeting Notes / Private Meetup App *(added 2026-10-01; reordered 2026-10-15, when the voice build joined; each links to its `/work/<slug>` page, in this order)*
 **Company** — Work / Process / Contact / Privacy
 **Get In Touch** — hello@tekguyz.com / South Florida / Mon–Fri, 9am–5pm
 
@@ -129,7 +129,7 @@ EYEBROW: OUR WORK
 HEADLINE: Two we're proud of.
 DESCRIPTION: Both are running right now. Open either one and use it yourself.
 
-*(Field Photo Reports, then AI Meeting Notes. **Changed 2026-09-04** — these are the first two of `caseStudies` in array order, which is what /work shows one click later; the pair had been left untouched when the lineup was rewritten, so the two pages disagreed about which builds lead. It also removes a third appearance of AI Voice Receptionist on this one page — it is already the hero poster and the violet fold card. Full set on /work.)*
+*(AI Voice Receptionist, then Lead & Pipeline CRM. **Changed 2026-10-15**: the owner reordered the work list, and this band still shows its first two case studies. Field Photo Reports stays the hero. Earlier pair: Field Photo Reports, then AI Meeting Notes. **Changed 2026-09-04** — these are the first two of `caseStudies` in array order, which is what /work shows one click later; the pair had been left untouched when the lineup was rewritten, so the two pages disagreed about which builds lead. It also removes a third appearance of AI Voice Receptionist on this one page — it is already the hero poster and the violet fold card. Full set on /work.)*
 
 ## Testimonial
 

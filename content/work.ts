@@ -113,10 +113,98 @@ const AUTHORED = '2026-08-05';
  * reordered so the four builds with a one-click demo lead (Field Photo Reports,
  * AI Meeting Notes, Lead & Pipeline CRM, Private Meetup App), then the voice
  * receptionist, then Team Performance.
+ *
+ * 2026-10-15: the owner reordered it again. The AI Voice Receptionist leads, as
+ * the newest live demo. The Lead & Pipeline CRM is second, because its proof is
+ * the strongest: it is the system TEKGUYZ runs on, and this site's contact form
+ * posts into it. Then Field Photo Reports, AI Meeting Notes and the Private
+ * Meetup App. Team Performance stays last, in its own project card.
  */
 const REFRESH_2026_10_01 = '2026-10-01';
 
 export const work: WorkEntry[] = [
+  {
+    slug: 'ai-voice-receptionist',
+    kind: 'case-study',
+    name: 'AI Voice Receptionist & Call Booking',
+    shortName: 'AI Voice Receptionist',
+    tag: 'AI VOICE AGENTS',
+    solution: 'ai-voice-agents',
+    headline: 'An AI Receptionist that answers the phone, writes down the job, and books the visit.',
+    // The rebuilt demo (tekguyz/ai-voice-receptionist, live 2026-10-13). It
+    // plays the made-up Mangrove Air, an AC repair shop in South Florida, and
+    // its Receptionist is Luna. The old "Sarah" demo (tekguyz-sarah.vercel.app)
+    // is retired: tekguyz/tekguyz-one#22, tekguyz/ai-voice-receptionist#10.
+    // Copy below is from the app's README, PRODUCT.md and CONTEXT.md only.
+    url: 'https://ai-voice-receptionist-tekguyz.vercel.app',
+    // 1440x900, the app's own `showcase/sample-call-desktop-light.png`, taken
+    // with `tools/capture` on 2026-10-14, converted to webp at quality 85. No
+    // crop. No heroPoster: this entry is not the home hero.
+    poster: '/media/voice-receptionist-thumb.webp',
+    alt: 'AI Voice Receptionist Sample Call for the made-up Mangrove Air: what Luna and the caller said on the left, and the job details on the right: name, job, urgency, address and booked time',
+    embeddable: false,
+    updatedAt: '2026-10-15',
+    challenge:
+      'A small shop or trade misses calls while the crew is out on a job or after the doors close. A caller with a broken AC often does not wait for a call back. They call the next name on the list.',
+    approach:
+      'We built Luna, an AI Receptionist for Mangrove Air, a made-up AC repair shop in South Florida. She answers, asks for the name, the job, how urgent it is and the address with its zip code, then books one of two open times. While she talks, the work order fills in live. She answers in Spanish when the caller speaks Spanish.',
+    outcome:
+      'The owner gets Call Notes for every call: a summary, the caller’s details, the job, the urgency and the booked time, plus a preview of the confirmation text. The Dashboard shows every call in one place. It is a demo, so no calendar is connected and nothing is sent.',
+    pullQuote:
+      'You do not watch a video of an AI receptionist. You call one, in one press.',
+    tryIt:
+      'Press Try the demo on its landing page, then Call now, and talk to Luna through your browser’s microphone. No sign-up, and no phone number is dialled. No microphone? Play the Sample Call: a real call to Luna, with an AI actor as the caller. Your Call Notes are deleted after 7 days.',
+    howItsBuilt:
+      'A phone-first web app. The call runs in the browser, and the server gives each call a short-lived token that only works for Luna, so the browser never holds a key. Calls stop at 3 minutes and have daily limits. Only the words are kept, for 7 days, never the caller’s voice.',
+    title: 'TEKGUYZ | AI Voice Receptionist — Live Demo',
+    description:
+      'Talk to Luna, an AI Receptionist for a made-up AC repair shop, right in your browser. Watch her write down the job and book a time, then see the owner’s Call Notes.',
+  },
+  {
+    slug: 'tekguyz-crm',
+    kind: 'case-study',
+    name: 'Lead & Pipeline CRM',
+    shortName: 'Lead & Pipeline CRM',
+    tag: 'BUSINESS SYSTEMS',
+    solution: 'business-systems',
+    headline: 'Track every lead from first enquiry to closed deal, in one pipeline.',
+    // The bare origin is the CRM's landing page. Its "Try the demo" button is
+    // the only thing that signs a visitor in (DEMO-STANDARD). Verified
+    // 2026-10-02: the origin returns 200; `/demo` now just redirects to it.
+    // **Check it without `curl -L`** — following a redirect hides where it went.
+    url: 'https://tekguyz-crm.vercel.app/',
+    poster: '/media/tekguyz-crm.webp',
+    alt: 'Lead and pipeline CRM Today view, close up: the Tasks Due list with the first two tasks and how many days overdue each one is',
+    embeddable: false,
+    updatedAt: REFRESH_2026_10_01,
+    challenge:
+      'Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody’s head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
+    // BOTH DIRECTIONS ARE NAMED, in the copy below. The poster is the Today view
+    // (swapped from the Reports view on 2026-10-06, after the Today and
+    // Pipeline redesign, tekguyz-crm#47), so it no longer proves the outbound
+    // half by itself; the words carry that.
+    //
+    // Outbound is stated as it really works since 2026-09-30: researched leads
+    // arrive as a file and are imported by hand. NEVER write "automatic" here,
+    // and never name the research tool — the site names no tools or apps.
+    approach:
+      'We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, we research local businesses worth a call and import them into the CRM as a file, so the ones we went out and found sit in the same pipeline as the enquiries.',
+    outcome:
+      'Everything worth chasing lives in one pipeline instead of an inbox and a spreadsheet. A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
+    pullQuote:
+      'The contact form on this page posts into it. This is the system we run our own business on.',
+    // Since 2026-10-01 each visitor gets their own workspace of sample data and
+    // can write in it (tekguyz-crm#29). The old read-only demo role is gone.
+    // Email, import and invites are off in the demo, per the CRM's own landing
+    // page, so never invite a visitor to try those.
+    tryIt:
+      'One click opens your own workspace with sample data — no signup, no password, no email. Add and change things as well as browse: the day’s agenda, the pipeline board, a lead’s full timeline, the revenue report. Email, import and invites are switched off in the demo.',
+    howItsBuilt:
+      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. Each demo visitor gets a private workspace of sample data, so the tour cannot reach anything real.',
+    title: 'TEKGUYZ | Lead & Pipeline CRM',
+    description:
+      'A multi-tenant CRM fed by website enquiries and by researched lead lists, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
+  },
   {
     slug: 'field-photo-reports',
     kind: 'case-study',
@@ -210,51 +298,6 @@ export const work: WorkEntry[] = [
       'An AI meeting notepad that records without sending a bot to the call, then writes summaries, takeaways, and action items you can trace back to the transcript.',
   },
   {
-    slug: 'tekguyz-crm',
-    kind: 'case-study',
-    name: 'Lead & Pipeline CRM',
-    shortName: 'Lead & Pipeline CRM',
-    tag: 'BUSINESS SYSTEMS',
-    solution: 'business-systems',
-    headline: 'Track every lead from first enquiry to closed deal, in one pipeline.',
-    // The bare origin is the CRM's landing page. Its "Try the demo" button is
-    // the only thing that signs a visitor in (DEMO-STANDARD). Verified
-    // 2026-10-02: the origin returns 200; `/demo` now just redirects to it.
-    // **Check it without `curl -L`** — following a redirect hides where it went.
-    url: 'https://tekguyz-crm.vercel.app/',
-    poster: '/media/tekguyz-crm.webp',
-    alt: 'Lead and pipeline CRM Today view, close up: the Tasks Due list with the first two tasks and how many days overdue each one is',
-    embeddable: false,
-    updatedAt: REFRESH_2026_10_01,
-    challenge:
-      'Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody’s head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.',
-    // BOTH DIRECTIONS ARE NAMED, in the copy below. The poster is the Today view
-    // (swapped from the Reports view on 2026-10-06, after the Today and
-    // Pipeline redesign, tekguyz-crm#47), so it no longer proves the outbound
-    // half by itself; the words carry that.
-    //
-    // Outbound is stated as it really works since 2026-09-30: researched leads
-    // arrive as a file and are imported by hand. NEVER write "automatic" here,
-    // and never name the research tool — the site names no tools or apps.
-    approach:
-      'We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, we research local businesses worth a call and import them into the CRM as a file, so the ones we went out and found sit in the same pipeline as the enquiries.',
-    outcome:
-      'Everything worth chasing lives in one pipeline instead of an inbox and a spreadsheet. A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.',
-    pullQuote:
-      'The contact form on this page posts into it. This is the system we run our own business on.',
-    // Since 2026-10-01 each visitor gets their own workspace of sample data and
-    // can write in it (tekguyz-crm#29). The old read-only demo role is gone.
-    // Email, import and invites are off in the demo, per the CRM's own landing
-    // page, so never invite a visitor to try those.
-    tryIt:
-      'One click opens your own workspace with sample data — no signup, no password, no email. Add and change things as well as browse: the day’s agenda, the pipeline board, a lead’s full timeline, the revenue report. Email, import and invites are switched off in the demo.',
-    howItsBuilt:
-      'Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. Each demo visitor gets a private workspace of sample data, so the tour cannot reach anything real.',
-    title: 'TEKGUYZ | Lead & Pipeline CRM',
-    description:
-      'A multi-tenant CRM fed by website enquiries and by researched lead lists, that flags follow-ups before they go cold and records what the pipeline was actually worth.',
-  },
-  {
     slug: 'private-meetup-app',
     kind: 'case-study',
     name: 'Private Meetup App',
@@ -293,42 +336,6 @@ export const work: WorkEntry[] = [
     title: 'TEKGUYZ | Private Meetup App',
     description:
       'A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.',
-  },
-  {
-    slug: 'ai-voice-receptionist',
-    kind: 'case-study',
-    name: 'AI Voice Receptionist & Call Booking',
-    tag: 'AI VOICE AGENTS',
-    solution: 'ai-voice-agents',
-    headline: 'An AI Receptionist that answers the phone, writes down the job, and books the visit.',
-    // The rebuilt demo (tekguyz/ai-voice-receptionist, live 2026-10-13). It
-    // plays the made-up Mangrove Air, an AC repair shop in South Florida, and
-    // its Receptionist is Luna. The old "Sarah" demo (tekguyz-sarah.vercel.app)
-    // is retired: tekguyz/tekguyz-one#22, tekguyz/ai-voice-receptionist#10.
-    // Copy below is from the app's README, PRODUCT.md and CONTEXT.md only.
-    url: 'https://ai-voice-receptionist-tekguyz.vercel.app',
-    // 1440x900, the app's own `showcase/sample-call-desktop-light.png`, taken
-    // with `tools/capture` on 2026-10-14, converted to webp at quality 85. No
-    // crop. No heroPoster: this entry is not the home hero.
-    poster: '/media/voice-receptionist-thumb.webp',
-    alt: 'AI Voice Receptionist Sample Call for the made-up Mangrove Air: what Luna and the caller said on the left, and the job details on the right: name, job, urgency, address and booked time',
-    embeddable: false,
-    updatedAt: '2026-10-15',
-    challenge:
-      'A small shop or trade misses calls while the crew is out on a job or after the doors close. A caller with a broken AC often does not wait for a call back. They call the next name on the list.',
-    approach:
-      'We built Luna, an AI Receptionist for Mangrove Air, a made-up AC repair shop in South Florida. She answers, asks for the name, the job, how urgent it is and the address with its zip code, then books one of two open times. While she talks, the work order fills in live. She answers in Spanish when the caller speaks Spanish.',
-    outcome:
-      'The owner gets Call Notes for every call: a summary, the caller’s details, the job, the urgency and the booked time, plus a preview of the confirmation text. The Dashboard shows every call in one place. It is a demo, so no calendar is connected and nothing is sent.',
-    pullQuote:
-      'You do not watch a video of an AI receptionist. You call one, in one press.',
-    tryIt:
-      'Press Try the demo on its landing page, then Call now, and talk to Luna through your browser’s microphone. No sign-up, and no phone number is dialled. No microphone? Play the Sample Call: a real call to Luna, with an AI actor as the caller. Your Call Notes are deleted after 7 days.',
-    howItsBuilt:
-      'A phone-first web app. The call runs in the browser, and the server gives each call a short-lived token that only works for Luna, so the browser never holds a key. Calls stop at 3 minutes and have daily limits. Only the words are kept, for 7 days, never the caller’s voice.',
-    title: 'TEKGUYZ | AI Voice Receptionist — Live Demo',
-    description:
-      'Talk to Luna, an AI Receptionist for a made-up AC repair shop, right in your browser. Watch her write down the job and book a time, then see the owner’s Call Notes.',
   },
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
@@ -416,8 +423,11 @@ export const projects = work.filter((w): w is Project => w.kind === 'project');
  * ink band as well made it three appearances on one page while
  * `ai-meeting-notes` had one. The voice build loses nothing — it is still the
  * hero, still on the board, still a case study.
+ *
+ * [changed 2026-10-15] Still the first two case studies, after the owner's
+ * reorder: the voice build and the CRM. Field Photo Reports stays the hero.
  */
-export const featuredSlugs = ['field-photo-reports', 'ai-meeting-notes'] as const;
+export const featuredSlugs = ['ai-voice-receptionist', 'tekguyz-crm'] as const;
 export const featured = featuredSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is CaseStudy => w?.kind === 'case-study');
@@ -472,14 +482,16 @@ export const foldBoard = foldSlugs
   .filter((w): w is WorkEntry => Boolean(w));
 
 /**
- * The footer's Work column: the four builds with a one-click demo, in the order
- * the owner set on 2026-10-01. Content, not layout, like `featuredSlugs`.
+ * The footer's Work column: the five builds with a one-click demo, in the order
+ * the owner set on 2026-10-15 (four until then; the voice build joined when it
+ * moved to the front). Content, not layout, like `featuredSlugs`.
  * `content/work.test.ts` fails if a slug stops resolving.
  */
 export const footerSlugs = [
+  'ai-voice-receptionist',
+  'tekguyz-crm',
   'field-photo-reports',
   'ai-meeting-notes',
-  'tekguyz-crm',
   'private-meetup-app',
 ] as const;
 

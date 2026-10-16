@@ -37,9 +37,13 @@ describe('work lineup', () => {
     expect(foldBoard).toHaveLength(foldSlugs.length);
   });
 
-  // The owner's order, 2026-10-01: the four builds with a one-click demo lead.
-  it('the work list leads with the four demo builds, in the owner’s order', () => {
-    expect(work.slice(0, 4).map((w) => w.slug)).toEqual([...footerSlugs]);
+  // The owner's order, 2026-10-15: the five builds with a one-click demo lead.
+  it('the work list leads with the five demo builds, in the owner’s order', () => {
+    expect(work.slice(0, 5).map((w) => w.slug)).toEqual([...footerSlugs]);
+  });
+
+  it('the home band shows the first two case studies', () => {
+    expect([...featuredSlugs]).toEqual(work.filter((w) => w.kind === 'case-study').slice(0, 2).map((w) => w.slug));
   });
 
   it('the footer Work column resolves every slug and gives each a short label', () => {
