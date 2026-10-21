@@ -4,11 +4,9 @@ import Link from 'next/link';
 import { motion, type Variants } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { AccentDot } from '@/components/solution-tag';
-import { StatusLine } from '@/components/status-line';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { site } from '@/lib/site';
 import { buildCountWord, type WorkEntry } from '@/content/work';
-import type { StatusResult } from '@/lib/status';
 
 /**
  * The homepage fold — DESIGN.md §4.18.
@@ -167,13 +165,10 @@ function cardVariants(instant: boolean): Variants {
   };
 }
 
-export function FoldBoard({
-  entries,
-  statuses,
-}: {
-  entries: WorkEntry[];
-  statuses: Record<string, StatusResult>;
-}) {
+// [decided 2026-10-21, refs #59] The cards no longer carry a StatusLine. It
+// repeated six times on the home page and read as boilerplate; the hero and
+// the ink band keep it, so the "it's live" proof is still on the page.
+export function FoldBoard({ entries }: { entries: WorkEntry[] }) {
   const instant = usePrefersReducedMotion();
 
   return (
@@ -238,7 +233,6 @@ export function FoldBoard({
                 {entry.name}
               </span>
 
-              <StatusLine result={statuses[entry.slug]!} variant="compact" className="mt-5" />
             </Link>
           </motion.li>
         ))}
