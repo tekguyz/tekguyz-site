@@ -8,6 +8,7 @@ import { StatusLine } from '@/components/status-line';
 import { accentForSolution } from '@/config/solutions';
 import { solutions, getSolution } from '@/content/solutions';
 import { workByName } from '@/content/work';
+import { examplesForSolution } from '@/content/examples';
 import { getAllStatuses } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, serviceNode } from '@/lib/seo';
 
@@ -50,6 +51,7 @@ export default async function SolutionDetailPage({
   const related = solution.relatedWork
     .map((name) => workByName(name))
     .filter((w): w is NonNullable<typeof w> => Boolean(w));
+  const solutionExamples = examplesForSolution(solution.slug);
 
   return (
     <div>
@@ -175,6 +177,37 @@ export default async function SolutionDetailPage({
                     {entry.name}
                   </h2>
                   <StatusLine result={statuses[entry.slug]!} className="mt-5" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Examples sit apart from the builds, under their own label, because
+            they are made-up businesses on sample data, not running software. */}
+        {solutionExamples.length > 0 && (
+          <div className="mt-16 md:mt-24">
+            <p className="mb-8 tg-eyebrow text-secondary">
+              Examples
+            </p>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {solutionExamples.map((ex, i) => (
+                <Link
+                  key={ex.slug}
+                  href={`/examples/${ex.slug}`}
+                  data-card
+                  data-reveal-index={i}
+                  className="reveal hover-card flex flex-col rounded-[12px] border border-border bg-surface p-6"
+                >
+                  <h2
+                    className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+                    style={{ textWrap: 'pretty' }}
+                  >
+                    {ex.name}
+                  </h2>
+                  <p className="mt-3 text-[0.875rem] text-secondary">
+                    Example on a made-up business: {ex.business}.
+                  </p>
                 </Link>
               ))}
             </div>

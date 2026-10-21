@@ -27,6 +27,15 @@ to the user as current state. Assert nothing you have not just measured.
 
 ## Open items
 
+### Examples (`/examples`)
+
+- ⬜ **Examples shipped without the nav, footer or concierge knowing them
+  (2026-10-21).** The four pages are reached from `/work`, each `/solutions`
+  page and the sitemap only. Open: (1) a nav or footer link is the owner's call
+  and part of the rebuild (#2). (2) `content/faq.ts` does not mention them, so
+  the concierge cannot point to them. (3) `impeccable` critique and polish were
+  not run: the session that built them had no `impeccable` skill.
+
 ### Images and the home hero
 
 - ⬜ **Home hero, shipped 2026-10-02 (#20); four loose ends.** The hero is Field

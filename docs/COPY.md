@@ -303,6 +303,38 @@ DESCRIPTION: `Every project here is real, running software you can open and try 
 
 ---
 
+# EXAMPLES — `/examples` and `/examples/[slug]`
+
+Added 2026-10-21 (owner: "I just need to showcase a little bit more what kind of
+products I'll be offering"). An example is **not** a build: it plays a made-up
+business on sample data, so it never appears in the /work lists. Each example
+plays its own made-up business, never one used by another demo. The first four
+are one per Solution.
+
+**Index hero**
+EYEBROW: `Examples`
+HEADLINE: `A closer look at what we build.`
+DESCRIPTION: `Short examples on made-up businesses, with sample data you can click through. For finished builds you can open and use, see Our Work.`
+CARD FOOTER: `Example: <business>, <business line>.`
+LINK: `See the finished builds in Our Work →`
+
+**Each example page** — tag · headline · `Example: <business>, <business line>.` ·
+The problem · What it does · try-it line · the screen · `Part of <Solution>` ·
+`Your version is built around your business, your tools and your words.`
+The per-example words (headline, problem, what it does, try-it line, title,
+description) live in `content/examples.ts`, one entry each; that file is their
+source.
+
+**On /work**, under Projects: `Want a quick look at more of what we build? See the examples →`
+**On each /solutions page**, under the builds: eyebrow `Examples`, a card per example with `Example on a made-up business: <business>.`
+
+## Metadata
+
+TITLE: `TEKGUYZ | Examples — A Closer Look at What We Build`
+DESCRIPTION: `Short examples of the tools we build for small businesses, each on a made-up business with sample data: quote follow-up, voicemail summaries, an inbox sorter and online booking.`
+
+---
+
 # CASE STUDY DETAIL PAGES
 
 *Shared structure: solution tag · headline · Challenge / Approach / Outcome · pull quote · LiveFrame + status · "How it's built" (plain language) · prev/next.*
