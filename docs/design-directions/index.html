@@ -1,0 +1,45 @@
+<title>TEKGUYZ Site Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&display=swap">
+<style>
+/* Layout: a plain picking sheet. Four rows, one per direction, each with its swatch,
+   one line, and a big tap target. Phone first. */
+:root{--bg:#FAFAF9;--fg:#111214;--muted:#5C6068;--line:#E4E4E0;--card:#FFFFFF;
+  --b:#3B6FE0;--v:#7C6FE0;--a:#F2A93C;--t:#2FA679;--f:"Geist",ui-sans-serif,system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E0F11;--fg:#F2F2F0;--muted:#A3A7AE;--line:#25272C;--card:#17191C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E0F11;--fg:#F2F2F0;--muted:#A3A7AE;--line:#25272C;--card:#17191C;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.5 var(--f)}
+:focus-visible{outline:2px solid var(--b);outline-offset:3px;border-radius:12px}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:4px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 48px}
+h1{font-weight:800;font-size:clamp(2rem,7vw,3rem);line-height:1;letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
+.lede{color:var(--muted);margin:0 0 28px;max-width:56ch}
+.list{display:grid;gap:12px}
+a.dir{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;transition:transform .2s cubic-bezier(.16,1,.3,1)}
+a.dir:hover{transform:translateY(-2px)}
+.sw{width:72px;height:72px;border-radius:12px;overflow:hidden;display:grid}
+.dir b{display:block;font-size:19px;letter-spacing:-.01em}
+.dir span{display:block;color:var(--muted);font-size:15px}
+.dir em{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg);border:1px solid var(--fg);border-radius:999px;padding:3px 8px;margin-left:6px;vertical-align:2px}
+.go{font-size:22px;color:var(--muted)}
+.note{margin-top:28px;font-size:15px;color:var(--muted)}
+.note li{margin-bottom:6px}
+</style>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<main class="wrap">
+  <h1>Four ways the new site could feel</h1>
+  <p class="lede">Each one is a full home page with the same real facts and the same one job: get the owner to contact you. Open each on your phone. Keep what you like from any of them.</p>
+  <div class="list">
+    <a class="dir" href="a-work-order.html"><span class="sw" style="background:#fff;box-shadow:inset 0 0 0 3px #0E1B3D"><i style="align-self:end;height:10px;background:linear-gradient(90deg,#3B6FE0 25%,#7C6FE0 25% 50%,#F2A93C 50% 75%,#2FA679 75%)"></i></span><div><b>A · Work Order</b><span>The page is a service ticket. The contact form is the hero.</span></div><span class="go">→</span></a>
+    <a class="dir" href="b-live-wire.html"><span class="sw" style="background:#0D0E10;place-items:center"><i style="width:14px;height:14px;border-radius:50%;background:#4ADE80"></i></span><div><b>B · Live Wire</b><span>Proof first. A live call on a phone, and every build marked Live.</span></div><span class="go">→</span></a>
+    <a class="dir" href="c-text-thread.html"><span class="sw" style="background:#F4F5F7;padding:12px;gap:6px;align-content:center"><i style="height:14px;width:70%;border-radius:8px;background:#111317;justify-self:end"></i><i style="height:14px;width:80%;border-radius:8px;background:#7C6FE0"></i></span><div><b>C · Text Thread <em>My pick</em></b><span>The page is a text conversation. The AI chat and the form are one reply box.</span></div><span class="go">→</span></a>
+    <a class="dir" href="d-truck-door.html"><span class="sw" style="background:#fff;gap:3px;align-content:center;padding:0 0 0 8px"><i style="height:9px;background:#2F5FCC"></i><i style="height:9px;background:#5F52C8;margin-left:6px"></i><i style="height:9px;background:#F2A93C;margin-left:12px"></i><i style="height:9px;background:#2FA679;margin-left:18px"></i></span><div><b>D · Truck Door</b><span>Big bold lettering like a service van. The stripe becomes livery.</span></div><span class="go">→</span></a>
+  </div>
+  <ul class="note">
+    <li>All four keep the stripe and the TEKGUYZ lettering. The dot logo is gone.</li>
+    <li>Example chips (like "After-hours receptionist") would open their own example page.</li>
+    <li>Mock only. No form sends anything, and nothing is live on tekguyz.com.</li>
+  </ul>
+</main>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Direction A · Work Order</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<style>
+/* Layout: the whole page is one service work order. Boxed fields, a ruled grid,
+   and the contact form is the first thing on the sheet. Single committed light look:
+   white bond paper, carbon-blue ink, the four-colour stripe as the form's header bar. */
+:root{
+  --paper:#FFFFFF; --ink:#0E1B3D; --carbon:#2340A0; --rule:#B9C3DD; --faint:#EEF1F8;
+  --b:#3B6FE0; --v:#7C6FE0; --a:#F2A93C; --t:#2FA679;
+  --f:"Archivo",ui-sans-serif,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.5 var(--f);font-stretch:100%}
+::selection{background:var(--carbon);color:#fff}
+:focus-visible{outline:3px solid var(--carbon);outline-offset:3px}
+a{color:var(--carbon);text-underline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:8px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+.mark{height:22px;width:auto;display:block;fill:var(--ink)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
+header nav{display:flex;gap:20px;font-stretch:75%;font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+header nav a{color:var(--ink);text-decoration:none}
+header nav a:hover{color:var(--carbon)}
+@media (max-width:640px){header nav a:not(:last-child){display:none}}
+
+/* The sheet */
+.sheet{border:2px solid var(--ink);margin-block:8px 48px}
+.sheet-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:2px solid var(--ink)}
+.sheet-top b{font-stretch:62%;font-weight:800;font-size:15px;letter-spacing:.12em;text-transform:uppercase}
+.sheet-top span{font-stretch:75%;font-size:14px;color:var(--carbon);font-variant-numeric:tabular-nums}
+.hero{display:grid;grid-template-columns:1.1fr 1fr}
+@media (max-width:860px){.hero{grid-template-columns:1fr}}
+.hero-l{padding:28px 22px 32px;border-right:2px solid var(--ink)}
+@media (max-width:860px){.hero-l{border-right:0;border-bottom:2px solid var(--ink)}}
+h1{font-weight:900;font-stretch:72%;font-size:clamp(3.2rem,11vw,6rem);line-height:.88;letter-spacing:-.02em;margin:0 0 20px;text-wrap:balance;text-transform:uppercase}
+.lede{font-size:19px;max-width:34ch;margin:0}
+.promise{margin:26px 0 0;padding:0;list-style:none;display:grid;gap:8px;font-stretch:80%;font-weight:600}
+.promise li{display:flex;gap:10px;align-items:center}
+.promise li::before{content:"";width:14px;height:14px;border:2px solid var(--carbon);flex:none;background:linear-gradient(var(--carbon),var(--carbon)) center/6px 6px no-repeat}
+
+form{padding:0;display:grid;position:relative;overflow:hidden}
+.field{display:grid;border-bottom:1px solid var(--rule);padding:10px 18px 12px}
+.field label{font-stretch:62%;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--carbon)}
+.field input,.field textarea{border:0;background:transparent;font:500 19px/1.4 var(--f);color:var(--ink);padding:4px 0;outline:0;resize:vertical;width:100%}
+.field textarea{min-height:92px}
+.field:focus-within{background:var(--faint)}
+.row2{display:grid;grid-template-columns:1fr 1fr}
+.row2 .field:first-child{border-right:1px solid var(--rule)}
+@media (max-width:480px){.row2{grid-template-columns:1fr}.row2 .field:first-child{border-right:0}}
+.submit{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:16px 18px}
+.btn{appearance:none;border:2px solid var(--ink);background:var(--ink);color:#fff;font:800 17px/1 var(--f);font-stretch:80%;letter-spacing:.06em;text-transform:uppercase;padding:18px 26px;cursor:pointer;transition:transform .15s cubic-bezier(.2,.8,.2,1),background .15s}
+.btn:hover{background:var(--carbon);border-color:var(--carbon)}
+.btn:active{transform:translateY(2px)}
+.submit small{font-size:14px;color:var(--carbon);max-width:26ch}
+.stamp{position:absolute;right:22px;top:40%;transform:rotate(-12deg) scale(2.4);opacity:0;border:4px solid var(--carbon);color:var(--carbon);font:900 30px/1 var(--f);font-stretch:62%;letter-spacing:.1em;padding:8px 14px;pointer-events:none}
+.stamped .stamp{animation:stamp .45s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes stamp{to{opacity:.9;transform:rotate(-12deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.stamped .stamp{animation:none;opacity:.9;transform:rotate(-12deg)}}
+
+/* Other ways to reach */
+.ways{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--ink)}
+.ways a,.ways div{padding:16px 18px;border-right:1px solid var(--rule);text-decoration:none;color:var(--ink);min-width:0}
+.ways > :last-child{border-right:0}
+.ways b{display:block;font-stretch:62%;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--carbon);font-weight:700}
+.ways span{font-weight:700;font-size:18px;overflow-wrap:anywhere}
+.ways a:hover{background:var(--faint)}
+@media (max-width:640px){.ways{grid-template-columns:1fr}.ways a,.ways div{border-right:0;border-bottom:1px solid var(--rule)}}
+
+/* Section: line items */
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:10px;margin:0 0 0}
+h2{font-weight:900;font-stretch:72%;font-size:clamp(2rem,6vw,3.2rem);line-height:.95;text-transform:uppercase;margin:0;letter-spacing:-.01em}
+.sec-h p{margin:0;color:var(--carbon);font-stretch:80%}
+.items{margin:0 0 56px;padding:0;list-style:none}
+.item{display:grid;grid-template-columns:28px 1.2fr 1.4fr 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:start}
+@media (max-width:860px){.item{grid-template-columns:28px 1fr}.item > :nth-child(n+3){grid-column:2}}
+.box{width:22px;height:22px;border:2px solid var(--ink);margin-top:4px}
+.item h3{margin:0;font-weight:800;font-stretch:85%;font-size:22px;line-height:1.1}
+.item p{margin:0}
+.tagline{display:block;width:40px;height:5px;margin-bottom:10px}
+.ex{font-size:15px}
+.ex b{display:block;font-stretch:62%;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--carbon)}
+.ex a{display:block;font-weight:600}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);margin:0 0 56px;padding:0;list-style:none;counter-reset:s}
+.steps li{padding:18px 16px 20px 0;border-bottom:1px solid var(--rule);counter-increment:s}
+.steps li::before{content:counter(s);display:block;font-weight:900;font-stretch:62%;font-size:44px;line-height:1;color:var(--carbon);margin-bottom:8px}
+.steps b{display:block;font-size:19px;font-stretch:85%}
+@media (max-width:760px){.steps{grid-template-columns:1fr 1fr}}
+footer{border-top:2px solid var(--ink)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:22px 28px;font-stretch:80%}
+.mock{background:var(--faint);color:var(--carbon);font-size:13px;text-align:center;padding-block:8px}
+.back{font-size:14px}
+</style>
+</head>
+<body>
+<div class="mock"><div class="wrap">Design mock, direction A. Nothing here sends. <a class="back" href="index.html">All directions</a></div></div>
+<header><div class="wrap">
+  <svg class="mark" viewBox="92 14 213 36" role="img" aria-label="TEKGUYZ"><path d="M120.17 15.40L92.39 15.40L92.39 22.08L102.21 22.08L102.21 48.60L110.35 48.60L110.35 22.08L120.17 22.08ZM123.49 15.40L123.49 48.60L147.71 48.60L147.71 41.92L131.67 41.92L131.67 35.27L146.78 35.27L146.78 28.63L131.67 28.63L131.67 22.08L147.34 22.08L147.34 15.40ZM151.69 15.40L151.69 48.60L159.87 48.60L159.87 39.25L162.96 35.51L171.85 48.60L180.97 48.60L168.34 30.13L180.22 15.40L170.91 15.40L159.87 29.19L159.87 15.40ZM212.12 48.60L212.12 31.11L197.15 31.11L197.15 36.86L203.79 36.86C203.18 40.37 200.98 42.66 197.24 42.66C191.96 42.66 189.43 38.22 189.43 32.05C189.43 25.83 191.96 21.34 197.24 21.34C200.56 21.34 202.76 23.35 203.56 26.90L212.02 26.53C210.43 19.09 205.10 14.65 197.43 14.65C187.47 14.65 181.06 22.13 181.06 32.05C181.06 41.96 187.52 49.35 196.87 49.35C201.50 49.35 205.24 47.34 206.92 44.02L207.30 48.60ZM243.59 36.49L243.59 15.35L235.41 15.35L235.41 36.49C235.41 40.56 233.26 42.66 229.51 42.66C225.82 42.66 223.62 40.56 223.62 36.49L223.62 15.35L215.44 15.35L215.44 36.49C215.44 44.35 220.86 49.35 229.51 49.35C238.17 49.35 243.59 44.35 243.59 36.49ZM246.12 15.40L257.58 35.93L257.58 48.60L265.76 48.60L265.76 35.93L277.22 15.40L268.33 15.40L261.69 28.31L254.96 15.40ZM304.30 21.34L304.30 15.40L279.65 15.40L279.65 22.08L294.10 22.08L278.62 42.06L278.62 48.60L304.67 48.60L304.67 41.92L288.21 41.92Z"/></svg>
+  <nav><a href="#fix">What we fix</a><a href="#how">How it goes</a><a href="#order">Start a request</a></nav>
+</div></header>
+
+<main class="wrap" id="order">
+  <section class="sheet" aria-labelledby="h1">
+    <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="sheet-top"><b>Request for work</b><span>South Florida · Mon–Fri 9–5</span></div>
+    <div class="hero">
+      <div class="hero-l">
+        <h1 id="h1">What do you want fixed?</h1>
+        <p class="lede">Real AI that fixes real problems, for small businesses. Write it the way you'd say it. A real person reads every request.</p>
+        <ul class="promise">
+          <li>The first conversation is free</li>
+          <li>A reply within one business day</li>
+          <li>The easy win first, then the next one</li>
+        </ul>
+      </div>
+      <form id="wo" novalidate>
+        <div class="row2">
+          <div class="field"><label for="n">Your name</label><input id="n" autocomplete="name" placeholder="Maria Lopez"></div>
+          <div class="field"><label for="biz">Business</label><input id="biz" autocomplete="organization" placeholder="Lopez Plumbing"></div>
+        </div>
+        <div class="field"><label for="e">Email</label><input id="e" type="email" autocomplete="email" placeholder="you@yourbusiness.com"></div>
+        <div class="field"><label for="p">The problem</label><textarea id="p" placeholder="We miss calls when we're on a job, and quotes sit for days."></textarea></div>
+        <div class="submit"><button class="btn" type="submit">Send my request</button><small>Not sure how to put it? Ask our AI below.</small></div>
+        <div class="stamp" aria-hidden="true">RECEIVED</div>
+      </form>
+    </div>
+    <div class="ways">
+      <a href="#order"><b>Ask our AI</b><span>What would you build for me?</span></a>
+      <div><b>Email</b><span>hello@tekguyz.com</span></div>
+      <a href="https://cal.com/tekguyz/free-conversation"><b>Book a free call</b><span>Pick a time</span></a>
+    </div>
+  </section>
+
+  <div class="sec-h" id="fix"><h2>What we fix</h2><p>Four kinds of work. Every one has a live build you can try.</p></div>
+  <ul class="items">
+    <li class="item"><span class="box" aria-hidden="true"></span>
+      <div><i class="tagline" style="background:var(--b)"></i><h3>Smart Operations</h3></div>
+      <p>Your business makes data and tasks every hour. We build systems that handle them automatically.</p>
+      <div class="ex"><b>For example</b><a href="#">Every lead answered</a><a href="#">Win-back</a><a href="https://squid-ink.vercel.app">Try: AI Meeting Notes ↗</a></div></li>
+    <li class="item"><span class="box" aria-hidden="true"></span>
+      <div><i class="tagline" style="background:var(--v)"></i><h3>AI Voice Agents</h3></div>
+      <p>Your phones don't stop ringing because your doors are closed. We answer them.</p>
+      <div class="ex"><b>For example</b><a href="#">After-hours receptionist</a><a href="#">No-show rescue</a><a href="https://ai-voice-receptionist-tekguyz.vercel.app">Try: AI Voice Receptionist ↗</a></div></li>
+    <li class="item"><span class="box" aria-hidden="true"></span>
+      <div><i class="tagline" style="background:var(--a)"></i><h3>Business Systems</h3></div>
+      <p>Everything your clients and team need, in one private place instead of five.</p>
+      <div class="ex"><b>For example</b><a href="#">Quote to paid</a><a href="#">Field job reports</a><a href="https://field-photo-reports.vercel.app">Try: Field Photo Reports ↗</a></div></li>
+    <li class="item"><span class="box" aria-hidden="true"></span>
+      <div><i class="tagline" style="background:var(--t)"></i><h3>Custom Web Apps</h3></div>
+      <p>If you can describe the workflow, we can build the tool that runs it.</p>
+      <div class="ex"><b>For example</b><a href="#">A website that catches leads</a><a href="https://meet4weed.vercel.app">Try: Private Meetup App ↗</a></div></li>
+  </ul>
+
+  <div class="sec-h" id="how"><h2>How it goes</h2><p>One job done well. Then the next.</p></div>
+  <ol class="steps">
+    <li><b>Find the problem</b>Remote, or on site with you.</li>
+    <li><b>Fix the easy win first</b>Most impact, least work.</li>
+    <li><b>Show it working</b>You see it before it's done.</li>
+    <li><b>Write it down</b>You know what was built and how.</li>
+  </ol>
+</main>
+<footer>
+  <div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="wrap"><span>We build tech that actually works.</span><span>South Florida · hello@tekguyz.com</span></div>
+</footer>
+<script>
+document.getElementById('wo').addEventListener('submit',e=>{e.preventDefault();e.currentTarget.classList.remove('stamped');void e.currentTarget.offsetWidth;e.currentTarget.classList.add('stamped')});
+</script>
+</body>
+</html>

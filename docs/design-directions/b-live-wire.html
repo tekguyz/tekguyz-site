@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Direction B · Live Wire</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@500&display=swap">
+<style>
+/* Layout: proof first. The hero is a running build (a phone mid-call with the voice
+   receptionist demo), and every Solution is shown as a live screen with a measured
+   "Live" status. The stripe is the one thread through the page, and it carries the
+   four Solution colours as wayfinding. Light by default, true dark mode. */
+:root{
+  --bg:#FAFAF8; --fg:#0D0E10; --muted:#5A5E66; --line:#E3E3DE; --panel:#FFFFFF; --sunk:#F1F1EC;
+  --live:#16A34A; --btn-bg:#0D0E10; --btn-fg:#FFFFFF;
+  --b:#3B6FE0; --v:#7C6FE0; --a:#F2A93C; --t:#2FA679;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Geist",ui-sans-serif,system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C0D0F;--fg:#F3F3F0;--muted:#A0A4AC;--line:#24262B;--panel:#15171A;--sunk:#1B1D21;--live:#4ADE80;--btn-bg:#F5F5F5;--btn-fg:#101010;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C0D0F;--fg:#F3F3F0;--muted:#A0A4AC;--line:#24262B;--panel:#15171A;--sunk:#1B1D21;--live:#4ADE80;--btn-bg:#F5F5F5;--btn-fg:#101010;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.55 var(--body)}
+::selection{background:var(--b);color:#fff}
+:focus-visible{outline:2px solid var(--b);outline-offset:3px;border-radius:6px}
+a{color:inherit;text-underline-offset:3px}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:4px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+.mark{height:18px;width:auto;display:block;fill:var(--fg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in oklab,var(--bg) 88%,transparent);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+header nav{display:flex;gap:22px;align-items:center;font-size:15px}
+header nav a{text-decoration:none;color:var(--muted)}
+header nav a:hover{color:var(--fg)}
+header nav .cta{color:var(--btn-fg);background:var(--btn-bg);padding:9px 14px;border-radius:999px;font-weight:600}
+@media (max-width:640px){header nav a:not(.cta){display:none}}
+
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;padding-block:64px 72px}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:40px;padding-block:40px 56px}}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2.9rem,8vw,5.6rem);line-height:.95;letter-spacing:-.035em;margin:0;text-wrap:balance;font-variation-settings:"opsz" 96}
+.lede{font-size:clamp(18px,2.2vw,21px);color:var(--muted);max-width:40ch;margin:24px 0 32px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:17px;padding:16px 22px;border-radius:14px;border:1px solid var(--line);transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s}
+.btn.primary{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg);box-shadow:0 6px 18px -8px rgb(0 0 0 / .45)}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:var(--panel)}
+.small{font-size:14px;color:var(--muted);margin-top:16px}
+
+/* The live phone */
+.phone{justify-self:center;width:min(320px,100%);aspect-ratio:9/18.5;max-width:100%;border-radius:44px;background:var(--panel);border:1px solid var(--line);box-shadow:0 30px 60px -30px rgb(0 0 0 / .35),0 2px 6px rgb(0 0 0 / .06);padding:18px;display:flex;flex-direction:column;position:relative}
+.phone .top{display:flex;justify-content:space-between;font:500 12px var(--mono);color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:6px;font:500 12px var(--mono);color:var(--live)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 0 color-mix(in oklab,var(--live) 60%,transparent);animation:pulse 2s ease-out infinite}
+@keyframes pulse{to{box-shadow:0 0 0 10px transparent}}
+.caller{margin-top:36px;text-align:center}
+.avatar{width:84px;height:84px;margin:0 auto 14px;border-radius:50%;background:conic-gradient(var(--b),var(--v),var(--a),var(--t),var(--b));padding:3px}
+.avatar span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:var(--panel);font:700 30px var(--display)}
+.caller b{display:block;font:700 22px var(--display)}
+.caller small{color:var(--muted);font-size:14px}
+.wave{display:flex;gap:4px;align-items:center;justify-content:center;height:56px;margin:22px 0}
+.wave i{width:4px;border-radius:2px;background:var(--v);height:30%;animation:wv 1.1s ease-in-out infinite}
+.wave i:nth-child(2n){animation-delay:-.3s;background:var(--b)}.wave i:nth-child(3n){animation-delay:-.6s}.wave i:nth-child(5n){animation-delay:-.8s;background:var(--t)}
+@keyframes wv{50%{height:95%}}
+.notes{margin-top:auto;background:var(--sunk);border-radius:20px;padding:14px;font-size:13px}
+.notes b{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px}
+.notes div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-top:1px solid var(--line)}
+.notes div:first-of-type{border-top:0}
+.notes span:last-child{color:var(--muted);text-align:right}
+.label{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);white-space:nowrap;font:500 12px var(--mono);color:var(--muted);background:var(--bg);padding:2px 10px;border:1px solid var(--line);border-radius:999px}
+@media (prefers-reduced-motion:reduce){.dot,.wave i{animation:none}.wave i{height:60%}}
+
+/* Solutions as live rows */
+section{padding-block:56px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,3.25rem);line-height:1;letter-spacing:-.03em;margin:0 0 12px;text-wrap:balance}
+.sub{color:var(--muted);max-width:52ch;margin:0 0 36px}
+.sols{display:grid;gap:0;border-top:1px solid var(--line)}
+.sol{display:grid;grid-template-columns:1fr 1fr 220px;gap:28px;padding:28px 0;border-bottom:1px solid var(--line);align-items:start}
+@media (max-width:900px){.sol{grid-template-columns:1fr;gap:12px}}
+.sol h3{font-family:var(--display);font-size:28px;letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:12px}
+.sol h3::before{content:"";width:12px;height:12px;border-radius:3px;background:var(--c)}
+.sol p{margin:0;color:var(--muted)}
+.pk{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pk a{font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--panel)}
+.pk a:hover{border-color:var(--c)}
+.try{display:block;text-decoration:none;border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--panel);transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.try:hover{transform:translateY(-2px)}
+.try b{display:block;font-weight:600}
+.try .status{margin-top:8px}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin:0;padding:0;list-style:none}
+@media (max-width:800px){.steps{grid-template-columns:1fr 1fr}}
+.steps li{border-top:2px solid var(--fg);padding-top:14px}
+.steps b{display:block;font-family:var(--display);font-size:21px;letter-spacing:-.01em}
+.steps span{color:var(--muted);font-size:15px}
+
+.contact{background:var(--btn-bg);color:var(--btn-fg);border-radius:28px;padding:48px clamp(20px,5vw,56px);display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media (max-width:860px){.contact{grid-template-columns:1fr}}
+.contact h2{color:inherit}
+.contact p{opacity:.75;margin:0}
+.ways{display:grid;gap:10px}
+.ways a,.ways div{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px 18px;border-radius:14px;border:1px solid color-mix(in oklab,var(--btn-fg) 22%,transparent);text-decoration:none;color:inherit;font-weight:600;min-width:0}
+.ways a:hover{background:color-mix(in oklab,var(--btn-fg) 8%,transparent)}
+.ways span{opacity:.7;font-weight:400;font-size:15px;overflow-wrap:anywhere;text-align:right}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:28px;color:var(--muted);font-size:15px}
+.mock{background:var(--sunk);color:var(--muted);font-size:13px;text-align:center;padding-block:7px}
+</style>
+</head>
+<body>
+<div class="mock"><div class="wrap">Design mock, direction B. Nothing here sends. <a href="index.html">All directions</a></div></div>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<header><div class="wrap">
+  <svg class="mark" viewBox="92 14 213 36" role="img" aria-label="TEKGUYZ"><path d="M120.17 15.40L92.39 15.40L92.39 22.08L102.21 22.08L102.21 48.60L110.35 48.60L110.35 22.08L120.17 22.08ZM123.49 15.40L123.49 48.60L147.71 48.60L147.71 41.92L131.67 41.92L131.67 35.27L146.78 35.27L146.78 28.63L131.67 28.63L131.67 22.08L147.34 22.08L147.34 15.40ZM151.69 15.40L151.69 48.60L159.87 48.60L159.87 39.25L162.96 35.51L171.85 48.60L180.97 48.60L168.34 30.13L180.22 15.40L170.91 15.40L159.87 29.19L159.87 15.40ZM212.12 48.60L212.12 31.11L197.15 31.11L197.15 36.86L203.79 36.86C203.18 40.37 200.98 42.66 197.24 42.66C191.96 42.66 189.43 38.22 189.43 32.05C189.43 25.83 191.96 21.34 197.24 21.34C200.56 21.34 202.76 23.35 203.56 26.90L212.02 26.53C210.43 19.09 205.10 14.65 197.43 14.65C187.47 14.65 181.06 22.13 181.06 32.05C181.06 41.96 187.52 49.35 196.87 49.35C201.50 49.35 205.24 47.34 206.92 44.02L207.30 48.60ZM243.59 36.49L243.59 15.35L235.41 15.35L235.41 36.49C235.41 40.56 233.26 42.66 229.51 42.66C225.82 42.66 223.62 40.56 223.62 36.49L223.62 15.35L215.44 15.35L215.44 36.49C215.44 44.35 220.86 49.35 229.51 49.35C238.17 49.35 243.59 44.35 243.59 36.49ZM246.12 15.40L257.58 35.930L257.58 48.60L265.76 48.60L265.76 35.93L277.22 15.40L268.33 15.40L261.69 28.31L254.96 15.40ZM304.30 21.34L304.30 15.40L279.65 15.40L279.65 22.08L294.10 22.08L278.62 42.06L278.62 48.60L304.67 48.60L304.67 41.92L288.21 41.92Z"/></svg>
+  <nav><a href="#work">Try the builds</a><a href="#how">How it goes</a><a class="cta" href="#contact">Contact us</a></nav>
+</div></header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <h1>Real AI that fixes real problems.</h1>
+      <p class="lede">For South Florida small businesses. Every build here is running right now. Try one, then tell us what you want fixed.</p>
+      <div class="actions">
+        <a class="btn primary" href="#contact">Tell us what to fix</a>
+        <a class="btn ghost" href="https://ai-voice-receptionist-tekguyz.vercel.app">Call the AI receptionist ↗</a>
+      </div>
+      <p class="small">A real person replies within one business day.</p>
+    </div>
+    <div class="phone" aria-label="Picture of the AI Voice Receptionist demo during a call">
+      <div class="top"><span>Demo call</span><span class="status"><i class="dot"></i>Live</span></div>
+      <div class="caller"><div class="avatar"><span>L</span></div><b>Luna</b><small>AI receptionist · Mangrove Air</small></div>
+      <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="notes"><b>Call notes</b>
+        <div><span>Job</span><span>AC not cooling</span></div>
+        <div><span>Urgency</span><span>Today</span></div>
+        <div><span>Booked</span><span>Tue, 10:00</span></div>
+      </div>
+      <span class="label">Sample data · a made-up AC company</span>
+    </div>
+  </div>
+
+  <section id="work"><div class="wrap">
+    <h2>Four kinds of work. All of it running.</h2>
+    <p class="sub">Each one starts small. Open the live build and use it like a customer would.</p>
+    <div class="sols">
+      <div class="sol" style="--c:var(--b)"><div><h3>Smart Operations</h3><div class="pk"><a href="#">Every lead answered</a><a href="#">Win-back</a></div></div><p>Your business makes data and tasks every hour. We build systems that handle them automatically.</p><a class="try" href="https://squid-ink.vercel.app"><b>AI Meeting Notes ↗</b><span class="status"><i class="dot"></i>Live</span></a></div>
+      <div class="sol" style="--c:var(--v)"><div><h3>AI Voice Agents</h3><div class="pk"><a href="#">After-hours receptionist</a><a href="#">No-show rescue</a></div></div><p>Your phones don't stop ringing because your doors are closed. We answer them.</p><a class="try" href="https://ai-voice-receptionist-tekguyz.vercel.app"><b>AI Voice Receptionist ↗</b><span class="status"><i class="dot"></i>Live</span></a></div>
+      <div class="sol" style="--c:var(--a)"><div><h3>Business Systems</h3><div class="pk"><a href="#">Quote to paid</a><a href="#">Field job reports</a></div></div><p>Everything your clients and team need, in one private place instead of five.</p><a class="try" href="https://field-photo-reports.vercel.app"><b>Field Photo Reports ↗</b><span class="status"><i class="dot"></i>Live</span></a></div>
+      <div class="sol" style="--c:var(--t)"><div><h3>Custom Web Apps</h3><div class="pk"><a href="#">A website that catches leads</a></div></div><p>If you can describe the workflow, we can build the tool that runs it.</p><a class="try" href="https://meet4weed.vercel.app"><b>Private Meetup App ↗</b><span class="status"><i class="dot"></i>Live</span></a></div>
+    </div>
+  </div></section>
+
+  <section id="how"><div class="wrap">
+    <h2>How it goes</h2>
+    <p class="sub">Once you let us in, there is usually more to fix. We start with the easy win.</p>
+    <ol class="steps">
+      <li><b>Find the problem</b><span>Remote, or on site with you.</span></li>
+      <li><b>Fix the easy win</b><span>Most impact, least work.</span></li>
+      <li><b>Show it working</b><span>You see it before it's done.</span></li>
+      <li><b>Write it down</b><span>You know what was built.</span></li>
+    </ol>
+  </div></section>
+
+  <section id="contact"><div class="wrap">
+    <div class="contact">
+      <div><h2>Tell us what's slowing you down.</h2><p>Pick the way that's easiest for you. A real person reads it.</p></div>
+      <div class="ways">
+        <a href="#contact">Write to us <span>Short form</span></a>
+        <a href="#contact">Ask our AI <span>What would you build for me?</span></a>
+        <div>Email <span>hello@tekguyz.com</span></div>
+        <a href="https://cal.com/tekguyz/free-conversation">Book a free call <span>Pick a time ↗</span></a>
+      </div>
+    </div>
+  </div></section>
+</main>
+<footer><div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="wrap"><span>We build tech that actually works.</span><span>South Florida · Mon–Fri 9–5</span></div></footer>
+</body>
+</html>
