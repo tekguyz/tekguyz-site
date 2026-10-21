@@ -86,11 +86,11 @@ export function ProcessSteps() {
             style={{ height: 300, background: 'var(--tg-border)' }}
           >
             <div
-              className="absolute top-0 left-0 w-[2px]"
+              className="absolute inset-0 w-[2px] origin-top"
               style={{
-                height: `${Math.round(progress * 100)}%`,
+                transform: `scaleY(${progress})`,
                 background: 'var(--tg-fg)',
-                transition: 'height 120ms linear',
+                transition: 'transform 120ms linear',
               }}
             />
           </div>
@@ -136,7 +136,7 @@ export function ProcessSteps() {
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute -left-4 top-9 text-[length:var(--text-hero)] leading-none font-bold tracking-[-0.045em] tabular-nums select-none"
+              className="pointer-events-none absolute -left-4 max-md:left-0 top-9 text-[length:var(--text-hero)] leading-none font-bold tracking-[-0.045em] tabular-nums select-none"
               style={{ color: accent(STRIPE_ORDER[i]!).dot, opacity: 0.08 }}
             >
               {step.numeral}
