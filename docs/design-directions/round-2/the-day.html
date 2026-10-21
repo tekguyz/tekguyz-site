@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Idea 1 · The Day</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..900&family=Onest:wght@400..700&display=swap">
+<style>
+/* Layout: the home page is one owner's workday, told as a scroll story. Each hour of
+   the day is one problem and its fix, and the light changes as the day goes on.
+   The four stripe colours become the day itself: violet morning, blue midday,
+   amber late afternoon, teal evening, then night. A clock rides along in the corner.
+   Single committed look: each hour sets its own light, every colour explicit. */
+:root{
+  --ink:#0B0C10; --paper:#FFFFFF;
+  --b:#3B6FE0; --v:#7C6FE0; --a:#F2A93C; --t:#2FA679;
+  --d:"Anybody",ui-sans-serif,system-ui,sans-serif;
+  --f:"Onest",ui-sans-serif,system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--ink);color:var(--paper);font:400 18px/1.5 var(--f);overflow-x:hidden}
+::selection{background:var(--a);color:var(--ink)}
+:focus-visible{outline:3px solid currentColor;outline-offset:4px;border-radius:8px}
+a{color:inherit}
+.g{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.inner{max-width:1180px;margin:0 auto}
+.mark{height:18px;width:auto;display:block;fill:currentColor}
+
+/* Top bar and the riding clock */
+.bar{position:fixed;inset:0 0 auto 0;z-index:10;padding-top:calc(env(safe-area-inset-top,0px) + 14px);padding-bottom:14px;color:#fff;background:linear-gradient(rgb(0 0 0 / .38),transparent);pointer-events:none}
+.bar .inner{display:flex;justify-content:space-between;align-items:center}
+.bar a,.bar svg{pointer-events:auto}
+.clock{font:600 16px var(--d);font-stretch:80%;font-variant-numeric:tabular-nums;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+.clock .dial{width:22px;height:22px;border:2px solid currentColor;border-radius:50%;position:relative}
+.clock .dial i{position:absolute;left:50%;top:50%;width:2px;height:8px;background:currentColor;transform-origin:50% 0;transform:translate(-50%,0) rotate(calc(var(--hand,0)*1deg + 180deg))}
+.talk{font:600 15px var(--f);text-decoration:none;border:2px solid currentColor;border-radius:999px;padding:7px 14px}
+
+/* Opening */
+.open{min-height:92svh;display:grid;align-content:end;padding-block:120px 64px;background:radial-gradient(120% 80% at 80% 100%,#2A2350 0%,#0B0C10 60%)}
+.open h1{font:900 clamp(3.4rem,13vw,10.5rem)/.84 var(--d);font-stretch:68%;letter-spacing:-.01em;margin:0;text-transform:uppercase;text-wrap:balance}
+.open h1 em{font-style:normal;font-stretch:130%;font-weight:300;display:block;font-size:.42em;letter-spacing:.01em;text-transform:none;margin-top:.3em;color:#C9C3FF}
+.open p{max-width:36ch;font-size:clamp(19px,2.4vw,23px);color:#D7D8E0;margin:28px 0 0}
+.scrollcue{margin-top:40px;display:flex;align-items:center;gap:12px;font-size:15px;color:#A9ABB8}
+.scrollcue i{width:1px;height:44px;background:linear-gradient(#fff,transparent);animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* An hour */
+.hour{position:relative;min-height:100svh;padding-block:110px 80px;display:grid;align-items:center;background:var(--sky);color:var(--fg);overflow:hidden}
+.hour .inner{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative;z-index:1}
+@media (max-width:900px){.hour .inner{grid-template-columns:1fr;gap:36px}}
+.time{position:absolute;right:-2vw;top:50%;transform:translateY(-50%);font:900 clamp(9rem,34vw,30rem)/.8 var(--d);font-stretch:50%;color:var(--ghost);pointer-events:none;z-index:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.when{font:700 15px var(--d);font-stretch:90%;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin:0 0 14px}
+.hour h2{font:850 clamp(2.6rem,7.4vw,5.6rem)/.92 var(--d);font-stretch:75%;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.hour .story{font-size:clamp(18px,2vw,21px);max-width:38ch;margin:22px 0 0;opacity:.88}
+.instead{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fixlink{font:600 16px var(--f);text-decoration:none;background:var(--fg);color:var(--sky);border-radius:999px;padding:13px 20px;transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.fixlink:hover{transform:translateY(-2px)}
+.trylink{font:600 16px var(--f);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.sol{display:inline-flex;align-items:center;gap:8px;font-size:14px;opacity:.85;margin-top:18px}
+.sol i{width:10px;height:10px;border-radius:3px;background:var(--fg)}
+
+/* The little screens that act out the fix */
+.screen{background:var(--card);color:var(--cardfg);border-radius:28px;padding:22px;box-shadow:0 40px 80px -40px rgb(0 0 0 / .55),0 2px 0 rgb(255 255 255 / .06) inset;max-width:440px;width:100%;justify-self:center}
+.screen header{display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:.7;margin-bottom:16px}
+.screen .row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--rule);font-size:16px}
+.screen .row span:last-child{opacity:.7;text-align:right}
+.screen .big{font:800 26px/1.1 var(--d);font-stretch:85%;margin:0 0 6px}
+.screen .pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;border-radius:999px;padding:6px 12px;background:var(--pill);color:var(--pillfg)}
+.screen .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.sample{font-size:12px;opacity:.55;margin-top:14px}
+/* steps play once when the hour comes into view; at rest they are all shown */
+.js .screen .step{opacity:0;transform:translateY(10px);transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+.js .on .screen .step{opacity:1;transform:none}
+.js .on .screen .step:nth-child(2){transition-delay:.5s}.js .on .screen .step:nth-child(3){transition-delay:1s}.js .on .screen .step:nth-child(4){transition-delay:1.5s}.js .on .screen .step:nth-child(5){transition-delay:2s}.js .on .screen .step:nth-child(6){transition-delay:2.5s}
+.ring{display:flex;align-items:center;gap:14px}
+.ring b{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:var(--pill);color:var(--pillfg);font:800 20px var(--d)}
+.on .ring b{animation:ring 1s cubic-bezier(.3,0,.2,1) 2}
+@keyframes ring{25%{transform:rotate(-12deg)}50%{transform:rotate(10deg)}75%{transform:rotate(-6deg)}}
+.wave{display:flex;gap:4px;align-items:center;height:40px;margin:6px 0 12px}
+.wave i{flex:1;border-radius:2px;background:currentColor;opacity:.5;height:30%}
+.on .wave i{animation:wv 1.2s ease-in-out infinite}
+.wave i:nth-child(3n){animation-delay:-.4s}.wave i:nth-child(2n){animation-delay:-.8s}
+@keyframes wv{50%{height:100%}}
+@media (prefers-reduced-motion:reduce){.js .screen .step{opacity:1;transform:none;transition:none}.on .ring b,.on .wave i,.scrollcue i{animation:none}}
+
+/* The night: talk */
+.night{background:radial-gradient(90% 60% at 20% 0%,#1A2A3A 0%,#07080B 70%);padding-block:120px 80px;color:#fff}
+.night h2{font:900 clamp(3rem,11vw,8.5rem)/.85 var(--d);font-stretch:62%;margin:0;text-transform:uppercase;text-wrap:balance}
+.night .story{font-size:clamp(19px,2.2vw,22px);max-width:40ch;color:#C8CBD6;margin:24px 0 36px}
+.note{background:#F7F6F1;color:var(--ink);border-radius:6px;padding:22px 22px 18px;max-width:640px;box-shadow:0 30px 60px -30px #000;transform:rotate(-.6deg)}
+.note label{display:block;font:700 13px var(--d);letter-spacing:.12em;text-transform:uppercase;color:#4B4E5A}
+.note textarea{width:100%;min-height:120px;border:0;background:repeating-linear-gradient(transparent 0 33px,#DCDAD2 33px 34px);font:500 20px/34px var(--f);color:var(--ink);resize:vertical;outline:0;padding:0;margin-top:6px}
+.note input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;font:500 18px var(--f);padding:8px 0;margin-top:10px;outline:0;color:var(--ink)}
+.note .send{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
+.note button{border:0;background:var(--ink);color:#fff;font:700 17px var(--f);border-radius:999px;padding:15px 24px;cursor:pointer}
+.note small{color:#4B4E5A;font-size:14px}
+.other{display:flex;flex-wrap:wrap;gap:22px;margin-top:30px;color:#C8CBD6;font-size:16px}
+.other b{color:#fff}
+.ai{margin-top:44px;border-top:1px solid #23262E;padding-top:28px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.ai p{margin:0;color:#C8CBD6;max-width:46ch}
+.ai a{font-weight:600;border:2px solid #fff;border-radius:999px;padding:11px 18px;text-decoration:none}
+footer{background:#07080B;color:#8B8E9A;font-size:15px}
+footer .inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:24px 30px}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:5px}
+.stripe i:nth-child(1){background:var(--v)}.stripe i:nth-child(2){background:var(--b)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+.mock{position:relative;z-index:11;background:#000;color:#8B8E9A;font-size:13px;text-align:center;padding-block:7px}
+</style>
+</head>
+<body>
+<div class="mock g">Idea 1 of 3. Mock page, nothing sends. <a href="index.html">All ideas</a></div>
+<div class="bar g"><div class="inner">
+  <svg class="mark" viewBox="92 14 213 36" role="img" aria-label="TEKGUYZ"><path d="M120.17 15.40L92.39 15.40L92.39 22.08L102.21 22.08L102.21 48.60L110.35 48.60L110.35 22.08L120.17 22.08ZM123.49 15.40L123.49 48.60L147.71 48.60L147.71 41.92L131.67 41.92L131.67 35.27L146.78 35.27L146.78 28.63L131.67 28.63L131.67 22.08L147.34 22.08L147.34 15.40ZM151.69 15.40L151.69 48.60L159.87 48.60L159.87 39.25L162.96 35.51L171.85 48.60L180.97 48.60L168.34 30.13L180.22 15.40L170.91 15.40L159.87 29.19L159.87 15.40ZM212.12 48.60L212.12 31.11L197.15 31.11L197.15 36.86L203.79 36.86C203.18 40.37 200.98 42.66 197.24 42.66C191.96 42.66 189.43 38.22 189.43 32.05C189.43 25.83 191.96 21.34 197.24 21.34C200.56 21.34 202.76 23.35 203.56 26.90L212.02 26.53C210.43 19.09 205.10 14.65 197.43 14.65C187.47 14.65 181.06 22.13 181.06 32.05C181.06 41.96 187.52 49.35 196.87 49.35C201.50 49.35 205.24 47.34 206.92 44.02L207.30 48.60ZM243.59 36.49L243.59 15.35L235.41 15.35L235.41 36.49C235.41 40.56 233.26 42.66 229.51 42.66C225.82 42.66 223.62 40.56 223.62 36.49L223.62 15.35L215.44 15.35L215.44 36.49C215.44 44.35 220.86 49.35 229.51 49.35C238.17 49.35 243.59 44.35 243.59 36.49ZM246.12 15.40L257.58 35.93L257.58 48.60L265.76 48.60L265.76 35.93L277.22 15.40L268.33 15.40L261.69 28.31L254.96 15.40ZM304.30 21.34L304.30 15.40L279.65 15.40L279.65 22.08L294.10 22.08L278.62 42.06L278.62 48.60L304.67 48.60L304.67 41.92L288.21 41.92Z"/></svg>
+  <div class="clock" aria-hidden="true"><span class="dial"><i></i></span><span id="clk">6:00 AM</span></div>
+  <a class="talk" href="#talk">Talk to us</a>
+</div></div>
+
+<main>
+  <section class="open g" data-t="6:00"><div class="inner">
+    <h1>You run a business all day.<em>Here's what that day looks like with a little real AI in it.</em></h1>
+    <p>One normal workday, hour by hour. Every fix you'll see is a real build you can try yourself.</p>
+    <div class="scrollcue"><i></i>Start the day</div>
+  </div></section>
+
+  <section class="hour g" data-t="7:40" style="--sky:#6B5BD8;--fg:#FFFFFF;--ghost:rgb(255 255 255 / .09);--card:#1B1640;--cardfg:#F1EFFF;--rule:rgb(255 255 255 / .1);--pill:#C9C3FF;--pillfg:#1B1640"><div class="inner">
+    <div>
+      <p class="when">7:40 in the morning</p>
+      <h2>The phone rings. You're under a sink.</h2>
+      <p class="story">Before, that call went to voicemail, and the customer called the next company on the list. Now an AI receptionist picks up, takes the details and books the visit. You get the notes when your hands are free.</p>
+      <div class="instead"><a class="fixlink" href="#">See the after-hours receptionist</a><a class="trylink" href="https://ai-voice-receptionist-tekguyz.vercel.app">Call our demo ↗</a></div>
+      <span class="sol"><i></i>AI Voice Agents</span>
+    </div>
+    <div class="screen" aria-label="Example of an answered call">
+      <header><span>Incoming call</span><span class="pill">Live demo</span></header>
+      <div class="ring step"><b>L</b><div><p class="big">Luna answered</p><span>AI receptionist · Mangrove Air</span></div></div>
+      <div class="row step"><span>Caller needs</span><span>AC not cooling</span></div>
+      <div class="row step"><span>How soon</span><span>Today</span></div>
+      <div class="row step"><span>Booked</span><span>Tue, 10:00</span></div>
+      <div class="row step"><span>Notes sent to</span><span>You</span></div>
+      <p class="sample">Sample data from our demo, a made-up AC company.</p>
+    </div>
+  </div><span class="time" aria-hidden="true">7:40</span></section>
+
+  <section class="hour g" data-t="11:15" style="--sky:#2F62D6;--fg:#FFFFFF;--ghost:rgb(255 255 255 / .09);--card:#0E1E46;--cardfg:#EEF3FF;--rule:rgb(255 255 255 / .1);--pill:#BFD3FF;--pillfg:#0E1E46"><div class="inner">
+    <div>
+      <p class="when">11:15 in the morning</p>
+      <h2>A good meeting. Nobody wrote anything down.</h2>
+      <p class="story">The supplier call ran long and the details are already fuzzy. Now the call becomes clean notes, a short summary and the to-dos. Ask your notes a question next week and get the answer.</p>
+      <div class="instead"><a class="fixlink" href="#">See how notes run themselves</a><a class="trylink" href="https://squid-ink.vercel.app">Try AI Meeting Notes ↗</a></div>
+      <span class="sol"><i></i>Smart Operations</span>
+    </div>
+    <div class="screen" aria-label="Example of meeting notes">
+      <header><span>Supplier call · 38 min</span><span class="pill">Live demo</span></header>
+      <div class="wave step" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <p class="big step">Summary ready</p>
+      <div class="row step"><span>To-do</span><span>Confirm the order by Friday</span></div>
+      <div class="row step"><span>To-do</span><span>Send the new address</span></div>
+      <div class="row step"><span>Ask it</span><span>"What did they say about delivery?"</span></div>
+      <p class="sample">Sample notes, to show the idea.</p>
+    </div>
+  </div><span class="time" aria-hidden="true">11:15</span></section>
+
+  <section class="hour g" data-t="16:50" style="--sky:#F2A93C;--fg:#1D1405;--ghost:rgb(29 20 5 / .08);--card:#FFF8EC;--cardfg:#1D1405;--rule:rgb(29 20 5 / .1);--pill:#1D1405;--pillfg:#FFE3B5"><div class="inner">
+    <div>
+      <p class="when">4:50 in the afternoon</p>
+      <h2>That quote from Monday. Still no answer.</h2>
+      <p class="story">The job photos are in a group chat, the quote is in your email, and the follow-up is in your head. Now it all lives in one private place, and the reminder goes out without you.</p>
+      <div class="instead"><a class="fixlink" href="#">See quote to paid</a><a class="trylink" href="https://field-photo-reports.vercel.app">Try Field Photo Reports ↗</a></div>
+      <span class="sol"><i></i>Business Systems</span>
+    </div>
+    <div class="screen" aria-label="Example of a quote being followed up">
+      <header><span>Quote #1042</span><span class="pill">Example</span></header>
+      <p class="big step">Kitchen repipe</p>
+      <div class="row step"><span>Sent</span><span>Monday</span></div>
+      <div class="row step"><span>Photos</span><span>6 from the job, attached</span></div>
+      <div class="row step"><span>Reminder</span><span>Sent Thursday, by itself</span></div>
+      <div class="row step"><span>Customer</span><span>Opened it</span></div>
+      <p class="sample">Made-up example, to show the idea.</p>
+    </div>
+  </div><span class="time" aria-hidden="true">4:50</span></section>
+
+  <section class="hour g" data-t="21:30" style="--sky:#1E7F5B;--fg:#FFFFFF;--ghost:rgb(255 255 255 / .08);--card:#0A2A1F;--cardfg:#E8FFF5;--rule:rgb(255 255 255 / .1);--pill:#A9EBCF;--pillfg:#0A2A1F"><div class="inner">
+    <div>
+      <p class="when">9:30 at night</p>
+      <h2>Someone finds you online. You're asleep.</h2>
+      <p class="story">They have a question, and nobody's there to answer. Now your site talks back, catches their name and what they need, and it's the first thing you read in the morning.</p>
+      <div class="instead"><a class="fixlink" href="#">See a website that catches leads</a><a class="trylink" href="#talk">Try ours, below</a></div>
+      <span class="sol"><i></i>Custom Web Apps</span>
+    </div>
+    <div class="screen" aria-label="Example of a lead caught at night">
+      <header><span>Your website · 9:31 PM</span><span class="pill">Example</span></header>
+      <p class="big step">"Do you work on weekends?"</p>
+      <div class="row step"><span>Answered</span><span>Right away</span></div>
+      <div class="row step"><span>Name</span><span>Dana R.</span></div>
+      <div class="row step"><span>Needs</span><span>Water heater, this week</span></div>
+      <div class="row step"><span>In your inbox</span><span>7:00 AM</span></div>
+      <p class="sample">Made-up example, to show the idea.</p>
+    </div>
+  </div><span class="time" aria-hidden="true">9:30</span></section>
+
+  <section class="night g" id="talk" data-t="23:00"><div class="inner">
+    <h2>Tomorrow can go differently.</h2>
+    <p class="story">Write down what ate your day. Plain words are fine. A real person reads it and writes back within one business day, and the first conversation is free.</p>
+    <form class="note" id="note">
+      <label for="what">What ate your day?</label>
+      <textarea id="what" placeholder="Missed calls in the morning, quotes nobody answers..."></textarea>
+      <label for="em" style="margin-top:16px">Where should we write back?</label>
+      <input id="em" type="email" autocomplete="email" placeholder="you@yourbusiness.com">
+      <div class="send"><button type="submit">Send it</button><small id="sent">Mon–Fri 9–5, South Florida</small></div>
+    </form>
+    <div class="other"><span>Or email <b>hello@tekguyz.com</b></span><a href="https://cal.com/tekguyz/free-conversation">Book a free call ↗</a></div>
+    <div class="ai"><p>Not sure what to ask for? Tell our AI about your business. It will tell you what it would fix first.</p><a href="#talk">Ask our AI</a></div>
+  </div></section>
+</main>
+<footer class="g"><div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="inner"><span>TEKGUYZ · Real AI for small businesses in South Florida</span><span>Every build on this site is live</span></div></footer>
+<script>
+(()=>{
+  document.documentElement.classList.add('js');
+  const secs=[...document.querySelectorAll('[data-t]')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.35});
+  secs.forEach(s=>io.observe(s));
+  // the clock: minutes since 6:00 for each section, interpolated by scroll
+  const toMin=t=>{const [h,m]=t.split(":").map(Number);return h*60+m};
+  const stops=secs.map((s,i)=>({el:s,m:toMin(s.dataset.t)}));
+  const clk=document.getElementById('clk'), hand=document.querySelector('.clock');
+  const fmt=m=>{m=Math.round(m/5)*5;let h=Math.floor(m/60)%24,mm=m%60,ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+String(mm).padStart(2,'0')+' '+ap};
+  let raf=0; const tick=()=>{raf=0; const y=scrollY+innerHeight*.5; let m=stops[0].m;
+    for(let i=0;i<stops.length-1;i++){const a=stops[i].el.offsetTop,b=stops[i+1].el.offsetTop; if(y>=a&&y<b){m=stops[i].m+(stops[i+1].m-stops[i].m)*((y-a)/(b-a));break} if(y>=b)m=stops[i+1].m}
+    clk.textContent=fmt(m); hand.style.setProperty('--hand',(m%720)/2)};
+  addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(tick)},{passive:true}); tick();
+  document.getElementById('note').addEventListener('submit',e=>{e.preventDefault();document.getElementById('sent').textContent='Mock only. On the real site this goes to a person.'});
+})();
+</script>
+</body>
+</html>
