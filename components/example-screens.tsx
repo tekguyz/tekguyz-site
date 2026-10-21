@@ -91,7 +91,7 @@ function Segmented<T extends string>({
   label: string;
 }) {
   return (
-    <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+    <div role="group" aria-label={label} className="flex flex-wrap gap-1.5 sm:gap-2">
       {options.map((o) => (
         <button
           key={o.value}
@@ -99,7 +99,7 @@ function Segmented<T extends string>({
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'tap-44 rounded-[8px] border px-3 py-2 text-[0.875rem] font-semibold transition-[border-color,background-color] duration-[120ms]',
+            'tap-44 rounded-[8px] border px-2 py-2 text-[0.875rem] sm:px-3 font-semibold transition-[border-color,background-color] duration-[120ms]',
             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg',
             value === o.value
               ? 'border-fg bg-surface'
@@ -621,7 +621,7 @@ function Booking({ solution }: { solution: SolutionSlug }) {
                       aria-pressed={time === t}
                       onClick={() => setTime(t)}
                       className={cn(
-                        'tap-44 rounded-[8px] border px-3 py-2 text-[0.875rem] font-semibold transition-[border-color,background-color] duration-[120ms]',
+                        'tap-44 rounded-[8px] border px-2 py-2 text-[0.875rem] sm:px-3 font-semibold transition-[border-color,background-color] duration-[120ms]',
                         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg',
                         isTaken
                           ? 'border-border text-secondary line-through opacity-60'
