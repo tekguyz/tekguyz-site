@@ -13,6 +13,11 @@ import { cn } from '@/lib/utils';
  * (36px, 30ch) on 2026-10-07: a 95-character quote wrapped to 6-7 lines and
  * was 353-412px tall, about 40% of each /work row.
  *
+ * A third, `row` size [decided 2026-10-21, refs #59]: in the home band and the
+ * /work rows the quote sat at 36-44px under a 25.6px product title, so people
+ * read the slogan before they knew what the build was. There the quote drops
+ * to `--text-title` and the title moves up to `--text-subhead`.
+ *
  * The only place accent touches anything larger than a dot or tag.
  */
 export function PullQuote({
@@ -23,7 +28,7 @@ export function PullQuote({
 }: {
   children: React.ReactNode;
   solution: SolutionSlug;
-  size?: 'display' | 'band';
+  size?: 'display' | 'band' | 'row';
   className?: string;
 }) {
   const a = accentForSolution(solution);
@@ -33,7 +38,9 @@ export function PullQuote({
         'pl-6 font-semibold tracking-[-0.03em]',
         size === 'display'
           ? 'max-w-[30ch] text-[length:var(--text-subhead)] leading-[1.15]'
-          : 'max-w-[22ch] text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08]',
+          : size === 'row'
+            ? 'max-w-[34ch] text-[length:var(--text-title)] leading-[1.25] tracking-[-0.02em]'
+            : 'max-w-[22ch] text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08]',
         className,
       )}
       style={{

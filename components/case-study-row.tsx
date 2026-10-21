@@ -44,7 +44,7 @@ export function CaseStudyRow({
     >
       <SolutionTag solution={entry.solution} label={entry.tag} />
       <h3
-        className="mt-4 text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+        className="mt-4 text-[length:var(--text-subhead)] leading-[1.15] font-semibold tracking-[-0.025em]"
         style={{ textWrap: 'pretty' }}
       >
         <Link href={`/work/${entry.slug}`} className="tap-44 link-underline">
@@ -57,7 +57,7 @@ export function CaseStudyRow({
       >
         {entry.approach}
       </p>
-      <PullQuote solution={entry.solution} className="mt-11">
+      <PullQuote solution={entry.solution} size="row" className="mt-11">
         {entry.pullQuote}
       </PullQuote>
       <Link
