@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { site } from '@/lib/site';
 import { solutions } from '@/content/solutions';
 import { getWork } from '@/content/work';
+import { examples } from '@/content/examples';
 import { generateStaticParams as workParams } from '@/app/work/[slug]/page';
 
 /**
@@ -23,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.url}/`, lastModified: now, changeFrequency: 'monthly', priority: 1 },
     { url: `${site.url}/solutions`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${site.url}/work`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${site.url}/examples`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${site.url}/process`, lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
     { url: `${site.url}/contact`, lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
     { url: `${site.url}/privacy`, lastModified: new Date('2026-07-13'), changeFrequency: 'yearly', priority: 0.3 },
@@ -45,5 +47,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  return [...staticRoutes, ...solutionRoutes, ...workRoutes];
+  const exampleRoutes: MetadataRoute.Sitemap = examples.map((e) => ({
+    url: `${site.url}/examples/${e.slug}`,
+    lastModified: new Date(e.updatedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...solutionRoutes, ...workRoutes, ...exampleRoutes];
 }

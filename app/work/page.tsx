@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { PageHero } from '@/components/page-hero';
 import { CaseStudyRow } from '@/components/case-study-row';
 import { ProjectCard } from '@/components/project-card';
@@ -65,6 +66,12 @@ export default async function WorkPage() {
             <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
           ))}
         </div>
+        <p className="mt-12 text-[length:var(--text-body)] text-secondary">
+          Want a quick look at more of what we build?{' '}
+          <Link href="/examples" className="tap-44 link-underline font-semibold text-fg">
+            See the examples →
+          </Link>
+        </p>
       </div>
 
       <ClosingCta />
