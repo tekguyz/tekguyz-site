@@ -113,13 +113,14 @@ const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 /**
- * Additive to the existing 24px, never a replacement, and always the
- * two-argument form so a browser without `env()` support resolves to 24px
- * rather than 0.
+ * Additive to the edge gap, never a replacement, and always the two-argument
+ * form so a browser without `env()` support resolves to the gap rather than 0.
+ * The gap is `--tg-launcher-inset` in `globals.css`: 16px on phones, 24px from
+ * 768 up (refs #55). The desktop panel shares it, so the two corners still meet.
  */
 const INSET = {
-  right: 'calc(24px + env(safe-area-inset-right, 0px))',
-  bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+  right: 'calc(var(--tg-launcher-inset) + env(safe-area-inset-right, 0px))',
+  bottom: 'calc(var(--tg-launcher-inset) + env(safe-area-inset-bottom, 0px))',
 } as const;
 
 /** The sheet fills the viewport minus the unsafe edges — all four of them. */
@@ -498,7 +499,7 @@ export function Concierge() {
         /* Padding is mobile-first and the two values are not the same decision.
            `py-[13px]` + the 18px mark = EXACTLY the 44px tap floor, which is the
            reason for the odd number: nothing above the floor is doing work.
-           Desktop keeps 24x16, where the pill is 16% of a 1440 viewport.
+           Desktop is 15x10 since #55: a 40px control, about 100px wide.
 
            Measured 2026-08-13 on a 412px viewport (Pixel 9A): the one desktop
            size shipped to every width made this 234x50 — 57% of the screen,
@@ -509,7 +510,7 @@ export function Concierge() {
            The padding now lives in `button.tsx` as `LAUNCHER_PADDING`, beside
            the four sizes it is not one of — one source per number. It is 1px
            short on every side because the HAIRLINE adds it back: 12+18+12+2 =
-           44, 15+18+15+2 = 50. Identical outer box to before the border
+           44, 10+18+10+2 = 40. Identical outer box to before the border
            existed. That file records why this control takes the padding but
            not `base`.
 
@@ -529,17 +530,11 @@ export function Concierge() {
         }`}
       >
         <ConnectedNodes size={18} stroke="currentColor" strokeOpacity={0.4} />
-        {/* Two spans, swapped by CSS — never `matchMedia`, which renders the
-            wrong string on the server and hydrates into a mismatch. `hidden` is
-            `display:none`, so the inactive string leaves the accessibility tree
-            with it and a screen reader reads exactly one.
-
-            Deliberately NO `aria-label` pinning the long string at every width:
-            the accessible name would then be "Ask about your project" while the
-            visible label reads "Ask us", and WCAG 2.5.3 requires the name to
-            contain the visible text. The visible text IS the name. */}
-        <span className="md:hidden">Ask us</span>
-        <span className="hidden md:inline">Ask about your project</span>
+        {/* One short label at every width (refs #55). "Ask about your project"
+            made the desktop pill 234px wide, 16% of a 1440 viewport, for words
+            the panel header already says once it opens. The visible text is
+            the accessible name — no `aria-label` (WCAG 2.5.3). */}
+        <span>Ask us</span>
       </button>
 
       <AnimatePresence>

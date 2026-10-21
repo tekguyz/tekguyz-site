@@ -471,7 +471,7 @@ async function sweepRoute(page: Page, route: string, vp: VP) {
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
     const findFab = () =>
       [...document.querySelectorAll('button')].find((b) =>
-        (b.textContent || '').includes('Ask about your project'),
+        (b.textContent || '').includes('Ask us'),
       ) || null;
 
     /* An overlap only counts if the launcher is actually presented. This probe
@@ -803,7 +803,7 @@ async function measureFab(page: Page) {
   return page.evaluate(() => {
     const a = (window as any).__a;
     const fab = [...document.querySelectorAll('button')].find((b) =>
-      (b.textContent || '').includes('Ask about your project'),
+      (b.textContent || '').includes('Ask us'),
     ) as HTMLElement | undefined;
     if (!fab) return { present: false };
     const cs = getComputedStyle(fab);
@@ -842,7 +842,7 @@ async function measurePanel(page: Page) {
   const opened = await page.evaluate(async () => {
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
     const fab = [...document.querySelectorAll('button')].find((b) =>
-      (b.textContent || '').includes('Ask about your project'),
+      (b.textContent || '').includes('Ask us'),
     ) as HTMLElement | undefined;
     if (!fab) return false;
     fab.click();
@@ -863,7 +863,7 @@ async function measurePanel(page: Page) {
     const send = panel.querySelector('button[type="submit"]') as HTMLElement | null;
     const close = panel.querySelector('button[aria-label="Close"]') as HTMLElement | null;
     const fabNow = [...document.querySelectorAll('button')].find((b) =>
-      (b.textContent || '').includes('Ask about your project'),
+      (b.textContent || '').includes('Ask us'),
     ) as HTMLElement | undefined;
 
     // Does the page behind the panel still scroll while it is open?
@@ -1341,7 +1341,7 @@ async function reducedMotionFloor(page: Page, route: string) {
     // `.tg-seq`, so the reduced-motion block's `!important` pins do not reach
     // it. Sample it over time rather than asserting either way.
     const fab = [...document.querySelectorAll('button')].find((b) =>
-      (b.textContent || '').includes('Ask about your project'),
+      (b.textContent || '').includes('Ask us'),
     ) as HTMLElement | undefined;
     const fabSamples: any[] = [];
     if (fab) {
@@ -1622,7 +1622,7 @@ const TAP_PROBE = `
       // The concierge launcher is fixed and floats over everything. Its
       // overlaps are the recorded, out-of-scope gap from Prompt 10 — counting
       // them as new adjacency defects here would be double-booking.
-      const isLauncher = !!thief && (thief.textContent || '').includes('Ask about your project');
+      const isLauncher = !!thief && (thief.textContent || '').includes('Ask us');
       // SAME EXEMPTION, WIDENED — not a second mechanism. An OPEN OVERLAY
       // legitimately covers the page beneath it, exactly as the fixed launcher
       // does. A control inside the overlay taking a point away from a target
@@ -1705,7 +1705,7 @@ async function phaseTaps(browser: Browser) {
         window.scrollTo(0, window.innerHeight * 1.4);
         await sleep(400);
         const fab = [...document.querySelectorAll('button')].find((b) =>
-          (b.textContent || '').includes('Ask about your project'),
+          (b.textContent || '').includes('Ask us'),
         ) as HTMLElement | undefined;
         if (!fab) return 'launcher not reachable';
         fab.click();
@@ -1866,7 +1866,7 @@ async function phaseClasses(browser: Browser) {
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
         const findFab = () =>
           [...document.querySelectorAll('button')].find((b) =>
-            (b.textContent || '').includes('Ask about your project'),
+            (b.textContent || '').includes('Ask us'),
           ) || null;
         const presented = (fab: Element) => {
           const cs = getComputedStyle(fab);

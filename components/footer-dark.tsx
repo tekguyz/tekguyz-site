@@ -5,6 +5,7 @@ import { solutions } from '@/content/solutions';
 import { footerWork } from '@/content/work';
 import { accentForSolution } from '@/config/solutions';
 import { site } from '@/lib/site';
+import { FooterLauncherYield } from '@/components/concierge/footer-yield';
 
 /**
  * Always dark regardless of the toggle, separated by a persistent 1px top
@@ -69,6 +70,7 @@ const HAIRLINE = 'var(--tg-border)';
 export function FooterDark() {
   return (
     <footer className="footer-dark border-t" style={{ borderTopColor: HAIRLINE }}>
+      <FooterLauncherYield />
       <div className="tg-container pt-10">
         {/* Masthead.
 

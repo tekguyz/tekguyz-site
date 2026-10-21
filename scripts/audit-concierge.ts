@@ -146,7 +146,7 @@ async function phaseM19(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference') => 
             const isLauncher = (n: Node) =>
               n.nodeType === 1 &&
               (n as Element).tagName === 'BUTTON' &&
-              ((n as Element).textContent || '').includes('Ask about your project');
+              ((n as Element).textContent || '').includes('Ask us');
 
             const sample = () => {
               if (!el) return;
@@ -169,7 +169,7 @@ async function phaseM19(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference') => 
                     ? (n as HTMLElement)
                     : n.nodeType === 1
                       ? ([...(n as Element).querySelectorAll('button')].find((b) =>
-                          (b.textContent || '').includes('Ask about your project'),
+                          (b.textContent || '').includes('Ask us'),
                         ) ?? null)
                       : null;
                   if (hit) {
@@ -197,7 +197,7 @@ async function phaseM19(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference') => 
               latchExisting: () => {
                 if (armed) return;
                 const b = [...document.querySelectorAll('button')].find((x) =>
-                  (x.textContent || '').includes('Ask about your project'),
+                  (x.textContent || '').includes('Ask us'),
                 );
                 if (b) {
                   armed = true;
@@ -282,7 +282,7 @@ async function phaseGeometry(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference'
 
     const launcher = await page.evaluate(() => {
       const b = [...document.querySelectorAll('button')].find((x) =>
-        (x.textContent || '').includes('Ask about your project'),
+        (x.textContent || '').includes('Ask us'),
       ) as HTMLElement | undefined;
       if (!b) return null;
       const cs = getComputedStyle(b);
@@ -326,7 +326,7 @@ async function phaseGeometry(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference'
     // Open it.
     await page.evaluate(() => {
       const b = [...document.querySelectorAll('button')].find((x) =>
-        (x.textContent || '').includes('Ask about your project'),
+        (x.textContent || '').includes('Ask us'),
       ) as HTMLElement | undefined;
       b?.focus();
       b?.click();
@@ -424,7 +424,7 @@ async function phaseGeometry(ctxFor: (vp: VP, reduce: 'reduce' | 'no-preference'
       return {
         panelPresent: !!document.querySelector('div[role="dialog"]'),
         activeElement: a ? a.tagName + '.' + (a.className || '').split(' ').slice(0, 2).join('.') : null,
-        activeIsLauncher: !!(a && (a.textContent || '').includes('Ask about your project')),
+        activeIsLauncher: !!(a && (a.textContent || '').includes('Ask us')),
         bodyOverflow: getComputedStyle(document.body).overflow,
       };
     });

@@ -49,7 +49,7 @@ window.__tg = {
   /* Verbatim from audit-mobile.ts:474-477. */
   findFab: () =>
     [...document.querySelectorAll('button')].find((b) =>
-      (b.textContent || '').includes('Ask about your project'),
+      (b.textContent || '').includes('Ask us'),
     ) || null,
 
   presentedState: (fab) => {

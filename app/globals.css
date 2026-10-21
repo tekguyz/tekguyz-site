@@ -466,6 +466,19 @@
   background: var(--tg-surface);
 }
 
+/* The concierge launcher's (and desktop panel's) gap from the viewport corner.
+   16px on phones so the control stops crowding body copy, 24px from 768 up.
+   refs #55. Read by `INSET` in `components/concierge/concierge.tsx`. */
+:root {
+  --tg-launcher-inset: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --tg-launcher-inset: 24px;
+  }
+}
+
 /* DESIGN.md §8 — 768–1024px collapses the asymmetric grid to 8 columns. */
 @media (max-width: 1023px) {
   .tg-grid {
