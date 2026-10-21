@@ -77,7 +77,7 @@ export default async function HomePage() {
           The strip's removal took the 48/64 `mt-12 md:mt-16` with it; the
           board is now the section's only child and needs no internal step. */}
       <section>
-        <FoldBoard entries={foldBoard} statuses={statuses} />
+        <FoldBoard entries={foldBoard} />
       </section>
 
       {/* Solutions — four full-width rows, never a four-card grid. */}
