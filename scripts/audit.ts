@@ -61,7 +61,7 @@ await page.evaluate(() => window.scrollTo(0, 1400));
 await page.waitForTimeout(700);
 out['4_fab'] = await page.evaluate(() => {
   const fab = [...document.querySelectorAll('button')].find((b) =>
-    b.textContent?.includes('Ask about your project'),
+    b.textContent?.includes('Ask us'),
   );
   if (!fab) return 'FAB NOT FOUND';
   const cs = getComputedStyle(fab);
@@ -77,7 +77,7 @@ out['4_fab'] = await page.evaluate(() => {
 // 5. Thinking indicator — 72px wide, 3px tall, 4 columns, inline with a label.
 out['5_thinking'] = await page.evaluate(() => {
   const fab = [...document.querySelectorAll('button')].find((b) =>
-    b.textContent?.includes('Ask about your project'),
+    b.textContent?.includes('Ask us'),
   ) as HTMLButtonElement | undefined;
   fab?.click();
   return 'panel opened';

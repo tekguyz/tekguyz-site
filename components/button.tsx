@@ -67,7 +67,7 @@ const sizes = {
  *
  * 1px short on every side because that control carries a hairline the four
  * above do not, so the outer box lands on 44px (mobile, exactly §8's tap floor)
- * and 50px (desktop).
+ * and 40px (desktop; it was 50 until the owner called it too big, refs #55).
  *
  * **The launcher takes this string and NOT `base`, and that is a cascade fact
  * rather than laziness.** `base` declares
@@ -78,7 +78,7 @@ const sizes = {
  * correct in the JSX and quietly disables the transitions. So the launcher
  * shares the value that matters (padding) and keeps its own transition.
  */
-export const LAUNCHER_PADDING = 'px-[15px] py-[12px] md:px-[23px] md:py-[15px]';
+export const LAUNCHER_PADDING = 'px-[15px] py-[12px] md:py-[10px]';
 
 type Variant = keyof typeof variants;
 type Size = keyof typeof sizes;
