@@ -1,0 +1,65 @@
+<title>TEKGUYZ Site Directions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&display=swap">
+<style>
+/* Layout: three whole-site ideas, each with its own page map, so the difference is
+   in the structure and flow, not only the paint. Phone first. */
+:root{--bg:#F6F6F4;--fg:#111214;--muted:#5C6068;--line:#E2E2DE;--card:#FFFFFF;
+  --b:#3B6FE0;--v:#7C6FE0;--a:#F2A93C;--t:#2FA679;--f:"Geist",ui-sans-serif,system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E0F11;--fg:#F2F2F0;--muted:#A3A7AE;--line:#25272C;--card:#17191C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E0F11;--fg:#F2F2F0;--muted:#A3A7AE;--line:#25272C;--card:#17191C;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 17px/1.5 var(--f)}
+:focus-visible{outline:2px solid var(--b);outline-offset:3px;border-radius:12px}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:4px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 56px}
+h1{font-weight:800;font-size:clamp(2rem,7vw,3.2rem);line-height:1;letter-spacing:-.035em;margin:0 0 12px;text-wrap:balance}
+.lede{color:var(--muted);margin:0 0 28px;max-width:58ch}
+.idea{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:14px}
+.idea .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.idea h2{margin:0;font-size:24px;letter-spacing:-.02em}
+.idea h2 em{font-style:normal;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--fg);border-radius:999px;padding:3px 8px;margin-left:8px;vertical-align:4px}
+.idea p{margin:8px 0 14px;color:var(--muted)}
+.open{flex:none;text-decoration:none;background:var(--fg);color:var(--bg);font-weight:700;border-radius:12px;padding:12px 16px}
+.map{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px}
+.map span{border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:var(--bg)}
+.map b{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+.dl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:14px 0 0;font-size:15px}
+.dl dt{color:var(--muted)}.dl dd{margin:0}
+.note{margin-top:24px;font-size:15px;color:var(--muted)}
+.note li{margin-bottom:6px}
+.old{font-size:14px;color:var(--muted)}
+</style>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<main class="wrap">
+  <h1>Three new sites, built from zero</h1>
+  <p class="lede">Each idea has its own pages, its own flow, new words and its own motion. Only your facts, your builds, the colors and the wordmark carry over. Open each one on your phone and scroll all the way down.</p>
+
+  <section class="idea">
+    <div class="top"><h2>1 · The Day <em>My pick</em></h2><a class="open" href="the-day.html">Open</a></div>
+    <p>The home page is one owner's workday as a scroll story. Each hour is a real problem and the fix acting itself out. The light changes as the day goes on, and the stripe's four colors become the hours.</p>
+    <div class="map"><b>Pages</b><span>The Day (home)</span><span>One page per fix</span><span>Try the builds</span><span>Talk</span></div>
+    <dl class="dl"><dt>Motion</dt><dd>A clock that runs as you scroll. Each fix plays out on a little screen.</dd><dt>Contact</dt><dd>The day ends at night with a note: "What ate your day?"</dd><dt>Risk</dt><dd>The owner has to scroll to reach the contact note. A "Talk to us" button stays at the top.</dd></dl>
+  </section>
+
+  <section class="idea">
+    <div class="top"><h2>2 · Problem Finder</h2><a class="open" href="problem-finder.html">Open</a></div>
+    <p>The site works like a tool. The owner taps the problem that sounds like their week, and the page turns into a fix sheet: what we'd build, a live build to try, and a message that's already started.</p>
+    <div class="map"><b>Pages</b><span>Find my fix (home)</span><span>One page per problem</span><span>Live builds</span><span>Who answers</span></div>
+    <dl class="dl"><dt>Motion</dt><dd>The tile you tap grows into the full fix sheet.</dd><dt>Contact</dt><dd>Inside every fix. The message is already half written.</dd><dt>Risk</dt><dd>It feels less like a brand and more like an app.</dd></dl>
+  </section>
+
+  <section class="idea">
+    <div class="top"><h2>3 · Open Workshop</h2><a class="open" href="open-workshop.html">Open</a></div>
+    <p>The site is your workshop wall. A pinboard shows what's on the bench and what just shipped, from your real work log. The visitor sees a real person at work before they write.</p>
+    <div class="map"><b>Pages</b><span>The board (home)</span><span>Work log</span><span>One page per build</span><span>Pin your job</span></div>
+    <dl class="dl"><dt>Motion</dt><dd>Cards drop onto the board. Your job card slides into "Up next".</dd><dt>Contact</dt><dd>A blank card you write on and pin to the board.</dd><dt>Risk</dt><dd>The board must be kept fresh, or it looks quiet.</dd></dl>
+  </section>
+
+  <ul class="note">
+    <li>All new words. Your facts, builds and the four Solutions stay. No prices, no phone number.</li>
+    <li>Each fix or problem gets its own page, so the 4 example showcases fit right in.</li>
+    <li>Mock pages. No form sends anything, and nothing is live on tekguyz.com.</li>
+  </ul>
+</main>
