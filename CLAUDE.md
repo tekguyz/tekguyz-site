@@ -41,8 +41,8 @@ and say which one you're using.
 | Situation | Skill |
 | --- | --- |
 | Deciding how something **looks or feels** — layout, motion, type, density, a component's treatment | `impeccable` |
-| **Inventing** behavior that isn't already specified in `docs/DESIGN.md` | `mattpocock-skills:grilling` **first**, then build it |
-| A bug, a test failure, anything behaving unexpectedly | `mattpocock-skills:diagnosing-bugs` |
+| **Inventing** behavior that isn't already specified in `docs/DESIGN.md` | `superpowers:brainstorming` **first**, then build it |
+| A bug, a test failure, anything behaving unexpectedly | `superpowers:systematic-debugging` |
 | Before a push, or after a batch of edits | `/code-review` |
 | Implementing a decision that is already written down | none — just build it |
 | **Critiquing or polishing UI that already exists** — hierarchy, spacing, alignment, contrast, motion, empty and error states | `impeccable` — `/impeccable critique <file>` before finalizing, `/impeccable polish` after |
