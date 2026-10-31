@@ -1,5 +1,7 @@
 # TEKGUYZ — Brand Playbook
 
+> **Retired 2026-10-31 (tekguyz/tekguyz-one#71, tekguyz/tekguyz-one#72).** Do not use this file for what TEKGUYZ is, its voice, its core message or the Solutions. The one source is `tekguyz-one/brand/playbook.md` (and `tekguyz-one/brand/solutions.md`). This old site is being replaced by `tekguyz-web`.
+
 > **Updated during the 2026 website rebuild.** Sections 11, 12, 13 and the Internal Notes carry real changes — testimonial attribution, the media inventory (new ratios, capture method, the real-capture rule), the resolved icon direction, and the resolved footer-location drift.
 >
 > **Scope of this document:** brand strategy, voice, business facts, and positioning. It is the highest authority on *what TEKGUYZ is and how it sounds*. For the website rebuild specifically, three documents sit below it and are more specific: `CANONICAL.md` (architecture and decisions), `DESIGN.md` (visual and motion spec), `COPY.md` (exact site copy). Where this playbook describes the visual system in general terms and DESIGN.md gives an exact value, DESIGN.md wins.
