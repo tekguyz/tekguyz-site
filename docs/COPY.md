@@ -282,7 +282,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Not screenshots of things that used to work. Six live builds — click into any one and open it yourself.
+DESCRIPTION: Six live builds — click into any one and open it yourself.
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -299,7 +299,7 @@ document was the stale half.]*
 ## Metadata
 
 TITLE: `TEKGUYZ | Our Work — Live, Working Software`
-DESCRIPTION: `Every project here is real, running software you can open and try yourself — not a screenshot. Case studies and builds across AI, automation, and web apps.`
+DESCRIPTION: `Every project here is real, running software you can open and try yourself. Case studies and builds across AI, automation, and web apps.`
 
 ---
 
@@ -653,7 +653,7 @@ Usually, yes — that's most of what we do. Integrating with tools you already p
 We make sure everything works the way it's supposed to, and we stay available when questions come up. We don't hand over a login and disappear.
 
 **Are the demos on this site real?**
-Every one. They're live applications, not screenshots. Open any of them and use it yourself.
+Every one. They're live applications. Open any of them and use it yourself.
 
 ---
 

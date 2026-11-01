@@ -10,7 +10,7 @@ import { buildMetadata, breadcrumbs, jsonLd, workItemList } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'TEKGUYZ | Our Work — Live, Working Software',
   description:
-    'Every project here is real, running software you can open and try yourself — not a screenshot. Case studies and builds across AI, automation, and web apps.',
+    'Every project here is real, running software you can open and try yourself. Case studies and builds across AI, automation, and web apps.',
   path: '/work',
 });
 
@@ -47,7 +47,7 @@ export default async function WorkPage() {
       <PageHero
         eyebrow="Our Work"
         headline="Everything here is running right now."
-        description={`Not screenshots of things that used to work. ${buildCountWordCapitalized} live builds — click into any one and open it yourself.`}
+        description={`${buildCountWordCapitalized} live builds — click into any one and open it yourself.`}
       />
 
       <div>
