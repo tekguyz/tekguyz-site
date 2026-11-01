@@ -1,5 +1,7 @@
 # Voice and words
 
+> **Retired 2026-10-31 (tekguyz/tekguyz-one#71, tekguyz/tekguyz-one#72).** Do not use this file for what TEKGUYZ is, its voice, its core message or the Solutions. The one source is `tekguyz-one/brand/playbook.md` (and `tekguyz-one/brand/solutions.md`). This old site is being replaced by `tekguyz-web`.
+
 How TEKGUYZ sounds in anything a client, lead or visitor reads. Read it before writing a headline, a caption, an email or a deck.
 
 ## The message, in order

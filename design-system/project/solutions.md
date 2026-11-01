@@ -1,5 +1,7 @@
 # Solutions and process
 
+> **Retired 2026-10-31 (tekguyz/tekguyz-one#71, tekguyz/tekguyz-one#72).** Do not use this file for what TEKGUYZ is, its voice, its core message or the Solutions. The one source is `tekguyz-one/brand/playbook.md` (and `tekguyz-one/brand/solutions.md`). This old site is being replaced by `tekguyz-web`.
+
 The four Solutions are the real offer. Each holds many offerings. A client buys a package: several offerings wired together to fix one problem end to end. A single offering on its own rarely sells. A website is one offering, not the offer.
 
 ## The four Solutions

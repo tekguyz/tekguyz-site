@@ -1,3 +1,5 @@
+> **Retired 2026-10-31 (tekguyz/tekguyz-one#71, tekguyz/tekguyz-one#72).** Do not use this file for what TEKGUYZ is, its voice, its core message or the Solutions. The one source is `tekguyz-one/brand/playbook.md` (and `tekguyz-one/brand/solutions.md`). This old site is being replaced by `tekguyz-web`.
+
 TEKGUYZ is the real person who helps small and medium businesses use real AI to fix real problems, and the interface says *measured*, not *performed*: hairlines instead of shadows, one motion gesture instead of five, four colours that each mean one line of work.
 
 **Start here, in this order.** Read this file. Read the Voice and words section (`voice.md`) before you write a sentence. Take colour, type, spacing, radius and motion from `tokens.json`; never type a hex. Build with the components in `components/`, which are real React and run as written. To use the system on a platform that has no React, see the Take it anywhere section (`platforms.md`).

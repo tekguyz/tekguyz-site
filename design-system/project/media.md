@@ -1,5 +1,7 @@
 # Media: marks, covers and clips
 
+> **Retired 2026-10-31 (tekguyz/tekguyz-one#71, tekguyz/tekguyz-one#72).** Do not use this file for what TEKGUYZ is, its voice, its core message or the Solutions. The one source is `tekguyz-one/brand/playbook.md` (and `tekguyz-one/brand/solutions.md`). This old site is being replaced by `tekguyz-web`.
+
 Every file here is made by the media build tool from fixed numbers. Pick the right file; do not resize, crop, recolour or edit one.
 
 ## Which mark, on which ground
