@@ -72,7 +72,7 @@ export const solutions: Solution[] = [
       'Live appointment scheduling',
       'Instant CRM and follow-up sync',
     ],
-    relatedWork: ['AI Voice Receptionist & Call Booking'],
+    relatedWork: ['AI Voice Receptionist & Call Booking', 'Missed Call Follow-Up'],
     cta: { label: 'Hear one in action', href: '/work/ai-voice-receptionist' },
     serviceDescription:
       'Real-time conversational AI agents that answer calls, capture leads, and schedule work around the clock.',
@@ -99,6 +99,7 @@ export const solutions: Solution[] = [
     relatedWork: [
       'Field Photo Reports & Quality Tracking',
       'Lead & Pipeline CRM',
+      'Quote to Paid',
       'Team Performance & Automated Customer Feedback',
     ],
     cta: { label: 'Talk about consolidating this', href: '/contact?interest=business-systems' },

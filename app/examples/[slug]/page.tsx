@@ -109,6 +109,19 @@ export default async function ExamplePage({ params }: { params: Promise<{ slug: 
             {entry.tryIt}
           </p>
           <ExampleScreen example={entry} />
+          {entry.fullDemo && (
+            <p className="mt-6 text-[length:var(--text-body)] text-secondary" style={{ textWrap: 'pretty' }}>
+              See the full build on a different made-up business:{' '}
+              <a
+                href={entry.fullDemo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tap-44 link-underline font-semibold text-fg"
+              >
+                {entry.fullDemo.name}, one-click demo
+              </a>
+            </p>
+          )}
         </div>
 
         <div className="mt-12 flex flex-wrap items-baseline justify-between gap-8 border-t border-border pt-8">
