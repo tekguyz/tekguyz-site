@@ -232,7 +232,7 @@ We build AI voice agents that answer every call like your best employee would �
 - Live appointment scheduling
 - Instant CRM and follow-up sync
 
-RELATED WORK: AI Voice Receptionist & Call Booking
+RELATED WORK: AI Voice Receptionist & Call Booking, Missed Call Follow-Up *(added 2026-11-10, #67)*
 CTA: Hear one in action → /work/ai-voice-receptionist
 
 METADATA — TITLE: `TEKGUYZ | AI Voice Agents — Answer Every Call, Day or Night`
@@ -251,7 +251,7 @@ We move you into one organized, private system where your clients and team log i
 - Automated invoicing
 - Integrations across the tools you already use
 
-RELATED WORK: Field Photo Reports & Quality Tracking, Lead & Pipeline CRM, Team Performance & Automated Customer Feedback
+RELATED WORK: Field Photo Reports & Quality Tracking, Lead & Pipeline CRM, Quote to Paid, Team Performance & Automated Customer Feedback *(Quote to Paid added 2026-11-10, #67)*
 CTA: Talk about consolidating this → /contact?interest=business-systems
 
 METADATA — TITLE: `TEKGUYZ | Business Systems — One Private System, Not Five Tools`
@@ -282,7 +282,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Six live builds — click into any one and open it yourself.
+DESCRIPTION: Eight live builds — click into any one and open it yourself.
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -291,10 +291,11 @@ lineup became six. *[corrected 2026-09-07 — the code was already right; this
 document was the stale half.]*
 
 **Case Studies** *(5, full-width)* — the deep-dive builds.
-**Projects** *(1, compact grid)* — lighter builds, same standard.
+**Projects** *(3, compact grid)* — lighter builds, same standard.
 
 *(2026-09-28, #13: Bundle Builder removed — the store behind it was cancelled.
-2026-09-29, pass 2: Private Meetup App added as the fifth case study.)*
+2026-09-29, pass 2: Private Meetup App added as the fifth case study.
+2026-11-10, #67: Missed Call Follow-Up and Quote to Paid added as projects, ahead of Team Performance.)*
 
 ## Metadata
 
@@ -324,6 +325,8 @@ The problem · What it does · try-it line · the screen · `Part of <Solution>`
 The per-example words (headline, problem, what it does, try-it line, title,
 description) live in `content/examples.ts`, one entry each; that file is their
 source.
+
+**Full demo line** *(2026-11-10, #67)*, under the screen, only when a finished build of the same tool exists: `See the full build on a different made-up business: <name>, one-click demo` — links the build's landing page in a new tab, never the demo itself. Today only Quote & Invoice Follow-Up has one: Quote to Paid.
 
 **On /work**, under Projects: `Want a quick look at more of what we build? See the examples →`
 **On each /solutions page**, under the builds: eyebrow `Examples`, a card per example with `Example on a made-up business: <business>.`
@@ -505,6 +508,40 @@ DESCRIPTION: `A members-only meetup app for verified Florida medical cannabis pa
 # PROJECT DETAIL PAGES
 
 *Lighter structure by design: tag · headline · Built For · what it does · what made it interesting · LiveFrame + status.*
+
+## `/work/missed-call-follow-up` — Missed Call Follow-Up
+
+*Added 2026-11-10 (#67, tekguyz/tekguyz-one#137). Words from tekguyz-one `projects/missed-call-follow-up/about.md`. Live demo link: the landing page, https://missed-call-follow-up.vercel.app.*
+
+TAG: AI Voice Agents
+BUILT FOR: Trade businesses that live on the phone: HVAC and AC repair, roofing, and boat and marine repair
+HEADLINE: Every missed call gets an answer, and every lead lands in the pipeline.
+
+When a call goes unanswered, the caller hears back by text, email or an automated voice callback, whichever the business picks. The follow-up asks what is wrong, where, and how soon. The lead lands on a pipeline board, and the owner gets an alert when the call is missed and again when the lead lands.
+
+**WHAT MADE IT INTERESTING:** the business picks the channel. Some callers answer a text, some read email, some want to hear a voice. The same three questions go out on whichever one fits, and every answer lands on the same board.
+
+**TRY IT:** Press Try the demo on its landing page. No sign-up. You play a caller to a made-up roofer: pick the channel, call, and nobody answers. The follow-up arrives on a phone on screen, and the lead lands on the owner’s board. Nothing is sent.
+
+METADATA — TITLE: `TEKGUYZ | Missed Call Follow-Up`
+DESCRIPTION: `When a call is missed, the caller hears back by text, email or a voice callback. The lead lands in a pipeline and the owner gets an alert. Try the one-click demo.`
+
+## `/work/quote-to-paid` — Quote to Paid
+
+*Added 2026-11-10 (#67, tekguyz/tekguyz-one#138). Words from tekguyz-one `projects/quote-to-paid/about.md`. Live demo link: the landing page, https://quotetopaid.vercel.app.*
+
+TAG: Business Systems
+BUILT FOR: Roofing and AC companies that send quotes and wait to get paid
+HEADLINE: No quote or invoice goes quiet. Persistent, never pushy.
+
+Follows up on every quote that got no answer and every unpaid invoice, by text, politely. The invoice goes out by itself when the crew marks the job done. The follow-ups stop the moment the customer answers or pays, and after the last one the owner is asked to call. One board shows what is waiting, who answered, who to call and what got paid.
+
+**WHAT MADE IT INTERESTING:** the stop rule. A follow-up that keeps going after the customer answers is the pushy kind. Here any answer or payment ends it, nothing goes out on Sundays, and it never passes three. The rules are simple enough to say out loud.
+
+**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up AC company. Press Skip ahead a day and watch follow-ups go out, customers answer and invoices get paid. Open any job to play the customer. Nothing is sent or charged.
+
+METADATA — TITLE: `TEKGUYZ | Quote to Paid`
+DESCRIPTION: `Follows up on every quote and every unpaid invoice by text, politely, until the customer answers or pays. Then it stops. Try the one-click demo.`
 
 ## `/work/team-performance` — Team Performance & Automated Customer Feedback
 

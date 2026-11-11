@@ -35,6 +35,11 @@ export interface Example {
   /** One line under the screen: how to use the example. */
   tryIt: string;
   screen: ExampleScreen;
+  /**
+   * A finished build of the same tool, when one exists: its public name and
+   * its landing page (never the demo itself). Shown under the screen.
+   */
+  fullDemo?: { name: string; url: string };
   updatedAt: string;
   title: string;
   description: string;
@@ -62,6 +67,8 @@ export const examples: Example[] = [
     tryIt:
       'Pick a quote or an invoice to read the follow-up we wrote for it, then approve it. It is an example, so nothing is sent.',
     screen: 'quote-follow-up',
+    // tekguyz-site#67: package D's demo, a different made-up business.
+    fullDemo: { name: 'Quote to Paid', url: 'https://quotetopaid.vercel.app' },
     updatedAt: ADDED,
     title: 'TEKGUYZ | Quote & Invoice Follow-Up — Example',
     description:

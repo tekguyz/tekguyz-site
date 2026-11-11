@@ -339,6 +339,65 @@ export const work: WorkEntry[] = [
   },
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
+  /*
+   * 2026-11-10 (tekguyz-site#67, tekguyz/tekguyz-one#137, #138): the two
+   * package demos, Missed Call Follow-Up (package A) and Quote to Paid
+   * (package D), join as projects, ahead of Team Performance, which stays last.
+   * Words are from tekguyz-one `projects/<repo>/about.md`. `url` is each
+   * landing page, never the demo itself. Posters are each app's own
+   * `showcase/` desktop capture, 1440x900, made-up businesses only.
+   */
+  {
+    slug: 'missed-call-follow-up',
+    kind: 'project',
+    name: 'Missed Call Follow-Up',
+    tag: 'AI VOICE AGENTS',
+    solution: 'ai-voice-agents',
+    headline: 'Every missed call gets an answer, and every lead lands in the pipeline.',
+    url: 'https://missed-call-follow-up.vercel.app',
+    // The app's own `showcase/lead-in-desktop-light.png` (webp), taken in the
+    // demo: Keywind Roofing and its callers are made up.
+    poster: '/media/missed-call-thumb.webp',
+    alt: 'Missed Call Follow-Up demo: the follow-up texts on the caller’s phone, the alerts to the owner, and the lead in the New column of the pipeline',
+    embeddable: false,
+    updatedAt: '2026-11-10',
+    builtFor: 'Trade businesses that live on the phone: HVAC and AC repair, roofing, and boat and marine repair',
+    summary:
+      'When a call goes unanswered, the caller hears back by text, email or an automated voice callback, whichever the business picks. The follow-up asks what is wrong, where, and how soon. The lead lands on a pipeline board, and the owner gets an alert when the call is missed and again when the lead lands.',
+    whatMadeItInteresting:
+      'the business picks the channel. Some callers answer a text, some read email, some want to hear a voice. The same three questions go out on whichever one fits, and every answer lands on the same board.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. You play a caller to a made-up roofer: pick the channel, call, and nobody answers. The follow-up arrives on a phone on screen, and the lead lands on the owner’s board. Nothing is sent.',
+    title: 'TEKGUYZ | Missed Call Follow-Up',
+    description:
+      'When a call is missed, the caller hears back by text, email or a voice callback. The lead lands in a pipeline and the owner gets an alert. Try the one-click demo.',
+  },
+  {
+    slug: 'quote-to-paid',
+    kind: 'project',
+    name: 'Quote to Paid',
+    tag: 'BUSINESS SYSTEMS',
+    solution: 'business-systems',
+    headline: 'No quote or invoice goes quiet. Persistent, never pushy.',
+    url: 'https://quotetopaid.vercel.app',
+    // The app's own `showcase/board-day-summary-desktop-light.png` (webp),
+    // taken in the demo: Gumbo Limbo Air, its customers and amounts are made up.
+    poster: '/media/quote-to-paid-thumb.webp',
+    alt: 'Quote to Paid demo board: a summary of the follow-ups that went out by themselves, the quotes and invoices waiting, and the two jobs that need the owner',
+    embeddable: false,
+    updatedAt: '2026-11-10',
+    builtFor: 'Roofing and AC companies that send quotes and wait to get paid',
+    summary:
+      'Follows up on every quote that got no answer and every unpaid invoice, by text, politely. The invoice goes out by itself when the crew marks the job done. The follow-ups stop the moment the customer answers or pays, and after the last one the owner is asked to call. One board shows what is waiting, who answered, who to call and what got paid.',
+    whatMadeItInteresting:
+      'the stop rule. A follow-up that keeps going after the customer answers is the pushy kind. Here any answer or payment ends it, nothing goes out on Sundays, and it never passes three. The rules are simple enough to say out loud.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. It opens a made-up AC company. Press Skip ahead a day and watch follow-ups go out, customers answer and invoices get paid. Open any job to play the customer. Nothing is sent or charged.',
+    title: 'TEKGUYZ | Quote to Paid',
+    description:
+      'Follows up on every quote and every unpaid invoice by text, politely, until the customer answers or pays. Then it stops. Try the one-click demo.',
+  },
+
   {
     slug: 'team-performance',
     kind: 'project',
