@@ -11,7 +11,11 @@ import {
   footerSlugs,
   footerWork,
   getWork,
+  heroSlug,
+  largeSlugs,
+  smallSlugs,
   work,
+  workLarge,
 } from './work';
 
 /**
@@ -37,13 +41,31 @@ describe('work lineup', () => {
     expect(foldBoard).toHaveLength(foldSlugs.length);
   });
 
-  // The owner's order, 2026-10-15: the five builds with a one-click demo lead.
-  it('the work list leads with the five demo builds, in the owner’s order', () => {
-    expect(work.slice(0, 5).map((w) => w.slug)).toEqual([...footerSlugs]);
+  // Founder, 2026-11-11: four large cards, one per Solution, then the rest.
+  it('/work shows every build exactly once, large or small', () => {
+    const shown = [...largeSlugs, ...smallSlugs];
+    expect(new Set(shown).size).toBe(shown.length);
+    expect([...shown].sort()).toEqual(work.map((w) => w.slug).sort());
   });
 
-  it('the home band shows the first two case studies', () => {
-    expect([...featuredSlugs]).toEqual(work.filter((w) => w.kind === 'case-study').slice(0, 2).map((w) => w.slug));
+  it('the large cards are one per Solution, in the founder’s order', () => {
+    expect(workLarge.map((w) => w.solution)).toEqual([
+      'ai-voice-agents',
+      'business-systems',
+      'smart-operations',
+      'custom-web-apps',
+    ]);
+  });
+
+  it('every large card has a pull quote', () => {
+    for (const w of workLarge) expect(w.pullQuote, w.slug).toBeTruthy();
+  });
+
+  it('Home never shows the CRM, and the band never repeats the hero', () => {
+    const home = [heroSlug, ...featuredSlugs, ...foldSlugs, ...footerSlugs];
+    expect(home).not.toContain('tekguyz-crm');
+    expect(featuredSlugs).not.toContain(heroSlug);
+    expect(getWork(heroSlug)?.heroPoster).toBeTruthy();
   });
 
   it('the footer Work column resolves every slug and gives each a short label', () => {
@@ -59,10 +81,8 @@ describe('work lineup', () => {
     expect(order).toEqual([...order].sort((a, b) => a - b));
   });
 
-  // Pass 2 of #13 fills the teal slot with the meetup app: four lines, four cards.
-  it('the fold board shows four cards, all case studies', () => {
+  it('the fold board shows four cards, one per line', () => {
     expect(foldBoard).toHaveLength(4);
-    for (const w of foldBoard) expect(w.kind, w.slug).toBe('case-study');
   });
 
   it('every solution’s Related work name resolves to an entry', () => {
@@ -84,7 +104,7 @@ describe('work lineup', () => {
   });
 
   it('the build count word matches the entry count', () => {
-    expect(buildCountWord).toBe('eight');
-    expect(work).toHaveLength(8);
+    expect(buildCountWord).toBe('nine');
+    expect(work).toHaveLength(9);
   });
 });

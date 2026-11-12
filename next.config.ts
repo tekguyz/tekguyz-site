@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       { source: '/work/restaurant-menu', destination: '/work', permanent: true },
       { source: '/work/auto-detailer', destination: '/work', permanent: true },
       { source: '/work/bundle-builder', destination: '/work', permanent: true },
+      { source: '/work/private-meetup-app', destination: '/work', permanent: true },
     ];
   },
 };

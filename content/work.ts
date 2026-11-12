@@ -77,6 +77,11 @@ export interface Project extends WorkBase {
   summary: string;
   whatMadeItInteresting: string;
   tryIt?: string;
+  /**
+   * Only for a project that leads its Solution on /work (a large card), which
+   * shows a pull quote the way a case study row does.
+   */
+  pullQuote?: string;
   /** Team Performance is the build the verified Google review describes. */
   hasClientReview?: boolean;
 }
@@ -210,8 +215,9 @@ export const work: WorkEntry[] = [
     kind: 'case-study',
     name: 'Field Photo Reports & Quality Tracking',
     shortName: 'Field Photo Reports',
-    tag: 'BUSINESS SYSTEMS',
-    solution: 'business-systems',
+    // Retagged from Business Systems by the founder, 2026-11-11.
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
     headline: 'One Report from the job site, with the proof printed on every photo.',
     // The public demo deploy (tekguyz/realstone-field-ops#64): it plays the
     // made-up Seagrape Stone Co., never the real shop. The bare origin is the
@@ -297,46 +303,6 @@ export const work: WorkEntry[] = [
     description:
       'An AI meeting notepad that records without sending a bot to the call, then writes summaries, takeaways, and action items you can trace back to the transcript.',
   },
-  {
-    slug: 'private-meetup-app',
-    kind: 'case-study',
-    name: 'Private Meetup App',
-    shortName: 'Private Meetup App',
-    tag: 'CUSTOM WEB APPS',
-    solution: 'custom-web-apps',
-    headline: 'Small private meetups, where a person checks every card and the address stays hidden until the host says yes.',
-    // The bare origin is the landing page; only its "Try the demo" button signs
-    // a visitor in (DEMO-STANDARD). The app's brand name is in this url and
-    // nowhere else on the site — `content/work.test.ts` fails if it leaks into
-    // any other field.
-    url: 'https://meet4weed.vercel.app',
-    // 1080x675, cut from the app's own `showcase/list-feed-light.png` (at y=270),
-    // taken in the demo: every member and meetup in it is invented. The app is
-    // one phone-width column, so its desktop picture left wide empty sides; the
-    // feed picture fills the frame. Swapped 2026-10-06.
-    poster: '/media/meetup-thumb.webp',
-    alt: 'Private Meetup App list view: category filters, a search box, a List and Map switch, and the first meetup card with its date and time',
-    embeddable: false,
-    updatedAt: REFRESH_2026_10_01,
-    // Written 2026-09-29 (#13 pass 2), in sync with COPY.md, from the app's
-    // PRODUCT.md and CONTEXT.md. No member count and no result is stated,
-    // because none exists: it launches small and private.
-    challenge:
-      'Florida law lets medical cannabis patients consume at a private home. A meetup there only works if everyone in the room is a verified patient, 21 or older. An ordinary event app cannot promise that: it checks nobody’s card, and anyone who finds the page can find the house.',
-    approach:
-      'We built a members-only app around the gate. Every new member takes a live photo of their card, then of their face with a random challenge, and a person reviews each one by eye. AI reads the card and lists concerns, but it never decides. Hosts approve every guest by hand. Until they do, the map shows only a circle about half a mile across. The app never handles a sale of any kind.',
-    outcome:
-      'Every member at a meetup was checked by a person, and nobody outside the guest list knows where it is. Card and face photos are deleted when the reviewer decides, within 7 days at most, and the app forgets the address a week after the meetup.',
-    pullQuote:
-      'Hide by default, reveal by approval: nobody sees who or where until a person has said yes.',
-    tryIt:
-      'Press Try the demo on its landing page. One click opens your own visitor account among sample members and meetups — no card, no sign-up, and it is deleted after 7 days. Browse the list and the map, open a meetup, and see what stays hidden until a host says yes.',
-    howItsBuilt:
-      'A phone-first web app that installs to the home screen, on one database where every row is locked to who may see it. Verification is a one-step-per-screen camera flow with no gallery upload. Notifications name no member and no meetup, and the app stores no data on the phone. The demo runs in a sealed copy that can never reach a real member. Light and dark mode throughout.',
-    title: 'TEKGUYZ | Private Meetup App',
-    description:
-      'A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.',
-  },
   // ---- Projects (lighter by design; project-card never carries an image) ----
 
   /*
@@ -351,6 +317,7 @@ export const work: WorkEntry[] = [
     slug: 'missed-call-follow-up',
     kind: 'project',
     name: 'Missed Call Follow-Up',
+    shortName: 'Missed Call Follow-Up',
     tag: 'AI VOICE AGENTS',
     solution: 'ai-voice-agents',
     headline: 'Every missed call gets an answer, and every lead lands in the pipeline.',
@@ -358,6 +325,11 @@ export const work: WorkEntry[] = [
     // The app's own `showcase/lead-in-desktop-light.png` (webp), taken in the
     // demo: Keywind Roofing and its callers are made up.
     poster: '/media/missed-call-thumb.webp',
+    // The home hero since 2026-11-11 (founder's pick). The top 1440x810 of the
+    // same capture, and for below 1024px the phone and the alerts only
+    // (x=0, y=160, 960x540), because the pipeline is a smear at phone width.
+    heroPoster: '/media/missed-call-hero.webp',
+    heroPosterMobile: '/media/missed-call-hero-mobile.webp',
     alt: 'Missed Call Follow-Up demo: the follow-up texts on the caller’s phone, the alerts to the owner, and the lead in the New column of the pipeline',
     embeddable: false,
     updatedAt: '2026-11-10',
@@ -376,6 +348,7 @@ export const work: WorkEntry[] = [
     slug: 'quote-to-paid',
     kind: 'project',
     name: 'Quote to Paid',
+    shortName: 'Quote to Paid',
     tag: 'BUSINESS SYSTEMS',
     solution: 'business-systems',
     headline: 'No quote or invoice goes quiet. Persistent, never pushy.',
@@ -393,9 +366,68 @@ export const work: WorkEntry[] = [
       'the stop rule. A follow-up that keeps going after the customer answers is the pushy kind. Here any answer or payment ends it, nothing goes out on Sundays, and it never passes three. The rules are simple enough to say out loud.',
     tryIt:
       'Press Try the demo on its landing page. No sign-up. It opens a made-up AC company. Press Skip ahead a day and watch follow-ups go out, customers answer and invoices get paid. Open any job to play the customer. Nothing is sent or charged.',
+    pullQuote: 'Any answer or payment stops the follow-ups. The rules are simple enough to say out loud.',
     title: 'TEKGUYZ | Quote to Paid',
     description:
       'Follows up on every quote and every unpaid invoice by text, politely, until the customer answers or pays. Then it stops. Try the one-click demo.',
+  },
+
+  /*
+   * 2026-11-11 (refs tekguyz/tekguyz-one#148, #149): the next two package
+   * demos. No-Show Rescue is package C, Win-Back is package G. Words are from
+   * each landing page and README; `url` is the landing page, never the demo.
+   * No showcase pictures exist yet, so each poster is a 1440x900 capture of the
+   * landing page (`tools/capture`, 2026-11-11). Swap in a demo capture when
+   * the showcase is made.
+   */
+  {
+    slug: 'no-show-rescue',
+    kind: 'project',
+    name: 'No-Show Rescue',
+    shortName: 'No-Show Rescue',
+    tag: 'AI VOICE AGENTS',
+    solution: 'ai-voice-agents',
+    headline: 'Fewer empty chairs: a reminder before the visit, a new time after a no-show.',
+    url: 'https://no-show-rescue.vercel.app',
+    poster: '/media/no-show-rescue-thumb.webp',
+    alt: 'No-Show Rescue landing page: a text thread offering a missed patient a new time, and an open chair filled from the waitlist',
+    embeddable: false,
+    updatedAt: '2026-11-11',
+    builtFor: 'Dental and vet practices',
+    summary:
+      'Patients get a reminder text the day before a visit. When someone does not come, they are offered a new time, and the open slot goes to a short-notice waitlist: the first to reply takes it. After the visit, one message asks how it went. Happy patients get the review link, and the others reach the front desk, privately.',
+    whatMadeItInteresting:
+      'the empty chair. Rebooking the patient who missed is half the job. The other half is filling the slot today, so the waitlist hears about it at once and is told when it is taken.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. You play a patient at a made-up dental practice: get the reminder, miss the visit, pick a new time, and watch the front desk fill the open chair. Nothing is sent.',
+    title: 'TEKGUYZ | No-Show Rescue',
+    description:
+      'Reminders before a visit, a new time offered after a no-show, the open slot filled from a waitlist, and a review request after. Try the one-click demo.',
+  },
+  {
+    slug: 'win-back',
+    kind: 'project',
+    name: 'Win-Back',
+    shortName: 'Win-Back',
+    tag: 'SMART OPERATIONS',
+    solution: 'smart-operations',
+    headline: 'Bring back the customers who stopped calling.',
+    url: 'https://win-back-customers.vercel.app',
+    poster: '/media/win-back-thumb.webp',
+    alt: 'Win-Back landing page: a drafted message to a past customer, waiting for the owner to approve or edit it, with 8 past customers found',
+    embeddable: false,
+    updatedAt: '2026-11-11',
+    builtFor: 'AC and heating companies with yearly service, and dental and vet offices with recalls',
+    summary:
+      'Reads the customer records the business already keeps and finds who stopped coming back: a missed tune-up, a plan that ran out, one visit and never again. A short report says who and why, and each customer gets a drafted message signed by the owner. The owner approves, changes or skips every one, and a reply can book a visit.',
+    whatMadeItInteresting:
+      'there is no approve-all button. Every message waits for the owner, it starts from the business’s own customers only, and anyone who asked not to get texts stays off the list.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. It opens a made-up AC company with its past-customer records. Read the report, approve the messages you like, and watch a reply book a visit. Nothing is sent.',
+    pullQuote: 'Nothing goes out until the owner approves it, one customer at a time.',
+    title: 'TEKGUYZ | Win-Back',
+    description:
+      'Finds past customers who stopped coming back in your own records, says who and why, and drafts a message to each for you to approve. Try the one-click demo.',
   },
 
   {
@@ -436,7 +468,10 @@ export const work: WorkEntry[] = [
    * and the demo showed a real company's products and prices, which the demo
    * standard bans. Its poster went with it.
    *
-   * All five retired slugs 308 to their replacement in `next.config.ts`, because
+   * RETIRED 2026-11-11: `private-meetup-app`. The founder took it off
+   * tekguyz.com; the portfolio keeps it. Its poster went with it.
+   *
+   * All six retired slugs 308 to their replacement in `next.config.ts`, because
    * Google still lists some of them.
    */
 ];
@@ -469,94 +504,68 @@ export const caseStudies = work.filter((w): w is CaseStudy => w.kind === 'case-s
 export const projects = work.filter((w): w is Project => w.kind === 'project');
 
 /**
- * Home shows exactly two, in this order (CANONICAL §4).
- *
- * [changed 2026-09-04] The second slot was `ai-voice-receptionist` and is now
- * `ai-meeting-notes` — **the first two of `caseStudies` in array order**, which
- * is what `/work` shows a visitor one click later. The old pair was left
- * untouched when the lineup was rewritten earlier the same day, so the home
- * band and the work index disagreed about which builds lead.
- *
- * It also fixes a repeat this page could not afford: `ai-voice-receptionist` is
- * ALREADY the hero's poster and the violet card on the fold board. Holding the
- * ink band as well made it three appearances on one page while
- * `ai-meeting-notes` had one. The voice build loses nothing — it is still the
- * hero, still on the board, still a case study.
- *
- * [changed 2026-10-15] Still the first two case studies, after the owner's
- * reorder: the voice build and the CRM. Field Photo Reports stays the hero.
+ * /work, decided by the founder 2026-11-11: four large cards, one per
+ * Solution, in this order, then every other build in small cards, newest first.
+ * `content/work.test.ts` fails if a build is in neither list, or in both.
  */
-export const featuredSlugs = ['ai-voice-receptionist', 'tekguyz-crm'] as const;
+export const largeSlugs = [
+  'ai-voice-receptionist',
+  'quote-to-paid',
+  'win-back',
+  'field-photo-reports',
+] as const;
+
+export const smallSlugs = [
+  'no-show-rescue',
+  'missed-call-follow-up',
+  'ai-meeting-notes',
+  'tekguyz-crm',
+  'team-performance',
+] as const;
+
+const bySlugs = (slugs: readonly string[]) =>
+  slugs.map((slug) => work.find((w) => w.slug === slug)).filter((w): w is WorkEntry => Boolean(w));
+
+export const workLarge = bySlugs(largeSlugs);
+export const workSmall = bySlugs(smallSlugs);
+
+/**
+ * The home hero (founder, 2026-11-11): Missed Call Follow-Up, replacing Field
+ * Photo Reports.
+ */
+export const heroSlug = 'missed-call-follow-up';
+
+/**
+ * The home ink band, "Two we're proud of" (founder, 2026-11-11). It never
+ * repeats the hero, and the Lead & Pipeline CRM never appears on Home.
+ */
+export const featuredSlugs = ['ai-voice-receptionist', 'field-photo-reports'] as const;
 export const featured = featuredSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is CaseStudy => w?.kind === 'case-study');
 
 /**
- * The homepage fold's build board — ONE live build per solution line, in
- * `STRIPE_ORDER` (blue → violet → amber → teal). Selection lives here rather
- * than in the component for the same reason `featuredSlugs` does: which builds
- * a page shows is content, not layout.
- *
- * The order is not editorial. Four cards carrying the four locked accents in
- * their canonical order makes the fold a LEGEND for the wayfinding system the
- * rest of the site then uses — a visitor meets all four accents attached to
- * four real product names before they reach the Solutions rows. Reordering
- * these breaks that; adding a fifth is impossible by construction, since there
- * is no fifth line.
- *
- * WHY THESE SPECIFICALLY. Every slot on the board is a CASE STUDY, so the tier
- * a card links into is the same for all of them.
- *
- * [2026-08-29] The amber slot moved from `team-performance` (a project) to
- * `field-photo-reports`, which then appears twice on home: a tagged entry
- * here and a full-size row in the ink band. The voice build already appeared
- * three times, so a no-repeat rule was buying nothing, and one thinner project
- * card among case studies led somewhere lighter than its neighbours. The cost:
- * `team-performance` is the build the verified Google review describes, so the
- * fold's review fact and its amber card no longer make the same claim. The
- * review fact still stands alone — it links to Google, where it is checkable.
- *
- * [2026-09-28, #13 pass 1] THE TEAL SLOT IS EMPTY, SO THE BOARD SHOWS THREE.
- * `bundle-builder` held it as a project — the one named exception to the rule
- * above — and was removed because its store was cancelled and its demo showed
- * a real company's products and prices. The owner chose three cards over
- * keeping that data up while the replacement waited for its screenshots.
- *
- * [2026-09-29, #13 pass 2] `private-meetup-app`, a custom-web-apps case study,
- * holds the teal slot. Four cards, four lines, and every one a case study: the
- * named exception is gone.
- *
- * `content/work.test.ts` fails if a slug here stops resolving, or if two cards
- * share a line or leave stripe order.
+ * The homepage fold's build board: one build per Solution line, in
+ * `STRIPE_ORDER` (blue, violet, amber, teal), so the fold is a legend for the
+ * four accents. Since 2026-11-11 a slot may hold a project: the two newest
+ * demos and Quote to Paid lead their lines, and the CRM stays off Home.
  */
 export const foldSlugs = [
-  'ai-meeting-notes',
-  'ai-voice-receptionist',
+  'win-back',
+  'no-show-rescue',
+  'quote-to-paid',
   'field-photo-reports',
-  'private-meetup-app',
 ] as const;
 
-export const foldBoard = foldSlugs
-  .map((slug) => work.find((w) => w.slug === slug))
-  .filter((w): w is WorkEntry => Boolean(w));
+export const foldBoard = bySlugs(foldSlugs);
 
 /**
- * The footer's Work column: the five builds with a one-click demo, in the order
- * the owner set on 2026-10-15 (four until then; the voice build joined when it
- * moved to the front). Content, not layout, like `featuredSlugs`.
- * `content/work.test.ts` fails if a slug stops resolving.
+ * The footer's Work column, shown on every page including Home: the four
+ * builds that lead their Solution on /work. Never the CRM (it is off Home).
  */
-export const footerSlugs = [
-  'ai-voice-receptionist',
-  'tekguyz-crm',
-  'field-photo-reports',
-  'ai-meeting-notes',
-  'private-meetup-app',
-] as const;
+export const footerSlugs = largeSlugs;
 
-export const footerWork = footerSlugs
-  .map((slug) => work.find((w) => w.slug === slug))
-  .filter((w): w is WorkEntry => Boolean(w));
+export const footerWork = workLarge;
 
 export function getWork(slug: string): WorkEntry | undefined {
   return work.find((w) => w.slug === slug);

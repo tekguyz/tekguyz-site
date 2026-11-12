@@ -48,7 +48,7 @@ export const solutions: Solution[] = [
       'Task and workflow automation across your tools',
       'Real-time operational alerts when something needs you',
     ],
-    relatedWork: ['AI Meeting Notes & Transcription'],
+    relatedWork: ['Win-Back', 'AI Meeting Notes & Transcription'],
     cta: { label: 'Talk about automating this', href: '/contact?interest=smart-operations' },
     serviceDescription:
       'Custom AI assistants, automated data sorting, and workflow automation that handle the repetitive work your business generates every hour.',
@@ -72,7 +72,7 @@ export const solutions: Solution[] = [
       'Live appointment scheduling',
       'Instant CRM and follow-up sync',
     ],
-    relatedWork: ['AI Voice Receptionist & Call Booking', 'Missed Call Follow-Up'],
+    relatedWork: ['AI Voice Receptionist & Call Booking', 'Missed Call Follow-Up', 'No-Show Rescue'],
     cta: { label: 'Hear one in action', href: '/work/ai-voice-receptionist' },
     serviceDescription:
       'Real-time conversational AI agents that answer calls, capture leads, and schedule work around the clock.',
@@ -97,7 +97,6 @@ export const solutions: Solution[] = [
       'Integrations across the tools you already use',
     ],
     relatedWork: [
-      'Field Photo Reports & Quality Tracking',
       'Lead & Pipeline CRM',
       'Quote to Paid',
       'Team Performance & Automated Customer Feedback',
@@ -126,7 +125,9 @@ export const solutions: Solution[] = [
       'Client-facing dashboards',
     ],
     // #13 pass 1 removed Bundle Builder; pass 2 added Private Meetup App.
-    relatedWork: ['Private Meetup App'],
+    // 2026-11-11: the meetup app left the site, and Field Photo Reports was
+    // retagged here from Business Systems (founder).
+    relatedWork: ['Field Photo Reports & Quality Tracking'],
     cta: { label: 'Describe what you need built', href: '/contact?interest=custom-web-apps' },
     serviceDescription:
       'Ordering and cart systems, headless e-commerce, scheduling and booking portals, and client-facing dashboards.',
