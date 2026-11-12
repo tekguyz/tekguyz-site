@@ -430,6 +430,38 @@ export const work: WorkEntry[] = [
       'Finds past customers who stopped coming back in your own records, says who and why, and drafts a message to each for you to approve. Try the one-click demo.',
   },
 
+  /*
+   * 2026-11-12 (refs tekguyz/tekguyz-one#152): Book Your Visit, a Custom Web Apps
+   * demo. It leads Custom Web Apps on /work, so it has a pull quote. Words are
+   * from tekguyz-one `projects/book-your-visit/about.md`. `url` is the landing
+   * page (bookyourvisit.vercel.app), never the demo. The poster is the app's own
+   * `showcase/webp/booking-page-desktop-light.webp`, 1440x900, made-up business.
+   */
+  {
+    slug: 'book-your-visit',
+    kind: 'project',
+    name: 'Book Your Visit',
+    shortName: 'Book Your Visit',
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
+    headline: 'Customers pick a time themselves.',
+    url: 'https://bookyourvisit.vercel.app',
+    poster: '/media/book-your-visit-thumb.webp',
+    alt: 'Book Your Visit demo: the booking page for a made-up cleaning company, with its three services, next to the owner’s day showing booked visits, free gaps and a Block off time button',
+    embeddable: false,
+    updatedAt: '2026-11-12',
+    builtFor: 'Small home-service businesses, such as a cleaning company, that run on a calendar and a phone',
+    summary:
+      'Customers pick a service and an open time, then book, move or cancel without a call. Each service has a length, so the page never offers a time that cannot fit. The owner sees the day: every visit, the free gaps and the blocked time. A visit booked online lands there marked “New”.',
+    whatMadeItInteresting:
+      'the page only shows open times: inside opening hours, never on a Sunday, never over blocked time, and with 30 minutes kept free to drive between homes. When the owner blocks off time, it leaves the booking page at once.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. You play a customer and the owner of a made-up cleaning company: book a cleaning, watch it land on the owner’s day, block off time, then move or cancel the visit. Nothing is sent.',
+    pullQuote: 'Customers see only the times you are free. Change or cancel without a call.',
+    title: 'TEKGUYZ | Book Your Visit',
+    description:
+      'An online booking portal where customers pick a service and an open time, and change or cancel without a call. The owner sees the day. Try the one-click demo.',
+  },
   {
     slug: 'team-performance',
     kind: 'project',
@@ -504,7 +536,8 @@ export const caseStudies = work.filter((w): w is CaseStudy => w.kind === 'case-s
 export const projects = work.filter((w): w is Project => w.kind === 'project');
 
 /**
- * /work, decided by the founder 2026-11-11: four large cards, one per
+ * /work, decided by the founder 2026-11-11 (Book Your Visit took the Custom Web
+ * Apps card from Field Photo Reports on 2026-11-12): four large cards, one per
  * Solution, in this order, then every other build in small cards, newest first.
  * `content/work.test.ts` fails if a build is in neither list, or in both.
  */
@@ -512,12 +545,13 @@ export const largeSlugs = [
   'ai-voice-receptionist',
   'quote-to-paid',
   'win-back',
-  'field-photo-reports',
+  'book-your-visit',
 ] as const;
 
 export const smallSlugs = [
   'no-show-rescue',
   'missed-call-follow-up',
+  'field-photo-reports',
   'ai-meeting-notes',
   'tekguyz-crm',
   'team-performance',
