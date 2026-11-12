@@ -3,7 +3,7 @@ import { PageHero } from '@/components/page-hero';
 import { CaseStudyRow } from '@/components/case-study-row';
 import { ProjectCard } from '@/components/project-card';
 import { ClosingCta } from '@/components/closing-cta';
-import { caseStudies, projects, buildCountWordCapitalized } from '@/content/work';
+import { workLarge, workSmall, buildCountWordCapitalized } from '@/content/work';
 import { getAllStatuses } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, workItemList } from '@/lib/seo';
 
@@ -15,8 +15,9 @@ export const metadata = buildMetadata({
 });
 
 /**
- * Case studies and projects are never interleaved — the weight difference
- * between the two components is deliberate signal about the depth of the build.
+ * Founder, 2026-11-11: four large cards, one per Solution, then every other
+ * build in small cards. Which build sits where is in `content/work.ts`
+ * (`largeSlugs`, `smallSlugs`), not here.
  *
  * Each group gets the export's section header: a small uppercase label with a
  * muted descriptor beside it, over a 28px-padded hairline.
@@ -52,17 +53,17 @@ export default async function WorkPage() {
 
       <div>
         <div className="tg-container">
-          <GroupHead title="Case Studies" note="The deep-dive builds" />
+          <GroupHead title="One for each Solution" note="Our four kinds of work, one build each" />
         </div>
-        {caseStudies.map((entry, i) => (
+        {workLarge.map((entry, i) => (
           <CaseStudyRow key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
         ))}
       </div>
 
       <div className="tg-container mt-16 pb-20 md:pb-32">
-        <GroupHead title="Projects" note="Lighter builds, same standard" />
+        <GroupHead title="More builds" note="Same standard, every one live" />
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {projects.map((entry, i) => (
+          {workSmall.map((entry, i) => (
             <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
           ))}
         </div>

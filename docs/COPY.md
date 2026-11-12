@@ -61,7 +61,7 @@ Tooltip / helper: none. The line "We check every demo hourly" was removed 2026-1
 ## Footer
 
 **Solutions** — Smart Operations / AI Voice Agents / Business Systems / Custom Web Apps
-**Work** — AI Voice Receptionist / Lead & Pipeline CRM / Field Photo Reports / AI Meeting Notes / Private Meetup App *(added 2026-10-01; reordered 2026-10-15, when the voice build joined; each links to its `/work/<slug>` page, in this order)*
+**Work** — AI Voice Receptionist / Quote to Paid / Win-Back / Field Photo Reports *(changed 2026-11-11: the four builds that lead their Solution on /work. The CRM left because the footer shows on Home, and the meetup app left the site. Each links to its `/work/<slug>` page, in this order)*
 **Company** — Work / Process / Contact / Privacy
 **Get In Touch** — hello@tekguyz.com / South Florida / Mon–Fri, 9am–5pm
 
@@ -87,7 +87,7 @@ HEADLINE: We build tech that actually works for your business.
 SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
 CTA PRIMARY: Start a Free Conversation → /contact (changed 2026-10-11, #40: contact leads; **drafted**, from the trust line "Free first conversation")
 CTA SECONDARY: See Our Work → /work
-MEDIA: `field-reports-hero.webp` (1040×585, 16:9) with a phone capture and a 4.5 s loop over it. Live-status chip attached, for Field Photo Reports. Changed 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
+MEDIA: `missed-call-hero.webp` (1440×810, 16:9), the top of Missed Call Follow-Up's own showcase capture: the follow-up texts on a phone, the owner's alerts and the lead pipeline. Below 1024px, `missed-call-hero-mobile.webp` (960×540): the phone and the alerts only. No loop and no phone layer. Live-status chip attached, for Missed Call Follow-Up. **Changed 2026-11-11** (founder's pick of two). Before that: `field-reports-hero.webp` with a phone capture and a 4.5 s loop, from 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
 
 ## The fold — build board caption
 
@@ -95,7 +95,7 @@ MEDIA: `field-reports-hero.webp` (1040×585, 16:9) with a phone capture and a 4.
 "Eight live builds" claim is not written anywhere any more — the board below the
 hero *is* the live builds, one per solution line, with a measured status on
 each, and `See all six builds` is the link directly beneath them. *(2026-09-29,
-#13 pass 2: four cards again — Private Meetup App holds the teal slot.)* The other two facts are now one muted
+#13 pass 2: four cards again — Private Meetup App holds the teal slot. **Changed 2026-11-11:** Win-Back, No-Show Rescue, Quote to Paid, Field Photo Reports, one per line in stripe order. The CRM is off Home and the meetup app is off the site.)* The other two facts are now one muted
 caption line beside that link, in the site's standard trust-fact pattern (one
 `--text-sm` secondary row, 3px `muted-soft` mid-dots, stacked below 766px).
 
@@ -129,7 +129,7 @@ EYEBROW: OUR WORK
 HEADLINE: Two we're proud of.
 DESCRIPTION: Both are running right now. Open either one and use it yourself.
 
-*(AI Voice Receptionist, then Lead & Pipeline CRM. **Changed 2026-10-15**: the owner reordered the work list, and this band still shows its first two case studies. Field Photo Reports stays the hero. Earlier pair: Field Photo Reports, then AI Meeting Notes. **Changed 2026-09-04** — these are the first two of `caseStudies` in array order, which is what /work shows one click later; the pair had been left untouched when the lineup was rewritten, so the two pages disagreed about which builds lead. It also removes a third appearance of AI Voice Receptionist on this one page — it is already the hero poster and the violet fold card. Full set on /work.)*
+*(AI Voice Receptionist, then Field Photo Reports. **Changed 2026-11-11** (founder): the Lead & Pipeline CRM never appears on Home, and the band never repeats the hero (Missed Call Follow-Up). Before that: AI Voice Receptionist, then Lead & Pipeline CRM. **Changed 2026-10-15**: the owner reordered the work list, and this band still shows its first two case studies. Field Photo Reports stays the hero. Earlier pair: Field Photo Reports, then AI Meeting Notes. **Changed 2026-09-04** — these are the first two of `caseStudies` in array order, which is what /work shows one click later; the pair had been left untouched when the lineup was rewritten, so the two pages disagreed about which builds lead. It also removes a third appearance of AI Voice Receptionist on this one page — it is already the hero poster and the violet fold card. Full set on /work.)*
 
 ## Testimonial
 
@@ -213,7 +213,7 @@ We build systems that handle the heavy lifting automatically — so the work sti
 - Task and workflow automation across your tools
 - Real-time operational alerts when something needs you
 
-RELATED WORK: AI Meeting Notes & Transcription
+RELATED WORK: Win-Back, AI Meeting Notes & Transcription *(Win-Back added 2026-11-11)*
 CTA: Talk about automating this → /contact?interest=smart-operations
 
 METADATA — TITLE: `TEKGUYZ | Smart Operations — Custom AI Assistants & Automation`
@@ -232,7 +232,7 @@ We build AI voice agents that answer every call like your best employee would �
 - Live appointment scheduling
 - Instant CRM and follow-up sync
 
-RELATED WORK: AI Voice Receptionist & Call Booking, Missed Call Follow-Up *(added 2026-11-10, #67)*
+RELATED WORK: AI Voice Receptionist & Call Booking, Missed Call Follow-Up *(added 2026-11-10, #67)*, No-Show Rescue *(added 2026-11-11)*
 CTA: Hear one in action → /work/ai-voice-receptionist
 
 METADATA — TITLE: `TEKGUYZ | AI Voice Agents — Answer Every Call, Day or Night`
@@ -251,7 +251,7 @@ We move you into one organized, private system where your clients and team log i
 - Automated invoicing
 - Integrations across the tools you already use
 
-RELATED WORK: Field Photo Reports & Quality Tracking, Lead & Pipeline CRM, Quote to Paid, Team Performance & Automated Customer Feedback *(Quote to Paid added 2026-11-10, #67)*
+RELATED WORK: Lead & Pipeline CRM, Quote to Paid, Team Performance & Automated Customer Feedback *(Quote to Paid added 2026-11-10, #67. Field Photo Reports moved to Custom Web Apps 2026-11-11)*
 CTA: Talk about consolidating this → /contact?interest=business-systems
 
 METADATA — TITLE: `TEKGUYZ | Business Systems — One Private System, Not Five Tools`
@@ -270,7 +270,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Private Meetup App *(added 2026-09-29, #13 pass 2. Bundle Builder was removed 2026-09-28.)*
+RELATED WORK: Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -282,7 +282,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Eight live builds — click into any one and open it yourself.
+DESCRIPTION: Nine live builds — click into any one and open it yourself.
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -290,12 +290,17 @@ edit. It read "Eight" here and in the code until 2026-09-04, four days after the
 lineup became six. *[corrected 2026-09-07 — the code was already right; this
 document was the stale half.]*
 
-**Case Studies** *(5, full-width)* — the deep-dive builds.
-**Projects** *(3, compact grid)* — lighter builds, same standard.
+**Changed 2026-11-11 (founder):** four large cards, one per Solution, then every other build in small cards. Group heads (**drafted**):
+
+**One for each Solution** *(4, full-width)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Field Photo Reports (Custom Web Apps). A large card shows the case study's approach or the project's summary, its pull quote, the frame, status and Try it.
+**More builds** *(5, compact grid)* — Same standard, every one live. Newest first: No-Show Rescue, Missed Call Follow-Up, AI Meeting Notes, Lead & Pipeline CRM, Team Performance. A case study in a small card shows its outcome.
+
+Before 2026-11-11: **Case Studies** *(full-width)* — the deep-dive builds; **Projects** *(compact grid)* — lighter builds, same standard.
 
 *(2026-09-28, #13: Bundle Builder removed — the store behind it was cancelled.
 2026-09-29, pass 2: Private Meetup App added as the fifth case study.
-2026-11-10, #67: Missed Call Follow-Up and Quote to Paid added as projects, ahead of Team Performance.)*
+2026-11-10, #67: Missed Call Follow-Up and Quote to Paid added as projects, ahead of Team Performance.
+2026-11-11: No-Show Rescue and Win-Back added as projects (refs tekguyz/tekguyz-one#148, #149). The Private Meetup App removed from the site; the portfolio keeps it, and `/work/private-meetup-app` redirects to `/work`.)*
 
 ## Metadata
 
@@ -348,7 +353,7 @@ DESCRIPTION: `Short examples of the tools we build for small businesses, each on
 
 *Rewritten 2026-09-28 (#13) for the new build at `realstone-field-ops.vercel.app`. The v1 copy (admin/installer switcher, `rs-field-ops.netlify.app`) described a build that no longer runs; it is in git history. Terms follow the app's own landing page: Visit, Report, Issue, Live photo, Office staff, Installer. The client stays unnamed here, as on the voice receptionist page; since 2026-10-05 the link is `field-photo-reports.vercel.app`, a demo that plays the made-up Seagrape Stone Co., so the poster shows no client logo (tekguyz/tekguyz-one#22). "3 to 5 days" is the shop's documented starting point, not a result. No result is stated as measured, because none is.*
 
-TAG: Business Systems
+TAG: Custom Web Apps *(retagged from Business Systems by the founder, 2026-11-11)*
 HEADLINE: One Report from the job site, with the proof printed on every photo.
 
 **THE CHALLENGE**
@@ -475,33 +480,7 @@ DESCRIPTION: `Talk to Luna, an AI Receptionist for a made-up AC repair shop, rig
 
 ---
 
-## `/work/private-meetup-app` — Private Meetup App
-
-*Written 2026-09-29 (#13 pass 2) from the app's own PRODUCT.md and CONTEXT.md. The app's brand name never appears in copy, name, alt or metadata; it is only in the url, and `content/work.test.ts` enforces that. It launches small and private, so no member count and no result is stated. The site says "meetup", not the app's own word "sesh". The poster is the app's `showcase/sesh-desktop-light.png`, taken in the demo: every person and meetup in it is invented.*
-
-TAG: Custom Web Apps
-HEADLINE: Small private meetups, where a person checks every card and the address stays hidden until the host says yes.
-
-**THE CHALLENGE**
-Florida law lets medical cannabis patients consume at a private home. A meetup there only works if everyone in the room is a verified patient, 21 or older. An ordinary event app cannot promise that: it checks nobody's card, and anyone who finds the page can find the house.
-
-**THE APPROACH**
-We built a members-only app around the gate. Every new member takes a live photo of their card, then of their face with a random challenge, and a person reviews each one by eye. AI reads the card and lists concerns, but it never decides. Hosts approve every guest by hand. Until they do, the map shows only a circle about half a mile across. The app never handles a sale of any kind.
-
-**THE OUTCOME**
-Every member at a meetup was checked by a person, and nobody outside the guest list knows where it is. Card and face photos are deleted when the reviewer decides, within 7 days at most, and the app forgets the address a week after the meetup.
-
-**PULL QUOTE**
-Hide by default, reveal by approval: nobody sees who or where until a person has said yes.
-
-**TRY IT**
-Press Try the demo on its landing page. One click opens your own visitor account among sample members and meetups — no card, no sign-up, and it is deleted after 7 days. Browse the list and the map, open a meetup, and see what stays hidden until a host says yes.
-
-**HOW IT'S BUILT**
-A phone-first web app that installs to the home screen, on one database where every row is locked to who may see it. Verification is a one-step-per-screen camera flow with no gallery upload. Notifications name no member and no meetup, and the app stores no data on the phone. The demo runs in a sealed copy that can never reach a real member. Light and dark mode throughout.
-
-METADATA — TITLE: `TEKGUYZ | Private Meetup App`
-DESCRIPTION: `A members-only meetup app for verified Florida medical cannabis patients. A person checks every card, the host approves every guest, and the address stays hidden until they do.`
+*`/work/private-meetup-app` — Private Meetup App: removed from the site 2026-11-11 (founder). Its copy is in git history and the portfolio keeps the build.*
 
 ---
 
@@ -538,10 +517,48 @@ Follows up on every quote that got no answer and every unpaid invoice, by text, 
 
 **WHAT MADE IT INTERESTING:** the stop rule. A follow-up that keeps going after the customer answers is the pushy kind. Here any answer or payment ends it, nothing goes out on Sundays, and it never passes three. The rules are simple enough to say out loud.
 
+**PULL QUOTE (large card on /work, drafted 2026-11-11):** Any answer or payment stops the follow-ups. The rules are simple enough to say out loud.
+
 **TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up AC company. Press Skip ahead a day and watch follow-ups go out, customers answer and invoices get paid. Open any job to play the customer. Nothing is sent or charged.
 
 METADATA — TITLE: `TEKGUYZ | Quote to Paid`
 DESCRIPTION: `Follows up on every quote and every unpaid invoice by text, politely, until the customer answers or pays. Then it stops. Try the one-click demo.`
+
+## `/work/no-show-rescue` — No-Show Rescue
+
+*Added 2026-11-11 (refs tekguyz/tekguyz-one#148), package C. Words from the app's landing page and README. Live demo link: the landing page, https://no-show-rescue.vercel.app. Poster: a capture of the landing page until the showcase pictures exist.*
+
+TAG: AI Voice Agents
+BUILT FOR: Dental and vet practices
+HEADLINE: Fewer empty chairs: a reminder before the visit, a new time after a no-show.
+
+Patients get a reminder text the day before a visit. When someone does not come, they are offered a new time, and the open slot goes to a short-notice waitlist: the first to reply takes it. After the visit, one message asks how it went. Happy patients get the review link, and the others reach the front desk, privately.
+
+**WHAT MADE IT INTERESTING:** the empty chair. Rebooking the patient who missed is half the job. The other half is filling the slot today, so the waitlist hears about it at once and is told when it is taken.
+
+**TRY IT:** Press Try the demo on its landing page. No sign-up. You play a patient at a made-up dental practice: get the reminder, miss the visit, pick a new time, and watch the front desk fill the open chair. Nothing is sent.
+
+METADATA — TITLE: `TEKGUYZ | No-Show Rescue`
+DESCRIPTION: `Reminders before a visit, a new time offered after a no-show, the open slot filled from a waitlist, and a review request after. Try the one-click demo.`
+
+## `/work/win-back` — Win-Back
+
+*Added 2026-11-11 (refs tekguyz/tekguyz-one#149), package G. Words from the app's landing page and README. Live demo link: the landing page, https://win-back-customers.vercel.app. Poster: a capture of the landing page until the showcase pictures exist. It leads Smart Operations on /work, so it has a pull quote (**drafted**).*
+
+TAG: Smart Operations
+BUILT FOR: AC and heating companies with yearly service, and dental and vet offices with recalls
+HEADLINE: Bring back the customers who stopped calling.
+
+Reads the customer records the business already keeps and finds who stopped coming back: a missed tune-up, a plan that ran out, one visit and never again. A short report says who and why, and each customer gets a drafted message signed by the owner. The owner approves, changes or skips every one, and a reply can book a visit.
+
+**WHAT MADE IT INTERESTING:** there is no approve-all button. Every message waits for the owner, it starts from the business’s own customers only, and anyone who asked not to get texts stays off the list.
+
+**PULL QUOTE (large card on /work):** Nothing goes out until the owner approves it, one customer at a time.
+
+**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up AC company with its past-customer records. Read the report, approve the messages you like, and watch a reply book a visit. Nothing is sent.
+
+METADATA — TITLE: `TEKGUYZ | Win-Back`
+DESCRIPTION: `Finds past customers who stopped coming back in your own records, says who and why, and drafts a message to each for you to approve. Try the one-click demo.`
 
 ## `/work/team-performance` — Team Performance & Automated Customer Feedback
 

@@ -13,7 +13,7 @@ import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
 import { solutions } from '@/content/solutions';
-import { featured, foldBoard, getWork, type CaseStudy } from '@/content/work';
+import { featured, foldBoard, getWork, heroSlug, type CaseStudy } from '@/content/work';
 import { testimonial } from '@/content/process';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/seo';
@@ -27,7 +27,8 @@ export const metadata = buildMetadata({
 
 export default async function HomePage() {
   const statuses = await getAllStatuses();
-  const hero = getWork('field-photo-reports')!;
+  // Missed Call Follow-Up since 2026-11-11 (founder). `heroSlug` in content/work.ts.
+  const hero = getWork(heroSlug)!;
 
   return (
     <div>

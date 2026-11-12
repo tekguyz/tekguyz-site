@@ -3,11 +3,13 @@ import { ViewTransition } from 'react';
 import { Frame, FrameMeta } from '@/components/live-frame';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
-import type { CaseStudy } from '@/content/work';
+import type { WorkEntry } from '@/content/work';
 import type { StatusResult } from '@/lib/status';
 
 /**
- * The /work index case-study row.
+ * The /work index large card: one per Solution (founder, 2026-11-11), so it
+ * takes a project as well as a case study. A project shows its summary where a
+ * case study shows its approach, and its pull quote only if it has one.
  *
  * Export layout alternates by offset, not mirror:
  *   even  text 1-6  / media 7-13
@@ -28,7 +30,7 @@ export function CaseStudyRow({
   status,
   index,
 }: {
-  entry: CaseStudy;
+  entry: WorkEntry;
   status: StatusResult;
   index: number;
 }) {
@@ -55,11 +57,13 @@ export function CaseStudyRow({
         className="mt-6 text-[length:var(--text-body)] text-secondary"
         style={{ textWrap: 'pretty' }}
       >
-        {entry.approach}
+        {entry.kind === 'case-study' ? entry.approach : entry.summary}
       </p>
-      <PullQuote solution={entry.solution} size="row" className="mt-11">
-        {entry.pullQuote}
-      </PullQuote>
+      {entry.pullQuote && (
+        <PullQuote solution={entry.solution} size="row" className="mt-11">
+          {entry.pullQuote}
+        </PullQuote>
+      )}
       <Link
         href={`/work/${entry.slug}`}
         className="tap-44 link-underline mt-9 inline-block text-[14.5px] font-semibold"
@@ -85,7 +89,9 @@ export function CaseStudyRow({
         </div>
       </ViewTransition>
       <FrameMeta status={status} url={entry.url} />
-      <p className="mt-5 text-[0.875rem] leading-[1.55] text-secondary">{entry.tryIt}</p>
+      {entry.tryIt && (
+        <p className="mt-5 text-[0.875rem] leading-[1.55] text-secondary">{entry.tryIt}</p>
+      )}
     </div>
   );
 

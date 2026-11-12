@@ -1,10 +1,13 @@
 import Link from 'next/link';
 import { StatusLine } from '@/components/status-line';
 import { SolutionTag } from '@/components/solution-tag';
-import type { Project } from '@/content/work';
+import type { WorkEntry } from '@/content/work';
 import type { StatusResult } from '@/lib/status';
 
 /**
+ * Since 2026-11-11 the /work small cards also hold case studies that do not
+ * lead their Solution (AI Meeting Notes, the CRM); those show their outcome.
+ *
  * Compact: surface fill, 1px hairline, 12px radius, 24px padding.
  * Tag (tight variant) -> title -> one description -> status line.
  *
@@ -18,7 +21,7 @@ export function ProjectCard({
   status,
   index = 0,
 }: {
-  entry: Project;
+  entry: WorkEntry;
   status: StatusResult;
   /** Position within its grid, for the 80ms reveal stagger. */
   index?: number;
@@ -46,7 +49,7 @@ export function ProjectCard({
       >
         {/* COPY.md's summary verbatim. The export shows a shortened card
             variant, but copy is authored in COPY.md and not rewritten here. */}
-        {entry.summary}
+        {entry.kind === 'project' ? entry.summary : entry.outcome}
       </p>
 
       <StatusLine result={status} className="mt-[22px]" />
