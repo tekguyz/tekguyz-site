@@ -127,7 +127,7 @@ export const solutions: Solution[] = [
     // #13 pass 1 removed Bundle Builder; pass 2 added Private Meetup App.
     // 2026-11-11: the meetup app left the site, and Field Photo Reports was
     // retagged here from Business Systems (founder).
-    relatedWork: ['Field Photo Reports & Quality Tracking'],
+    relatedWork: ['Book Your Visit', 'Field Photo Reports & Quality Tracking'],
     cta: { label: 'Describe what you need built', href: '/contact?interest=custom-web-apps' },
     serviceDescription:
       'Ordering and cart systems, headless e-commerce, scheduling and booking portals, and client-facing dashboards.',

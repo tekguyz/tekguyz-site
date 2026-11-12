@@ -61,7 +61,7 @@ Tooltip / helper: none. The line "We check every demo hourly" was removed 2026-1
 ## Footer
 
 **Solutions** — Smart Operations / AI Voice Agents / Business Systems / Custom Web Apps
-**Work** — AI Voice Receptionist / Quote to Paid / Win-Back / Field Photo Reports *(changed 2026-11-11: the four builds that lead their Solution on /work. The CRM left because the footer shows on Home, and the meetup app left the site. Each links to its `/work/<slug>` page, in this order)*
+**Work** — AI Voice Receptionist / Quote to Paid / Win-Back / Book Your Visit *(changed 2026-11-12: Book Your Visit replaced Field Photo Reports, refs tekguyz/tekguyz-one#152. Before that, 2026-11-11: the four builds that lead their Solution on /work. The CRM left because the footer shows on Home, and the meetup app left the site. Each links to its `/work/<slug>` page, in this order)*
 **Company** — Work / Process / Contact / Privacy
 **Get In Touch** — hello@tekguyz.com / South Florida / Mon–Fri, 9am–5pm
 
@@ -270,7 +270,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
+RELATED WORK: Book Your Visit *(added 2026-11-12)*, Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -292,8 +292,8 @@ document was the stale half.]*
 
 **Changed 2026-11-11 (founder):** four large cards, one per Solution, then every other build in small cards. Group heads (**drafted**):
 
-**One for each Solution** *(4, full-width)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Field Photo Reports (Custom Web Apps). A large card shows the case study's approach or the project's summary, its pull quote, the frame, status and Try it.
-**More builds** *(5, compact grid)* — Same standard, every one live. Newest first: No-Show Rescue, Missed Call Follow-Up, AI Meeting Notes, Lead & Pipeline CRM, Team Performance. A case study in a small card shows its outcome.
+**One for each Solution** *(4, full-width)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Book Your Visit (Custom Web Apps; Field Photo Reports led it until 2026-11-12). A large card shows the case study's approach or the project's summary, its pull quote, the frame, status and Try it.
+**More builds** *(6, compact grid)* — Same standard, every one live. Newest first: No-Show Rescue, Missed Call Follow-Up, Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM, Team Performance. A case study in a small card shows its outcome.
 
 Before 2026-11-11: **Case Studies** *(full-width)* — the deep-dive builds; **Projects** *(compact grid)* — lighter builds, same standard.
 
@@ -559,6 +559,25 @@ Reads the customer records the business already keeps and finds who stopped comi
 
 METADATA — TITLE: `TEKGUYZ | Win-Back`
 DESCRIPTION: `Finds past customers who stopped coming back in your own records, says who and why, and drafts a message to each for you to approve. Try the one-click demo.`
+
+## `/work/book-your-visit` — Book Your Visit
+
+*Added 2026-11-12 (refs tekguyz/tekguyz-one#152), Custom Web Apps. Words from tekguyz-one `projects/book-your-visit/about.md`. Live demo link: the landing page, https://bookyourvisit.vercel.app. Poster: the app's own `showcase/webp/booking-page-desktop-light.webp`. It leads Custom Web Apps on /work, so it has a pull quote (**drafted** from the "Say" lines).*
+
+TAG: Custom Web Apps
+BUILT FOR: Small home-service businesses, such as a cleaning company, that run on a calendar and a phone
+HEADLINE: Customers pick a time themselves.
+
+Customers pick a service and an open time, then book, move or cancel without a call. Each service has a length, so the page never offers a time that cannot fit. The owner sees the day: every visit, the free gaps and the blocked time. A visit booked online lands there marked “New”.
+
+**WHAT MADE IT INTERESTING:** the page only shows open times: inside opening hours, never on a Sunday, never over blocked time, and with 30 minutes kept free to drive between homes. When the owner blocks off time, it leaves the booking page at once.
+
+**PULL QUOTE (large card on /work):** Customers see only the times you are free. Change or cancel without a call.
+
+**TRY IT:** Press Try the demo on its landing page. No sign-up. You play a customer and the owner of a made-up cleaning company: book a cleaning, watch it land on the owner’s day, block off time, then move or cancel the visit. Nothing is sent.
+
+METADATA — TITLE: `TEKGUYZ | Book Your Visit`
+DESCRIPTION: `An online booking portal where customers pick a service and an open time, and change or cancel without a call. The owner sees the day. Try the one-click demo.`
 
 ## `/work/team-performance` — Team Performance & Automated Customer Feedback
 
