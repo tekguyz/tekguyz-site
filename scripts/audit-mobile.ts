@@ -56,7 +56,6 @@ const WORK = [
   'no-show-rescue',
   'win-back',
   'book-your-visit',
-  'team-performance',
 ];
 const SOLUTIONS = ['smart-operations', 'ai-voice-agents', 'business-systems', 'custom-web-apps'];
 
@@ -1122,7 +1121,7 @@ const MOTION_ROUTES = [
   '/',
   '/work',
   '/work/ai-voice-receptionist',
-  '/work/team-performance',
+  '/work/quote-to-paid',
   '/solutions',
   '/solutions/ai-voice-agents',
   '/process',

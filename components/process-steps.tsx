@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { STRIPE_ORDER, accent } from '@/config/solutions';
 import { processSteps } from '@/content/process';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 
@@ -14,9 +13,9 @@ import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
  * weight; the rest stay muted at 400. A "Step 0N of 04" readout sits below.
  *
  * Steps occupy cols 4-13 with 72px/96px padding and hairline separators. Each
- * carries its numeral absolutely positioned behind the title at 8% opacity in
- * that step's accent — the only numerals on the site, because /process is the
- * only genuinely ordered sequence.
+ * carries its numeral as a small mono label above the title (Seam: numbers stay
+ * because the order matters, and data is mono).
+
  *
  * Under prefers-reduced-motion the pin is removed and this degrades to a plain
  * stacked list, which is the accessibility floor CANONICAL §6 requires. The pin
@@ -95,7 +94,7 @@ export function ProcessSteps() {
   }, [reduced]);
 
   return (
-    <div className="tg-container tg-grid items-start pb-20 md:pb-32">
+    <div className="tg-container tg-grid items-start pt-4 pb-20 md:pt-8 md:pb-28">
       <div className="tg-pin hidden lg:block" style={{ gridColumn: '1 / 3' }}>
         {/* One 300px box holds the track and the four nodes. Each node sits at its
             step's measured start, with its label hung off it, so the label, the
@@ -133,9 +132,9 @@ export function ProcessSteps() {
                   }}
                 />
                 <span
-                  className="ml-4 text-[0.875rem] leading-[1.35] tracking-[0.04em] transition-colors duration-[120ms]"
+                  className="ml-4 text-[15px] leading-[1.35] transition-colors duration-[120ms]"
                   style={{
-                    fontWeight: on ? 600 : 400,
+                    fontWeight: on ? 700 : 400,
                     color: on ? 'var(--tg-fg)' : 'var(--tg-secondary)',
                   }}
                 >
@@ -145,7 +144,7 @@ export function ProcessSteps() {
             );
           })}
         </div>
-        <p className="mt-9 text-[0.875rem] leading-[1.55] tabular-nums text-secondary">
+        <p className="mt-9 text-[15px] leading-[1.55] tabular-nums text-secondary">
           Step {String(active + 1).padStart(2, '0')} of {String(processSteps.length).padStart(2, '0')}
         </p>
       </div>
@@ -172,23 +171,22 @@ export function ProcessSteps() {
               // form's rail, not a new state mechanism (DESIGN.md §4.17).
               data-on={reduced || i <= active}
               style={{ '--tg-rule-scale': (i + 1) / processSteps.length } as CSSProperties}
-              className={`reveal tg-rule tg-rule-top relative border-t border-border pt-18 pb-16 md:pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
+              className={`tg-rule tg-rule-top relative border-t border-border pt-18 pb-16 md:pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
             >
               <span
                 aria-hidden
-                className="pointer-events-none absolute -left-4 max-md:left-0 top-9 text-[length:var(--text-hero)] leading-none font-bold tracking-[-0.045em] tabular-nums select-none"
-                style={{ color: accent(STRIPE_ORDER[i]!).dot, opacity: 0.08 }}
+                className="label text-mute pointer-events-none absolute left-0 top-8 hidden tabular-nums select-none lg:block"
               >
                 {step.numeral}
               </span>
               <div className="relative">
                 {/* Below 1024px the rail is hidden, so this is the only place a
                     phone or tablet reader is told where they are in the sequence. */}
-                <p className="mb-4 text-[0.875rem] leading-[1.55] tabular-nums text-secondary lg:hidden">
+                <p className="mb-4 text-[15px] leading-[1.55] tabular-nums text-secondary lg:hidden">
                   Step {step.numeral} of {String(processSteps.length).padStart(2, '0')}
                 </p>
                 <h2
-                  className="text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em] transition-colors duration-[120ms]"
+                  className="text-[length:var(--text-display)] transition-colors duration-[120ms]"
                   style={{ color: lit ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
                 >
                   {step.title}

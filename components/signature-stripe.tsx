@@ -1,19 +1,13 @@
 import { STRIPE_ORDER, accent } from '@/config/solutions';
 
 /**
- * Four-segment accent bar, exactly three per page: top of hero, above the
- * closing CTA, bottom of the footer. Nowhere else.
- *
- * Export uses a 4-column grid at 6px tall, full-bleed, in the fixed
- * blue -> violet -> amber -> teal order.
+ * Seam's stripe: four lamps, equal width, 10px, in the fixed
+ * blue -> violet -> amber -> teal order. Once per page, along the bottom of the
+ * footer. Nowhere else.
  */
 export function SignatureStripe() {
   return (
-    <div
-      aria-hidden
-      data-signature-stripe
-      className="grid h-[6px] w-full grid-cols-4"
-    >
+    <div aria-hidden data-signature-stripe className="tg-stripe w-full">
       {STRIPE_ORDER.map((key) => (
         <span key={key} style={{ background: accent(key).dot }} />
       ))}

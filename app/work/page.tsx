@@ -69,7 +69,7 @@ export default async function WorkPage() {
         </div>
         <p className="mt-12 text-[length:var(--text-body)] text-secondary">
           Want a quick look at more of what we build?{' '}
-          <Link href="/examples" className="tap-44 link-underline font-semibold text-fg">
+          <Link href="/examples" className="tap-44 font-bold text-fg underline decoration-2 underline-offset-[6px]">
             See the examples →
           </Link>
         </p>
@@ -82,9 +82,9 @@ export default async function WorkPage() {
 
 function GroupHead({ title, note }: { title: string; note: string }) {
   return (
-    <div className="flex items-baseline gap-4 border-b border-border pb-7">
-      <h2 className="tg-eyebrow">{title}</h2>
-      <span className="text-[0.875rem] text-secondary">{note}</span>
+    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b-2 border-fg pb-5">
+      <h2 className="tg-plain tg-eyebrow">{title}</h2>
+      <span className="text-[15px] text-secondary">{note}</span>
     </div>
   );
 }

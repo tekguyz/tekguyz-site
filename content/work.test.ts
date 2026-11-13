@@ -104,7 +104,7 @@ describe('work lineup', () => {
   });
 
   it('the build count word matches the entry count', () => {
-    expect(buildCountWord).toBe('10');
-    expect(work).toHaveLength(10);
+    expect(buildCountWord).toBe('nine');
+    expect(work).toHaveLength(9);
   });
 });

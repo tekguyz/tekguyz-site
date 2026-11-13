@@ -34,14 +34,13 @@ export function ProjectCard({
     <Link
       href={`/work/${entry.slug}`}
       data-card
-      data-reveal-index={index}
-      className="reveal hover-card flex h-full flex-col rounded-[12px] border border-border bg-surface"
+      className="hover-card flex h-full flex-col tg-frame bg-bg"
       style={{ padding: 'var(--pad-card)' }}
     >
       <SolutionTag solution={entry.solution} label={entry.tag} variant="card" className="self-start" />
 
       <h3
-        className="mt-4 text-[length:var(--text-body)] leading-[1.3] font-semibold tracking-[-0.01em]"
+        className="mt-4 text-[length:var(--text-title)]"
         style={{ textWrap: 'pretty' }}
       >
         {entry.headline}
@@ -69,7 +68,7 @@ export function ProjectCard({
           compact card is the exact ambiguity this tier is meant to avoid. */}
       <span
         aria-hidden
-        className="link-underline mt-4 self-start text-[14.5px] font-semibold"
+        className="link-underline mt-4 self-start text-[16px] font-semibold"
       >
         Read the full story →
       </span>

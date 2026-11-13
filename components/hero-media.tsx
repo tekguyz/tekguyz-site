@@ -48,7 +48,7 @@ export function HeroMedia({
       />
       {media?.video ? <HeroVideo mp4={media.video.mp4} webm={media.video.webm} /> : null}
       {media?.phone ? (
-        <div className="tg-hero-phone absolute bottom-[-16px] right-[-12px] w-[22%] overflow-hidden rounded-[14px] border lg:w-[17%]">
+        <div className="tg-hero-phone absolute bottom-[-16px] right-[-12px] w-[22%] overflow-hidden rounded-none border lg:w-[17%]">
           <Image
             src={media.phone.src}
             alt={media.phone.alt}

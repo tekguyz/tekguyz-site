@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
       { source: '/work/auto-detailer', destination: '/work', permanent: true },
       { source: '/work/bundle-builder', destination: '/work', permanent: true },
       { source: '/work/private-meetup-app', destination: '/work', permanent: true },
+      // Retired 2026-11-12 with the Joe M. review (refs #76).
+      { source: '/work/team-performance', destination: '/work', permanent: true },
     ];
   },
 };

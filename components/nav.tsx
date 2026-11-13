@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ConnectedNodes } from '@/components/logo-lockup';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { ButtonLink } from '@/components/button';
 import { AccentDot } from '@/components/solution-tag';
 import { useSuppressLauncher } from '@/components/concierge/concierge-bus';
@@ -15,14 +14,13 @@ import { cn } from '@/lib/utils';
 
 /**
  * Sticky, 64px tall (76px until 2026-11-12; the owner found it thick). It
- * stays put on scroll: hiding it would make "Let's Talk" jump in and out. Transparent with no fill and no border at scroll 0; past
- * 24px it fills to 82% opacity with a 14px backdrop blur and the hairline
- * border fades in. Those values live on --tg-nav-* and switch on data-scrolled.
+ * stays put on scroll: hiding it would make "Let's Talk" jump in and out. Always on the ink ground (Seam: every page
+ * opens on ink); past 24px a 1px on-ink hairline appears under it.
  *
  * The active-page indicator is an animated ::after rule (scaleX from the left,
- * 240ms) sitting 10px below the link — not a static bar. 2px, ink, never accent.
+ * 240ms) sitting 10px below the link — not a static bar. 2px, in the ground's text colour, never a lamp.
  *
- * The "Let's Talk" CTA is 14px 24px — the only button size in the nav.
+ * The "Let's Talk" CTA is the 44px nav size, paper on ink.
  *
  * Mobile: hamburger, full-screen drawer, Solutions expanding inline to the four
  * accent-dot entries, which are four ROUTES (CANONICAL reversed the single
@@ -36,7 +34,7 @@ const LINKS = [
   { href: '/contact', label: 'Contact' },
 ];
 
-/** Past 24px the bar takes its scrolled fill, blur and hairline. */
+/** Past 24px the bar shows its hairline. */
 const NAV_SCROLL_THRESHOLD = 24;
 
 export function Nav() {
@@ -82,29 +80,17 @@ export function Nav() {
   return (
     <header
       data-scrolled={scrolled ? 'true' : 'false'}
-      style={{ viewTransitionName: 'site-nav' }}
       // The <header> itself carries no border. An unqualified Tailwind v4
       // `border-b` resolves to currentColor, which painted an opaque ink (light)
       // / near-white (dark) hairline below the 64px bar at EVERY scroll
       // position — doubling the real hairline once scrolled, and sitting
       // directly on the signature stripe that starts flush at the nav's bottom
-      // edge. The one specified border lives on the fill layer below, colored
-      // by --tg-nav-border so it can fade in with the rest of the scrolled state.
-      className="sticky top-0 z-[60] w-full"
+      // edge. The one hairline is the 1px layer below, shown once scrolled.
+      className="on-ink sticky top-0 z-[60] w-full"
     >
       <div
-        className="absolute inset-0 -z-10 border-b"
-        style={{
-          backgroundColor: 'var(--tg-nav-bg)',
-          borderBottomColor: 'var(--tg-nav-border)',
-          backdropFilter: 'blur(var(--tg-nav-blur))',
-          WebkitBackdropFilter: 'blur(var(--tg-nav-blur))',
-          // --dur-base, not a literal. 240ms was correct only by coincidence:
-          // nothing tied it to the token, so a change to the state duration
-          // would have left the nav behind silently.
-          transition:
-            'background-color var(--dur-base), border-color var(--dur-base), backdrop-filter var(--dur-base)',
-        }}
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px transition-colors duration-[240ms]"
+        style={{ background: scrolled ? 'var(--line-on-ink)' : 'transparent' }}
       />
 
       <div className="tg-container flex h-[64px] items-center gap-10">
@@ -115,7 +101,7 @@ export function Nav() {
             neighbour is 40px away (`gap-10`), so nothing overlaps. */}
         <Link href="/" aria-label="TEKGUYZ home" className="tap-44 flex flex-none items-center gap-[11px]">
           <ConnectedNodes size={26} />
-          <span className="text-[19px] font-extrabold tracking-[-0.025em]">TEKGUYZ</span>
+          <span className="font-[family-name:var(--font-lettering)] text-[24px] leading-none font-extrabold [font-stretch:75%]">TEKGUYZ</span>
         </Link>
 
         <nav aria-label="Main" className="ml-auto hidden items-center gap-[34px] md:flex">
@@ -138,13 +124,12 @@ export function Nav() {
               // hovering a non-current link draws the same bar at
               // `border-strong` — the shape previews, the weight says whether
               // you are actually there.
-              className="tap-44 tg-rule text-[14.5px] font-medium transition-colors duration-[120ms]"
+              className="tap-44 tg-rule text-[16px] font-medium transition-colors duration-[120ms]"
               style={{ color: isActive(l.href) ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
             >
               {l.label}
             </Link>
           ))}
-          <ThemeToggle />
           {/* D-10 restored this button to the standard 14x24 geometry, which
               takes its painted height from 51.2px to 42.5px — correct, and
               1.5px under the tap floor. So it gets the same `::before` overlay
@@ -158,7 +143,6 @@ export function Nav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:hidden">
-          <ThemeToggle />
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -182,7 +166,7 @@ export function Nav() {
       {open && (
         <div
           id="mobile-drawer"
-          className="fixed inset-0 top-[64px] z-40 flex flex-col bg-bg md:hidden"
+          className="on-ink fixed inset-0 top-[64px] z-40 flex flex-col md:hidden"
         >
           <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-[var(--container-pad)] pt-2">
             <div className="border-b border-border py-5">
@@ -190,7 +174,7 @@ export function Nav() {
                 type="button"
                 onClick={() => setSolutionsOpen((v) => !v)}
                 aria-expanded={solutionsOpen}
-                className="flex w-full items-center justify-between text-left text-[2rem] leading-[1.1] font-semibold tracking-[-0.025em]"
+                className="flex w-full items-center justify-between text-left font-[family-name:var(--font-lettering)] text-[2.25rem] leading-[1] font-extrabold uppercase [font-stretch:75%]"
               >
                 Solutions
                 <span aria-hidden className="text-[1.125rem] leading-none text-secondary">
@@ -219,7 +203,7 @@ export function Nav() {
                 href={l.href}
                 aria-current={isActive(l.href) ? 'page' : undefined}
                 className={cn(
-                  'flex h-[72px] items-center border-b border-border text-[2rem] leading-[1.1] font-semibold tracking-[-0.025em]',
+                  'flex h-[72px] items-center border-b border-border font-[family-name:var(--font-lettering)] text-[2.25rem] leading-[1] font-extrabold uppercase [font-stretch:75%]',
                   isActive(l.href) ? 'text-fg' : 'text-fg',
                 )}
               >
@@ -238,7 +222,7 @@ export function Nav() {
               // this email link was the one sub-768 control that did not. It is
               // the mobile counterpart to M-13, which the audit scoped to the
               // >=768 horizontal row only.
-              className="tap-44 link-underline self-start text-[0.875rem] text-secondary"
+              className="tap-44 link-underline self-start text-[15px] text-secondary"
             >
               {site.publicEmail}
             </a>

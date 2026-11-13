@@ -1,5 +1,7 @@
 # TEKGUYZ Design System v2.6
 
+> **Seam replaces §1 (colour), §2 (type), §3 (shape) and §7 (dark mode)** as of 2026-11-12. The look is now "Seam" from `tekguyz-one/brand/design/`: two grounds (ink and paper) on every page, four lamps, square corners, Archivo / Atkinson Hyperlegible Next / Red Hat Mono, no theme toggle. Spec: `docs/superpowers/specs/2026-11-12-seam-reskin.md`. Values: `docs/TOKENS.md`. Where this file disagrees with Seam on those four sections, Seam wins; the rest of this file still holds the reasons for mechanisms.
+
 *Supersedes v2.5.*
 
 **Governed by:** `docs/CANONICAL.md` · **Copy:** `docs/COPY.md`

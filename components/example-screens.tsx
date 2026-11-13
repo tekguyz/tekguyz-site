@@ -25,10 +25,13 @@ export function ExampleScreen({ example }: { example: Example }) {
   }[example.screen];
 
   return (
-    <div className="overflow-hidden rounded-[12px] border border-border bg-bg shadow-[var(--tg-elevate)]">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface px-5 py-3">
-        <p className="text-[0.875rem] font-semibold">{example.business}</p>
-        <p className="tg-eyebrow text-secondary">Example · made-up data</p>
+    <div className="tg-plain tg-frame on-paper overflow-hidden">
+      <div className="on-ink flex flex-wrap items-center justify-between gap-2 px-5 py-3">
+        <p className="text-[15px] font-bold">{example.business}</p>
+        <p className="label text-fg inline-flex items-center gap-2 rounded-full bg-[rgb(255_255_255_/_0.1)] px-3 py-[2px]">
+          <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: accentForSolution(example.solution).dot }} />
+          Example · made-up data
+        </p>
       </div>
       {body}
     </div>
@@ -56,7 +59,7 @@ function ListButton({
       className={cn(
         'block w-full border-b border-border px-5 py-4 text-left transition-[background-color] duration-[120ms]',
         'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-fg',
-        selected ? 'bg-surface' : 'hover:bg-surface',
+        selected ? 'bg-[var(--line-on-paper)]' : 'hover:bg-[var(--line-on-paper)]',
       )}
     >
       {children}
@@ -66,13 +69,13 @@ function ListButton({
 
 function Pill({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'warn' | 'urgent' | 'done' }) {
   const dot = {
-    neutral: 'var(--tg-muted-soft)',
+    neutral: 'var(--tg-mute)',
     warn: 'var(--tg-warning)',
     urgent: 'var(--tg-error)',
     done: 'var(--tg-success)',
   }[tone];
   return (
-    <span className="inline-flex flex-none items-center gap-[6px] rounded-[6px] border border-border px-2 py-[3px] text-[0.75rem] font-semibold whitespace-nowrap">
+    <span className="inline-flex flex-none items-center gap-[6px] rounded-full border border-border px-[10px] py-[3px] text-[14px] font-bold whitespace-nowrap">
       <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: dot }} />
       {children}
     </span>
@@ -99,10 +102,10 @@ function Segmented<T extends string>({
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            'tap-44 rounded-[8px] border px-2 py-2 text-[0.875rem] sm:px-3 font-semibold transition-[border-color,background-color] duration-[120ms]',
+            'tap-44 rounded-none border px-2 py-2 text-[15px] sm:px-3 font-semibold transition-[border-color,background-color] duration-[120ms]',
             'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg',
             value === o.value
-              ? 'border-fg bg-surface'
+              ? 'border-fg bg-fg text-bg'
               : 'border-border text-secondary hover:border-border-strong',
           )}
         >
@@ -142,14 +145,14 @@ function Approve({
         onClick={onApprove}
         disabled={approved}
         className={cn(
-          'inline-flex items-center justify-center rounded-[8px] px-6 py-[15px] text-[14.5px]/[1] font-semibold',
+          'inline-flex items-center justify-center rounded-none px-6 py-[15px] text-[16px]/[1] font-semibold',
           'transition-[background-color] duration-[120ms] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg',
-          approved ? 'border border-border text-secondary' : 'bg-cta-bg text-cta-fg hover:bg-cta-hover',
+          approved ? 'border border-border text-secondary' : 'border-2 border-cta-bg bg-cta-bg text-cta-fg hover:bg-cta-hover hover:text-cta-hover-fg',
         )}
       >
         {approved ? doneLabel : idleLabel}
       </button>
-      <p role="status" className="text-[0.875rem] text-secondary">
+      <p role="status" className="text-[15px] text-secondary">
         {approved ? 'In this example nothing is really sent.' : ''}
       </p>
     </div>
@@ -158,16 +161,16 @@ function Approve({
 
 function Message({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-4 rounded-[8px] border border-border bg-surface p-4 text-[0.9375rem] leading-[1.6] whitespace-pre-line">
+    <div className="mt-4 border border-border p-4 text-[0.9375rem] leading-[1.6] whitespace-pre-line">
       {children}
     </div>
   );
 }
 
-function AccentLabel({ solution, children }: { solution: SolutionSlug; children: ReactNode }) {
-  const a = accentForSolution(solution);
+function AccentLabel({ children }: { solution: SolutionSlug; children: ReactNode }) {
+  // A time or a status: Seam's mono data label.
   return (
-    <p className="tg-eyebrow" style={{ color: a.text }}>
+    <p className="label text-mute">
       {children}
     </p>
   );
@@ -263,7 +266,7 @@ function QuoteFollowUp({ solution }: { solution: SolutionSlug }) {
             <span className="flex items-start justify-between gap-3">
               <span className="min-w-0">
                 <span className="block font-semibold">{q.who}</span>
-                <span className="block text-[0.875rem] text-secondary">{q.job}</span>
+                <span className="block text-[15px] text-secondary">{q.job}</span>
               </span>
               <Pill tone={approved[q.id] ? 'done' : q.tone}>{approved[q.id] ? 'Follow-up sent' : q.state}</Pill>
             </span>
@@ -272,11 +275,11 @@ function QuoteFollowUp({ solution }: { solution: SolutionSlug }) {
         detail={
           <div>
             <AccentLabel solution={solution}>{open.when}</AccentLabel>
-            <h3 className="mt-3 text-[1.25rem] leading-[1.3] font-semibold">{open.who}</h3>
+            <h3 className="mt-3 text-[1.25rem]">{open.who}</h3>
             <p className="mt-1 text-[0.9375rem] text-secondary">{open.job}</p>
             {open.draft ? (
               <>
-                <p className="mt-6 text-[0.875rem] font-semibold">Follow-up, written for you</p>
+                <p className="mt-6 text-[15px] font-semibold">Follow-up, written for you</p>
                 <Message>{open.draft}</Message>
                 <Approve
                   approved={Boolean(approved[open.id])}
@@ -358,20 +361,20 @@ function Voicemail({ solution }: { solution: SolutionSlug }) {
           <span className="flex items-start justify-between gap-3">
             <span className="min-w-0">
               <span className="block font-semibold">{v.who}</span>
-              <span className="block text-[0.875rem] text-secondary">{v.when}</span>
+              <span className="block text-[15px] text-secondary">{v.when}</span>
             </span>
             <Pill tone={v.tone}>{v.urgency}</Pill>
           </span>
-          <span className="mt-2 block text-[0.875rem] leading-[1.5]">{v.summary}</span>
+          <span className="mt-2 block text-[15px] leading-[1.5]">{v.summary}</span>
         </ListButton>
       ))}
       detail={
         <div>
           <AccentLabel solution={solution}>Voicemail · {open.when}</AccentLabel>
-          <h3 className="mt-3 text-[1.25rem] leading-[1.3] font-semibold">{open.who}</h3>
-          <p className="mt-6 text-[0.875rem] font-semibold">Summary</p>
+          <h3 className="mt-3 text-[1.25rem]">{open.who}</h3>
+          <p className="mt-6 text-[15px] font-semibold">Summary</p>
           <p className="mt-2 text-[0.9375rem] leading-[1.6]">{open.summary}</p>
-          <p className="mt-6 text-[0.875rem] font-semibold">What they need</p>
+          <p className="mt-6 text-[15px] font-semibold">What they need</p>
           <ul className="m-0 mt-2 list-none p-0">
             {open.needs.map((n) => (
               <li key={n} className="border-t border-border py-2 text-[0.9375rem] last:border-b">
@@ -383,7 +386,7 @@ function Voicemail({ solution }: { solution: SolutionSlug }) {
             type="button"
             aria-expanded={showWords}
             onClick={() => setShowWords((s) => !s)}
-            className="tap-44 link-underline mt-6 text-[0.875rem] font-semibold"
+            className="tap-44 link-underline mt-6 text-[15px] font-semibold"
           >
             {showWords ? 'Hide what they said' : 'Read what they said'}
           </button>
@@ -492,7 +495,7 @@ function Inbox({ solution }: { solution: SolutionSlug }) {
             <span className="flex items-start justify-between gap-3">
               <span className="min-w-0">
                 <span className="block font-semibold">{e.subject}</span>
-                <span className="block text-[0.875rem] text-secondary">{e.from}</span>
+                <span className="block text-[15px] text-secondary">{e.from}</span>
               </span>
               <Pill tone={e.urgent ? 'urgent' : approved[e.id] ? 'done' : 'neutral'}>
                 {e.urgent ? 'Urgent' : approved[e.id] ? 'Replied' : GROUP_LABEL[e.group]}
@@ -503,11 +506,11 @@ function Inbox({ solution }: { solution: SolutionSlug }) {
         detail={
           <div>
             <AccentLabel solution={solution}>Sorted into {GROUP_LABEL[open.group]}</AccentLabel>
-            <h3 className="mt-3 text-[1.25rem] leading-[1.3] font-semibold">{open.subject}</h3>
+            <h3 className="mt-3 text-[1.25rem]">{open.subject}</h3>
             <p className="mt-1 text-[0.9375rem] text-secondary">From {open.from}</p>
             {open.draft ? (
               <>
-                <p className="mt-6 text-[0.875rem] font-semibold">Reply, written for you</p>
+                <p className="mt-6 text-[15px] font-semibold">Reply, written for you</p>
                 <Message>{open.draft}</Message>
                 <Approve
                   approved={Boolean(approved[open.id])}
@@ -573,7 +576,7 @@ function Booking({ solution }: { solution: SolutionSlug }) {
           <AccentLabel solution={solution}>Book a visit · Tomorrow</AccentLabel>
           {booked ? (
             <div className="mt-4">
-              <h3 className="text-[1.25rem] leading-[1.3] font-semibold">You are booked.</h3>
+              <h3 className="text-[1.25rem]">You are booked.</h3>
               <p className="mt-2 text-[0.9375rem] leading-[1.6]">
                 {service}, tomorrow at {time}. The van comes to you. In this example nothing is saved.
               </p>
@@ -581,7 +584,7 @@ function Booking({ solution }: { solution: SolutionSlug }) {
                 <button
                   type="button"
                   onClick={() => setView('owner')}
-                  className="inline-flex items-center justify-center rounded-[8px] bg-cta-bg px-6 py-[15px] text-[14.5px]/[1] font-semibold text-cta-fg transition-[background-color] duration-[120ms] hover:bg-cta-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+                  className="inline-flex items-center justify-center rounded-none bg-cta-bg px-6 py-[15px] text-[16px]/[1] font-bold text-cta-fg border-2 border-cta-bg transition-[background-color,color] duration-[120ms] hover:bg-cta-hover hover:text-cta-hover-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
                 >
                   See the Owner’s Day
                 </button>
@@ -592,7 +595,7 @@ function Booking({ solution }: { solution: SolutionSlug }) {
                     setService(null);
                     setTime(null);
                   }}
-                  className="tap-44 link-underline text-[0.875rem] font-semibold"
+                  className="tap-44 link-underline text-[15px] font-semibold"
                 >
                   Start over
                 </button>
@@ -600,7 +603,7 @@ function Booking({ solution }: { solution: SolutionSlug }) {
             </div>
           ) : (
             <>
-              <p className="mt-5 text-[0.875rem] font-semibold">1. Pick a service</p>
+              <p className="mt-5 text-[15px] font-semibold">1. Pick a service</p>
               <div className="mt-3">
                 <Segmented
                   label="Service"
@@ -609,7 +612,7 @@ function Booking({ solution }: { solution: SolutionSlug }) {
                   options={SERVICES.map((s) => ({ value: s, label: s }))}
                 />
               </div>
-              <p className="mt-6 text-[0.875rem] font-semibold">2. Pick an open time</p>
+              <p className="mt-6 text-[15px] font-semibold">2. Pick an open time</p>
               <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Time">
                 {TIMES.map((t) => {
                   const isTaken = taken.has(t);
@@ -621,12 +624,12 @@ function Booking({ solution }: { solution: SolutionSlug }) {
                       aria-pressed={time === t}
                       onClick={() => setTime(t)}
                       className={cn(
-                        'tap-44 rounded-[8px] border px-2 py-2 text-[0.875rem] sm:px-3 font-semibold transition-[border-color,background-color] duration-[120ms]',
+                        'tap-44 rounded-none border px-2 py-2 text-[15px] sm:px-3 font-semibold transition-[border-color,background-color] duration-[120ms]',
                         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg',
                         isTaken
                           ? 'border-border text-secondary line-through opacity-60'
                           : time === t
-                            ? 'border-fg bg-surface'
+                            ? 'border-fg bg-fg text-bg'
                             : 'border-border hover:border-border-strong',
                       )}
                     >
@@ -641,9 +644,9 @@ function Booking({ solution }: { solution: SolutionSlug }) {
                 disabled={!service || !time}
                 onClick={() => setBooked(true)}
                 className={cn(
-                  'mt-7 inline-flex items-center justify-center rounded-[8px] px-6 py-[15px] text-[14.5px]/[1] font-semibold',
+                  'mt-7 inline-flex items-center justify-center rounded-none px-6 py-[15px] text-[16px]/[1] font-semibold',
                   'transition-[background-color] duration-[120ms] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg',
-                  service && time ? 'bg-cta-bg text-cta-fg hover:bg-cta-hover' : 'border border-border text-secondary',
+                  service && time ? 'border-2 border-cta-bg bg-cta-bg text-cta-fg hover:bg-cta-hover hover:text-cta-hover-fg' : 'border border-border text-secondary',
                 )}
               >
                 Book This Time
@@ -659,14 +662,14 @@ function Booking({ solution }: { solution: SolutionSlug }) {
               <li key={d.time} className="flex items-start justify-between gap-4 border-t border-border py-4 last:border-b">
                 <span className="min-w-0">
                   <span className="block font-semibold">{d.who}</span>
-                  <span className="block text-[0.875rem] text-secondary">{d.service}</span>
+                  <span className="block text-[15px] text-secondary">{d.service}</span>
                 </span>
-                <span className="flex-none text-[0.875rem] font-semibold">{d.time}</span>
+                <span className="flex-none text-[15px] font-semibold">{d.time}</span>
               </li>
             ))}
           </ul>
           {!booked && (
-            <p className="mt-5 text-[0.875rem] text-secondary">
+            <p className="mt-5 text-[15px] text-secondary">
               Book a visit as the customer, then come back here to see it in the day.
             </p>
           )}

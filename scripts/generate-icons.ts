@@ -15,7 +15,8 @@
  *  - The master's hairline connectors are #E5E7EB, which vanishes on a
  *    transparent background at small sizes. Favicons keep the connectors but on
  *    an opaque plate.
- *  - That plate is now DARK (--tg-bg-dark, #101010), not white and not
+ *  - That plate is now DARK (Seam ink, #0B0B0C; the nodes take the Seam lamp
+ *    values, code only), not white and not
  *    transparent. This is an icon-set-only change: `icon-master.svg` is
  *    untouched, and nothing else reads it — the nav lockup and footer render
  *    the mark as JSX (components/logo-lockup.tsx) and the OG images build their
@@ -31,8 +32,8 @@ const ROOT = join(import.meta.dir, '..');
 const PUBLIC = join(ROOT, 'public');
 const APP = join(ROOT, 'app');
 
-/** --tg-bg-dark. The one plate colour for every generated icon. */
-const PLATE = '#101010';
+/** Seam ink (2026-11-12). The one plate colour for every generated icon. */
+const PLATE = '#0B0B0C';
 /** Hairline connectors, lifted off the dark plate but never a highlight. */
 const CONNECTOR = '#4B5563';
 
@@ -46,10 +47,10 @@ function paddedIcon(background: string | null): string {
     <line x1="32" y1="12" x2="52" y2="32" stroke="${CONNECTOR}" stroke-width="2.5"/>
     <line x1="12" y1="32" x2="32" y2="52" stroke="${CONNECTOR}" stroke-width="2.5"/>
     <line x1="52" y1="32" x2="32" y2="52" stroke="${CONNECTOR}" stroke-width="2.5"/>
-    <circle cx="32" cy="12" r="7.5" fill="#3B6FE0"/>
-    <circle cx="52" cy="32" r="7.5" fill="#7C6FE0"/>
-    <circle cx="32" cy="52" r="7.5" fill="#F2A93C"/>
-    <circle cx="12" cy="32" r="7.5" fill="#2FA679"/>
+    <circle cx="32" cy="12" r="7.5" fill="#5B8DFF"/>
+    <circle cx="52" cy="32" r="7.5" fill="#9B8CFF"/>
+    <circle cx="32" cy="52" r="7.5" fill="#FFB938"/>
+    <circle cx="12" cy="32" r="7.5" fill="#35C48D"/>
   </g>
 </svg>`;
 }

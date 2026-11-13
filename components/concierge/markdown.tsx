@@ -70,7 +70,7 @@ function inline(text: string, keyPrefix: string): ReactNode[] {
       out.push(
         <code
           key={key}
-          className="rounded-[4px] border border-border bg-surface px-[6px] py-[1px] font-mono text-[0.8125rem]"
+          className="tg-frame bg-bg px-[6px] py-[1px] font-mono text-[14px]"
         >
           {tok.slice(1, -1)}
         </code>,
@@ -95,7 +95,7 @@ export function Markdown({ text }: { text: string }) {
   const flushPara = () => {
     if (!para.length) return;
     blocks.push(
-      <p key={`p${k++}`} className="text-[0.875rem] leading-[1.55]" style={{ textWrap: 'pretty' }}>
+      <p key={`p${k++}`} className="text-[15px] leading-[1.55]" style={{ textWrap: 'pretty' }}>
         {inline(para.join(' '), `p${k}`)}
       </p>,
     );
@@ -108,7 +108,7 @@ export function Markdown({ text }: { text: string }) {
     blocks.push(
       <Tag
         key={`l${k++}`}
-        className="m-0 flex list-none flex-col gap-[6px] p-0 text-[0.875rem] leading-[1.55]"
+        className="m-0 flex list-none flex-col gap-[6px] p-0 text-[15px] leading-[1.55]"
       >
         {list.items.map((item, idx) => (
           <li key={idx} className="flex gap-[10px]">

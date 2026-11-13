@@ -42,7 +42,7 @@ describe('isPlausibleWebsite', () => {
   );
 
   it('accepts a path, query and hash after the host', () => {
-    expect(isPlausibleWebsite('tekguyz.com/work/team-performance?utm=x#top')).toBe(true);
+    expect(isPlausibleWebsite('tekguyz.com/work/quote-to-paid?utm=x#top')).toBe(true);
   });
 
   it('accepts a multi-label host and a long TLD', () => {

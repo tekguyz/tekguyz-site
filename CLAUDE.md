@@ -64,7 +64,7 @@ code are enough for most tasks.
 | --- | --- |
 | **What is open right now** | `docs/KNOWN_GAPS.md` — open and deferred work, and what was permanently rejected |
 | An architecture or CRM-contract decision | `docs/CANONICAL.md` (highest authority) |
-| **An exact token value** — a colour, a duration, an easing, a radius, the type scale, the density scale | **`docs/TOKENS.md`. Small, read it whole, and quote it freely — 40 tokens are asserted against `app/globals.css` on every `prebuild`, so it cannot be silently wrong.** |
+| **An exact token value** — a colour, a duration, an easing, a radius, the type scale, the density scale | **`docs/TOKENS.md`. Small, read it whole, and quote it freely — 48 tokens are asserted against `app/globals.css` on every `prebuild`, so it cannot be silently wrong.** |
 | **Why** a value is what it is, or a component's mechanism | `docs/DESIGN.md` §-by-§, not whole |
 | Page copy, or a route's title/description | `docs/COPY.md` — the relevant page only |
 | JSON-LD for a route | `docs/SEO.md` (small, fine to read whole) |
@@ -111,8 +111,8 @@ apply to your case.
 - **Never add `physical_address` or the `social_*` fields to the contact form.**
 - **The concierge never states or estimates a price**, never commits to a timeline, and never prints a raw route path or internal label as visible text.
 - **Every CRM triage POST is signed, and the payload is serialized exactly once.** Never inline the `JSON.stringify` back into the `fetch` call — it 401s 100% of the time.
-- **No accent ever fills a button** — primary CTAs are always ink. No 5th accent. Mapping lives only in `config/solutions.ts`.
-- **Banned motion:** parallax, gradient blobs, spinning shapes, marquees, particles, glassmorphism, cursor-followers, magnetic buttons, skeleton shimmer, smooth-scroll libraries. It rejects one aesthetic, not motion itself — **adding motion outside that list is wanted, not risky.**
+- **No lamp ever fills a button** — a primary CTA is always the opposite ground (ink on paper, paper on ink). No 5th accent. Mapping lives only in `config/solutions.ts`.
+- **Banned motion:** parallax, gradient blobs, spinning shapes, marquees, particles, glassmorphism, cursor-followers, magnetic buttons, skeleton shimmer, smooth-scroll libraries. It rejects one aesthetic, not motion itself. Since Seam (2026-11-12): one moment per page, nothing else moves on its own.
 - **`scripts/audit-mobile.ts` does not run under Bun, ever.** Use `bun run audit:mobile <phase>`.
 
 Mechanism, incident and full text for every rule above: the matching
@@ -134,7 +134,7 @@ Full reasoning for each: `docs/KNOWN_GAPS.md` § Permanently rejected.
 Acceptance criteria — not a checklist to narrate:
 
 - `bun run build` passes with zero type errors, and passes with **no secrets in the environment**.
-- Every touched route renders in light and dark mode. Dark mode has real bright elements — the primary button inverts to `#F5F5F5`/`#101010`.
+- Every touched route renders with both Seam grounds (ink and paper) and reads on each: a button is always the opposite ground, never a lamp. There is no dark mode and no theme toggle (Seam, 2026-11-12; `docs/TOKENS.md`).
 - Keyboard reaches every interactive element with a visible focus ring.
 - `prefers-reduced-motion` leaves no entrance, pulse, pin, or shimmer running, and hides nothing.
 - No hydration warnings.

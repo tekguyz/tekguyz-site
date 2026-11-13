@@ -1,6 +1,10 @@
 /**
  * Dark-context literal-hex guard.
  *
+ * [2026-11-12, Seam] The scope roots are now `.on-ink` and `.on-paper`; the
+ * old `.ink-band` / `.footer-dark` named below are gone. The list bans every
+ * neutral those two grounds define, plus the retired old-palette neutrals.
+ *
  * WHY THIS EXISTS. `check:design` asserts that `docs/TOKENS.md` matches
  * `app/globals.css`, and it is good at exactly that. It cannot see a hex typed
  * into a `.tsx` file, because there is no token there to compare against — the
@@ -64,6 +68,14 @@ const EXEMPT_BASENAMES = /^(opengraph-image|twitter-image|icon|apple-icon|manife
 
 /** Banned value -> what to use instead. */
 const BANNED: Record<string, string> = {
+  // Seam (2026-11-12): every neutral the two grounds define. Read the token.
+  '#b4b8c0': 'var(--tg-secondary) / text-secondary  (on-ink-soft)',
+  '#8a8f98': 'var(--tg-mute) / text-mute  (on-ink-mute)',
+  '#43474f': 'var(--tg-secondary) / text-secondary  (on-paper-soft)',
+  '#5c616b': 'var(--tg-mute) / text-mute  (on-paper-mute)',
+  '#2a2a2d': 'var(--tg-border) / border-border  (line-on-ink)',
+  '#d9dadf': 'var(--tg-border) / border-border  (line-on-paper)',
+  // Retired with the old palette. Still banned so they cannot creep back.
   '#f5f5f5': 'var(--tg-fg) / text-fg',
   '#9ca3af': 'var(--tg-secondary) / text-secondary  (retired as a text colour)',
   '#7b8291': 'var(--tg-secondary) / text-secondary',

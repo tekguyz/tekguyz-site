@@ -18,7 +18,7 @@ export function OutcomeBlock({
   tone,
   label,
   message,
-  bodyClassName = 'text-[0.875rem] leading-[1.55]',
+  bodyClassName = 'text-[15px] leading-[1.55]',
 }: {
   tone: Tone;
   label: React.ReactNode;
@@ -30,7 +30,7 @@ export function OutcomeBlock({
 }) {
   return (
     <>
-      <div className="flex items-center gap-2 text-[0.875rem] leading-[1.55] tracking-[0.04em]">
+      <div className="flex items-center gap-2 text-[15px] leading-[1.55] tracking-[0.04em]">
         <span
           aria-hidden
           className="h-[6px] w-[6px] flex-none rounded-full"

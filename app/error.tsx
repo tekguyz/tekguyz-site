@@ -18,12 +18,12 @@ export default function GlobalError({
   return (
     <section className="tg-section">
       <div className="tg-container">
-        <h1 className="max-w-[18ch] text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]">
+        <h1 className="max-w-[18ch] text-[length:var(--text-display)]">
           Something broke on our end.
         </h1>
         <p className="mt-6 max-w-[52ch] text-[length:var(--text-body)] text-secondary">
           Not yours — ours. Refresh, and if it keeps happening, tell us at{' '}
-          <a href={`mailto:${site.publicEmail}`} className="tap-24 link-underline text-fg">
+          <a href={`mailto:${site.publicEmail}`} className="tap-24 text-fg font-bold underline decoration-2 underline-offset-[5px]">
             {site.publicEmail}
           </a>
           .
