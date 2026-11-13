@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SignatureStripe } from '@/components/signature-stripe';
-import { FlourishMark } from '@/components/flourish-mark';
 import { ClosingCta } from '@/components/closing-cta';
 import { AccentDot } from '@/components/solution-tag';
 import { StatusLine } from '@/components/status-line';
@@ -81,9 +80,7 @@ export default async function SolutionDetailPage({
           ← Solutions
         </Link>
 
-        <FlourishMark className="mt-10 mb-8" />
-
-        <div className="tg-grid pt-4">
+        <div className="tg-grid pt-10">
           {/* 768–1023: display-scale title beside body prose is the same narrow-column
               artifact as page-hero — both take all 8 tracks and stack. */}
           <div className="[grid-column:1/6] max-lg:[grid-column:1/-1]">

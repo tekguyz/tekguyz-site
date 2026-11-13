@@ -1,4 +1,3 @@
-import { FlourishMark } from '@/components/flourish-mark';
 import { SignatureStripe } from '@/components/signature-stripe';
 
 /**
@@ -32,7 +31,6 @@ export function PageHero({
               line 9 on an 8-track grid, which manufactures implicit tracks and
               squeezes the h1 into ~144px. */}
           <div className="[grid-column:1/8] max-lg:[grid-column:1/-1]">
-            <FlourishMark className="mb-9" />
             <p className="mb-6 tg-eyebrow text-secondary">
               {eyebrow}
             </p>

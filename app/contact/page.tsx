@@ -1,6 +1,5 @@
 import { Fragment, Suspense } from 'react';
 import { SignatureStripe } from '@/components/signature-stripe';
-import { FlourishMark } from '@/components/flourish-mark';
 import { ContactForm } from '@/components/contact-form';
 import { FaqAccordion } from '@/components/faq-accordion';
 import { ButtonLink } from '@/components/button';
@@ -71,7 +70,6 @@ export default function ContactPage() {
             second column for it to sit beside — so intake and its trust column
             each take all 8 tracks rather than a third of the row. */}
         <div className="[grid-column:1/6] max-lg:[grid-column:1/-1]">
-          <FlourishMark className="mb-9" />
           <p className="mb-6 tg-eyebrow text-secondary">
             Get In Touch
           </p>

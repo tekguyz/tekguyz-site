@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ViewTransition } from 'react';
 import { SignatureStripe } from '@/components/signature-stripe';
-import { FlourishMark } from '@/components/flourish-mark';
 import { Frame, FrameMeta, BuildNarrative } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
@@ -12,7 +11,7 @@ import { ClosingCta } from '@/components/closing-cta';
 import { work, getWork, adjacentWork, type WorkEntry } from '@/content/work';
 import { getSolution, type Solution } from '@/content/solutions';
 import { getStatus, type StatusResult } from '@/lib/status';
-import { buildMetadata, breadcrumbs, jsonLd, softwareApplicationNode } from '@/lib/seo';
+import { buildMetadata, breadcrumbs, jsonLd, reviewNode, softwareApplicationNode } from '@/lib/seo';
 
 export function generateStaticParams() {
   return work.map((w) => ({ slug: w.slug }));
@@ -137,6 +136,9 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
             url: entry.url,
             description: entry.description,
           }),
+          // The Review node sits on the page that shows the quote. It left the
+          // home page with the home testimonial (2026-11-12).
+          ...(entry.kind === 'project' && entry.hasClientReview ? [reviewNode()] : []),
         )}
       />
 
@@ -150,9 +152,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
             ← Work
           </Link>
 
-          <FlourishMark className="mt-10 mb-8" />
-
-          <SolutionTag solution={entry.solution} label={entry.tag} />
+          <SolutionTag solution={entry.solution} label={entry.tag} className="mt-10 flex w-fit" />
 
           <ViewTransition name={`work-title-${entry.slug}`} share="morph" default="none">
             <h1

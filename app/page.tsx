@@ -9,14 +9,12 @@ import { Frame } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
-import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
 import { solutions } from '@/content/solutions';
 import { featured, foldBoard, getWork, heroSlug, type CaseStudy } from '@/content/work';
-import { testimonial } from '@/content/process';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
-import { buildMetadata, jsonLd, professionalService, reviewNode } from '@/lib/seo';
+import { buildMetadata, jsonLd, professionalService } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'TEKGUYZ | AI Help for South Florida Small Businesses',
@@ -39,7 +37,7 @@ export default async function HomePage() {
         app/contact/page.tsx. Keep the JSON-LD script inside the wrapper. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLd(professionalService(), reviewNode())}
+        dangerouslySetInnerHTML={jsonLd(professionalService())}
       />
 
       {/* Stripe 1 of 3 — top of hero. */}
@@ -108,20 +106,12 @@ export default async function HomePage() {
         ))}
       </section>
 
-      {/* Testimonial — Review schema, no numeric rating (none exists). */}
-      <section className="py-20 md:py-32">
-        <div className="tg-container">
-          <p className="mb-10 tg-eyebrow text-secondary">
-            What Clients Say
-          </p>
-          <div className="reveal">
-            <Testimonial contextSlug={testimonial.contextSlug} />
-          </div>
-        </div>
-      </section>
+      {/* No testimonial here since 2026-11-12 (owner): the one review is on its
+          own story page (`/work/<slug>`, "Client review"), with its Review
+          schema. On home it was a full-width card that only made the page longer.
 
-      {/* Process teaser — CANONICAL §4 item 7, between Testimonial and the
-          closing CTA. Copy is COPY.md's "Process teaser" block verbatim. Now a
+          Process teaser — CANONICAL §4 item 7, before the closing CTA. Copy is
+          COPY.md's "Process teaser" block verbatim. Now a
           component of its own (Wave 3); treatment and reasoning in DESIGN.md
           §4.17. */}
       <ProcessTeaser />

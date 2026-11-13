@@ -62,7 +62,7 @@ export default async function WorkPage() {
 
       <div className="tg-container mt-16 pb-20 md:pb-32">
         <GroupHead title="More builds" note="Same standard, every one live" />
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {workSmall.map((entry, i) => (
             <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
           ))}
