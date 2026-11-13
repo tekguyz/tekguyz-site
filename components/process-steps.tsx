@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { STRIPE_ORDER, accent } from '@/config/solutions';
 import { processSteps } from '@/content/process';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
@@ -38,6 +38,13 @@ import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 export function ProcessSteps() {
   const [progress, setProgress] = useState(0);
   const [active, setActive] = useState(0);
+  /* Where each step begins along the rail's track, 0–1. Measured from the steps'
+     own tops, for the same reason `progress` is: the node for step N sits where
+     the fill is when step N starts, not at an even quarter. Starts even and is
+     replaced on the first scroll/resize measurement. */
+  const [marks, setMarks] = useState<number[]>(() =>
+    processSteps.map((_, i) => i / processSteps.length),
+  );
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   /* This file used to carry its own character-identical copy of the query +
@@ -61,6 +68,16 @@ export function ProcessSteps() {
       const last = steps[steps.length - 1]!.getBoundingClientRect();
       const span = last.bottom - first.top;
       setProgress(span > 0 ? Math.min(1, Math.max(0, (line - first.top) / span)) : 0);
+      if (span > 0) {
+        const next = steps.map((s) => (s.getBoundingClientRect().top - first.top) / span);
+        // Relative offsets don't change while scrolling, only on resize; skip the
+        // state write unless one actually moved, so a scroll doesn't re-render twice.
+        setMarks((prev) =>
+          prev.length === next.length && prev.every((v, i) => Math.abs(v - next[i]!) < 0.002)
+            ? prev
+            : next,
+        );
+      }
 
       let current = 0;
       for (let i = 0; i < steps.length; i++) {
@@ -80,13 +97,16 @@ export function ProcessSteps() {
   return (
     <div className="tg-container tg-grid items-start pb-20 md:pb-32">
       <div className="tg-pin hidden lg:block" style={{ gridColumn: '1 / 3' }}>
-        <div className="flex gap-5">
+        {/* One 300px box holds the track and the four nodes. Each node sits at its
+            step's measured start, with its label hung off it, so the label, the
+            dot and the fill all agree about where step N begins. */}
+        <div className="relative my-3 tabular-nums" style={{ height: 300 }}>
           <div
-            className="relative w-[2px] flex-none"
-            style={{ height: 300, background: 'var(--tg-border)' }}
+            className="absolute inset-y-0 left-0 w-[2px]"
+            style={{ background: 'var(--tg-border)' }}
           >
             <div
-              className="absolute inset-0 w-[2px] origin-top"
+              className="absolute inset-0 origin-top"
               style={{
                 transform: `scaleY(${progress})`,
                 background: 'var(--tg-fg)',
@@ -94,16 +114,26 @@ export function ProcessSteps() {
               }}
             />
           </div>
-          <div
-            className="flex flex-col justify-between tabular-nums"
-            style={{ height: 300 }}
-          >
-            {processSteps.map((step, i) => {
-              const on = !reduced && i === active;
-              return (
+          {processSteps.map((step, i) => {
+            const reached = !reduced && i <= active;
+            const on = !reduced && i === active;
+            return (
+              <div
+                key={step.numeral}
+                className="absolute left-0 flex items-center"
+                style={{ top: `${marks[i]! * 100}%`, transform: 'translateY(-50%)' }}
+              >
                 <span
-                  key={step.numeral}
-                  className="text-[0.875rem] leading-[1.55] tracking-[0.04em] transition-colors duration-[120ms]"
+                  aria-hidden
+                  className="-ml-[5px] block size-3 flex-none rounded-full border-2 transition-[background-color,border-color,transform] duration-[120ms]"
+                  style={{
+                    background: reached ? 'var(--tg-fg)' : 'var(--tg-bg)',
+                    borderColor: reached ? 'var(--tg-fg)' : 'var(--tg-border-strong)',
+                    transform: on ? 'scale(1.25)' : 'scale(1)',
+                  }}
+                />
+                <span
+                  className="ml-4 text-[0.875rem] leading-[1.35] tracking-[0.04em] transition-colors duration-[120ms]"
                   style={{
                     fontWeight: on ? 600 : 400,
                     color: on ? 'var(--tg-fg)' : 'var(--tg-secondary)',
@@ -111,49 +141,68 @@ export function ProcessSteps() {
                 >
                   {step.numeral} {step.title}
                 </span>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
         <p className="mt-9 text-[0.875rem] leading-[1.55] tabular-nums text-secondary">
-          Step {String(active + 1).padStart(2, '0')} of 04
+          Step {String(active + 1).padStart(2, '0')} of {String(processSteps.length).padStart(2, '0')}
         </p>
       </div>
 
       {/* The rail beside this is `hidden lg:block`, so in the 768–1023 band there
           is no second column and the steps take all 8 tracks. */}
       <div className="[grid-column:4/13] max-lg:[grid-column:1/-1]">
-        {processSteps.map((step, i) => (
-          <div
-            key={step.numeral}
-            ref={(el) => {
-              stepRefs.current[i] = el;
-            }}
-            // No data-reveal-index: the stagger is for grids that enter
-            // together. These four are a screen apart, so an index would just
-            // add up to 240ms of dead time before a step that arrives alone.
-            className={`reveal relative border-t border-border pt-18 pb-16 md:pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
-          >
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -left-4 max-md:left-0 top-9 text-[length:var(--text-hero)] leading-none font-bold tracking-[-0.045em] tabular-nums select-none"
-              style={{ color: accent(STRIPE_ORDER[i]!).dot, opacity: 0.08 }}
+        {processSteps.map((step, i) => {
+          // Under reduced motion nothing tracks scroll, so every step reads as lit.
+          const lit = reduced || i === active;
+          return (
+            <div
+              key={step.numeral}
+              ref={(el) => {
+                stepRefs.current[i] = el;
+              }}
+              // No data-reveal-index: the stagger is for grids that enter
+              // together. These four are a screen apart, so an index would just
+              // add up to 240ms of dead time before a step that arrives alone.
+              //
+              // The top edge is the home teaser's staircase: `.tg-rule` drawn
+              // 25 / 50 / 75 / 100% of the way across, ink once the reader has
+              // reached that step. The same object as the teaser and the contact
+              // form's rail, not a new state mechanism (DESIGN.md §4.17).
+              data-on={reduced || i <= active}
+              style={{ '--tg-rule-scale': (i + 1) / processSteps.length } as CSSProperties}
+              className={`reveal tg-rule tg-rule-top relative border-t border-border pt-18 pb-16 md:pb-24 ${i === processSteps.length - 1 ? 'border-b' : ''}`}
             >
-              {step.numeral}
-            </span>
-            <div className="relative">
-              <h2 className="text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]">
-                {step.title}
-              </h2>
-              <p
-                className="mt-7 max-w-[58ch] text-[length:var(--text-body)] text-secondary"
-                style={{ textWrap: 'pretty' }}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -left-4 max-md:left-0 top-9 text-[length:var(--text-hero)] leading-none font-bold tracking-[-0.045em] tabular-nums select-none"
+                style={{ color: accent(STRIPE_ORDER[i]!).dot, opacity: 0.08 }}
               >
-                {step.body}
-              </p>
+                {step.numeral}
+              </span>
+              <div className="relative">
+                {/* Below 1024px the rail is hidden, so this is the only place a
+                    phone or tablet reader is told where they are in the sequence. */}
+                <p className="mb-4 text-[0.875rem] leading-[1.55] tabular-nums text-secondary lg:hidden">
+                  Step {step.numeral} of {String(processSteps.length).padStart(2, '0')}
+                </p>
+                <h2
+                  className="text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em] transition-colors duration-[120ms]"
+                  style={{ color: lit ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
+                >
+                  {step.title}
+                </h2>
+                <p
+                  className="mt-7 max-w-[58ch] text-[length:var(--text-body)] text-secondary"
+                  style={{ textWrap: 'pretty' }}
+                >
+                  {step.body}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

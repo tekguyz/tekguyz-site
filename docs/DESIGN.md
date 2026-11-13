@@ -1365,6 +1365,11 @@ The rail encodes position, the one fact that genuinely differs between them.
 - **`<ol>`, not four `<div>`s.** The rail says "sequence" visually; the list says
   it to a screen reader, which gets "list, 4 items" and a position for each.
 
+**[shipped 2026-11-12] Each bar ends in a 7px ink dot** at the same fraction as
+`--tg-rule-scale`, so the endpoint reads as a position. Type is `--text-title` /
+`--text-body` (it was 18px / 14px). `/process` uses the same staircase on each
+step's top edge, with `data-on` once the reader has reached that step.
+
 **[decided 2026-08-13] No hover state.** These are not links. A hover response on
 a non-interactive element advertises an affordance that is not there, and
 `.tg-rule`'s hover weight belongs to things that respond to a click. The

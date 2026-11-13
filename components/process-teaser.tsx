@@ -63,12 +63,30 @@ export function ProcessTeaser() {
             data-reveal-index={i}
             data-on="true"
             style={{ '--tg-rule-scale': (i + 1) / processSteps.length } as CSSProperties}
-            className="reveal tg-rule tg-rule-top border-t border-border pt-6"
+            className="reveal tg-rule tg-rule-top border-t border-border pt-8"
           >
-            <h3 className="text-[1.125rem] leading-[1.3] font-semibold tracking-[-0.02em]">
+            {/* The marker for "this is how far through you are when this step
+                ends": a dot on the tip of the staircase bar, so the endpoint reads
+                as a position rather than just a longer line. Sits on the same
+                fraction as `--tg-rule-scale`, so the two cannot disagree. */}
+            <span
+              aria-hidden
+              className="absolute top-0 size-[7px] rounded-full"
+              style={{
+                left: `${((i + 1) / processSteps.length) * 100}%`,
+                translate: '-100% -50%',
+                background: 'var(--tg-fg)',
+              }}
+            />
+            <h3 className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.025em]">
               {s.title}
             </h3>
-            <p className="mt-2 text-[0.875rem] leading-[1.55] text-secondary">{s.teaser}</p>
+            <p
+              className="mt-3 max-w-[32ch] text-[length:var(--text-body)] leading-[1.5] text-secondary"
+              style={{ textWrap: 'pretty' }}
+            >
+              {s.teaser}
+            </p>
           </li>
         ))}
       </ol>
