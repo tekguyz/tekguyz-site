@@ -1,150 +1,100 @@
 @import 'tailwindcss';
 
-/* next-themes writes `class="dark"` on <html> (attribute="class", enableSystem={false}). */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ---------------------------------------------------------------------------
-   DESIGN.md §1 — colors. Every value here is from the locked, measured table.
-   Do not substitute a "close enough" shade; the ratios were audited.
+   Seam. Source: tekguyz-one/brand/design/ (DESIGN.md + tokens.css), put on this
+   site by docs/superpowers/specs/2026-11-12-seam-reskin.md.
+
+   Two grounds, four lamps, no other hues, and NO THEME SWITCH. Every page uses
+   both grounds, joined by a straight horizontal seam. `.on-ink` and `.on-paper`
+   are the only two scope roots: each redeclares the semantic `--tg-*` values
+   below, so a component reads `text-fg` / `text-secondary` / `border-border`
+   and gets the right colour on whichever ground it sits on.
+
+   Values are the measured Seam table; do not substitute a "close enough" shade.
 --------------------------------------------------------------------------- */
 :root {
-  --tg-ink: #111111;
-  --tg-canvas: #ffffff;
-  --tg-surface-card: #f5f5f5;
-  --tg-hairline: #e5e7eb;
-  --tg-muted: #6a717e;
-  --tg-muted-soft: #9ca3af; /* NON-TEXT ONLY: dots, thinking indicator */
-  --tg-muted-dark: #7b8291;
-  --tg-bg-dark: #101010;
-  --tg-text-primary-dark: #f5f5f5;
-  --tg-border-dark: #2a2a2c;
+  /* Two grounds. */
+  --ink: #0b0b0c;
+  --paper: #ffffff;
 
-  /* Wayfinding accents — dots, tags, badges, pull-quote borders. Never a button fill. */
-  --tg-accent-blue: #3b6fe0;
-  --tg-accent-violet: #7c6fe0;
-  --tg-accent-amber: #f2a93c;
-  --tg-accent-teal: #2fa679;
+  /* Text and lines, per ground. */
+  --on-ink: #ffffff;
+  --on-ink-soft: #b4b8c0;
+  --on-ink-mute: #8a8f98;
+  --line-on-ink: #2a2a2d;
+  --on-paper: #0b0b0c;
+  --on-paper-soft: #43474f;
+  --on-paper-mute: #5c616b;
+  --line-on-paper: #d9dadf;
 
-  /* -text variants: an accent rendered as small/bold text on ANY light background. */
-  --tg-accent-blue-text: #1e3f94;
-  --tg-accent-violet-text: #4433a8;
-  --tg-accent-amber-text: #8a5a0a;
-  --tg-accent-teal-text: #1d6b4d;
+  /* The four lamps. Fields, dots and the stripe only. Text on a lamp is always
+     ink; a lamp is never text on paper. Mapping lives in config/solutions.ts. */
+  --lamp-blue: #5b8dff;
+  --lamp-violet: #9b8cff;
+  --lamp-amber: #ffb938;
+  --lamp-teal: #35c48d;
 
-  --tg-success: #10b981;
-  --tg-warning: #f59e0b;
-  --tg-error: #ef4444;
+  /* Functional states (form errors, the live check). Not brand hues. */
+  --tg-success: #35c48d;
+  --tg-warning: #ffb938;
+  --tg-error: #c4261d;
 
-  /* Theme-aware semantics. Light mode values. */
-  --tg-bg: var(--tg-canvas);
-  --tg-fg: var(--tg-ink);
-  --tg-surface: var(--tg-surface-card);
-  --tg-border: var(--tg-hairline);
-  --tg-border-strong: #d1d5db;
-  --tg-secondary: var(--tg-muted);
+  /* Space: 4px base. */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 72px;
+  --s-9: 112px;
 
-  /* Primary CTA inverts wholesale between themes — see DESIGN.md §4 / §7. */
-  --tg-cta-bg: var(--tg-ink);
-  --tg-cta-fg: #ffffff;
-  --tg-cta-hover: #242424;
+  /* Shape: square. Only status pills are round. */
+  --radius: 0;
+  --radius-pill: 999px;
 
-  /* Accent-as-text resolves per theme so components never branch on useTheme(). */
-  --tg-accent-blue-on-bg: var(--tg-accent-blue-text);
-  --tg-accent-violet-on-bg: var(--tg-accent-violet-text);
-  --tg-accent-amber-on-bg: var(--tg-accent-amber-text);
-  --tg-accent-teal-on-bg: var(--tg-accent-teal-text);
-
-  /* Nav is transparent at scroll 0 and fills in past 24px — driven by data-scrolled. */
-  --tg-nav-bg: rgb(255 255 255 / 0);
-  --tg-nav-border: rgb(229 231 235 / 0);
-  --tg-nav-blur: 0px;
-
-  /* Elevation — SCOPED to the homepage fold only. See `.tg-elevate` below for
-     the full decision; these live here rather than at the rule so dark mode can
-     redeclare them at the same scope root every other themed value uses.
-     Two layers: a 1px contact shadow that keeps the edge crisp against the
-     hairline, and a wide diffuse layer that does the actual lifting. */
-  --tg-elevate: 0 1px 2px rgb(17 17 17 / 0.06), 0 12px 28px -8px rgb(17 17 17 / 0.16);
-  --tg-elevate-hover: 0 2px 4px rgb(17 17 17 / 0.07), 0 20px 40px -12px rgb(17 17 17 / 0.24);
+  --measure: 62ch;
 }
 
-.dark {
-  --tg-bg: var(--tg-bg-dark);
-  --tg-fg: var(--tg-text-primary-dark);
-  --tg-surface: #1a1a1c;
-  --tg-border: var(--tg-border-dark);
-  --tg-border-strong: #3a3a3e;
-  --tg-secondary: var(--tg-muted-dark);
-
-  --tg-cta-bg: var(--tg-text-primary-dark);
-  --tg-cta-fg: var(--tg-bg-dark);
-  --tg-cta-hover: #e2e2e2;
-
-  /* Blue and violet need dedicated dark variants; amber and teal pass as-is. */
-  --tg-accent-blue-on-bg: #5380e4;
-  --tg-accent-violet-on-bg: #8377e2;
-  --tg-accent-amber-on-bg: var(--tg-accent-amber);
-  --tg-accent-teal-on-bg: var(--tg-accent-teal);
-
-  --tg-nav-bg: rgb(16 16 16 / 0);
-  --tg-nav-border: rgb(42 42 44 / 0);
-
-  /* A shadow tuned for white is invisible on #101010 — the same alpha over a
-     near-black floor produces almost no delta. Dark mode goes to pure black at
-     a much higher alpha so the lift still reads; the hairline is still doing
-     half the work, which is why the border stays on the elevated elements. */
-  --tg-elevate: 0 1px 2px rgb(0 0 0 / 0.6), 0 10px 28px -10px rgb(0 0 0 / 0.8);
-  --tg-elevate-hover: 0 2px 4px rgb(0 0 0 / 0.7), 0 18px 40px -14px rgb(0 0 0 / 0.9);
+/* The paper ground is the default, so anything outside a scope root reads
+   paper values. */
+:root,
+.on-paper {
+  --tg-bg: var(--paper);
+  --tg-fg: var(--on-paper);
+  --tg-surface: var(--paper);
+  --tg-secondary: var(--on-paper-soft);
+  --tg-mute: var(--on-paper-mute);
+  --tg-border: var(--line-on-paper);
+  --tg-border-strong: var(--ink);
+  /* The action is the opposite ground. Never a lamp. */
+  --tg-cta-bg: var(--ink);
+  --tg-cta-fg: var(--paper);
+  --tg-cta-hover-bg: var(--paper);
+  --tg-cta-hover-fg: var(--ink);
+  --tg-focus: var(--lamp-blue);
 }
 
-[data-scrolled='true'] {
-  --tg-nav-bg: rgb(255 255 255 / 0.82);
-  --tg-nav-border: rgb(229 231 235 / 1);
-  --tg-nav-blur: 14px;
+.on-ink {
+  --tg-bg: var(--ink);
+  --tg-fg: var(--on-ink);
+  --tg-surface: var(--ink);
+  --tg-secondary: var(--on-ink-soft);
+  --tg-mute: var(--on-ink-mute);
+  --tg-border: var(--line-on-ink);
+  --tg-border-strong: var(--paper);
+  --tg-cta-bg: var(--paper);
+  --tg-cta-fg: var(--ink);
+  --tg-cta-hover-bg: var(--ink);
+  --tg-cta-hover-fg: var(--paper);
+  --tg-focus: var(--paper);
 }
 
-.dark [data-scrolled='true'] {
-  --tg-nav-bg: rgb(16 16 16 / 0.8);
-  --tg-nav-border: rgb(42 42 44 / 1);
-}
-
-/* The ink band is dark in BOTH themes, so tokens inside it must not theme-swap.
-   DESIGN.md §1 documents this as the one deliberate literal-value exception. */
-.ink-band {
-  --tg-bg: #111111;
-  --tg-fg: #f5f5f5;
-  --tg-surface: #1a1a1c;
-  --tg-border: #2a2a2c;
-  --tg-border-strong: #3a3a3e;
-  /* muted-dark, not muted-soft. This read #9ca3af — a value TOKENS.md retired
-     as a text colour — which made the band a second, undocumented exception to
-     that retirement with no mechanism behind it. The violet tag literal below
-     IS mechanically justified (token resolution would be wrong there); this
-     was not. Contrast drops 7.5:1 → 4.90:1 on #111111, AA for the 14px body it
-     carries, and it now matches .footer-dark's secondary exactly. The band was
-     the second thing muted-dark's 2026-08-14 lightening fixed: at #747c8b it
-     measured 4.495:1 here and had been recorded as 4.53:1 (the page-floor
-     number) since the token landed. */
-  --tg-secondary: var(--tg-muted-dark);
-  --tg-accent-blue-on-bg: #5380e4;
-  --tg-accent-violet-on-bg: #8377e2;
-  --tg-accent-amber-on-bg: #f2a93c;
-  --tg-accent-teal-on-bg: #2fa679;
-  --tg-cta-bg: #f5f5f5;
-  --tg-cta-fg: #101010;
-  --tg-cta-hover: #e2e2e2;
-  background-color: #111111;
-  color: #f5f5f5;
-}
-
-/* The footer is permanently dark regardless of the toggle. */
-.footer-dark {
-  --tg-bg: #101010;
-  --tg-fg: #f5f5f5;
-  --tg-border: #2a2a2c;
-  --tg-secondary: var(--tg-muted-dark);
-  background-color: #101010;
-  color: #f5f5f5;
+.on-ink,
+.on-paper {
+  background-color: var(--tg-bg);
+  color: var(--tg-fg);
 }
 
 @theme inline {
@@ -154,82 +104,70 @@
   --color-border: var(--tg-border);
   --color-border-strong: var(--tg-border-strong);
   --color-secondary: var(--tg-secondary);
+  --color-mute: var(--tg-mute);
 
-  --color-ink: var(--tg-ink);
-  --color-canvas: var(--tg-canvas);
-  --color-surface-card: var(--tg-surface-card);
-  --color-hairline: var(--tg-hairline);
-  --color-muted: var(--tg-muted);
-  --color-muted-soft: var(--tg-muted-soft);
-  --color-muted-dark: var(--tg-muted-dark);
-  --color-bg-dark: var(--tg-bg-dark);
-  --color-text-primary-dark: var(--tg-text-primary-dark);
-  --color-border-dark: var(--tg-border-dark);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
 
-  --color-accent-blue: var(--tg-accent-blue);
-  --color-accent-violet: var(--tg-accent-violet);
-  --color-accent-amber: var(--tg-accent-amber);
-  --color-accent-teal: var(--tg-accent-teal);
+  --color-lamp-blue: var(--lamp-blue);
+  --color-lamp-violet: var(--lamp-violet);
+  --color-lamp-amber: var(--lamp-amber);
+  --color-lamp-teal: var(--lamp-teal);
 
   --color-cta-bg: var(--tg-cta-bg);
   --color-cta-fg: var(--tg-cta-fg);
-  --color-cta-hover: var(--tg-cta-hover);
+  --color-cta-hover: var(--tg-cta-hover-bg);
+  --color-cta-hover-fg: var(--tg-cta-hover-fg);
 
   --color-success: var(--tg-success);
   --color-warning: var(--tg-warning);
   --color-error: var(--tg-error);
 
-  /* DESIGN.md §2 — type scale. */
-  --text-hero: clamp(2.5rem, 6vw, 4.5rem);
-  --text-display: clamp(2rem, 4.5vw, 3.5rem);
-  --text-subhead: clamp(1.5rem, 3vw, 2.25rem);
+  /* Type scale. Display steps are for the lettering face. */
+  --text-hero: clamp(2.75rem, 7vw, 5.5rem);
+  --text-display: clamp(2.25rem, 4.6vw, 3.75rem);
+  --text-subhead: clamp(1.75rem, 3vw, 2.5rem);
   --text-title: clamp(1.375rem, 2vw, 1.75rem);
-  --text-body: 1.0625rem;
-  --text-sm: 0.875rem;
-  --text-caption: 0.75rem;
+  --text-body: 1.125rem;
+  --text-sm: 1rem;
+  --text-caption: 0.8125rem;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-display: var(--font-lettering), 'Arial Narrow', sans-serif;
+  --font-mono: var(--font-data), ui-monospace, monospace;
 
-  /* DESIGN.md §3 — 4px base scale. */
-  --spacing-section: 128px;
-  --spacing-section-mobile: 80px;
+  /* Square. Every radius step resolves to 0; pills use `rounded-full`. */
+  --radius-input: 0;
+  --radius-tag: 0;
+  --radius-button: 0;
+  --radius-card: 0;
+  --radius-container: 0;
 
-  /* DESIGN.md §3 — radius scale. */
-  --radius-input: 4px;
-  --radius-tag: 6px;
-  --radius-button: 8px;
-  --radius-card: 12px;
-  --radius-container: 16px;
-
-  /* DESIGN.md §6 — motion. */
   --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
   --animate-duration-fast: 120ms;
 }
 
 :root {
-  /* DESIGN.md §6 — five durations, each with one job. A value that cannot be
-     given a job does not belong here. */
-  --dur-instant: 90ms; /* focus ring, press */
+  /* Durations, each with one job. Seam allows one moment per page (the lamp
+     fields rising in); the rest are state feedback on press, hover and open. */
+  --dur-instant: 90ms; /* press */
   --dur-fast: 120ms; /* colour and opacity only */
   --dur-base: 240ms; /* state: draw, rotate, shift */
-  --dur-state: 320ms; /* a box changes size: collapse, step */
-  --dur-entrance: 500ms; /* scroll reveal */
-  --dur-page: 320ms; /* view transition */
+  --dur-state: 320ms; /* a box changes size: collapse */
+  --dur-entrance: 700ms; /* the lamp fields rising in */
+  --lamp-stagger: 60ms;
 
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
-  /* Settles into place and stops. No overshoot anywhere on this site — an
-     overshoot says "performed," and every other signal here says "measured." */
+  /* Settles and stops. No overshoot anywhere on this site. */
   --ease-state: cubic-bezier(0.2, 0.6, 0.2, 1);
 
   --container-max: 1280px;
   --container-pad: 32px;
 
-  /* DESIGN.md §8 — the density scale. Components declare intent and the value
-     resolves per width, instead of each one hand-picking `py-14 sm:py-18`.
-     Mobile-first: the bare :root IS the ≤767px value. */
+  /* The density scale. Mobile-first: the bare :root IS the ≤767px value. */
   --pad-container: 24px; /* inside a full-bleed panel */
   --pad-card: 24px; /* inside a card that sits in a multi-column grid */
   --gap-group: 28px; /* between grouped elements within one component */
@@ -238,12 +176,8 @@
 @media (min-width: 768px) {
   :root {
     --pad-container: 32px;
-    /* Identical to the base value ON PURPOSE, and mandatory. A card in a
-       multi-column grid gains no width at 768 — the grid gains tracks, not
-       room — so the value genuinely does not step here. check-design.ts
-       asserts all three breakpoints of every density token in three separate
-       blocks, so deleting this "redundant" line fails `prebuild`; it does not
-       tidy it. */
+    /* Identical to the base value on purpose, and mandatory: check-design.ts
+       asserts all three breakpoints of every density token. */
     --pad-card: 24px;
     --gap-group: 40px;
   }
@@ -272,25 +206,40 @@
   }
 
   html {
+    -webkit-text-size-adjust: 100%;
     /* Anchor jumps only — no smooth-scroll library anywhere on this site. */
     scroll-behavior: smooth;
     scroll-padding-top: 96px;
+    scrollbar-color: var(--ink) var(--paper);
+    background-color: var(--ink);
   }
 
   body {
     margin: 0;
-    background-color: var(--tg-bg);
-    color: var(--tg-fg);
-    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    background-color: var(--paper);
+    color: var(--on-paper);
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Headings are lettering: condensed block caps. Body and buttons stay in
+     sentence case in the body face. */
   h1,
   h2,
-  h3,
+  h3 {
+    margin: 0;
+    font-family: var(--font-lettering), 'Arial Narrow', sans-serif;
+    font-stretch: 75%;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
   h4 {
     margin: 0;
     font-weight: 700;
@@ -305,52 +254,60 @@
     text-decoration: none;
   }
 
-  /* Visible focus everywhere — DESIGN.md §8 accessibility floor. */
+  /* Visible focus everywhere: blue on paper, white on ink. */
   :focus-visible {
-    outline: 2px solid var(--tg-fg);
+    outline: 3px solid var(--tg-focus);
     outline-offset: 3px;
-    border-radius: 2px;
   }
 
   ::selection {
-    background: var(--tg-fg);
-    color: var(--tg-bg);
+    background: var(--lamp-amber);
+    color: var(--ink);
   }
 }
 
 /* ---------------------------------------------------------------------------
-   Components
-
-   The ONLY layered block in this file, and the layer is the whole point.
-   `@import 'tailwindcss'` declares `theme, base, components, utilities` in that
-   order, so a rule here loses to every Tailwind utility at the call site and
-   wins over nothing but `base`. That is the required direction for `.tg-eyebrow`
-   below: it owns the four typography declarations that were identical at all 24
-   sites, and call sites keep overriding colour (`text-secondary`) and margin
-   (`mb-6`, `mb-10`, …) with ordinary utilities.
-
-   Do NOT move this out of the layer to "make it stronger". Unlayered — the form
-   the rest of this file uses — it would beat `text-secondary` and repaint two
-   thirds of the eyebrows on the site. The `gap-y-12` incident is the same
-   mechanism read the other way round: there, an unlayered `gap` silently ate a
-   layered utility. Here we want the utility to win, so the rule is layered.
+   Components — layered on purpose, so call-site utilities (colour, margin)
+   still win over these.
 --------------------------------------------------------------------------- */
 @layer components {
-  /*
-   * DESIGN.md §2.1 caption step. Typography only — no colour, no margin.
-   *
-   * Colour is deliberately absent because it is the one thing that genuinely
-   * varies per site: `text-secondary` on most, the accent's `-text` variant on
-   * the solution/work detail pages (resolved from `config/solutions.ts`, the
-   * same resolution that drives dots and tags — there is no second mechanism),
-   * and fixed dark-context values inside `.ink-band` / `.footer-dark`.
-   */
+  /* The headline voice at hero size: narrower and tighter than h2. */
+  .lettering {
+    font-family: var(--font-lettering), 'Arial Narrow', sans-serif;
+    font-stretch: 68%;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.005em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  /* A small label in the body face. Seam has no uppercase kicker; the words
+     stay, the costume goes. */
   .tg-eyebrow {
-    font-size: 0.75rem;
+    font-size: 0.9375rem;
     line-height: 1.4;
     font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+  }
+
+  /* A heading that is NOT lettering: product-UI fragments (example screens),
+     FAQ questions, small group labels. Body face, sentence case. Put it on the
+     heading itself, or on a wrapper to cover every heading inside. */
+  .tg-plain,
+  .tg-plain :is(h1, h2, h3) {
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-stretch: 100%;
+    text-transform: none;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0;
+  }
+
+  /* Mono data label: times, status, "sample data". Nothing else. */
+  .label {
+    font-family: var(--font-data), ui-monospace, monospace;
+    font-size: 13px;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -370,105 +327,30 @@
 }
 
 .tg-section {
-  padding-block: 128px;
+  padding-block: 112px;
 }
 
 @media (max-width: 767px) {
   .tg-section {
-    padding-block: 80px;
+    padding-block: 72px;
   }
 }
 
-/* ---------------------------------------------------------------------------
-   DESIGN.md §3 — the boundary above `closing-cta`, counted once.
-
-   Every route ends the same way: a block closing at full 128px bottom rhythm,
-   then the signature stripe, then the CTA's own top padding. That is two
-   complete gaps stacked across a 6px rule — 202px from the last content to the
-   closing headline on `/`, and more on the routes whose closing block carries
-   its own trailing padding.
-
-   128px separates two CONTENT sections. What follows here is a full-bleed
-   coloured rule, and a rule is already a boundary, so the block that closes
-   into it sheds half its rhythm. With the CTA's 64/48px top padding that leaves
-   134px desktop / 94px mobile in total — one rhythm unit, counted once.
-
-   Those totals were 110/78 while the closing band sat on bare canvas. The band
-   now has a `--tg-surface` ground (below), which changes what the number means:
-   the CTA's own top padding is no longer part of the GAP, it is the interior of
-   a visible block. The gap the eye actually reads is canvas + stripe — 70px
-   desktop, 46px mobile — and it got smaller, not larger, while the band got
-   room to breathe. This is the distinction that makes raising the CTA's padding
-   safe rather than a third recurrence of the spacing leak: a shed rhythm plus a
-   coloured boundary plus interior padding is one gap; two undifferentiated
-   canvas gaps stacked across a 6px rule was the 202px defect.
-
-   Fixed HERE, at the collision, not at `--tg-section` and not in seven pages'
-   markup. Verified before writing it that all seven routes carrying
-   `closing-cta` end that element at exactly 128px, so this only ever reduces —
-   it can never add padding to a neighbour that had none. Re-measure if a
-   route's closing block changes shape.
-
-   Unlayered on purpose: Tailwind's `pb-32` lives in `@layer utilities` and this
-   has the same (0,1,0) specificity, so it wins by LAYER, never by source order.
-   §8's `motion-reduce:lg:static` note is why that distinction is not optional.
-
-   Mobile-first, and the breakpoint is `min-width: 768px` rather than the
-   `max-width: 767px` used elsewhere in this file, because the CTA's own top
-   padding is Tailwind's `md:` — also `min-width: 768px`. A viewport can land on
-   a fractional CSS width (measured: `innerWidth` 767 with BOTH `max-width:767px`
-   and `min-width:768px` false), so a `max-width` twin would leave a hairline
-   band where one half of this pair switched and the other did not. Two
-   declarations that have to agree get the same query, not the complementary one.
---------------------------------------------------------------------------- */
+/* The gap above `closing-cta`, counted once: the block that closes into the
+   ink band sheds half its rhythm. Same `min-width: 768px` query as the CTA's
+   own `md:` padding, so the two can never disagree at a fractional width. */
 :where(section, div):has(+ .tg-closing) {
-  padding-bottom: 40px;
+  padding-bottom: 48px;
 }
 
 @media (min-width: 768px) {
   :where(section, div):has(+ .tg-closing) {
-    padding-bottom: 64px;
+    padding-bottom: 72px;
   }
 }
 
-/* ---------------------------------------------------------------------------
-   The closing band's ground — DESIGN.md §4.5.
-
-   `closing-cta` was correctly built and visually inert: a centered text stack
-   on the same canvas as everything above it, which is to say it read as more
-   page rather than as the page's last word. Every gap inside it had been
-   measured and argued (24 · 48 · 24 · 16) and the flatness was still there,
-   because the flatness was never in the elements or in their spacing — the
-   block had no edges.
-
-   One declaration gives it edges. The signature stripe directly above stops
-   being a divider between two sections and becomes the band's lid; the
-   permanently-dark footer directly below becomes its floor. The band is
-   therefore bracketed on both sides without adding a single element.
-
-   `--tg-surface`, the same token the hero's media panel uses. That is the
-   bookend rhyme, and it is deliberately one token rather than a new treatment:
-   the page opens on a surface panel and closes on a surface ground. It also
-   costs nothing in dark mode, where the token is #1A1A1C — a real step up from
-   the #101010 page and the #101010 footer, so the band separates in both
-   themes without a hairline and without a branch.
-
-   NOT a card, and that distinction is the whole reason this is allowed:
-   DESIGN.md v2.5 rejected adding "fill, border, card or divider" to
-   `closing-cta`, and what it rejected was BOXING THE STACK — a bounded object
-   floating on the page, which would have fought the centering and shrunk the
-   band. This is full-bleed with no radius and no border. A band, not a box.
-
-   On the `<section>`, so it sits behind the stripe (four opaque segments, so
-   the stripe is unaffected) and reaches the viewport edges on all seven routes
-   that carry the component. */
-.tg-closing {
-  background: var(--tg-surface);
-}
-
 /* The concierge launcher's (and desktop panel's) gap from the viewport corner.
-   16px on phones so the control stops crowding body copy, 24px from 768 up.
-   refs #55. Read by `INSET` in `components/concierge/concierge.tsx`. */
+   Read by `INSET` in `components/concierge/concierge.tsx`. refs #55. */
 :root {
   --tg-launcher-inset: 16px;
 }
@@ -479,50 +361,16 @@
   }
 }
 
-/* DESIGN.md §8 — 768–1024px collapses the asymmetric grid to 8 columns. */
+/* 768–1023px: the 12-track grid collapses to 8. */
 @media (max-width: 1023px) {
   .tg-grid {
     grid-template-columns: repeat(8, 1fr);
   }
 }
 
-/* ---------------------------------------------------------------------------
-   DESIGN.md §8 — case-study rows stack in the 768–1023 band (2026-08-11).
-
-   The 8-track split starved BOTH halves at once: the text column measured 249px,
-   about 31 characters at `--text-body` against the 45–75 a measure exists to
-   hold, and the alternatives all bought one half by spending the other (4/4 is
-   the template look §0 avoids; 5/3 fixes the prose and drops the poster to 249px
-   wide, and the poster is what the `/work` index is for). So the band gets one
-   genuine column instead of two starved ones. This is the same escape `page-hero`,
-   `SectionHead`, `/contact` and `/solutions/[slug]` already take at 768 — §8's
-   reasoning was written about an oversized heading, and it generalises to prose.
-
-   `grid-row` and `grid-column` are released TOGETHER, in this one block, for the
-   same reason the ≤767 reset releases them together: the halves are pinned to
-   `grid-row: 1` on the multi-column bands so the alternation can ride on
-   `grid-column` while the DOM stays in reading order, and a pin surviving into a
-   one-column band stacks both halves into the SAME CELL. Split across two rules
-   they could disagree; here they cannot.
-
-   Unlayered and `!important` on purpose: the placements this overrides are
-   Tailwind arbitrary properties (`[grid-column:1/6]`, `[grid-row:1]`) of the same
-   (0,1,0) specificity, and two same-property utilities have no winner — only a
-   source order. §8's `motion-reduce:lg:static` note is why that is not a
-   stylistic call.
-
-   NO lower bound, deliberately, and this was nearly written the other way. A
-   `min-width: 768px` arm is the COMPLEMENTARY query to the ≤767 reset's
-   `max-width: 767px`, and a viewport can land on a fractional width where both
-   are false — measured elsewhere in this file: `innerWidth` 767 with
-   `max-width:767px` and `min-width:768px` both false. In that hairline band
-   neither rule would apply and the row would silently fall back to the 8-track
-   split. Sharing the reset's upper region instead means the two rules OVERLAP
-   rather than abut, and they set identical values there, so they cannot disagree
-   at any width. Same principle as the `closing-cta` boundary above: two
-   declarations that have to agree get the same query, never the complementary
-   one.
---------------------------------------------------------------------------- */
+/* Case-study rows stack in the 768–1023 band. No lower bound on purpose: it
+   overlaps the ≤767 reset instead of abutting it, so no fractional width can
+   fall between them. */
 @media (max-width: 1023px) {
   .tg-stack-md > * {
     grid-column: 1 / -1 !important;
@@ -534,30 +382,16 @@
   .tg-grid {
     grid-template-columns: repeat(1, 1fr);
   }
+  /* grid-row is released with grid-column: alternating rows pin both halves to
+     row 1 on the multi-column bands, and must stack here. */
   .tg-grid > * {
     grid-column: 1 / -1 !important;
-    /* `grid-row` is released here for the same reason `grid-column` is. The
-       alternating rows (home Featured Work, /work case studies) pin BOTH halves
-       to `grid-row: 1` on the multi-column bands, because explicit column
-       placement alone does not survive sparse auto-flow: an item whose
-       column-start sits behind the placement cursor is pushed to the next row,
-       which is what forced those components to alternate their DOM order in the
-       first place. Pinned to row 1, the columns alone decide the visual order,
-       so the DOM can stay in reading order — text, then media — at every width.
-       Down here there is one column and the halves must stack, so the pin has to
-       go, or both halves would occupy the same cell. */
     grid-row: auto !important;
   }
 }
 
-/* The alternating case-study row's own split gap.
-   NOT a `gap-y-*` utility: `.tg-grid` sets the shorthand `gap: 24px` unlayered,
-   so it beats any layered `row-gap` from `@layer utilities` regardless of source
-   order. `gap-y-12` was declared on both components and had never once applied —
-   the stacked halves have always sat at 24px. Same class of silent drop as the
-   `cn()`/`leading-none` bug, one layer up. Only ever visible below 768px, where
-   the halves stack; above that each row is a single grid row and row-gap is
-   inert. */
+/* The alternating row's split gap. Unlayered, because `.tg-grid`'s unlayered
+   `gap` beats any layered `gap-y-*` utility. */
 .tg-split {
   row-gap: 48px;
 }
@@ -567,152 +401,135 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Home hero media — a plain plate at every width. No panel, no bleed.
-
-   It was a surface-filled panel that ran off the right viewport edge (and 10vw
-   past it). Measured 2026-10-06 on the live site: that hid 13% to 18% of the
-   picture at every desktop width and cut "You (Guest)" mid-word, and the panel's
-   gray sat on the picture's own near-identical gray margin, which read as a
-   strange border and padding. Under 1024px it had already been removed for the
-   same reasons (DESIGN.md §4.9: a plate has zero padding), so desktop now uses
-   the same rule: `Frame` carries the 12px radius and 1px hairline, and the
-   status block sits 12px beneath it.
+   Frames: square, 2px border in the ground's strong line, no shadow.
 --------------------------------------------------------------------------- */
+.tg-frame {
+  border: 2px solid var(--tg-border-strong);
+}
+
+/* Home hero media — a plain plate. */
 .tg-hero-frame {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.tg-hero-poster,
-.tg-hero-poster .tg-hero-img {
-  border-radius: 12px;
-}
-
-/* Under 1024px the media stacks under the text.
-
-   `margin-top` is the ONLY declaration behind the 80px text-to-media gap
-   (24 grid + 56). The `gap-y-14` that used to sit on the grid never applied —
-   `.tg-grid`'s `gap` is unlayered and beats a layered `row-gap`, the same
-   silent drop as the case-study rows' `gap-y-12`. */
 @media (max-width: 1023px) {
   .tg-hero-frame {
     margin-top: 56px;
   }
 }
 
-/* The phone capture that overlaps the hero poster. A flat ring in the page
-   colour cuts it out of the desktop picture without a shadow. */
+/* The phone capture overlapping the hero poster: a flat ring in the ground
+   colour cuts it out of the picture, no shadow. */
 .tg-hero-phone {
-  border-color: var(--tg-border);
-  background: var(--tg-surface);
+  border-color: var(--tg-border-strong);
+  background: var(--tg-bg);
   outline: 4px solid var(--tg-bg);
 }
 
 /* ---------------------------------------------------------------------------
-   Scroll reveals — IntersectionObserver + a plain CSS transition.
+   The seam row — four lamp fields straddling the ink/paper edge.
 
-   `.reveal` on its own does NOTHING. That is the point, and it is what keeps
-   the blank-page bug from being possible: content is visible by default.
+   The row pulls itself up over the bottom of the ink block above it, so the
+   top of each field sits on ink and the bottom on paper. The block above
+   reserves the room with `.tg-seam-above`.
 
-   The hidden state lives on `.reveal-armed`, which only components/reveal.tsx
-   adds, from an effect. So an element can only be hidden once JS is running and
-   an observer is already attached to un-hide it. No JS, no observer support, a
-   hydration failure, print, or a crawler that never scrolls — all render the
-   page fully visible.
-
-   An earlier pass used `animation-timeline: view()`. That is a SCRUBBED
-   timeline: scrolling back up ran the reveal in reverse and content vanished
-   again, and "once" is not expressible with it. It also put `opacity: 0` in
-   static CSS with nothing guaranteed to remove it, which blanked half the
-   homepage in a full-page capture. Both failure modes are structurally
-   impossible with the arrangement below.
-
-   THE RISE USES `translate`, NOT `transform`, deliberately. `.hover-card`
-   animates `transform: translateY(-3px)` on hover; if the reveal used the same
-   property the two would fight over one value with two different durations.
-   `translate` is an independent property, so the entrance and the hover lift
-   compose instead of overwriting each other.
+   The one animated moment: fields rise in on load, 60ms apart, and lift 8px
+   on hover. `rise` uses `translate`, the hover uses `transform`, so the two
+   never fight over one property.
 --------------------------------------------------------------------------- */
-.reveal {
-  transition:
-    opacity var(--dur-entrance) var(--ease-entrance),
-    translate var(--dur-entrance) var(--ease-entrance);
+.tg-seam-above {
+  padding-bottom: 152px;
 }
 
-/* A `transition` SHORTHAND resets every transition property, and the hover
-   rules below sit later in this file — so `reveal hover-row` (solution-row) and
-   `reveal hover-card` (project-card, the solutions-page build cards) silently
-   lost their entrance transition entirely and snapped in with no animation.
-   The classes were wired up correctly; the CSS cancelled them. Anything
-   carrying both needs its transitions declared together, once. */
-.reveal.hover-row {
-  transition:
-    opacity var(--dur-entrance) var(--ease-entrance),
-    translate var(--dur-entrance) var(--ease-entrance),
-    border-color var(--dur-base) var(--ease-hover);
+.tg-seam-row {
+  position: relative;
+  z-index: 2;
+  margin-top: -88px;
 }
 
-.reveal.hover-card {
-  transition:
-    opacity var(--dur-entrance) var(--ease-entrance),
-    translate var(--dur-entrance) var(--ease-entrance),
-    transform var(--dur-base) var(--ease-hover),
-    border-color var(--dur-base) var(--ease-hover);
-}
-
-.reveal-armed {
-  opacity: 0;
-  translate: 0 16px;
-}
-
-.reveal-armed.is-revealed {
-  opacity: 1;
-  translate: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* The controller bails before arming anything, but belt and braces: if a
-     class ever lands, it must not hide content or animate. */
-  .reveal,
-  .reveal-armed {
-    opacity: 1 !important;
-    translate: none !important;
-    transform: none !important;
-    transition: none !important;
+@media (min-width: 768px) {
+  .tg-seam-above {
+    padding-bottom: 208px;
+  }
+  .tg-seam-row {
+    margin-top: -112px;
   }
 }
 
-/* ---------------------------------------------------------------------------
-   status-line pulse — verified state only.
---------------------------------------------------------------------------- */
-@keyframes tg-pulse {
-  0%,
-  100% {
+.tg-lamps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1023px) {
+  .tg-lamps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 519px) {
+  .tg-lamps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tg-lampfield {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s-5);
+  min-height: 232px;
+  padding: var(--s-5);
+  color: var(--ink);
+  animation: tg-rise var(--dur-entrance) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--lamp-stagger) + var(--lamp-stagger));
+  transition: transform 220ms var(--ease-out);
+}
+
+@media (max-width: 519px) {
+  .tg-lampfield {
+    min-height: 150px;
+  }
+}
+
+.tg-lampfield:hover {
+  transform: translateY(-8px);
+}
+
+/* Ink focus ring on a lamp: blue on blue would vanish. */
+.tg-lampfield:focus-visible {
+  outline-color: var(--ink);
+  outline-offset: -6px;
+}
+
+@keyframes tg-rise {
+  from {
+    translate: 0 40px;
+    opacity: 0;
+  }
+  to {
+    translate: none;
     opacity: 1;
   }
-  50% {
-    opacity: 0.4;
-  }
 }
 
-.status-dot-live {
-  animation: tg-pulse 1600ms var(--ease-hover) infinite;
+/* The four-lamp stripe: bottom of the footer, nowhere else. */
+.tg-stripe {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: 10px;
+}
+
+/* Process step list: ruled by a 2px line. */
+.tg-steps {
+  border-top: 2px solid var(--tg-border-strong);
 }
 
 /* ---------------------------------------------------------------------------
-   Concierge launcher — the yield rule.
-
-   The launcher fades out while a primary CTA is on screen (M-06 + M-15). It is
-   OPACITY ONLY: a translate or scale here would be a second, undocumented
-   motion pattern, and the launcher's Motion entrance — which animated
-   translateY(8) and ran unsuppressed under `reduce` (M-19 / H-4, confirmed by
-   measurement) — is exactly what this replaces.
-
-   A real rule rather than two Tailwind utilities because the two properties
-   need two different durations: 240ms for the yield, the site's standard 120ms
-   for the button's own hover. Both are declared here together — a `transition`
-   shorthand resets every transition property, so they cannot be split.
+   Concierge launcher — the yield rule. Opacity only; both transitions are
+   declared together because a `transition` shorthand resets the other.
 --------------------------------------------------------------------------- */
 .tg-yield {
   transition:
@@ -720,12 +537,8 @@
     background-color 120ms var(--ease-hover);
 }
 
-/* ---------------------------------------------------------------------------
-   Concierge "thinking" — the ONLY moving use of the four-color system.
-   Four discrete segments, never a blended gradient.
---------------------------------------------------------------------------- */
-/* Keyframes taken literally from the design export, which sweeps by holding
-   each segment dim and flashing it briefly — not a symmetric ease in/out. */
+/* Concierge "thinking": four discrete lamp segments, never a gradient. It is
+   feedback for a request in flight, not ambient motion. */
 @keyframes tg-shimmer {
   0%,
   55%,
@@ -742,7 +555,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Hover contract — DESIGN.md §6
+   Hover contract. Lines darken; nothing lifts except a lamp field.
 --------------------------------------------------------------------------- */
 .hover-row {
   transition: border-color var(--dur-base) var(--ease-hover);
@@ -758,95 +571,18 @@
 }
 
 .hover-card {
-  transition:
-    transform var(--dur-base) var(--ease-hover),
-    border-color var(--dur-base) var(--ease-hover);
+  transition: border-color var(--dur-base) var(--ease-hover);
 }
 .hover-card:hover {
-  transform: translateY(-3px);
   border-color: var(--tg-border-strong);
 }
 
 /* ---------------------------------------------------------------------------
-   `.tg-elevate` / `.tg-lift` — the site's ONE elevation, scoped to the homepage
-   fold. [decided 2026-08-14, DESIGN.md §4.18]
-
-   TOKENS.md says "elevation is flat, hairlines only, hover lift comes from
-   position," and that rule still governs every other surface on this site. This
-   is a deliberate, dated exception for ONE shape — the fold's four build cards
-   — and the argument is content, not taste: they are the only elements on the
-   page whose job is to assert "this is a separate, real object you can pick
-   up." Flat-on-flat is what makes a page of hairline rectangles read as a
-   template. [narrowed 2026-08-29: the exception used to cover the fold's proof
-   strip too. That component is deleted, so the static `.tg-elevate` class went
-   with it and only the hover-capable `.tg-lift` remains.]
-
-   DO NOT WIDEN THIS. `LiveFrame`'s plate (padding 0, no shadow), `project-card`,
-   `case-study-row` and every other card tier stay flat — the weight gap between
-   card tiers is real signal, and a shadow applied everywhere communicates
-   nothing.
-
-   THE HOVER LIFT IS `translate`, NOT `transform`, and that is inverted from
-   `.hover-card` on purpose. These elements are animated by Motion, which writes
-   its `y` entrance as an INLINE `transform` — an inline declaration beats any
-   class, so a `transform`-based hover lift here would simply never apply after
-   the entrance settled. `.reveal` keeps the same split for the same reason,
-   with the two owners swapped: there the entrance owns `translate` and the
-   hover owns `transform`. One property, one owner, either way round.
-
-   All three transitioned properties are declared TOGETHER in one rule. A
-   `transition` shorthand resets every transition property, so splitting them
-   across two rules silently drops whichever loses the cascade — the mechanism
-   that cancelled the `.reveal.hover-card` entrances.
-
-   Under `prefers-reduced-motion` the universal reset zeroes the duration and
-   the lift becomes instant. It still lifts; it just doesn't travel. Nothing
-   here hides content.
---------------------------------------------------------------------------- */
-/* `.tg-elevate` — the static, non-interactive form — was REMOVED 2026-08-29.
-   Its only consumer was the fold's proof strip, and that component is deleted
-   (DESIGN.md §4.18; reasoning at the top of `components/fold-board.tsx`). The
-   two custom properties below it stay: `.tg-lift` still reads both. */
-.tg-lift {
-  box-shadow: var(--tg-elevate);
-  transition:
-    translate var(--dur-base) var(--ease-hover),
-    box-shadow var(--dur-base) var(--ease-hover),
-    border-color var(--dur-base) var(--ease-hover);
-}
-.tg-lift:hover,
-.tg-lift:focus-visible {
-  translate: 0 -3px;
-  box-shadow: var(--tg-elevate-hover);
-  border-color: var(--tg-border-strong);
-}
-
-/* ---------------------------------------------------------------------------
-   `.tg-rule` — THE state primitive. DESIGN.md §6.
-
-   A hairline that draws from the left. Every state change on this site uses
-   this one gesture, so that a visitor learns it once and then reads it
-   everywhere: the nav's current page, a solution row under the pointer, an
-   open FAQ answer, the step you have reached in the form.
-
-   This is a generalisation, not an invention. The nav's active-page indicator
-   already did exactly this — 2px, ink, `scaleX(0)` from `left center`, 240ms —
-   and it was the only thing on the site that did. Shipping a second copy of
-   the same mechanism under a different selector is how two implementations of
-   one idea drift apart, so the nav now consumes this rule rather than owning
-   a private one.
-
-   ::after, and that is a real constraint rather than a preference. `.tap-44` /
-   `.tap-24` own ::before site-wide, and the nav links carry BOTH — a 44px hit
-   overlay and a page indicator. One pseudo per job; there is no third.
-
-   Two weights, and the split is the whole reason this is legible:
-     :hover / :focus-visible  -> `border-strong`. Transient. "This is a thing."
-     [data-on='true']         -> `fg`. Persistent. "You are here."
-   The persistent weight is written at (0,3,0) so it beats the transient
-   (0,2,0) on specificity rather than on source order — DESIGN.md §8's note on
-   why an accessibility- or wayfinding-bearing declaration never rests on a
-   source-order win applies here directly.
+   `.tg-rule` — the state primitive. A 2px bar drawn from the left: the nav's
+   current page, a row under the pointer, the form's step rail.
+   `data-on` is persistent ink at (0,3,0), so it beats the transient hover on
+   SPECIFICITY, not source order. `::after`, because `.tap-44`/`.tap-24` own
+   `::before` and nav links carry both.
 --------------------------------------------------------------------------- */
 .tg-rule {
   position: relative;
@@ -856,17 +592,9 @@
   position: absolute;
   left: 0;
   right: 0;
-  /* Default sits on the element's own bottom edge; the nav overrides to -10px
-     because its indicator hangs below the link's box by the export's value. */
   bottom: -1px;
   height: 2px;
   background: var(--tg-border-strong);
-  /* Driven by a custom property rather than by competing `transform`
-     declarations, so the bar can also be drawn PARTWAY — which is what makes
-     the contact form's step rail the same object as the nav's indicator
-     instead of a second progress mechanism. The variable is set on the
-     element, not the pseudo, so it inherits; an inline value therefore beats
-     every selector below without needing !important. */
   transform: scaleX(var(--tg-rule-scale, 0));
   transform-origin: left center;
   transition: transform var(--dur-base) var(--ease-state);
@@ -880,21 +608,8 @@
   --tg-rule-scale: 1;
 }
 
-/* A THIRD position on the same one gesture, not a fourth mechanism: the bar
-   sits partly drawn at rest and completes on hover/focus. This is what the
-   contact form's step rail already does (0.5 -> 1); the only new thing is that
-   here the partial value is a REST STATE rather than a progress readout.
-
-   It exists because `.link-underline` grows from 0% — it draws nothing at rest —
-   which is fine for a link sitting under an ink-filled button, and a real defect
-   for one that is the only actionable element on its band (DESIGN.md §4.4).
-
-   (0,1,0), so `.tg-rule:hover` / `:focus-visible` at (0,2,0) beat it on
-   SPECIFICITY, not source order. This is also why it is a class and not an
-   inline `--tg-rule-scale`: the variable is set on the element and inherits, so
-   an inline value would beat every selector below it and pin the bar at 0.34
-   through hover. The form's rail can be inline precisely because nothing there
-   ever hovers. */
+/* Partly drawn at rest, completes on hover/focus. A class, not an inline
+   value, so `:hover` at (0,2,0) still beats it. */
 .tg-rule-rest {
   --tg-rule-scale: 0.34;
 }
@@ -906,57 +621,28 @@
   bottom: -10px;
 }
 
-/* The same bar, drawn along the element's TOP edge instead — the homepage
-   Process teaser, whose steps carry their hairline above the content rather
-   than below it (DESIGN.md §4.17).
-
-   Written `.tg-rule.tg-rule-top` at (0,2,0) rather than `.tg-rule-top` at
-   (0,1,0), so it beats `.tg-rule::after`'s `bottom` on SPECIFICITY. The
-   navlink override above wins on source order instead, which works and is the
-   pattern this file is trying to stop repeating: move either rule and it
-   breaks silently. */
 .tg-rule.tg-rule-top::after {
   top: -1px;
   bottom: auto;
 }
 
-/* Text CTAs draw an underline left-to-right via background-size. */
+/* Text links: a 2px underline, offset, the Seam link treatment. */
 .link-underline {
-  background-image: linear-gradient(currentColor, currentColor);
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 0% 1px;
-  transition: background-size 180ms var(--ease-hover);
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--dur-fast) var(--ease-hover);
 }
 .link-underline:hover,
 .link-underline:focus-visible {
-  background-size: 100% 1px;
+  text-decoration-color: currentColor;
 }
 
 /* ---------------------------------------------------------------------------
-   `.tg-collapse` — a box that changes height. DESIGN.md §6.
-
-   `grid-template-rows: 0fr -> 1fr` is the only way to animate to a content
-   height without measuring it in JS, and measuring it in JS is what makes an
-   accordion jump when the copy changes or the text reflows at a new width.
-
-   THIS REPLACES `hidden` ON THE PANEL, and the swap has to carry the
-   accessibility guarantee `hidden` was giving for free. A collapsed box with
-   `overflow: hidden` is still in the accessibility tree and its contents are
-   still tab-reachable — a screen reader would read every FAQ answer on the
-   conversion route while every row looks shut. So the inner element also flips
-   `visibility`, which does remove it from the tree:
-
-     open   -> visible immediately (no delay), so the content is announced as
-               the box grows.
-     closed -> hidden, DELAYED by the full collapse duration, so the content is
-               still painted while the box is shrinking and only disappears
-               once there is nothing left to see.
-
-   The panel stays mounted either way. Conditional rendering left all six
-   `aria-controls` pointing at ids that did not exist while collapsed, which is
-   exactly the state a screen reader meets on page load; that fix is not being
-   undone here.
+   `.tg-collapse` — a box that changes height. The inner element also flips
+   `visibility`, which removes it from the accessibility tree: visible at once
+   on open, hidden after the full collapse on close.
 --------------------------------------------------------------------------- */
 .tg-collapse {
   display: grid;
@@ -976,9 +662,6 @@
   transition-delay: 0s;
 }
 
-/* The content inside a collapse arrives after the box, not with it — 4px is
-   the whole move. Any more and the answer reads as a separate animation
-   rather than as the box's own contents settling. */
 .tg-collapse-content {
   opacity: 0;
   translate: 0 -4px;
@@ -991,15 +674,7 @@
   translate: none;
 }
 
-/* ---------------------------------------------------------------------------
-   `.tg-mark` — the +/- indicator, rotated rather than replaced.
-
-   Swapping the character `+` for `-` is a text change, so there is nothing to
-   animate and the glyph flickers as the font re-rasterises. Two 1.5px bars
-   with one rotating 90deg -> 0deg is the same symbol, actually animated, and
-   it inherits `currentColor` so it tracks the trigger's muted -> ink shift for
-   free.
---------------------------------------------------------------------------- */
+/* `.tg-mark` — the +/- indicator, rotated rather than replaced. */
 .tg-mark {
   position: relative;
   display: block;
@@ -1014,7 +689,7 @@
   left: 0;
   right: 0;
   top: 50%;
-  height: 1.5px;
+  height: 2px;
   background: currentColor;
   translate: 0 -50%;
 }
@@ -1027,55 +702,8 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Theme toggle — the control acknowledges the press.
-
-   Which glyph shows is decided by CSS (`.dark` on <html>), never by React
-   state, and that is not changing. `display` is discrete, so the swap itself
-   cannot be animated — but the SVG that CONTAINS both glyphs can turn, and the
-   swap happens inside the turn. The result is one control rotating, not two
-   icons blinking.
-
-   REJECTED: transitioning page colours on theme change. It needs a transition
-   on `:root` covering background and colour, which then applies to every
-   descendant that inherits them and to every element whose own colour
-   transition would now be competing — a site-wide cost for a one-off moment,
-   on a toggle most visitors press at most once.
---------------------------------------------------------------------------- */
-.tg-theme-glyph {
-  transition: rotate var(--dur-base) var(--ease-state);
-}
-.dark .tg-theme-glyph {
-  rotate: 90deg;
-}
-
-/* Focus rings are deliberately NOT transitioned. It was considered and
-   rejected: the only way to add one site-wide is a `transition` shorthand on a
-   low-specificity group selector, and a shorthand resets every transition
-   property — so every element already carrying `.link-underline`,
-   `.hover-card`, `.reveal` or `.tg-yield` would either lose its own transition
-   or silently drop the new one depending on which rule won. An instant focus
-   ring is also simply correct: a keyboard user tracking their position wants
-   the indicator to be there, not arriving. */
-
-/* ---------------------------------------------------------------------------
-   Tap targets — DESIGN.md §8's two-tier policy, implemented once.
-
-   44x44 for standalone controls, 24x24 (WCAG 2.2 AA) for links inline in
-   running prose. The expansion is a PSEUDO-ELEMENT OVERLAY, never a size
-   change: the visual weight of a 14.5px text link and a 38px toggle are
-   decisions from the approved export, and growing a painted box to 44px is a
-   composition change nobody has made. The overlay leaves the render
-   byte-identical and grows only the hit area.
-
-   ::before, not ::after, and that is load-bearing: `[data-navlink]::after` is
-   the active-page indicator bar, and the nav links are exactly the elements
-   that need both. One pseudo per job.
-
-   Centred on the element rather than inset from it, so a target wider than the
-   tier keeps its full width and only grows on the axis that is short. Every
-   adjacency this creates is hit-tested by `scripts/audit-mobile.ts taps` —
-   two overlapping invisible targets mean one silently steals the other's taps,
-   decided by source order, which nobody reading the JSX can see.
+   Tap targets — 44x44 for standalone controls, 24x24 for links in prose. The
+   expansion is a `::before` overlay, never a size change.
 --------------------------------------------------------------------------- */
 .tap-44,
 .tap-24 {
@@ -1087,8 +715,6 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  /* `translate`, not `transform` — the same split the reveal rule keeps, so a
-     hover lift on an ancestor can never fight this for one property. */
   translate: -50% -50%;
   width: 100%;
   height: 100%;
@@ -1102,52 +728,16 @@
   min-height: 24px;
 }
 
-/* `project-card`'s "Read the full story →" is a span, not a nested anchor — the
-   whole card is the link, and an anchor inside an anchor would split one card
-   into two tab stops. So the underline has to be driven by the card's hover and
-   focus, not the span's own, or it would only ever draw when the pointer
-   happened to land on those five words. */
+/* A whole-card link: its "Read the full story" span underlines on the card's
+   hover and focus. */
 [data-card]:hover .link-underline,
 [data-card]:focus-visible .link-underline {
-  background-size: 100% 1px;
+  text-decoration-color: currentColor;
 }
 
 /* ---------------------------------------------------------------------------
-   View Transitions — DESIGN.md §6, shared-element build-card -> detail morph.
---------------------------------------------------------------------------- */
-::view-transition {
-  /* Keep the page clickable while a transition runs. */
-  pointer-events: none;
-}
-
-::view-transition-group(.morph) {
-  animation-duration: var(--dur-page);
-  animation-timing-function: var(--ease-entrance);
-}
-
-/* The nav must not slide with the content — it's the spatial anchor. */
-::view-transition-group(site-nav) {
-  animation: none;
-  z-index: 100;
-}
-::view-transition-old(site-nav) {
-  display: none;
-}
-::view-transition-new(site-nav) {
-  animation: none;
-}
-
-/* ---------------------------------------------------------------------------
-   The /process progress rail — the site's ONE pinned moment.
-
-   This is a real rule, not the `lg:sticky lg:top-[140px] motion-reduce:lg:static`
-   utility stack it replaces. Both of those utilities set `position` and both
-   have specificity (0,1,0), so which one won was decided purely by their order
-   in the generated stylesheet — nothing about `motion-reduce:` makes it beat
-   `lg:`. The accessibility floor CANONICAL §6 requires (reduced motion degrades
-   the pin to a stacked list) cannot rest on a utility-sort coin flip, so the
-   override lives in the reduced-motion block below, after this rule, where the
-   cascade decides it deterministically.
+   The /process progress rail — pinned on desktop, unpinned under reduced
+   motion (below), as a real rule rather than a utility-order coin flip.
 --------------------------------------------------------------------------- */
 @media (min-width: 1024px) {
   .tg-pin {
@@ -1157,8 +747,8 @@
 }
 
 /* ---------------------------------------------------------------------------
-   prefers-reduced-motion kills every entrance, the status pulse, the
-   closing-CTA echo, the /process pin, and the concierge shimmer.
+   prefers-reduced-motion: the lamp rise, the hover lift, the shimmer and the
+   pin all stop. Nothing is hidden.
 --------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1174,12 +764,6 @@
     scroll-behavior: auto;
   }
 
-  /* `.tg-collapse` closes its inner element's `visibility` on a DELAY, and the
-     universal reset above only zeroes transition-DURATION. Left alone, a
-     reduced-motion visitor closing an FAQ row would watch a fully painted
-     answer sit in a zero-height box for 320ms. Delay has to be zeroed too, and
-     the collapse itself must still work — it snaps open, it does not stop
-     opening. Nothing here hides content that was visible. */
   .tg-collapse > *,
   .tg-collapse-content {
     transition-delay: 0s !important;
@@ -1189,33 +773,15 @@
     translate: none !important;
   }
 
-  .reveal,
-  .reveal-armed {
+  .tg-lampfield {
+    animation: none !important;
     opacity: 1 !important;
     translate: none !important;
-    transform: none !important;
-    animation: none !important;
+  }
+  .tg-lampfield:hover {
+    transform: none;
   }
 
-  /* The hero load sequence and the closing-CTA echo. !important is required
-     here specifically because Motion writes opacity/transform as inline styles,
-     which a plain rule cannot override. This also pins the elements visible
-     before hydration, so a reduced-motion visitor never sees the hidden state
-     even for a frame. */
-  .tg-seq {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .status-dot-live {
-    animation: none !important;
-    opacity: 0.85;
-  }
-
-  /* The launcher's yield is instant under `reduce` — it still yields, it just
-     doesn't fade. The universal `transition-duration: 0.001ms !important` above
-     already reaches this; stated explicitly because it is an accessibility
-     floor and must not rest on a rule that could be scoped down later. */
   .tg-yield {
     transition: none !important;
   }
@@ -1225,16 +791,7 @@
     opacity: 1 !important;
   }
 
-  /* The one pinned moment, unpinned. See .tg-pin below for why this is a real
-     rule rather than a `motion-reduce:lg:static` utility. */
   .tg-pin {
     position: static !important;
-  }
-
-  ::view-transition-old(*),
-  ::view-transition-new(*),
-  ::view-transition-group(*) {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
   }
 }

@@ -1,167 +1,118 @@
 # TEKGUYZ Token Reference
 
-**This file is enforced.** `bun run check:design` runs on every `prebuild` and
-asserts that every `--token: value;` printed below matches `app/globals.css`. A
-mismatch **fails the build** and names the token and both values.
+**This file is enforced.** `bun run check:design` runs on every `prebuild` and asserts that every `--token: value;` printed below matches `app/globals.css`. A mismatch **fails the build** and names the token and both values.
 
-That is the entire point of splitting this out of `DESIGN.md`. That document was
-89KB doing two jobs — a description of what the code does, and a record of what
-was decided and why — and the two were indistinguishable on the page, so its
-descriptive half drifted and got quoted back as fact three separate times.
-
-**Read this file for a value. Read `DESIGN.md` for a reason.**
+**Read this file for a value. Read the Seam source for a reason.** Since 2026-11-12 the look is "Seam", from `tekguyz-one/brand/design/` (`DESIGN.md` and `tokens.css`), put on this site by `docs/superpowers/specs/2026-11-12-seam-reskin.md`. `docs/DESIGN.md` §1 (colour), §2 (type), §3 (shape) and §7 (dark mode) are replaced by Seam; its other sections still hold the reasons for mechanisms.
 
 | Question | File |
 | --- | --- |
 | "What is `--dur-base`?" | Here. It is checked, so you can quote it. |
-| "Why is there no overshoot?" | `DESIGN.md` §6.1. |
-| "What is the card radius?" | Here. |
-| "Why is `LiveFrame`'s padding 0?" | `DESIGN.md` §4. Prose, not checkable, still authoritative. |
+| "Why two grounds and no toggle?" | `tekguyz-one/brand/design/DESIGN.md`, "The idea". |
+| "What is the card radius?" | Here: 0. |
+| "Why is `.tg-collapse` built that way?" | `docs/DESIGN.md` §6. Prose, not checkable, still authoritative. |
 
-**Authority is unchanged: CANONICAL > DESIGN > COPY > SEO.** This file is not a
-new authority — it is `DESIGN.md`'s measured half, extracted so a machine can
-hold it to account. Where this file and `DESIGN.md` disagree about a *number*,
-this one is right by construction, because the build would not have passed
-otherwise.
+**Authority is unchanged: CANONICAL > DESIGN > COPY > SEO.** This file is not a new authority. Where it and a doc disagree about a *number*, this one is right by construction, because the build would not have passed otherwise.
 
-**To add a token to the guard:** put it in a fenced ` ```css ` block under a
-heading, then add that heading to `TOKEN_SECTIONS` in
-`scripts/check-design.ts`. Two lines.
+**To add a token to the guard:** put it in a fenced ` ```css ` block under a heading, then add that heading to `TOKEN_SECTIONS` in `scripts/check-design.ts`. Two lines.
 
 ---
 
 ## Colour
 
-Measured in the v2.3 contrast audit; every ratio below is real, not estimated.
-See `DESIGN.md` §1 for what each one is *for* and for the accent rules
-(wayfinding only, never a button fill, never a 5th colour).
+Two grounds, four lamps, no other hues. **There is no theme switch.** Every page uses both grounds, joined by a straight horizontal seam. `.on-ink` and `.on-paper` in `globals.css` are the only scope roots; each sets the semantic `--tg-*` values (`fg`, `secondary`, `mute`, `border`, `border-strong`, `cta-*`) for its ground, so components never branch on where they sit.
 
 ```css
---tg-ink: #111111;
---tg-canvas: #ffffff;
---tg-surface-card: #f5f5f5;
---tg-hairline: #e5e7eb;
---tg-muted: #6a717e;
---tg-muted-soft: #9ca3af;
---tg-muted-dark: #7b8291;
---tg-bg-dark: #101010;
---tg-text-primary-dark: #f5f5f5;
---tg-border-dark: #2a2a2c;
---tg-accent-blue: #3b6fe0;
---tg-accent-violet: #7c6fe0;
---tg-accent-amber: #f2a93c;
---tg-accent-teal: #2fa679;
+--ink: #0b0b0c;
+--paper: #ffffff;
+--on-ink: #ffffff;
+--on-ink-soft: #b4b8c0;
+--on-ink-mute: #8a8f98;
+--line-on-ink: #2a2a2d;
+--on-paper: #0b0b0c;
+--on-paper-soft: #43474f;
+--on-paper-mute: #5c616b;
+--line-on-paper: #d9dadf;
+--lamp-blue: #5b8dff;
+--lamp-violet: #9b8cff;
+--lamp-amber: #ffb938;
+--lamp-teal: #35c48d;
 ```
 
-Contrast, measured: `muted` 4.91:1 on canvas and 4.50:1 on `surface-card` — the
-minimum step clearing both. `muted-dark` clears AA on all three dark
-backgrounds it is composited on: 4.93:1 on `#101010` (page floor, footer),
-4.90:1 on `#111111` (ink band), 4.51:1 on `#1a1a1c` (card fill) — the card
-fill is the binding constraint and the margin there is thin, so re-measure
-before darkening any dark surface.
-**`muted-soft` is retired as a text colour** and is valid only for dots and the
-concierge thinking indicator.
+Contrast, from the Seam table: `on-ink-soft` 9.3:1 on ink · `on-paper-soft` 9.2:1 on paper · `on-ink-mute` 6.0:1 on ink and `on-paper-mute` 6.2:1 on paper, small labels only. Ink text on each lamp: blue 6.3 · violet 7.1 · amber 11.5 · teal 8.8.
 
-Accent `-text` variants (an accent rendered as small/bold text on any light
-background): blue `#1e3f94` 9.57 · violet `#4433a8` 9.19 · amber `#8a5a0a` 5.92
-· teal `#1d6b4d` 6.44, all on white. Dark-mode variants: blue `#5380e4` 5.05 ·
-violet `#8377e2` 5.17 on `#101010`; amber and teal pass as their plain accent.
+**Lamp rules.** A lamp is a field, a dot, the footer stripe, or the highlight on the one thing that matters in a fragment. Text on a lamp is always ink. **A lamp is never text on paper** (it fails). A primary button is the opposite ground, never a lamp. Lamp-to-Solution is fixed in `config/solutions.ts`: blue Smart Operations · violet AI Voice Agents · amber Business Systems · teal Custom Web Apps.
+
+`--tg-success`, `--tg-warning` and `--tg-error` are functional states (the live check, form errors), not brand hues, and are not printed here.
 
 ---
 
 ## Type
 
 ```css
---text-hero: clamp(2.5rem, 6vw, 4.5rem);
---text-display: clamp(2rem, 4.5vw, 3.5rem);
---text-subhead: clamp(1.5rem, 3vw, 2.25rem);
+--text-hero: clamp(2.75rem, 7vw, 5.5rem);
+--text-display: clamp(2.25rem, 4.6vw, 3.75rem);
+--text-subhead: clamp(1.75rem, 3vw, 2.5rem);
 --text-title: clamp(1.375rem, 2vw, 1.75rem);
---text-body: 1.0625rem;
---text-sm: 0.875rem;
---text-caption: 0.75rem;
+--text-body: 1.125rem;
+--text-sm: 1rem;
+--text-caption: 0.8125rem;
 ```
 
-Rendered: hero 40→72px · display 32→56px · **subhead 24→36px** · title 22→28px ·
-body 17px · small 14px · caption 12px. Geist throughout; Geist Mono in two
-places only (`status-line`, which sets it on the whole line, and the concierge's
-inline code span). Process numerals and tag labels are Geist Sans — the doc
-claimed mono for both until it was measured on 2026-08-13.
+Three faces, each with a job, self-hosted through `next/font` in `app/layout.tsx`:
 
-**`--text-subhead` is the item-level heading step, added 2026-08-13.** Section
-heads own `display`; the things listed under one own `subhead`. It exists because
-`SectionHead`'s `h2` and `solution-row`'s title were both `--text-display` and
-differed by weight alone (700 vs 600) — a distinction that is legible in this
-table and not on the page. Its only consumer today is `solution-row`. Reason in
-`DESIGN.md` §2 and §4.6.
+- **Archivo** (variable width), the lettering face. `h1`, `h2`, `h3` are uppercase, weight 800, width 75% (the `.lettering` class narrows to 68% for hero size), line-height 0.92–0.95. Tracking never below -0.04em.
+- **Atkinson Hyperlegible Next**, body and buttons. 18px base, 1.55 line-height, sentence case.
+- **Red Hat Mono**, data only: times, status, "sample data". Nothing else.
 
-**The 72px ceiling is governed by a constraint, not by the number**: the hero
-headline must wrap to no more than 3 lines on desktop with the CTA row inside
-the first viewport. If the copy changes length, re-measure against that rule.
+Rendered: hero 44→88px · display 36→60px · subhead 28→40px · title 22→28px · body 18px · small 16px · caption 13px. Max display size on the web is 96px. Hierarchy comes from weight and size; there are no uppercase eyebrow kickers (`.tg-eyebrow` is now a small bold label in the body face).
 
 ---
 
 ## Radius, container, spacing
 
 ```css
---radius-input: 4px;
---radius-tag: 6px;
---radius-button: 8px;
---radius-card: 12px;
---radius-container: 16px;
+--radius: 0;
+--radius-pill: 999px;
+--radius-card: 0;
+--radius-button: 0;
 --container-max: 1280px;
 --container-pad: 32px;
+--s-1: 4px;
+--s-2: 8px;
+--s-3: 12px;
+--s-4: 16px;
+--s-5: 24px;
+--s-6: 32px;
+--s-7: 48px;
+--s-8: 72px;
+--s-9: 112px;
 ```
 
-Dots and badges are `full`, which is not a token. `--container-pad` drops to
-24px below 768px. Base spacing unit 4px; scale 4·8·12·16·24·32·48·64·96·128.
-
-**Elevation is flat, with one dated, scoped exception.** Hairlines only, no
-shadows, hover lift from position — that still governs every surface on this site
-**except the homepage fold's four build cards**, which carry `--tg-elevate` /
-`--tg-elevate-hover` via `.tg-lift` (`app/globals.css`, added 2026-08-14).
-Reason in `DESIGN.md` §4.18. **[narrowed 2026-08-29]** The exception used to
-cover the fold's proof strip as well; that component is deleted, so the static
-`.tg-elevate` class was removed and only `.tg-lift` remains. Both custom
-properties stay — `.tg-lift` reads them. The two
-values are **not printed here on purpose** — a shadow is a four-part composite
-whose light and dark forms differ structurally, `check:design` compares single
-declarations, and the guard cannot be made to mean anything useful about it. It
-is one class in one stylesheet with the rule written next to it. **Do not widen
-it:** `LiveFrame`'s plate, `project-card`, and `case-study-row` stay flat, and
-the weight gap between card tiers is the signal that protects.
+**Square corners.** Only status pills and dots are round (`rounded-full`). Depth comes from the ink/paper seam and 2px borders (`.tg-frame`), never from shadows: there are no shadows on this site. `--container-pad` drops to 24px below 768px.
 
 ---
 
 ## Motion
-
-Five durations, each with exactly one job. A duration that cannot be given a job
-does not get added.
 
 ```css
 --dur-instant: 90ms;
 --dur-fast: 120ms;
 --dur-base: 240ms;
 --dur-state: 320ms;
---dur-entrance: 500ms;
---dur-page: 320ms;
+--dur-entrance: 700ms;
+--lamp-stagger: 60ms;
 --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
 --ease-state: cubic-bezier(0.2, 0.6, 0.2, 1);
 --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
 ```
 
-`instant` press · `fast` colour and opacity only · `base` state (draw, rotate,
-shift) · `state` a box changing size · `entrance` scroll reveal · `page` view
-transition.
-
-**No easing on this site overshoots.** See `DESIGN.md` §6.1 for why that was
-chosen against a spring rather than inherited.
+**One moment per page.** On Home the four lamp fields rise in on load, `--lamp-stagger` apart, over `--dur-entrance`, and lift 8px on hover. Nothing else moves on its own: no scroll reveals, no view-transition morph, no status pulse. The rest is feedback on an action (press, hover, open, the concierge's thinking stripe). `prefers-reduced-motion` turns all of it off. No easing overshoots.
 
 ---
 
 ## Density
 
-Mobile-first: the bare `:root` **is** the ≤767px value, so a component that
-declares nothing gets the dense value rather than the loose one.
+Mobile-first: the bare `:root` **is** the ≤767px value.
 
 ```css
 --pad-container: 24px; /* 24 → 32 → 64px */
@@ -169,55 +120,12 @@ declares nothing gets the dense value rather than the loose one.
 --gap-group: 28px; /* 28 → 40 → 56px */
 ```
 
-The declared value is the ≤767px one; the comment gives all three across
-≤767 / 768 / 1024. **All three are checked**, in three separate blocks of
-`globals.css`, so a breakpoint that silently loses its override fails the build.
+The declared value is the ≤767px one; the comment gives all three across ≤767 / 768 / 1024. **All three are checked**, in three separate blocks of `globals.css`.
 
-**Section rhythm is deliberately not a token** — the content-section call sites
-carry it as `py-20 md:py-32` and `pt-16 md:pt-24`. `DESIGN.md` §8.0 has the three
-reasons, and there is no `--rhythm-section` or `--tg-section` custom property to
-go looking for.
-
-**There is, however, a `.tg-section` CLASS, and this file did not say so.**
-Measured 2026-08-28: `app/globals.css:363–371` declares `padding-block: 128px`,
-dropping to `80px` under `max-width: 767px` — the same 128/80 the call sites
-resolve to, hardcoded. Its only two consumers are `app/error.tsx:19` and
-`app/not-found.tsx:8`, the two routes that have no content sections to rhythm
-against. That does not contradict the rule above — it is a class, not a token,
-and it is not on any content route — but it is **a second place the rhythm
-lives**, and no guard will tell you when the two drift.
+**Section rhythm is deliberately not a token**: call sites carry it as `py-20 md:py-28` and similar. The `.tg-section` class (112px, 72px under 768px) is used only by `app/error.tsx` and `app/not-found.tsx`.
 
 ---
 
-## Colour format: hex today, OKLCH is a real open option
+## Colour format
 
-**The site is hex throughout — zero OKLCH.** ~~50 values.~~ **Counted directly
-2026-08-28** by matching `#[0-9a-fA-F]{3,8}` against `app/globals.css`: **48 hex
-values in live declarations, 27 of them distinct** (55 occurrences and 29
-distinct if the comments are counted with them). The old 50 matched none of those
-four ways of counting.
-
-**Nothing was "overridden."** Tailwind v4's oklch palette is *its own* colours
-(`--color-blue-500` and friends). This is a bespoke brand palette from the
-Claude Design export; `#3b6fe0` is not a Tailwind colour, so there was never a
-Tailwind oklch value for it to keep. Hex is simply the notation the export
-handed over.
-
-**What OKLCH would actually buy, stated accurately:**
-
-- **Wide gamut — the real one.** OKLCH can express colours *outside* sRGB, so
-  the four accents could be visibly more vivid on a P3 display (most modern
-  phones and monitors). Hex cannot reach those colours at all.
-- **Perceptually uniform derivation.** Lightening or darkening a colour behaves
-  predictably. Only matters once tints are generated rather than hand-picked.
-- **Not** "better-looking fixed colours." `#3b6fe0` and its OKLCH equivalent
-  resolve to the identical sRGB pixel. For a fixed value there is no difference.
-
-**[open, not decided] Converting is a contained task — 14 tokens.** An earlier
-version of this entry claimed a hex → OKLCH round-trip would move the measured
-contrast ratios; **that was wrong.** Converted with sufficient precision the
-ratios are unchanged, because the browser resolves both to the same sRGB values.
-The reason to schedule it deliberately is the wide-gamut step: going *beyond*
-sRGB changes the accents on P3 displays, which is a visual decision needing a
-side-by-side on a real screen, and it needs the ratios re-measured against the
-fallback any sRGB display will still get.
+Hex throughout, no OKLCH. Converting is still an open option for wide-gamut lamps on P3 screens; it needs a side-by-side on a real screen first.

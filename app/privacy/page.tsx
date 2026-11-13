@@ -76,9 +76,9 @@ export default function PrivacyPage() {
 
       <PageHero eyebrow="Legal" headline="Privacy Policy" />
 
-      <section className="pb-20 md:pb-32">
+      <section className="pt-16 pb-20 md:pt-20 md:pb-28">
         <div className="tg-container">
-          <p className="text-[0.875rem] text-secondary">
+          <p className="label text-mute">
             <span className="tabular">Last updated: August 12, 2026</span>
           </p>
 
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
           <div className="mt-12 flex flex-col gap-10">
             {SECTIONS.map(([heading, body]) => (
               <section key={heading}>
-                <h2 className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
+                <h2 className="text-[length:var(--text-title)]">
                   {heading}
                 </h2>
                 <p className="mt-3 max-w-[68ch] text-[length:var(--text-body)]">{body}</p>

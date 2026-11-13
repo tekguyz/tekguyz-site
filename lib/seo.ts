@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { site } from '@/lib/site';
 import { solutions } from '@/content/solutions';
 import { faq } from '@/content/faq';
-import { testimonial } from '@/content/process';
 import { work } from '@/content/work';
 
 /**
@@ -24,7 +23,7 @@ export function buildMetadata({
 }: {
   title: string;
   description: string;
-  /** Route path with a leading slash, e.g. "/work/team-performance". "" for home. */
+  /** Route path with a leading slash, e.g. "/work/quote-to-paid". "" for home. */
   path: string;
   /** Defaults to the route's own opengraph-image if one exists. */
   ogImage?: string;
@@ -103,16 +102,6 @@ export function serviceNode(serviceType: string, description: string): Json {
     description,
     provider: { '@type': 'Organization', name: site.name },
     areaServed: ['South Florida', 'United States'],
-  };
-}
-
-/** SEO.md: no reviewRating — there is no numeric score attached. Do not invent one. */
-export function reviewNode(): Json {
-  return {
-    '@type': 'Review',
-    reviewBody: testimonial.body,
-    author: { '@type': 'Person', name: testimonial.author },
-    itemReviewed: { '@type': 'Organization', name: site.name },
   };
 }
 

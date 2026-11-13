@@ -153,7 +153,7 @@ out['8_themeToggle'] = await page.evaluate(() => {
 
 // Extra: signature stripe count per route.
 const stripes: Record<string, number> = {};
-for (const r of ['/', '/solutions', '/work', '/process', '/contact', '/privacy', '/work/team-performance']) {
+for (const r of ['/', '/solutions', '/work', '/process', '/contact', '/privacy', '/work/quote-to-paid']) {
   await page.goto(BASE + r, { waitUntil: 'domcontentloaded' });
   stripes[r] = await page.evaluate(
     () => document.querySelectorAll('[data-signature-stripe]').length,

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { SignatureStripe } from '@/components/signature-stripe';
 import { SolutionTag, AccentDot } from '@/components/solution-tag';
 import { ClosingCta } from '@/components/closing-cta';
 import { ExampleScreen } from '@/components/example-screens';
@@ -54,54 +53,52 @@ export default async function ExamplePage({ params }: { params: Promise<{ slug: 
         )}
       />
 
-      <SignatureStripe />
+      {/* Seam: the problem sits on ink; what the tool does and the screen
+          sit on paper. */}
+      <section className="on-ink pt-10 pb-16 md:pb-20">
+        <div className="tg-container">
+          <Link href="/examples" className="tap-44 link-underline text-[16px] font-bold text-secondary">
+            ← Examples
+          </Link>
 
-      <div className="tg-container pt-10 pb-20 md:pb-32">
-        <Link href="/examples" className="tap-44 link-underline text-[0.875rem] font-semibold text-secondary">
-          ← Examples
-        </Link>
+          <div className="tg-grid items-end pt-10">
+            <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
+              <SolutionTag solution={entry.solution} label={entry.tag} />
+              <h1 className="lettering mt-6 text-[length:var(--text-display)] md:text-[clamp(2.75rem,5vw,4.5rem)]">
+                {entry.headline}
+              </h1>
+              <p className="text-secondary mt-6 text-[length:var(--text-body)]">
+                Example: {entry.business}, {entry.businessLine}.
+              </p>
+            </div>
 
-        <div className="tg-grid pt-10">
-          <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
-            <SolutionTag solution={entry.solution} label={entry.tag} />
-            <h1
-              className="mt-6 text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]"
-              style={{ textWrap: 'pretty' }}
-            >
-              {entry.headline}
-            </h1>
-            <p className="mt-6 text-[length:var(--text-body)] text-secondary">
-              Example: {entry.business}, {entry.businessLine}.
-            </p>
-          </div>
-
-          <div className="[grid-column:7/13] max-lg:[grid-column:1/-1]">
-            <p className="tg-eyebrow text-secondary">The problem</p>
-            <p className="mt-3 text-[length:var(--text-body)]" style={{ textWrap: 'pretty' }}>
-              {entry.problem}
-            </p>
-            <p className="mt-9 tg-eyebrow text-secondary">What it does</p>
-            <ul className="m-0 mt-3 list-none p-0">
-              {entry.does.map((f, i) => (
-                <li
-                  key={f}
-                  className={`flex items-baseline gap-[14px] border-t border-border py-[14px] text-[length:var(--text-body)] ${
-                    i === entry.does.length - 1 ? 'border-b' : ''
-                  }`}
-                >
-                  <span
-                    aria-hidden
-                    className="h-[5px] w-[5px] flex-none rounded-full"
-                    style={{ background: a.dot, transform: 'translateY(-3px)' }}
-                  />
-                  {f}
-                </li>
-              ))}
-            </ul>
+            <div className="[grid-column:8/13] max-lg:[grid-column:1/-1]">
+              <p className="tg-eyebrow text-secondary">The problem</p>
+              <p className="mt-3 text-[length:var(--text-body)] leading-[1.55]">{entry.problem}</p>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="mt-16 md:mt-24">
+      <div className="tg-container pt-16 pb-20 md:pt-20 md:pb-28">
+        <p className="tg-eyebrow text-secondary">What it does</p>
+        <ul className="m-0 mt-3 list-none border-t-2 border-fg p-0 md:grid md:grid-cols-2 md:gap-x-12">
+          {entry.does.map((f) => (
+            <li
+              key={f}
+              className="flex items-baseline gap-[14px] border-b border-border py-4 text-[length:var(--text-body)] font-bold"
+            >
+              <span
+                aria-hidden
+                className="h-[10px] w-[10px] flex-none rounded-full"
+                style={{ background: a.dot }}
+              />
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-16 md:mt-20">
           <p className="mb-6 text-[length:var(--text-body)] text-secondary" style={{ textWrap: 'pretty' }}>
             {entry.tryIt}
           </p>
@@ -113,7 +110,7 @@ export default async function ExamplePage({ params }: { params: Promise<{ slug: 
                 href={entry.fullDemo.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tap-44 link-underline font-semibold text-fg"
+                className="tap-44 font-bold text-fg underline decoration-2 underline-offset-[5px]"
               >
                 {entry.fullDemo.name}, one-click demo
               </a>
@@ -122,14 +119,14 @@ export default async function ExamplePage({ params }: { params: Promise<{ slug: 
         </div>
 
         <div className="mt-12 flex flex-wrap items-baseline justify-between gap-8 border-t border-border pt-8">
-          <p className="flex items-center gap-3 text-[0.875rem] text-secondary">
+          <p className="flex items-center gap-3 text-[15px] text-secondary">
             <AccentDot solution={entry.solution} size={8} />
             Part of{' '}
-            <Link href={`/solutions/${solution.slug}`} className="tap-44 link-underline font-semibold text-fg">
+            <Link href={`/solutions/${solution.slug}`} className="tap-44 font-bold text-fg underline decoration-2 underline-offset-[5px]">
               {solution.name}
             </Link>
           </p>
-          <p className="max-w-[46ch] text-[0.875rem] text-secondary" style={{ textWrap: 'pretty' }}>
+          <p className="max-w-[46ch] text-[15px] text-secondary" style={{ textWrap: 'pretty' }}>
             Your version is built around your business, your tools and your words.
           </p>
         </div>

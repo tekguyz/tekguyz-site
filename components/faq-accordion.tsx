@@ -75,7 +75,7 @@ export function FaqAccordion() {
             data-drawn={isOpen}
             className={`tg-rule border-t border-border ${i === faq.length - 1 ? 'border-b' : ''}`}
           >
-            <h3 className="m-0">
+            <h3 className="tg-plain m-0">
               <button
                 type="button"
                 id={`faq-trigger-${i}`}
@@ -87,9 +87,9 @@ export function FaqAccordion() {
                 aria-expanded={isOpen}
                 aria-controls={`faq-panel-${i}`}
                 className="flex w-full cursor-pointer items-baseline justify-between gap-6 py-[22px] text-left transition-colors duration-[120ms]"
-                style={{ color: isOpen ? 'var(--tg-fg)' : 'var(--tg-secondary)' }}
+                style={{ color: 'var(--tg-fg)' }}
               >
-                <span className="text-[1.25rem] leading-[1.3] font-semibold tracking-[-0.02em]">
+                <span className="text-[1.25rem] leading-[1.3] font-bold">
                   {item.question}
                 </span>
                 {/* Two bars, one rotating — not a `+`/`−` character swap. A

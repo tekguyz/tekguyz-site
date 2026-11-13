@@ -20,7 +20,7 @@ import { FooterLauncherYield } from '@/components/concierge/footer-yield';
  * repeated tagline — Privacy already lives in the Company column, and the
  * reference render's duplicate was wrong.
  *
- * EVERY colour here reads the `.footer-dark` scope root in globals.css — which
+ * EVERY colour here reads the `.on-ink` scope root in globals.css — which
  * is what the previous version of this line CLAIMED while the file carried four
  * bare hexes. Two of them (#9CA3AF for the tagline, location, hours and the
  * social row) had drifted off the scope's own `--tg-secondary`, so the footer
@@ -65,11 +65,11 @@ const SOCIALS = [
   },
 ];
 
-const HAIRLINE = 'var(--tg-border)';
+const HAIRLINE = 'var(--line-on-ink)';
 
 export function FooterDark() {
   return (
-    <footer className="footer-dark border-t" style={{ borderTopColor: HAIRLINE }}>
+    <footer className="on-ink border-t" style={{ borderTopColor: HAIRLINE }}>
       <FooterLauncherYield />
       <div className="tg-container pt-10">
         {/* Masthead.
@@ -88,10 +88,10 @@ export function FooterDark() {
           <div className="flex items-start gap-4">
             <ConnectedNodes size={40} stroke={HAIRLINE} />
             <div>
-              <p className="text-fg text-[26px] leading-[1.1] font-extrabold tracking-[-0.03em]">
+              <p className="text-fg font-[family-name:var(--font-lettering)] text-[32px] leading-none font-extrabold [font-stretch:75%]">
                 TEKGUYZ
               </p>
-              <p className="text-secondary mt-[10px] text-[0.875rem] leading-[1.55]">
+              <p className="text-secondary mt-[10px] text-[15px] leading-[1.55]">
                 We build tech that actually works.
               </p>
             </div>
@@ -168,7 +168,7 @@ export function FooterDark() {
                 <Link
                   key={s.slug}
                   href={`/solutions/${s.slug}`}
-                  className="tap-44 text-fg flex items-center gap-3 text-[0.875rem]"
+                  className="tap-44 text-fg flex items-center gap-3 text-[15px]"
                 >
                   {/* Dots use the real accent from config/solutions.ts and
                       never theme-swap — the footer is dark either way. */}
@@ -192,7 +192,7 @@ export function FooterDark() {
                 <Link
                   key={w.slug}
                   href={`/work/${w.slug}`}
-                  className="tap-44 link-underline text-fg text-[0.875rem]"
+                  className="tap-44 link-underline text-fg text-[15px]"
                 >
                   {w.shortName ?? w.name}
                 </Link>
@@ -214,7 +214,7 @@ export function FooterDark() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="tap-44 link-underline text-fg text-[0.875rem]"
+                  className="tap-44 link-underline text-fg text-[15px]"
                 >
                   {l.label}
                 </Link>
@@ -229,19 +229,19 @@ export function FooterDark() {
             <div className="flex flex-col items-start gap-[22px] tabular-nums">
               <a
                 href={`mailto:${site.publicEmail}`}
-                className="tap-44 link-underline text-fg text-[0.875rem]"
+                className="tap-44 link-underline text-fg text-[15px]"
               >
                 {site.publicEmail}
               </a>
-              <span className="text-secondary text-[0.875rem]">{site.location}</span>
-              <span className="text-secondary text-[0.875rem]">{site.hours}</span>
+              <span className="text-secondary text-[15px]">{site.location}</span>
+              <span className="text-secondary text-[15px]">{site.hours}</span>
             </div>
           </div>
         </div>
 
         {/* Bottom bar — copyright only. Nothing else belongs here. */}
         <div className="mt-14 border-t py-6" style={{ borderTopColor: HAIRLINE }}>
-          <p className="text-secondary text-[0.875rem] tabular-nums">
+          <p className="text-secondary text-[15px] tabular-nums">
             &copy; {new Date().getFullYear()} TEKGUYZ. Built by TEKGUYZ.
           </p>
         </div>

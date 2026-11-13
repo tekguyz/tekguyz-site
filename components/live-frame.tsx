@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
  * The fill is `--tg-surface`, not a literal white. Under `cover` it is never
  * visible once the poster paints — it is a loading/failure state, not a design
  * surface, and its only job is to avoid punching a white rectangle into a dark
- * page while the image decodes. Inside `.ink-band` the same token already
+ * page while the image decodes. Inside `.on-ink` the same token already
  * resolves to #1A1A1C, so no branch is needed.
  *
  * The hero's `tg-hero-frame` used to be a surface panel with 32px padding that
@@ -56,7 +56,6 @@ export function Frame({
   alt,
   ratio = '16/10',
   priority = false,
-  viewTransitionName,
   className,
 }: {
   poster: string;
@@ -65,7 +64,6 @@ export function Frame({
   alt: string;
   ratio?: '16/10' | '16/9';
   priority?: boolean;
-  viewTransitionName?: string;
   className?: string;
 }) {
   const common = { alt, fill: true, sizes: SIZES, priority } as const;
@@ -79,12 +77,10 @@ export function Frame({
 
   return (
     <div
-      className={cn('relative w-full overflow-hidden rounded-[12px] border p-0', className)}
+      className={cn('tg-frame relative w-full overflow-hidden rounded-none p-0', className)}
       style={{
         aspectRatio: ratio,
         background: 'var(--tg-surface)',
-        borderColor: 'var(--tg-border)',
-        ...(viewTransitionName ? { viewTransitionName } : {}),
       }}
     >
       {posterMobile ? (
@@ -144,7 +140,7 @@ export function FrameMeta({
         target="_blank"
         rel="noopener noreferrer"
         data-uline
-        className="tap-44 link-underline text-[14.5px] font-semibold"
+        className="tap-44 link-underline text-[16px] font-bold"
         style={{ color: 'var(--tg-fg)' }}
       >
         Open it in a new tab
@@ -175,7 +171,7 @@ export function BuildNarrative({
         How it&rsquo;s built
       </p>
       <p
-        className="text-[0.875rem] leading-[1.55]"
+        className="text-[length:var(--text-sm)] leading-[1.55]"
         style={{ color: 'var(--tg-secondary)' }}
       >
         {children}

@@ -24,7 +24,7 @@ const ROUTES: [string, string][] = [
   ['/solutions/ai-voice-agents', 'solution-detail'],
   ['/work', 'work'],
   ['/work/ai-voice-receptionist', 'case-detail'],
-  ['/work/team-performance', 'project-detail'],
+  ['/work/quote-to-paid', 'project-detail'],
   ['/process', 'process'],
   ['/contact', 'contact'],
   ['/privacy', 'privacy'],

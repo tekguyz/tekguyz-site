@@ -14,6 +14,8 @@ const EXPECTED: Record<string, string> = {
   '/work/restaurant-menu': '/work',
   '/work/auto-detailer': '/work',
   '/work/bundle-builder': '/work',
+  // Retired 2026-11-12 with the Joe M. review (refs #76).
+  '/work/team-performance': '/work',
 };
 
 describe('redirects', async () => {

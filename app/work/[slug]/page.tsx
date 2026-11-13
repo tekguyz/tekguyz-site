@@ -1,17 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ViewTransition } from 'react';
-import { SignatureStripe } from '@/components/signature-stripe';
 import { Frame, FrameMeta, BuildNarrative } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag, AccentDot } from '@/components/solution-tag';
-import { Testimonial } from '@/components/testimonial';
 import { ClosingCta } from '@/components/closing-cta';
 import { work, getWork, adjacentWork, type WorkEntry } from '@/content/work';
 import { getSolution, type Solution } from '@/content/solutions';
 import { getStatus, type StatusResult } from '@/lib/status';
-import { buildMetadata, breadcrumbs, jsonLd, reviewNode, softwareApplicationNode } from '@/lib/seo';
+import { buildMetadata, breadcrumbs, jsonLd, softwareApplicationNode } from '@/lib/seo';
 
 export function generateStaticParams() {
   return work.map((w) => ({ slug: w.slug }));
@@ -59,7 +56,7 @@ function MetaRail({
         </p>
         <Link href={`/solutions/${solution.slug}`} className="tap-44 flex items-center gap-3">
           <AccentDot solution={entry.solution} />
-          <span className="link-underline text-[14.5px] font-semibold">{solution.name}</span>
+          <span className="link-underline text-[16px] font-semibold">{solution.name}</span>
         </Link>
       </div>
 
@@ -78,7 +75,7 @@ function MetaRail({
           href={entry.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="tap-44 link-underline text-[14.5px] font-semibold"
+          className="tap-44 link-underline text-[16px] font-semibold"
         >
           Open it in a new tab
         </a>
@@ -136,36 +133,30 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
             url: entry.url,
             description: entry.description,
           }),
-          // The Review node sits on the page that shows the quote. It left the
-          // home page with the home testimonial (2026-11-12).
-          ...(entry.kind === 'project' && entry.hasClientReview ? [reviewNode()] : []),
         )}
       />
 
-      <SignatureStripe />
+      {/* Seam: the ink ground holds the promise (tag and headline); the paper
+          ground below holds the story, the frame and the rail. */}
+      <section className="on-ink pt-10 pb-16 md:pb-20">
+        <div className="tg-container">
+          <Link href="/work" className="tap-44 link-underline text-[16px] font-bold text-secondary">
+            ← Work
+          </Link>
+          <SolutionTag solution={entry.solution} label={entry.tag} className="mt-10 flex w-fit" />
+          <h1 className="lettering mt-6 max-w-[20ch] text-[length:var(--text-display)] md:text-[clamp(2.75rem,5.4vw,4.75rem)]">
+            {entry.headline}
+          </h1>
+        </div>
+      </section>
 
-      <div className="tg-container tg-grid items-start pt-10 pb-20 md:pb-32">
+      <div className="tg-container tg-grid items-start pt-14 pb-20 md:pt-20 md:pb-28">
         <div
           className={`max-lg:[grid-column:1/7] ${isCase ? '[grid-column:1/9]' : '[grid-column:1/8]'}`}
         >
-          <Link href="/work" className="tap-44 link-underline text-[0.875rem] font-semibold text-secondary">
-            ← Work
-          </Link>
-
-          <SolutionTag solution={entry.solution} label={entry.tag} className="mt-10 flex w-fit" />
-
-          <ViewTransition name={`work-title-${entry.slug}`} share="morph" default="none">
-            <h1
-              className="mt-7 text-[length:var(--text-display)] leading-[1.05] font-bold tracking-[-0.03em]"
-              style={{ textWrap: 'pretty' }}
-            >
-              {entry.headline}
-            </h1>
-          </ViewTransition>
-
           {isCase ? (
             <>
-              <div className="mt-18">
+              <div>
                 {[
                   ['The Challenge', entry.challenge],
                   ['The Approach', entry.approach],
@@ -173,8 +164,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 ].map(([label, body], i) => (
                   <div
                     key={label}
-                    data-reveal-index={i}
-                    className={`reveal grid gap-6 border-t border-border py-10 md:grid-cols-[180px_1fr] ${i === 2 ? 'border-b' : ''}`}
+                    className={`grid gap-6 py-10 md:grid-cols-[180px_1fr] ${i === 0 ? 'border-t-2 border-fg' : 'border-t border-border'} ${i === 2 ? 'border-b border-border' : ''}`}
                   >
                     <p className="tg-eyebrow text-secondary">
                       {label}
@@ -189,20 +179,18 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 ))}
               </div>
 
-              <PullQuote solution={entry.solution} className="reveal mt-18">
+              <PullQuote solution={entry.solution} className="mt-18">
                 {entry.pullQuote}
               </PullQuote>
 
               {/* Frame, status, "Try it" and the narrative enter as one unit —
                   same rule as the Featured Work rows. */}
-              <div className="reveal mt-20">
-                <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
+              <div className="mt-20">
                   <div>
                     <Frame poster={entry.poster} alt={entry.alt} priority />
                   </div>
-                </ViewTransition>
                 <FrameMeta status={status} url={entry.url} />
-                <p className="mt-6 max-w-[62ch] text-[0.875rem] leading-[1.55] text-secondary">
+                <p className="mt-6 max-w-[62ch] text-[length:var(--text-sm)] leading-[1.55] text-secondary">
                   <span className="tg-eyebrow">Try it</span>{' '}
                   &nbsp;{entry.tryIt}
                 </p>
@@ -211,7 +199,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
             </>
           ) : (
             <>
-              <div className="reveal mt-14 grid gap-6 border-y border-border py-7 md:grid-cols-[180px_1fr]">
+              <div className="grid gap-6 border-t-2 border-b border-t-fg border-b-border py-7 md:grid-cols-[180px_1fr]">
                 <p className="tg-eyebrow text-secondary">
                   Built for
                 </p>
@@ -225,7 +213,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                 {entry.summary}
               </p>
 
-              <div className="reveal mt-12 border-t border-border pt-8">
+              <div className="mt-12 border-t border-border pt-8">
                 <p className="mb-[14px] tg-eyebrow text-secondary">
                   What made it interesting
                 </p>
@@ -243,25 +231,16 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                   existed in content/work.ts and was rendered nowhere: this page
                   had no image and `project-card` deliberately never has one, so
                   four captured assets were wired to nothing. */}
-              <div className="reveal mt-14">
+              <div className="mt-14">
                 <Frame poster={entry.poster} alt={entry.alt} priority />
                 <FrameMeta status={status} url={entry.url} />
               </div>
 
               {entry.tryIt && (
-                <p className="mt-6 max-w-[62ch] text-[0.875rem] leading-[1.55] text-secondary">
+                <p className="mt-6 max-w-[62ch] text-[length:var(--text-sm)] leading-[1.55] text-secondary">
                   <span className="tg-eyebrow">Try it</span>{' '}
                   &nbsp;{entry.tryIt}
                 </p>
-              )}
-
-              {entry.hasClientReview && (
-                <div className="mt-16">
-                  <p className="mb-6 tg-eyebrow text-secondary">
-                    Client review
-                  </p>
-                  <Testimonial contextSlug={entry.slug} />
-                </div>
               )}
             </>
           )}
@@ -274,7 +253,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
               {prev && (
                 <Link
                   href={`/work/${prev.slug}`}
-                  className="tap-44 link-underline text-[14.5px] font-semibold text-secondary"
+                  className="tap-44 link-underline text-[16px] font-bold text-secondary"
                 >
                   ← {prev.name}
                 </Link>
@@ -282,7 +261,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
               {next && (
                 <Link
                   href={`/work/${next.slug}`}
-                  className="tap-44 link-underline text-[14.5px] font-semibold text-secondary"
+                  className="tap-44 link-underline text-[16px] font-bold text-secondary"
                 >
                   {next.name} →
                 </Link>

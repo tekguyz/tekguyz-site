@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { ViewTransition } from 'react';
 import { Frame, FrameMeta } from '@/components/live-frame';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
@@ -46,7 +45,7 @@ export function CaseStudyRow({
     >
       <SolutionTag solution={entry.solution} label={entry.tag} />
       <h3
-        className="mt-4 text-[length:var(--text-subhead)] leading-[1.15] font-semibold tracking-[-0.025em]"
+        className="mt-4 text-[length:var(--text-subhead)]"
         style={{ textWrap: 'pretty' }}
       >
         <Link href={`/work/${entry.slug}`} className="tap-44 link-underline">
@@ -66,7 +65,7 @@ export function CaseStudyRow({
       )}
       <Link
         href={`/work/${entry.slug}`}
-        className="tap-44 link-underline mt-9 inline-block text-[14.5px] font-semibold"
+        className="tap-44 mt-9 inline-block text-[16px] font-bold underline decoration-2 underline-offset-[6px]"
       >
         Read the full story →
       </Link>
@@ -83,14 +82,12 @@ export function CaseStudyRow({
           : '[grid-row:1] [grid-column:7/13] max-lg:[grid-column:5/9]'
       }
     >
-      <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
         <div>
           <Frame poster={entry.poster} alt={entry.alt} />
         </div>
-      </ViewTransition>
       <FrameMeta status={status} url={entry.url} />
       {entry.tryIt && (
-        <p className="mt-5 text-[0.875rem] leading-[1.55] text-secondary">{entry.tryIt}</p>
+        <p className="mt-5 text-[15px] leading-[1.55] text-secondary">{entry.tryIt}</p>
       )}
     </div>
   );
@@ -123,7 +120,7 @@ export function CaseStudyRow({
     // collapse the row (H-1, Prompt 8). A fallback that is currently inert is
     // not the same as a value that never applied.
     <article
-      className={`reveal tg-container tg-grid tg-split tg-stack-md items-start py-20 ${index > 0 ? 'border-t border-border' : ''}`}
+      className={`tg-container tg-grid tg-split tg-stack-md items-start py-20 ${index > 0 ? 'border-t border-border' : ''}`}
     >
       {text}
       {media}

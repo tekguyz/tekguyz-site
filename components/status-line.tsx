@@ -33,7 +33,7 @@ function absoluteTime(from: number): string {
  * state for the visitor, so it doesn't get emphasis or an error color.
  *
  * Colours are read from the scope, never re-derived. A surface that stays dark
- * in both themes (`.ink-band`, `.footer-dark`) redeclares `--tg-fg` and
+ * on the ink ground (`.on-ink`) redeclares `--tg-fg` and
  * `--tg-secondary` at its own root, so this component needs no `onInk` branch
  * and never names a hex — the two used to disagree, and the literal won.
  */
@@ -77,7 +77,7 @@ export function StatusLine({
   const stamp = hydrated ? relativeTime(result.checkedAt) : absoluteTime(result.checkedAt);
 
   const fg = 'var(--tg-fg)';
-  const dim = 'var(--tg-secondary)';
+  const dim = 'var(--tg-mute)';
 
   return (
     <p
@@ -90,19 +90,19 @@ export function StatusLine({
            every StatusLine on the site, `default` included, silently rendered a
            22.4px line box (the inherited 1.6) instead of 21.7px. Same mechanism
            as `button.tsx`'s dropped `leading-none`; the fix is the same shape. */
-        compact ? 'text-[length:var(--text-caption)]' : 'text-[0.875rem]',
-        'flex items-center gap-2 font-mono leading-[1.55] tracking-[0.04em] tabular-nums',
+        compact ? 'text-[length:var(--text-caption)]' : 'text-[15px]',
+        'flex items-center gap-2 font-mono leading-[1.55] tracking-[0.02em] tabular-nums',
         className,
       )}
     >
       <span
         aria-hidden
-        className={cn('h-[6px] w-[6px] flex-none rounded-full', live && 'status-dot-live')}
-        style={{ background: live ? 'var(--tg-success)' : 'var(--tg-muted-soft)' }}
+        className="h-2 w-2 flex-none rounded-full"
+        style={{ background: live ? 'var(--tg-success)' : 'var(--tg-mute)' }}
       />
       {live ? (
         <>
-          <span className="font-semibold" style={{ color: fg }}>
+          <span className="font-medium" style={{ color: fg }}>
             Live
           </span>
           <span style={{ color: dim }}>{compact ? `· ${stamp}` : `· checked ${stamp}`}</span>

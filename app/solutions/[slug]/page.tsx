@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { SignatureStripe } from '@/components/signature-stripe';
 import { ClosingCta } from '@/components/closing-cta';
 import { AccentDot } from '@/components/solution-tag';
 import { StatusLine } from '@/components/status-line';
@@ -70,62 +69,51 @@ export default async function SolutionDetailPage({
         )}
       />
 
-      <SignatureStripe />
+      {/* Seam: the ink ground holds the problem and the promise; the paper
+          ground below holds what we build and the proof. */}
+      <section className="on-ink pt-10 pb-16 md:pb-24">
+        <div className="tg-container">
+          <Link
+            href="/solutions"
+            className="tap-44 link-underline text-[16px] font-bold text-secondary"
+          >
+            ← Solutions
+          </Link>
 
-      <div className="tg-container pt-10 pb-20 md:pb-32">
-        <Link
-          href="/solutions"
-          className="tap-44 link-underline text-[0.875rem] font-semibold text-secondary"
-        >
-          ← Solutions
-        </Link>
+          <div className="tg-grid items-end pt-10">
+            {/* 768–1023: display-scale title beside body prose is the same narrow-column
+                artifact as page-hero — both take all 8 tracks and stack. */}
+            <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
+              <p className="tg-eyebrow text-fg inline-flex items-center gap-2">
+                <AccentDot solution={solution.slug} size={12} />
+                {solution.tag}
+              </p>
+              <h1 className="lettering mt-5 text-[length:var(--text-hero)]">{solution.name}</h1>
+            </div>
 
-        <div className="tg-grid pt-10">
-          {/* 768–1023: display-scale title beside body prose is the same narrow-column
-              artifact as page-hero — both take all 8 tracks and stack. */}
-          <div className="[grid-column:1/6] max-lg:[grid-column:1/-1]">
-            <div className="flex items-start gap-[22px]">
-              <AccentDot solution={solution.slug} style={{ marginTop: 22 }} />
-              <div>
-                <h1 className="text-[length:var(--text-display)] leading-[1.1] font-semibold tracking-[-0.025em]">
-                  {solution.name}
-                </h1>
-                <p
-                  className="mt-5 tg-eyebrow"
-                  style={{ color: a.text }}
-                >
-                  {solution.tag}
-                </p>
-              </div>
+            <div className="[grid-column:8/13] max-lg:[grid-column:1/-1]">
+              <p className="text-[length:var(--text-body)] leading-[1.55]">{solution.body[0]}</p>
+              <p className="text-secondary mt-5 text-[length:var(--text-body)] leading-[1.55]">
+                {solution.body[1]}
+              </p>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="[grid-column:7/13] max-lg:[grid-column:1/-1]">
-            <p
-              className="text-[length:var(--text-body)]"
-              style={{ textWrap: 'pretty' }}
-            >
-              {solution.body[0]}
-            </p>
-            <p
-              className="mt-5 text-[length:var(--text-body)] text-secondary"
-              style={{ textWrap: 'pretty' }}
-            >
-              {solution.body[1]}
-            </p>
-
-            <ul className="m-0 mt-9 list-none p-0">
-              {solution.features.map((f, i) => (
+      <div className="tg-container pt-16 pb-20 md:pt-20 md:pb-28">
+        <div>
+          <div>
+            <ul className="m-0 list-none border-t-2 border-fg p-0 md:grid md:grid-cols-2 md:gap-x-12">
+              {solution.features.map((f) => (
                 <li
                   key={f}
-                  className={`flex items-baseline gap-[14px] border-t border-border py-[14px] text-[length:var(--text-body)] ${
-                    i === solution.features.length - 1 ? 'border-b' : ''
-                  }`}
+                  className="flex items-baseline gap-[14px] border-b border-border py-4 text-[length:var(--text-body)] font-bold"
                 >
                   <span
                     aria-hidden
-                    className="h-[5px] w-[5px] flex-none rounded-full"
-                    style={{ background: a.dot, transform: 'translateY(-3px)' }}
+                    className="h-[10px] w-[10px] flex-none rounded-full"
+                    style={{ background: a.dot }}
                   />
                   {f}
                 </li>
@@ -136,7 +124,7 @@ export default async function SolutionDetailPage({
               {/* Resolved names only, and no label at all when none resolve —
                   an empty "Related work" reads as a broken page (#13). */}
               {related.length > 0 && (
-                <p className="text-[0.875rem] leading-[1.55] text-secondary">
+                <p className="text-[length:var(--text-sm)] leading-[1.55] text-secondary">
                   <span className="tg-eyebrow">
                     Related work
                   </span>{' '}
@@ -145,7 +133,7 @@ export default async function SolutionDetailPage({
               )}
               <Link
                 href={solution.cta.href}
-                className="tap-44 link-underline flex-none text-[14.5px] font-semibold"
+                className="tap-44 flex-none text-[17px] font-bold underline decoration-2 underline-offset-[6px]"
               >
                 {solution.cta.label} →
               </Link>
@@ -159,16 +147,15 @@ export default async function SolutionDetailPage({
               The builds
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {related.map((entry, i) => (
+              {related.map((entry) => (
                 <Link
                   key={entry.slug}
                   href={`/work/${entry.slug}`}
                   data-card
-                  data-reveal-index={i}
-                  className="reveal hover-card flex flex-col rounded-[12px] border border-border bg-surface p-6"
+                  className="hover-card flex flex-col tg-frame bg-bg p-6"
                 >
                   <h2
-                    className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+                    className="text-[length:var(--text-title)]"
                     style={{ textWrap: 'pretty' }}
                   >
                     {entry.name}
@@ -188,21 +175,20 @@ export default async function SolutionDetailPage({
               Examples
             </p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              {solutionExamples.map((ex, i) => (
+              {solutionExamples.map((ex) => (
                 <Link
                   key={ex.slug}
                   href={`/examples/${ex.slug}`}
                   data-card
-                  data-reveal-index={i}
-                  className="reveal hover-card flex flex-col rounded-[12px] border border-border bg-surface p-6"
+                  className="hover-card flex flex-col tg-frame bg-bg p-6"
                 >
                   <h2
-                    className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+                    className="text-[length:var(--text-title)]"
                     style={{ textWrap: 'pretty' }}
                   >
                     {ex.name}
                   </h2>
-                  <p className="mt-3 text-[0.875rem] text-secondary">
+                  <p className="mt-3 text-[15px] text-secondary">
                     Example on a made-up business: {ex.business}.
                   </p>
                 </Link>

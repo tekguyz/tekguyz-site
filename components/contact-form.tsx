@@ -81,8 +81,8 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const field =
-  'w-full h-11 px-3 rounded-[4px] border border-border bg-transparent text-[1rem] ' +
-  'transition-[border-color] duration-[240ms] focus-visible:border-border-strong';
+  'w-full h-12 px-3 rounded-none border-2 border-mute bg-transparent text-[1.0625rem] ' +
+  'transition-[border-color] duration-[240ms] focus-visible:border-fg';
 
 /* A <select>'s popup list is painted by the browser, and Chrome takes its fill
    from the control's own computed background-color. `bg-transparent` therefore
@@ -96,7 +96,7 @@ const selectField =
   `${field.replace('bg-transparent', 'bg-bg')} [&>option]:bg-bg [&>option]:text-fg`;
 
 const labelClass =
-  'block mb-[10px] tg-eyebrow text-secondary';
+  'block mb-[10px] tg-eyebrow text-fg';
 
 export function ContactForm() {
   const searchParams = useSearchParams();
@@ -194,7 +194,7 @@ export function ContactForm() {
     // 40px of card padding is 22% of a 360px viewport. Dropping it to 24 below
     // `sm` is where the 30px the step header is short actually comes from; the
     // step-header comment below has the arithmetic.
-    <div className="rounded-[16px] border border-border" style={{ padding: 'var(--pad-card)' }}>
+    <div className="tg-frame on-paper" style={{ padding: 'var(--pad-card)' }}>
       {sent ? (
         /* D-03. Submitting unmounts the form, so the focused Send button goes
            with it and focus falls to <body>; the next Tab — or Chrome's own
@@ -263,10 +263,10 @@ export function ContactForm() {
             style={{ '--tg-rule-scale': step === 1 ? 0.5 : 1 } as CSSProperties}
             className="tg-rule flex items-center justify-between gap-4 border-b border-border pb-6 max-sm:gap-3"
           >
-            <p className="text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]">
+            <p className="text-[length:var(--text-title)] leading-[1.2] font-bold">
               {step === 1 ? 'What do you want fixed?' : 'Tell us more.'}
             </p>
-            <span className="text-[0.875rem] tracking-[0.04em] whitespace-nowrap tabular-nums text-secondary">
+            <span className="label whitespace-nowrap tabular-nums text-mute">
               0{step} / 02
             </span>
           </div>
@@ -438,7 +438,7 @@ export function ContactForm() {
                 </Button>
               </div>
 
-              <p className="text-[0.875rem] leading-[1.55] text-secondary">
+              <p className="text-[15px] leading-[1.55] text-secondary">
                 We reply within one business day.
               </p>
             </div>
@@ -493,7 +493,7 @@ function Field({
       {error ? (
         <FieldError>{error}</FieldError>
       ) : hint ? (
-        <p id={`${id}-hint`} className="mt-2 text-[0.75rem] text-secondary">
+        <p id={`${id}-hint`} className="mt-2 text-[13px] text-secondary">
           {hint}
         </p>
       ) : null}
@@ -524,7 +524,7 @@ function ErrorText({
   return (
     <p
       role="alert"
-      className={`flex items-start gap-2 text-[0.875rem] leading-[1.55] text-fg ${className}`}
+      className={`flex items-start gap-2 text-[15px] leading-[1.55] text-fg ${className}`}
     >
       <span
         aria-hidden

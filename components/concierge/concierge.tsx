@@ -525,7 +525,7 @@ export function Concierge() {
 
            A shadow would not have worked here even if §3 allowed one: a dark
            halo around a dark pill on a dark band adds no edge. */
-        className={`tg-yield fixed z-[80] flex cursor-pointer items-center gap-[10px] rounded-[8px] border border-[rgb(255_255_255_/_0.25)] bg-cta-bg ${LAUNCHER_PADDING} text-[14.5px] leading-none font-semibold text-cta-fg hover:bg-cta-hover active:scale-[0.98] ${
+        className={`tg-yield fixed z-[80] flex cursor-pointer items-center gap-[10px] rounded-none border-2 border-paper bg-ink ${LAUNCHER_PADDING} text-[16px] leading-none font-bold text-paper hover:bg-paper hover:text-ink hover:border-ink active:translate-y-px ${
           launcherVisible ? '' : 'pointer-events-none'
         }`}
       >
@@ -563,10 +563,10 @@ export function Concierge() {
                      viewport has room, and yields to the bound when it does
                      not — which is the whole point of expressing it as a
                      preference rather than a floor. */
-                  'fixed z-[80] flex h-[640px] max-h-[calc(100dvh-48px)] w-[420px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-[16px] border border-border bg-bg'
+                  'fixed z-[80] flex h-[640px] max-h-[calc(100dvh-48px)] w-[420px] max-w-[calc(100vw-48px)] flex-col overflow-hidden rounded-none border-2 border-ink bg-paper text-ink'
             }
           >
-            <div className="flex h-14 flex-none items-center gap-[10px] border-b border-border px-4">
+            <div className="on-ink flex h-14 flex-none items-center gap-[10px] px-4">
               {/* ROLE avatar, not a person: the Connected Nodes mark on a
                   `surface` plate. No name, no face, no initial — a human name
                   or portrait would assert that a person is on the other end,
@@ -583,11 +583,11 @@ export function Concierge() {
                   about the glyph changes, only what sits behind it. */}
               <div
                 aria-hidden
-                className="flex h-8 w-8 flex-none items-center justify-center rounded-[8px] bg-surface"
+                className="flex h-8 w-8 flex-none items-center justify-center rounded-none bg-ink"
               >
                 <ConnectedNodes size={18} />
               </div>
-              <span className="text-[14.5px] font-semibold">Ask about your project</span>
+              <span className="text-[16px] font-bold">Ask about your project</span>
               {/* 44x44 by padding around the glyph, never by resizing it — the
                   ✕ stays at its exported 16px. The negative margin keeps the
                   painted glyph where the export puts it while the hit area
@@ -595,7 +595,7 @@ export function Concierge() {
 
                   `tap-44` is declared even though the PAINTED box is already
                   44x44, and it is not redundant: `elementFromPoint` honours
-                  `border-radius`, so with `rounded-[6px]` the four corner
+                  `border-radius`, so with `rounded-none` the four corner
                   points `TAP_PROBE` samples (1px inside each edge, 7.07px from
                   a 6px arc's centre) fall outside the shape and the parent
                   owns them. `.tap-44::before` is a SQUARE 44x44 overlay with
@@ -610,7 +610,7 @@ export function Concierge() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close"
-                className="tap-44 -mr-[6px] ml-auto flex h-11 w-11 flex-none cursor-pointer items-center justify-center rounded-[6px] text-[16px] leading-none text-secondary hover:text-fg"
+                className="tap-44 -mr-[6px] ml-auto flex h-11 w-11 flex-none cursor-pointer items-center justify-center rounded-none text-[16px] leading-none text-secondary hover:text-fg"
               >
                 ✕
               </button>
@@ -635,7 +635,7 @@ export function Concierge() {
                   and it is the first thing anyone reads. */}
               <div>
                 <ReplyLabel />
-                <p className="text-[0.875rem] leading-[1.55]" style={{ textWrap: 'pretty' }}>
+                <p className="text-[15px] leading-[1.55]" style={{ textWrap: 'pretty' }}>
                   {opener}
                 </p>
               </div>
@@ -656,7 +656,7 @@ export function Concierge() {
                          creates none of the source-order adjacency overlaps
                          the footer column hit at 12px. Invisible to
                          `phaseTaps`, which never opens the panel. */
-                      className="tap-44 cursor-pointer rounded-[8px] border border-border px-3 py-2 text-left text-[0.875rem] text-secondary transition-colors duration-[240ms] hover:border-border-strong hover:text-fg"
+                      className="tap-44 cursor-pointer rounded-none border border-border px-3 py-2 text-left text-[15px] text-secondary transition-colors duration-[240ms] hover:border-border-strong hover:text-fg"
                     >
                       {chip}
                     </button>
@@ -675,7 +675,7 @@ export function Concierge() {
                     <p
                       key={i}
                       data-msg
-                      className="max-w-[85%] self-end rounded-[12px] bg-surface px-[14px] py-3 text-[0.875rem] leading-[1.55]"
+                      className="max-w-[85%] self-end rounded-none bg-ink text-paper px-[14px] py-3 text-[15px] leading-[1.55]"
                       style={{ textWrap: 'pretty' }}
                     >
                       {m.content}
@@ -710,13 +710,13 @@ export function Concierge() {
                   <div className="mt-auto flex flex-col items-start gap-3 border-t border-border pt-5">
                     <Link
                       href="/contact"
-                      className="rounded-[8px] bg-cta-bg px-6 py-[15px] text-[14.5px] leading-none font-semibold text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover"
+                      className="rounded-none bg-cta-bg px-6 py-[15px] text-[16px] leading-none font-semibold border-2 border-cta-bg text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover hover:text-cta-hover-fg"
                     >
                       Open the contact form
                     </Link>
                     <a
                       href={`mailto:${site.publicEmail}`}
-                      className="link-underline text-[0.875rem] text-secondary"
+                      className="link-underline text-[15px] text-secondary"
                     >
                       {site.publicEmail}
                     </a>
@@ -762,12 +762,12 @@ export function Concierge() {
                     placeholder={
                       captured ? "Keep going if you'd like…" : "Describe what you're dealing with…"
                     }
-                    className="h-11 min-w-0 flex-1 rounded-[4px] border border-border bg-bg px-3 text-[0.875rem] outline-none focus-visible:border-border-strong"
+                    className="h-11 min-w-0 flex-1 rounded-none border border-border bg-bg px-3 text-[15px] outline-none focus-visible:border-border-strong"
                   />
                   <button
                     type="submit"
                     disabled={busy || !input.trim()}
-                    className="h-11 flex-none cursor-pointer rounded-[8px] bg-cta-bg px-[18px] text-[14.5px] font-semibold text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-40"
+                    className="h-11 flex-none cursor-pointer rounded-none bg-cta-bg px-[18px] text-[16px] font-bold border-2 border-cta-bg text-cta-fg transition-colors duration-[120ms] hover:bg-cta-hover hover:text-cta-hover-fg disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Send
                   </button>

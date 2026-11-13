@@ -21,7 +21,7 @@ export function ThinkingStripe() {
   return (
     <div
       role="status"
-      className="flex items-center gap-[10px] text-[0.875rem] leading-[1.55] tracking-[0.04em] text-secondary"
+      className="flex items-center gap-[10px] text-[15px] leading-[1.55] tracking-[0.04em] text-secondary"
     >
       <span aria-hidden className="grid h-[3px] w-[72px] flex-none grid-cols-4">
         {STRIPE_ORDER.map((key, i) => (

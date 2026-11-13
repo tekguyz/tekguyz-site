@@ -33,12 +33,3 @@ export const processSteps: ProcessStep[] = [
     teaser: "We don't disappear after go-live.",
   },
 ];
-
-/** PLAYBOOK §11 / SEO.md — Review schema, no reviewRating (no numeric score exists). */
-export const testimonial = {
-  body: "TEKGUYZ integrated our 3CX phones with Twilio and Zoho CRM to fully automate our text surveys and protect our customer experience. They also built a custom internal tool that tracks our team's offline project work perfectly without micro-management. Exceptional execution.",
-  author: 'Joe M.',
-  source: 'Verified Google review',
-  /** The build he is describing. */
-  contextSlug: 'team-performance',
-} as const;

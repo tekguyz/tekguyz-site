@@ -82,8 +82,6 @@ export interface Project extends WorkBase {
    * shows a pull quote the way a case study row does.
    */
   pullQuote?: string;
-  /** Team Performance is the build the verified Google review describes. */
-  hasClientReview?: boolean;
 }
 
 export type WorkEntry = CaseStudy | Project;
@@ -462,29 +460,12 @@ export const work: WorkEntry[] = [
     description:
       'An online booking portal where customers pick a service and an open time, and change or cancel without a call. The owner sees the day. Try the one-click demo.',
   },
-  {
-    slug: 'team-performance',
-    kind: 'project',
-    name: 'Team Performance & Automated Customer Feedback',
-    tag: 'BUSINESS SYSTEMS',
-    solution: 'business-systems',
-    headline: 'Phone logs that credit the right person, and surveys that know when to stop.',
-    url: 'https://advantage-teams.vercel.app/dashboard',
-    poster: '/media/advantage-teams-thumb.webp',
-    alt: 'Team Performance dashboard connecting desk-phone logs to CRM records with per-team-member job credit',
-    embeddable: false,
-    updatedAt: AUTHORED,
-    builtFor: 'Service businesses with phone-based teams and customer follow-up surveys',
-    summary:
-      'Connects desk-phone logs directly to the CRM so team members get automatic credit for the jobs they actually handled — no manual entry, no micro-management. Paired with a smart-limit SMS feedback loop that only surveys a customer when it’s genuinely useful, instead of every single time.',
-    whatMadeItInteresting:
-      'the survey limiter. Most feedback tools send on every trigger, which trains customers to ignore them. Capping it protects the response rate and the customer relationship at the same time.',
-    hasClientReview: true,
-    title: 'TEKGUYZ | Team Performance & Automated Feedback',
-    description:
-      'Desk-phone logs connected straight to the CRM, plus a smart-limit SMS feedback loop that only surveys customers when it actually matters.',
-  },
   /* RETIRED 2026-09-04, and the reason is worth keeping so nobody re-adds them.
+   *
+   * RETIRED 2026-11-12 (refs #76): `team-performance` (Team Performance &
+   * Automated Customer Feedback, the archived Advantage-Teams app), and the
+   * Joe M. Google review that only rendered on its page went with it. Its URL
+   * redirects to /work in next.config.ts.
    *
    * `meeting-organizer` (crispy-bacon.netlify.app) was the SAME PRODUCT as
    * `ai-meeting-notes` one full rewrite earlier. Listing both showed a visitor
@@ -554,7 +535,6 @@ export const smallSlugs = [
   'field-photo-reports',
   'ai-meeting-notes',
   'tekguyz-crm',
-  'team-performance',
 ] as const;
 
 const bySlugs = (slugs: readonly string[]) =>

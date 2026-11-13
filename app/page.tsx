@@ -1,9 +1,7 @@
 import Link from 'next/link';
-import { ViewTransition } from 'react';
-import { SignatureStripe } from '@/components/signature-stripe';
 import { HomeHero } from '@/components/home-hero';
+import { LampFields } from '@/components/lamp-fields';
 import { SectionHead } from '@/components/page-hero';
-import { SolutionRow } from '@/components/solution-row';
 import { FoldBoard } from '@/components/fold-board';
 import { Frame } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
@@ -11,7 +9,6 @@ import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
 import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
-import { solutions } from '@/content/solutions';
 import { featured, foldBoard, getWork, heroSlug, type CaseStudy } from '@/content/work';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService } from '@/lib/seo';
@@ -23,25 +20,32 @@ export const metadata = buildMetadata({
   path: '',
 });
 
+/**
+ * Home, Seam layout (docs/superpowers/specs/2026-11-12-seam-reskin.md):
+ *
+ *   ink    hero: the problem and the promise
+ *   seam   the four Solutions as lamp fields, straddling the edge
+ *   paper  the fold's build rows, the two featured builds, the four steps
+ *   ink    the closing band, then the footer
+ *
+ * The four Solutions moved up from below the build board to sit on the seam:
+ * that is where Seam puts them, and they replace the Solution rows.
+ */
 export default async function HomePage() {
   const statuses = await getAllStatuses();
   // Missed Call Follow-Up since 2026-11-11 (founder). `heroSlug` in content/work.ts.
   const hero = getWork(heroSlug)!;
 
   return (
+    // One root element, never a multi-child fragment: Next scrolls the new
+    // segment into view on every client-side transition, and a fragment calls
+    // scrollIntoView() on EVERY top-level child. Mechanism in full:
+    // app/contact/page.tsx. Keep the JSON-LD script inside the wrapper.
     <div>
-    {/* One root element, never a multi-child fragment — Next scrolls the new
-        segment into view on every client-side transition, and a fragment routes
-        that through FragmentInstance.scrollIntoView(), which calls
-        scrollIntoView() on EVERY top-level child. Mechanism in full:
-        app/contact/page.tsx. Keep the JSON-LD script inside the wrapper. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(professionalService())}
       />
-
-      {/* Stripe 1 of 3 — top of hero. */}
-      <SignatureStripe />
 
       <HomeHero
         poster={hero.heroPoster ?? hero.poster}
@@ -52,68 +56,32 @@ export default async function HomePage() {
         status={statuses[hero.slug]!}
       />
 
-      {/* THE FOLD'S PROOF — DESIGN.md §4.18. Four live builds, one per
-          solution line, then one muted caption line.
+      <LampFields />
 
-          [changed 2026-08-29] The elevated three-fact `proof-strip` that used
-          to sit above the board is GONE, and `components/proof-strip.tsx` is
-          deleted with it. Its loudest fact was "Eight live builds" — which the
-          board directly beneath it already IS, with a measured live status on
-          each card and "See all eight builds" one line below. A panel
-          asserting that two inches above the evidence was the page arguing
-          with itself. Its other two facts, the ones the board genuinely cannot
-          prove about itself, moved into the board's caption row. Full
-          reasoning, and what it cost, at the top of `fold-board.tsx`.
-
-          NO VERTICAL PADDING ON THIS SECTION, in either direction, and that is
-          the gap being counted once. Above: the hero's own `pb-16 md:pb-20`
-          (64/80) already groups the board with the statement it proves. Below:
-          the Solutions section's `py-20 md:py-32` supplies the full 80/128
-          rhythm on its own. A `py-*` here would stack two complete gaps at
-          both ends — the defect the `closing-cta` boundary rule exists to fix,
-          read at the top of the page instead of the bottom.
-
-          The strip's removal took the 48/64 `mt-12 md:mt-16` with it; the
-          board is now the section's only child and needs no internal step. */}
-      <section>
-        <FoldBoard entries={foldBoard} />
+      {/* The fold's proof: four live builds as build rows. */}
+      <section className="pt-16 pb-20 md:pt-20 md:pb-28">
+        <FoldBoard entries={foldBoard} statuses={statuses} />
       </section>
 
-      {/* Solutions — four full-width rows, never a four-card grid. */}
-      <section className="py-20 md:py-32">
-        <SectionHead
-          eyebrow="What We Do"
-          headline="What We Do"
-          description="Four kinds of problems we fix for small businesses. Find the one that sounds like yours."
-        />
-        <div className="tg-container mt-16">
-          {solutions.map((s, i) => (
-            <SolutionRow key={s.slug} solution={s} last={i === solutions.length - 1} index={i} />
-          ))}
+      {/* Featured Work — the two deep builds, on paper with the rest of the
+          proof. Ruled off from the board above by a 2px line. */}
+      <section className="py-20 md:py-28">
+        <div className="tg-container">
+          <div className="border-t-2 border-fg" />
         </div>
-      </section>
-
-      {/* Featured Work — the full-bleed ink band. Ink in BOTH themes; in dark
-          mode it's separated from the page by a hairline, not a fill change. */}
-      <section className="ink-band border-y border-border py-20 md:py-32">
-        <SectionHead
-          eyebrow="Our Work"
-          headline="Two we're proud of."
-          description="Both are running right now. Open either one and use it yourself."
-        />
+        <div className="pt-12 md:pt-16">
+          <SectionHead
+            eyebrow="Our Work"
+            headline="Two we're proud of."
+            description="Both are running right now. Open either one and use it yourself."
+          />
+        </div>
         {featured.map((entry, i) => (
           <BandRow key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
         ))}
       </section>
 
-      {/* No testimonial here since 2026-11-12 (owner): the one review is on its
-          own story page (`/work/<slug>`, "Client review"), with its Review
-          schema. On home it was a full-width card that only made the page longer.
-
-          Process teaser — CANONICAL §4 item 7, before the closing CTA. Copy is
-          COPY.md's "Process teaser" block verbatim. Now a
-          component of its own (Wave 3); treatment and reasoning in DESIGN.md
-          §4.17. */}
+      {/* No review on Home (owner, 2026-11-12); it was retired with Team Performance. */}
       <ProcessTeaser />
 
       <ClosingCta />
@@ -121,7 +89,7 @@ export default async function HomePage() {
   );
 }
 
-/** A featured-work row on the ink band: tag, title, pull-quote, status, link. */
+/** A featured-work row: tag, title, pull-quote, status, link, and the frame. */
 function BandRow({
   entry,
   status,
@@ -141,20 +109,15 @@ function BandRow({
           : '[grid-row:1] [grid-column:1/6] max-lg:[grid-column:1/4]'
       }
     >
-      <SolutionTag solution={entry.solution} label={entry.tag} onInk />
-      <h3
-        className="text-fg mt-4 text-[length:var(--text-subhead)] leading-[1.15] font-semibold tracking-[-0.025em]"
-        style={{ textWrap: 'pretty' }}
-      >
-        {entry.headline}
-      </h3>
-      <PullQuote solution={entry.solution} size="row" className="mt-10">
+      <SolutionTag solution={entry.solution} label={entry.tag} />
+      <h3 className="text-fg mt-4 text-[length:var(--text-subhead)]">{entry.headline}</h3>
+      <PullQuote solution={entry.solution} size="row" className="mt-8">
         {entry.pullQuote}
       </PullQuote>
-      <StatusLine result={status} className="mt-10" />
+      <StatusLine result={status} className="mt-8" />
       <Link
         href={`/work/${entry.slug}`}
-        className="tap-44 link-underline text-fg mt-[22px] inline-block text-[14.5px] font-semibold"
+        className="tap-44 text-fg mt-[22px] inline-block text-[16px] font-bold underline decoration-2 underline-offset-[6px]"
       >
         Read the full story →
       </Link>
@@ -169,30 +132,15 @@ function BandRow({
           : '[grid-row:1] [grid-column:7/13] max-lg:[grid-column:5/9]'
       }
     >
-      <ViewTransition name={`work-${entry.slug}`} share="morph" default="none">
-        <div>
-          <Frame poster={entry.poster} alt={entry.alt} />
-        </div>
-      </ViewTransition>
+      <Frame poster={entry.poster} alt={entry.alt} />
     </div>
   );
 
   return (
-    // `reveal` on the row, never on the halves — DESIGN.md §6 is explicit that
-    // Featured Work rows enter text and media as one unit. This is the home
-    // band's own row component, distinct from components/case-study-row.tsx,
-    // which is why the earlier pass's hook-up missed it entirely.
-    //
-    // DOM order is READING order — text, then media, on every row, whichever
-    // side the media takes on desktop. The alternation is now carried entirely
-    // by `grid-column`, with both halves pinned to `grid-row: 1` so sparse
-    // auto-flow can't push the left-hand item down a row. Swapping the DOM
-    // instead put two posters back to back below 768px, where the grid is one
-    // column and source order is all that's left of the layout: row 0 ended on
-    // its image and row 1 opened with the next one.
+    // DOM order is READING order — text, then media — on every row. The
+    // alternation rides on `grid-column`, both halves pinned to `grid-row: 1`.
     <article
-      data-reveal-index={index}
-      className={`reveal tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-16 md:mt-24 border-b border-border pb-16 md:pb-24' : 'pt-16 md:pt-24'}`}
+      className={`tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-12 md:mt-16 border-b border-border pb-16 md:pb-20' : 'pt-16 md:pt-20'}`}
     >
       {text}
       {media}

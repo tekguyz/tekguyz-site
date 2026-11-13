@@ -8,14 +8,13 @@ import { cn } from '@/lib/utils';
  * This is the one brand mark; every instance is this same geometry, never a
  * redrawn approximation.
  *
- * `stroke` is a prop because the connectors are context-dependent: the theme
- * hairline in the nav, the `.footer-dark` scope's own `--tg-border` in the
- * always-dark footer, and currentColor at 40% inside the concierge launcher
- * (where the mark sits on the ink fill and has no hairline token to read).
+ * `stroke` is a prop because the connectors are context-dependent: the ground's
+ * mute grey by default, and currentColor at 40%
+ * inside the concierge launcher. The four circles take the Seam lamp values.
  */
 export function ConnectedNodes({
   size = 26,
-  stroke = 'var(--tg-border-strong)',
+  stroke = 'var(--tg-mute)',
   strokeOpacity,
   className,
 }: {
@@ -38,10 +37,10 @@ export function ConnectedNodes({
       <line x1="32" y1="12" x2="52" y2="32" style={line} />
       <line x1="12" y1="32" x2="32" y2="52" style={line} />
       <line x1="52" y1="32" x2="32" y2="52" style={line} />
-      <circle cx="32" cy="12" r="8" style={{ fill: '#3B6FE0' }} />
-      <circle cx="52" cy="32" r="8" style={{ fill: '#7C6FE0' }} />
-      <circle cx="32" cy="52" r="8" style={{ fill: '#F2A93C' }} />
-      <circle cx="12" cy="32" r="8" style={{ fill: '#2FA679' }} />
+      <circle cx="32" cy="12" r="8" style={{ fill: 'var(--lamp-blue)' }} />
+      <circle cx="52" cy="32" r="8" style={{ fill: 'var(--lamp-violet)' }} />
+      <circle cx="32" cy="52" r="8" style={{ fill: 'var(--lamp-amber)' }} />
+      <circle cx="12" cy="32" r="8" style={{ fill: 'var(--lamp-teal)' }} />
     </svg>
   );
 }

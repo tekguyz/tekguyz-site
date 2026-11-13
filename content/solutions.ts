@@ -96,11 +96,7 @@ export const solutions: Solution[] = [
       'Automated invoicing',
       'Integrations across the tools you already use',
     ],
-    relatedWork: [
-      'Lead & Pipeline CRM',
-      'Quote to Paid',
-      'Team Performance & Automated Customer Feedback',
-    ],
+    relatedWork: ['Lead & Pipeline CRM', 'Quote to Paid'],
     cta: { label: 'Talk about consolidating this', href: '/contact?interest=business-systems' },
     serviceDescription:
       'Secure client and team logins, private document portals, automated invoicing, and integrations across the tools you already use.',

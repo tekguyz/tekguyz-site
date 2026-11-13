@@ -1,5 +1,4 @@
 import { Fragment, Suspense } from 'react';
-import { SignatureStripe } from '@/components/signature-stripe';
 import { ContactForm } from '@/components/contact-form';
 import { FaqAccordion } from '@/components/faq-accordion';
 import { ButtonLink } from '@/components/button';
@@ -63,9 +62,9 @@ export default function ContactPage() {
         )}
       />
 
-      <SignatureStripe />
-
-      <div className="tg-container tg-grid items-start pt-16 md:pt-24 pb-20 md:pb-32">
+      {/* Seam: the ask sits on ink; the form is a paper card on it. */}
+      <section className="on-ink">
+      <div className="tg-container tg-grid items-start pt-16 md:pt-24 pb-20 md:pb-28">
         {/* 768–1023: the form card is a single column at every width — there is no
             second column for it to sit beside — so intake and its trust column
             each take all 8 tracks rather than a third of the row. */}
@@ -74,8 +73,7 @@ export default function ContactPage() {
             Get In Touch
           </p>
           <h1
-            className="text-[length:var(--text-hero)] leading-[0.95] font-bold tracking-[-0.045em]"
-            style={{ textWrap: 'pretty' }}
+            className="lettering text-[length:var(--text-hero)]"
           >
             Let&rsquo;s talk about your business.
           </h1>
@@ -95,14 +93,14 @@ export default function ContactPage() {
               is cross-axis, so it would centre these three facts horizontally
               once stacked, and DESIGN.md §9 left-anchors everything but the
               closing CTA. */}
-          <div className="reveal mt-12 flex flex-wrap items-center gap-x-[22px] gap-y-[10px] text-[0.875rem] leading-[1.55] text-secondary max-[766px]:flex-col max-[766px]:items-start">
+          <div className="mt-12 flex flex-wrap items-center gap-x-[22px] gap-y-[10px] text-[15px] leading-[1.55] text-secondary max-[766px]:flex-col max-[766px]:items-start">
             {TRUST.map((line, i) => (
               <Fragment key={line}>
                 {i > 0 && (
                   <span
                     aria-hidden
                     className="h-[3px] w-[3px] flex-none rounded-full max-[766px]:hidden"
-                    style={{ background: 'var(--tg-muted-soft)' }}
+                    style={{ background: 'var(--tg-mute)' }}
                   />
                 )}
                 <span>{line}</span>
@@ -110,7 +108,7 @@ export default function ContactPage() {
             ))}
           </div>
 
-          <p className="mt-9 text-[0.875rem] leading-[1.55] tabular-nums text-secondary">
+          <p className="mt-9 text-[15px] leading-[1.55] tabular-nums text-secondary">
             {site.publicEmail} · {site.hoursLong} · {site.locationLong}
           </p>
         </div>
@@ -131,7 +129,7 @@ export default function ContactPage() {
               here when they come back. Not `data-primary-cta`: the form's
               button owns that slot. */}
           <div className="mt-6 flex flex-col items-start gap-3">
-            <p className="text-[0.875rem] leading-[1.55] text-secondary">
+            <p className="text-[15px] leading-[1.55] text-secondary">
               Prefer to skip the form?
             </p>
             <ButtonLink
@@ -146,6 +144,7 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+      </section>
 
       {/* FAQ — emits FAQPage schema from these exact strings, never a paraphrase.
           Revealed, along with the trust lines above. The form itself deliberately
@@ -154,9 +153,9 @@ export default function ContactPage() {
           route needs to convey. (The controller reveals anything already on
           screen at mount without animating, so a reveal here is only ever an
           entrance for a visitor who scrolls to it.) */}
-      <section className="reveal pb-20 md:pb-32">
+      <section className="pt-16 pb-20 md:pt-24 md:pb-28">
         <div className="tg-container">
-          <p className="mb-10 tg-eyebrow text-secondary">
+          <p className="mb-8 tg-eyebrow text-secondary">
             Common Questions
           </p>
           <FaqAccordion />
