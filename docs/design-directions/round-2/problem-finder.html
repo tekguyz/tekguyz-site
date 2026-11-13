@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Idea 2 · Problem Finder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..900&display=swap">
+<style>
+/* Layout: the site is a tool, not a brochure. The home page asks one question and
+   shows the problems owners actually have, as big colour tiles. Tap one and the
+   tile grows into a full "fix sheet": what we'd build, a live build to try, and a
+   message already started for you. Every fix sheet is also its own page for Google.
+   Light and dark. */
+:root{
+  --bg:#FFFFFF; --fg:#0C0D10; --muted:#5B606B; --line:#E6E7EB; --soft:#F3F4F6;
+  --btn:#0C0D10; --btnfg:#FFFFFF;
+  --b:#3B6FE0; --v:#7C6FE0; --a:#F2A93C; --t:#2FA679;
+  --bfg:#FFFFFF; --vfg:#FFFFFF; --afg:#1D1405; --tfg:#FFFFFF;
+  --f:"Schibsted Grotesk",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0C0E;--fg:#F3F4F6;--muted:#A2A7B1;--line:#23262C;--soft:#16181C;--btn:#F5F5F5;--btnfg:#101010;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B0C0E;--fg:#F3F4F6;--muted:#A2A7B1;--line:#23262C;--soft:#16181C;--btn:#F5F5F5;--btnfg:#101010;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 18px/1.5 var(--f)}
+::selection{background:var(--b);color:#fff}
+:focus-visible{outline:3px solid var(--b);outline-offset:3px;border-radius:10px}
+a{color:inherit;text-underline-offset:4px}
+.g{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1180px;margin:0 auto}
+.mark{height:18px;width:auto;display:block;fill:var(--fg)}
+header .inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:16px}
+header nav{display:flex;gap:6px;font-size:15px;font-weight:600}
+header nav a{text-decoration:none;padding:8px 12px;border-radius:999px}
+header nav a:hover{background:var(--soft)}
+@media (max-width:560px){header nav a:not(:last-child){display:none}}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:4px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+
+/* Ask */
+.ask{padding-block:40px 28px}
+h1{font-weight:850;font-size:clamp(2.8rem,9vw,6.4rem);line-height:.92;letter-spacing:-.045em;margin:0;text-wrap:balance;max-width:12ch}
+.ask p{color:var(--muted);font-size:clamp(18px,2.2vw,21px);margin:18px 0 0;max-width:46ch}
+.search{margin-top:28px;display:flex;align-items:center;gap:10px;border:2px solid var(--fg);border-radius:20px;padding:6px 6px 6px 20px;max-width:720px}
+.search input{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:500 20px var(--f);padding:12px 0;outline:0}
+.search button{border:0;background:var(--btn);color:var(--btnfg);font:700 16px var(--f);border-radius:14px;padding:14px 18px;cursor:pointer}
+
+/* Tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-block:20px 64px}
+@media (max-width:980px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{appearance:none;border:0;text-align:left;cursor:pointer;font:inherit;background:var(--c);color:var(--cf);border-radius:22px;padding:18px 18px 16px;min-height:168px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+.tile:hover{transform:translateY(-4px) rotate(-.4deg);box-shadow:0 22px 40px -24px rgb(0 0 0 / .45)}
+.tile b{font-weight:800;font-size:clamp(21px,2.4vw,27px);line-height:1.05;letter-spacing:-.02em}
+.tile small{font-size:13px;font-weight:600;opacity:.8;display:flex;justify-content:space-between;align-items:center}
+.tile small::after{content:"→";font-size:20px}
+.tile.other{background:var(--soft);color:var(--fg);border:2px dashed var(--line)}
+.c-b{--c:var(--b);--cf:var(--bfg)}.c-v{--c:var(--v);--cf:var(--vfg)}.c-a{--c:var(--a);--cf:var(--afg)}.c-t{--c:var(--t);--cf:var(--tfg)}
+
+/* Fix sheet (opens in place) */
+.sheet{display:none;padding-block:12px 64px}
+.open .sheet{display:block}
+.open .tiles,.open .ask .search{display:none}
+.fix{background:var(--c);color:var(--cf);border-radius:30px;padding:clamp(22px,4vw,48px);display:grid;grid-template-columns:1.1fr .9fr;gap:40px;view-transition-name:fix}
+@media (max-width:900px){.fix{grid-template-columns:1fr;gap:28px}}
+.back{appearance:none;border:0;background:transparent;color:inherit;font:600 15px var(--f);cursor:pointer;padding:0;margin-bottom:18px;opacity:.85}
+.fix h2{font-weight:850;font-size:clamp(2.2rem,6vw,4.4rem);line-height:.95;letter-spacing:-.04em;margin:0;text-wrap:balance}
+.fix .what{font-size:20px;margin:18px 0 0;max-width:40ch}
+.fix ul{margin:22px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.fix li{display:flex;gap:12px;align-items:flex-start}
+.fix li::before{content:"";flex:none;width:20px;height:20px;margin-top:3px;border-radius:6px;background:currentColor;opacity:.25}
+.fix .meta{margin-top:24px;font-size:14px;opacity:.85;display:flex;gap:16px;flex-wrap:wrap}
+.panel{background:var(--bg);color:var(--fg);border-radius:22px;padding:20px;display:grid;gap:14px;align-content:start}
+.panel h3{margin:0;font-size:15px;font-weight:700;color:var(--muted)}
+.trybox{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-decoration:none}
+.trybox b{display:block}
+.trybox span{color:var(--muted);font-size:14px}
+.trybox i{font-style:normal;font-size:13px;font-weight:700;color:#16A34A;white-space:nowrap}
+.panel textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:14px;background:var(--soft);color:var(--fg);font:400 17px/1.45 var(--f);padding:12px 14px;resize:vertical}
+.panel input{width:100%;border:1px solid var(--line);border-radius:14px;background:var(--soft);color:var(--fg);font:400 17px var(--f);padding:13px 14px}
+.panel button{border:0;background:var(--btn);color:var(--btnfg);font:700 17px var(--f);border-radius:14px;padding:16px;cursor:pointer}
+.panel small{color:var(--muted);font-size:14px}
+.related{margin-top:22px}
+.related h3{font-size:15px;color:var(--muted);margin:0 0 10px}
+.related div{display:flex;gap:8px;flex-wrap:wrap}
+.related button{appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:600 15px var(--f);border-radius:999px;padding:9px 14px;cursor:pointer}
+
+/* Below: proof and the person */
+.band{border-top:1px solid var(--line);padding-block:56px}
+.band h2{font-weight:850;font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-.04em;line-height:1;margin:0 0 10px;text-wrap:balance}
+.band > .inner > p{color:var(--muted);margin:0 0 28px;max-width:50ch}
+.builds{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:900px){.builds{grid-template-columns:1fr}}
+.build{display:block;text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:18px;transition:border-color .2s}
+.build:hover{border-color:var(--fg)}
+.build b{display:block;font-size:20px;letter-spacing:-.01em}
+.build span{color:var(--muted);font-size:15px}
+.build i{display:inline-block;margin-top:12px;font-style:normal;font-size:13px;font-weight:700;color:#16A34A}
+.four{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;font-size:15px;color:var(--muted)}
+.four span{display:inline-flex;align-items:center;gap:8px}
+.four i{width:10px;height:10px;border-radius:3px}
+footer .inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:24px 30px;color:var(--muted);font-size:15px}
+.mock{background:var(--soft);color:var(--muted);font-size:13px;text-align:center;padding-block:7px}
+::view-transition-group(fix){animation-duration:.5s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+@media (prefers-reduced-motion:reduce){.tile{transition:none}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+</style>
+</head>
+<body>
+<div class="mock g">Idea 2 of 3. Mock page, nothing sends. <a href="index.html">All ideas</a></div>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<header class="g"><div class="inner">
+  <svg class="mark" viewBox="92 14 213 36" role="img" aria-label="TEKGUYZ"><path d="M120.17 15.40L92.39 15.40L92.39 22.08L102.21 22.08L102.21 48.60L110.35 48.60L110.35 22.08L120.17 22.08ZM123.49 15.40L123.49 48.60L147.71 48.60L147.71 41.92L131.67 41.92L131.67 35.27L146.78 35.27L146.78 28.63L131.67 28.63L131.67 22.08L147.34 22.08L147.34 15.40ZM151.69 15.40L151.69 48.60L159.87 48.60L159.87 39.25L162.96 35.51L171.85 48.60L180.97 48.60L168.34 30.13L180.22 15.40L170.91 15.40L159.87 29.19L159.87 15.40ZM212.12 48.60L212.12 31.11L197.15 31.11L197.15 36.86L203.79 36.86C203.18 40.37 200.98 42.66 197.24 42.66C191.96 42.66 189.43 38.22 189.43 32.05C189.43 25.83 191.96 21.34 197.24 21.34C200.56 21.34 202.76 23.35 203.56 26.90L212.02 26.53C210.43 19.09 205.10 14.65 197.43 14.65C187.47 14.65 181.06 22.13 181.06 32.05C181.06 41.96 187.52 49.35 196.87 49.35C201.50 49.35 205.24 47.34 206.92 44.02L207.30 48.60ZM243.59 36.49L243.59 15.35L235.41 15.35L235.41 36.49C235.41 40.56 233.26 42.66 229.51 42.66C225.82 42.66 223.62 40.56 223.62 36.49L223.62 15.35L215.44 15.35L215.44 36.49C215.44 44.35 220.86 49.35 229.51 49.35C238.17 49.35 243.59 44.35 243.59 36.49ZM246.12 15.40L257.58 35.93L257.58 48.60L265.76 48.60L265.76 35.93L277.22 15.40L268.33 15.40L261.69 28.31L254.96 15.40ZM304.30 21.34L304.30 15.40L279.65 15.40L279.65 22.08L294.10 22.08L278.62 42.06L278.62 48.60L304.67 48.60L304.67 41.92L288.21 41.92Z"/></svg>
+  <nav><a href="#builds">Live builds</a><a href="#person">Who answers</a><a href="#top" id="startover">Find my fix</a></nav>
+</div></header>
+
+<main id="top">
+  <section class="ask g"><div class="inner">
+    <h1 id="q">What's going wrong at work?</h1>
+    <p id="qsub">Tap the one that sounds like your week. We'll show you the fix, a working version to try, and a message that's already started.</p>
+    <form class="search" id="search"><label for="s" hidden>Describe the problem</label><input id="s" placeholder="Or say it in your own words..." autocomplete="off"><button type="submit">Find the fix</button></form>
+  </div></section>
+
+  <section class="g"><div class="inner">
+    <div class="tiles" id="tiles"></div>
+    <div class="sheet" id="sheet"></div>
+  </div></section>
+
+  <section class="band g" id="builds"><div class="inner">
+    <h2>Every fix here is running.</h2>
+    <p>Open any of them and use it like your customer would. Nothing is a screenshot.</p>
+    <div class="builds">
+      <a class="build" href="https://ai-voice-receptionist-tekguyz.vercel.app"><b>AI Voice Receptionist ↗</b><span>Call it in your browser. It books the visit.</span><br><i>● Live</i></a>
+      <a class="build" href="https://field-photo-reports.vercel.app"><b>Field Photo Reports ↗</b><span>Job photos and checks in one report.</span><br><i>● Live</i></a>
+      <a class="build" href="https://squid-ink.vercel.app"><b>AI Meeting Notes ↗</b><span>A call becomes notes and to-dos.</span><br><i>● Live</i></a>
+    </div>
+    <div class="four"><span><i style="background:var(--b)"></i>Smart Operations</span><span><i style="background:var(--v)"></i>AI Voice Agents</span><span><i style="background:var(--a)"></i>Business Systems</span><span><i style="background:var(--t)"></i>Custom Web Apps</span></div>
+  </div></section>
+
+  <section class="band g" id="person"><div class="inner">
+    <h2>A real person reads every message.</h2>
+    <p>Our AI can answer first, any time. Then a person writes back within one business day, in plain English. Mon–Fri 9–5, South Florida. Or email hello@tekguyz.com, or <a href="https://cal.com/tekguyz/free-conversation">book a free call ↗</a>.</p>
+  </div></section>
+</main>
+<footer class="g"><div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="inner"><span>TEKGUYZ · Real AI for small businesses</span><span>South Florida</span></div></footer>
+
+<script>
+const FIX=[
+ {id:'calls',t:'I miss calls when I\'m on a job',c:'v',sol:'AI Voice Agents',h:'Every call gets answered.',w:'An AI receptionist picks up, holds a real conversation, takes the details and books the visit. You read the notes when your hands are free.',l:['Answers day or night','Pulls who called and what they need','Books the visit during the call'],try:['AI Voice Receptionist','Call it in your browser','https://ai-voice-receptionist-tekguyz.vercel.app'],rel:['noshow','leads']},
+ {id:'noshow',t:'Patients don\'t show up',c:'v',sol:'AI Voice Agents',h:'Fewer empty chairs.',w:'A reminder goes out before the visit. After a no-show, the patient gets offered a new time, without your front desk chasing them.',l:['Reminds before the visit','Offers a new time after a no-show','Fits the way your office works'],try:null,rel:['calls','leads']},
+ {id:'quotes',t:'My quotes go cold',c:'a',sol:'Business Systems',h:'Quotes that turn into jobs.',w:'The quote, the photos and the follow-up live in one private place. The reminder goes out by itself, so nothing sits for a week.',l:['One place for the quote and the job','Follow-up goes out by itself','You see where every quote stands'],try:['Lead & Pipeline CRM','Track a lead from first call to won','https://tekguyz-crm.vercel.app'],rel:['photos','leads']},
+ {id:'photos',t:'Job photos get lost in texts',c:'a',sol:'Business Systems',h:'Every job, one clean report.',w:'Your crew takes photos and checks on the job. They land in one report the office can read, and the next step starts by itself.',l:['Photos and checks in one report','The office sees it right away','Marking a job done tells billing'],try:['Field Photo Reports','Open a job and file a report','https://field-photo-reports.vercel.app'],rel:['quotes','notes']},
+ {id:'leads',t:'Leads slip through the cracks',c:'b',sol:'Smart Operations',h:'Every lead answered.',w:'A lead from your site, a call or a message gets a reply fast and lands in one list, so nobody waits and nobody gets forgotten.',l:['A fast first reply','One list for every lead','Spam sorted out from real people'],try:['Lead & Pipeline CRM','See leads sorted in one place','https://tekguyz-crm.vercel.app'],rel:['calls','winback']},
+ {id:'winback',t:'Old customers never come back',c:'b',sol:'Smart Operations',h:'Bring past customers back.',w:'Past customers hear from you at the right time with a short, friendly message, so the work you already earned comes back.',l:['Finds customers you haven\'t seen','Sends a short, friendly message','Starts with the customers you pick'],try:null,rel:['leads','site']},
+ {id:'notes',t:'Meetings, and nobody took notes',c:'b',sol:'Smart Operations',h:'Notes that write themselves.',w:'A call or a meeting becomes clean notes, a short summary and the to-dos. Ask your notes a question later and get the answer.',l:['Notes and a summary from audio','The to-dos pulled out','Ask your notes a question'],try:['AI Meeting Notes','Try the demo','https://squid-ink.vercel.app'],rel:['photos','leads']},
+ {id:'site',t:'My website just sits there',c:'t',sol:'Custom Web Apps',h:'A website that catches leads.',w:'Your site answers questions, catches the visitor\'s name and what they need, and sends it to you, even at 2 in the morning.',l:['Talks back to visitors','Catches the lead for you','Built for your business, not a template'],try:['This site','You\'re using one right now','#top'],rel:['leads','calls']},
+];
+const $=s=>document.querySelector(s), tiles=$('#tiles'), sheet=$('#sheet');
+tiles.innerHTML=FIX.map(f=>`<button class="tile c-${f.c}" data-id="${f.id}"><b>${f.t}</b><small>${f.sol}</small></button>`).join('')+`<button class="tile other" data-id="other"><b>Something else</b><small>Tell us in your words</small></button>`;
+const vt=fn=>{if(document.startViewTransition&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.startViewTransition(fn);else fn()};
+function open(id,text){
+  const f=FIX.find(x=>x.id===id)||{c:'b',h:'Tell us what\'s going on.',w:'Not every problem fits a box. Write it the way you\'d say it. A real person reads it and tells you what we\'d fix first.',l:['No forms to figure out','A reply within one business day','The first conversation is free'],try:null,rel:['calls','quotes'],t:text||''};
+  const tryBox=f.try?`<a class="trybox" href="${f.try[2]}"><div><b>${f.try[0]} ↗</b><span>${f.try[1]}</span></div><i>● Live</i></a>`:`<div class="trybox"><div><b>No public demo yet</b><span>Ask and we'll walk you through it.</span></div></div>`;
+  sheet.innerHTML=`<div class="fix c-${f.c}"><div><button class="back" id="back">← All problems</button><h2>${f.h}</h2><p class="what">${f.w}</p><ul>${f.l.map(x=>`<li>${x}</li>`).join('')}</ul>${f.sol?`<p class="meta"><span>Part of ${f.sol}</span><span>Starts small, grows with you</span></p>`:''}</div>
+  <div class="panel"><h3>Try it</h3>${tryBox}<h3>Your message, already started</h3><form id="msg"><label for="mt" hidden>Message</label><textarea id="mt">${f.t?('Hi, '+f.t.charAt(0).toLowerCase()+f.t.slice(1)+'. '):''}</textarea><label for="me" hidden>Email</label><input id="me" type="email" placeholder="Your email" style="margin-top:10px"><button type="submit" style="width:100%;margin-top:10px">Send to a real person</button></form><small id="ok">Reply within one business day. Or email hello@tekguyz.com.</small></div></div>
+  <div class="related"><h3>Owners with this problem often also ask about</h3><div>${f.rel.map(r=>{const x=FIX.find(y=>y.id===r);return `<button data-id="${x.id}">${x.t}</button>`}).join('')}</div></div>`;
+  vt(()=>{document.body.classList.add('open');$('#q').textContent=f.t||'Something else';$('#qsub').textContent='Here is what we would build. Change anything in the message and send it.'});
+  scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  $('#msg').addEventListener('submit',e=>{e.preventDefault();$('#ok').textContent='Mock only. On the real site this goes to a person.'});
+}
+function close(){vt(()=>{document.body.classList.remove('open');$('#q').textContent="What's going wrong at work?";$('#qsub').textContent="Tap the one that sounds like your week. We'll show you the fix, a working version to try, and a message that's already started."})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){open(b.dataset.id);return}if(e.target.id==='back'||e.target.id==='startover'){e.preventDefault();close()}});
+$('#search').addEventListener('submit',e=>{e.preventDefault();const v=$('#s').value.toLowerCase();const hit=FIX.find(f=>f.t.toLowerCase().split(/\W+/).some(w=>w.length>3&&v.includes(w)));open(hit?hit.id:'other',$('#s').value)});
+</script>
+</body>
+</html>

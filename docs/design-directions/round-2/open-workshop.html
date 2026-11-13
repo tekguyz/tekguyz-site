@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Idea 3 · Open Workshop</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400..700&family=Martian+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the site is the workshop wall. A pinboard shows what is being built and
+   what just shipped, taken from the real work log, so a visitor sees a real person
+   at work before they ever write. The contact form is a blank card for the board:
+   write your job on it, pin it, and it slides into the "Up next" column.
+   Light pegboard by default, dark mode as the shop after hours. */
+:root{
+  --wall:#E7E9EC; --dots:#CDD1D7; --card:#FFFFFF; --fg:#121317; --muted:#5C616B; --line:#DADDE2;
+  --btn:#121317; --btnfg:#FFFFFF; --live:#15803D;
+  --b:#3B6FE0; --v:#7C6FE0; --a:#F2A93C; --t:#2FA679;
+  --f:"Familjen Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --m:"Martian Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wall:#15171B;--dots:#262A31;--card:#1D2026;--fg:#F1F2F4;--muted:#A4A9B3;--line:#2C3038;--btn:#F5F5F5;--btnfg:#101010;--live:#4ADE80;color-scheme:dark}}
+:root[data-theme="dark"]{--wall:#15171B;--dots:#262A31;--card:#1D2026;--fg:#F1F2F4;--muted:#A4A9B3;--line:#2C3038;--btn:#F5F5F5;--btnfg:#101010;--live:#4ADE80;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wall) radial-gradient(var(--dots) 1.4px,transparent 1.6px) 0 0/22px 22px;color:var(--fg);font:400 18px/1.5 var(--f)}
+::selection{background:var(--a);color:#1D1405}
+:focus-visible{outline:3px solid var(--b);outline-offset:3px;border-radius:8px}
+a{color:inherit;text-underline-offset:4px}
+.g{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:1200px;margin:0 auto}
+.mark{height:18px;width:auto;display:block;fill:var(--fg)}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:5px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+header .inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:16px}
+.open-now{display:inline-flex;align-items:center;gap:8px;font:600 12px var(--m);text-transform:uppercase;letter-spacing:.06em;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 12px}
+.open-now i{width:8px;height:8px;border-radius:50%;background:var(--live)}
+header nav{display:flex;gap:18px;font-size:16px;font-weight:600}
+header nav a{text-decoration:none}
+@media (max-width:640px){header nav{display:none}}
+
+.intro{padding-block:36px 24px;display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end}
+@media (max-width:900px){.intro{grid-template-columns:1fr}}
+h1{font-weight:700;font-size:clamp(2.7rem,8.2vw,6.2rem);line-height:.93;letter-spacing:-.04em;margin:0;text-wrap:balance}
+.intro p{font-size:clamp(18px,2.1vw,21px);color:var(--muted);margin:0;max-width:40ch}
+.intro .go{display:inline-block;margin-top:18px;font-weight:700;text-decoration:none;background:var(--btn);color:var(--btnfg);border-radius:12px;padding:15px 20px}
+
+/* The board */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-block:20px 56px;align-items:start}
+@media (max-width:900px){.board{grid-template-columns:1fr}}
+.col h2{font:600 12px var(--m);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 12px;display:flex;justify-content:space-between}
+.stack{display:grid;gap:14px;min-height:60px}
+.card{position:relative;background:var(--card);border-radius:6px;padding:20px 18px 16px;box-shadow:0 1px 0 rgb(0 0 0 / .04),0 14px 28px -18px rgb(0 0 0 / .4);transform:rotate(var(--r,0deg))}
+.card::before{content:"";position:absolute;top:-9px;left:50%;width:64px;height:18px;transform:translateX(-50%) rotate(-2deg);background:var(--tape,var(--a));opacity:.85}
+.card .tag{font:600 11px var(--m);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.card b{display:block;font-size:21px;line-height:1.15;letter-spacing:-.01em;margin:8px 0 6px}
+.card p{margin:0;color:var(--muted);font-size:16px}
+.card a.try{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-weight:700;font-size:15px}
+.card a.try::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--live)}
+.card.you{border:2px dashed var(--fg);box-shadow:none;--tape:var(--fg)}
+.card.you form{display:grid;gap:10px;margin-top:10px}
+.card.you textarea,.card.you input{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--fg);font:400 18px/1.4 var(--f);padding:8px 0;outline:0;resize:vertical}
+.card.you textarea{min-height:84px}
+.card.you button{border:0;background:var(--btn);color:var(--btnfg);font:700 16px var(--f);border-radius:10px;padding:14px;cursor:pointer}
+.card.you small{color:var(--muted);font-size:14px}
+.pinned{animation:pin .7s cubic-bezier(.16,1,.3,1)}
+@keyframes pin{from{transform:translateY(-30px) rotate(-6deg) scale(1.04);opacity:0}}
+@media (prefers-reduced-motion:no-preference){.js .board .card:not(.you){animation:drop .7s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*90ms)}}
+@keyframes drop{from{transform:translateY(-18px) rotate(calc(var(--r,0deg) - 4deg));opacity:0}}
+@media (prefers-reduced-motion:reduce){.pinned{animation:none}}
+
+/* Log */
+.log{background:var(--card);border-radius:10px;padding:clamp(18px,3vw,32px);margin-bottom:56px;box-shadow:0 14px 28px -22px rgb(0 0 0 / .4)}
+.log h2{font-size:clamp(1.8rem,4.5vw,2.8rem);letter-spacing:-.03em;line-height:1;margin:0 0 6px}
+.log > p{color:var(--muted);margin:0 0 18px}
+.log ol{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:120px 1fr auto;gap:16px;padding:14px 0;border-top:1px solid var(--line);align-items:baseline}
+@media (max-width:640px){.log li{grid-template-columns:1fr;gap:2px}}
+.log time{font:400 13px var(--m);color:var(--muted)}
+.log span.what{font-size:18px}
+.log span.app{font:600 12px var(--m);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.log span.app i{width:9px;height:9px;border-radius:2px}
+.sols{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 56px}
+.sols a{text-decoration:none;background:var(--card);border-radius:999px;padding:10px 16px;font-weight:600;display:inline-flex;align-items:center;gap:8px;box-shadow:0 8px 18px -14px rgb(0 0 0 / .5)}
+.sols a i{width:10px;height:10px;border-radius:3px}
+footer{background:var(--card)}
+footer .inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-block:22px 28px;color:var(--muted);font-size:15px}
+.mock{background:var(--card);color:var(--muted);font-size:13px;text-align:center;padding-block:7px}
+</style>
+</head>
+<body>
+<div class="mock g">Idea 3 of 3. Mock page, nothing sends. <a href="index.html">All ideas</a></div>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<header class="g"><div class="inner">
+  <svg class="mark" viewBox="92 14 213 36" role="img" aria-label="TEKGUYZ"><path d="M120.17 15.40L92.39 15.40L92.39 22.08L102.21 22.08L102.21 48.60L110.35 48.60L110.35 22.08L120.17 22.08ZM123.49 15.40L123.49 48.60L147.71 48.60L147.71 41.92L131.67 41.92L131.67 35.27L146.78 35.27L146.78 28.63L131.67 28.63L131.67 22.08L147.34 22.08L147.34 15.40ZM151.69 15.40L151.69 48.60L159.87 48.60L159.87 39.25L162.96 35.51L171.85 48.60L180.97 48.60L168.34 30.13L180.22 15.40L170.91 15.40L159.87 29.19L159.87 15.40ZM212.12 48.60L212.12 31.11L197.15 31.11L197.15 36.86L203.79 36.86C203.18 40.37 200.98 42.66 197.24 42.66C191.96 42.66 189.43 38.22 189.43 32.05C189.43 25.83 191.96 21.34 197.24 21.34C200.56 21.34 202.76 23.35 203.56 26.90L212.02 26.53C210.43 19.09 205.10 14.65 197.43 14.65C187.47 14.65 181.06 22.13 181.06 32.05C181.06 41.96 187.52 49.35 196.87 49.35C201.50 49.35 205.24 47.34 206.92 44.02L207.30 48.60ZM243.59 36.49L243.59 15.35L235.41 15.35L235.41 36.49C235.41 40.56 233.26 42.66 229.51 42.66C225.82 42.66 223.62 40.56 223.62 36.49L223.62 15.35L215.44 15.35L215.44 36.49C215.44 44.35 220.86 49.35 229.51 49.35C238.17 49.35 243.59 44.35 243.59 36.49ZM246.12 15.40L257.58 35.93L257.58 48.60L265.76 48.60L265.76 35.93L277.22 15.40L268.33 15.40L261.69 28.31L254.96 15.40ZM304.30 21.34L304.30 15.40L279.65 15.40L279.65 22.08L294.10 22.08L278.62 42.06L278.62 48.60L304.67 48.60L304.67 41.92L288.21 41.92Z"/></svg>
+  <span class="open-now"><i></i>Shop open Mon–Fri 9–5</span>
+  <nav><a href="#board">The board</a><a href="#log">Work log</a><a href="#yours">Pin your job</a></nav>
+</div></header>
+
+<main class="g"><div class="inner">
+  <section class="intro">
+    <h1>This is where your fix gets built.</h1>
+    <div><p>No sales team and no black box. You can see what's on the bench right now, what just shipped, and try every build yourself. Then pin your job to the board.</p><a class="go" href="#yours">Pin your job</a></div>
+  </section>
+
+  <section class="board" id="board" aria-label="Work board">
+    <div class="col"><h2><span>On the bench</span><span>1</span></h2><div class="stack">
+      <article class="card" style="--r:-1deg;--tape:var(--a);--i:0"><div class="tag"><span>Business Systems</span><span>Planning</span></div><b>Phone alerts for Field Photo Reports</b><p>When a crew files a report, the office gets told right away. Being planned now.</p><a class="try" href="https://field-photo-reports.vercel.app">Try today's version ↗</a></article>
+    </div></div>
+    <div class="col"><h2><span>Just shipped</span><span>2</span></h2><div class="stack">
+      <article class="card" style="--r:.8deg;--tape:var(--v);--i:1"><div class="tag"><span>AI Voice Agents</span><span>Live</span></div><b>Meet Luna, the new receptionist demo</b><p>Call Mangrove Air, a made-up AC company. Luna answers, takes the job and books it.</p><a class="try" href="https://ai-voice-receptionist-tekguyz.vercel.app">Call Luna ↗</a></article>
+      <article class="card" style="--r:-.6deg;--tape:var(--a);--i:2"><div class="tag"><span>Business Systems</span><span>Live</span></div><b>The lead tracker, rebuilt for a phone</b><p>Every button is big enough for a thumb. 889 automated checks run on each change.</p><a class="try" href="https://tekguyz-crm.vercel.app">Try the lead tracker ↗</a></article>
+    </div></div>
+    <div class="col" id="yours"><h2><span>Up next</span><span id="cnt">0</span></h2><div class="stack" id="next">
+      <article class="card you" id="you" style="--r:0deg"><div class="tag"><span>Your job</span><span>Blank card</span></div><b>What should we fix for you?</b>
+        <form id="pin"><label for="job" hidden>Your job</label><textarea id="job" placeholder="We lose track of quotes once they go out..."></textarea><label for="em" hidden>Email</label><input id="em" type="email" autocomplete="email" placeholder="Your email"><button type="submit">Pin it to the board</button></form>
+        <small>A real person reads it and writes back within one business day. Or email hello@tekguyz.com, or <a href="https://cal.com/tekguyz/free-conversation">book a free call ↗</a>.</small></article>
+    </div></div>
+  </section>
+
+  <section class="log" id="log">
+    <h2>Work log</h2>
+    <p>Real entries from the builds, in plain words. Newest first.</p>
+    <ol>
+      <li><time>Oct 16, 2026</time><span class="what">Started planning phone alerts for new job reports.</span><span class="app"><i style="background:var(--a)"></i>Field Photo Reports</span></li>
+      <li><time>Oct 15, 2026</time><span class="what">The new receptionist demo, Luna for Mangrove Air, goes on the website.</span><span class="app"><i style="background:var(--v)"></i>AI Voice Receptionist</span></li>
+      <li><time>Oct 14, 2026</time><span class="what">Phone-friendly redesign finished. New pictures taken.</span><span class="app"><i style="background:var(--a)"></i>Lead tracker</span></li>
+      <li><time>Oct 14, 2026</time><span class="what">The work order now shows the address on two lines.</span><span class="app"><i style="background:var(--v)"></i>AI Voice Receptionist</span></li>
+      <li><time>Oct 12, 2026</time><span class="what">Fixed a test that only failed on Windows.</span><span class="app"><i style="background:var(--b)"></i>AI Meeting Notes</span></li>
+    </ol>
+  </section>
+
+  <nav class="sols" aria-label="What we work on">
+    <a href="#"><i style="background:var(--b)"></i>Smart Operations</a><a href="#"><i style="background:var(--v)"></i>AI Voice Agents</a><a href="#"><i style="background:var(--a)"></i>Business Systems</a><a href="#"><i style="background:var(--t)"></i>Custom Web Apps</a>
+  </nav>
+</div></main>
+<footer class="g"><div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="inner"><span>TEKGUYZ · Real AI for small businesses, built in the open</span><span>South Florida</span></div></footer>
+<script>
+document.documentElement.classList.add('js');
+document.getElementById('pin').addEventListener('submit',e=>{
+  e.preventDefault(); const t=document.getElementById('job').value.trim()||'Your job';
+  const c=document.createElement('article'); c.className='card pinned'; c.style.cssText='--r:1.2deg;--tape:var(--t)';
+  c.innerHTML='<div class="tag"><span>Your job</span><span>Pinned just now</span></div><b></b><p>Mock only. On the real site a real person gets this and writes back.</p>';
+  c.querySelector('b').textContent=t; document.getElementById('next').prepend(c);
+  document.getElementById('cnt').textContent='1'; e.target.reset();
+});
+</script>
+</body>
+</html>

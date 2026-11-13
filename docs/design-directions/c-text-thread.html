@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Direction C · Text Thread</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..900&display=swap">
+<style>
+/* Layout: the page is a conversation. The owner already lives in text threads, so
+   the hero IS the chat: no floating chat button, the AI and the form are one reply
+   box in the page. Sections below are "pinned" answers. Bubbles in the four stripe
+   colours mark which Solution a message is about. Light and dark. */
+:root{
+  --bg:#F4F5F7; --fg:#111317; --muted:#5D6470; --me:#111317; --me-fg:#FFFFFF; --them:#FFFFFF; --line:#E1E4EA; --soft:#EAECF0;
+  --b:#3B6FE0; --v:#7C6FE0; --a:#F2A93C; --t:#2FA679;
+  --f:"Figtree",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E0F12;--fg:#F2F3F5;--muted:#A3A9B4;--me:#F5F5F5;--me-fg:#101010;--them:#1A1C21;--line:#262931;--soft:#16181C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E0F12;--fg:#F2F3F5;--muted:#A3A9B4;--me:#F5F5F5;--me-fg:#101010;--them:#1A1C21;--line:#262931;--soft:#16181C;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.5 var(--f)}
+::selection{background:var(--v);color:#fff}
+:focus-visible{outline:2px solid var(--v);outline-offset:3px;border-radius:10px}
+a{color:inherit;text-underline-offset:3px}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.stripe{display:grid;grid-template-columns:repeat(4,1fr);height:4px}
+.stripe i:nth-child(1){background:var(--b)}.stripe i:nth-child(2){background:var(--v)}.stripe i:nth-child(3){background:var(--a)}.stripe i:nth-child(4){background:var(--t)}
+.mark{height:17px;width:auto;display:block;fill:var(--fg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in oklab,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.who{display:flex;flex-direction:column;align-items:center;gap:2px}
+.who small{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.who small i{width:7px;height:7px;border-radius:50%;background:var(--t)}
+header a{font-size:15px;text-decoration:none;color:var(--muted)}
+
+.intro{padding-block:44px 8px;text-align:center}
+h1{font-weight:850;font-size:clamp(2.6rem,9vw,4.6rem);line-height:.98;letter-spacing:-.035em;margin:0 auto;max-width:13ch;text-wrap:balance}
+.intro p{color:var(--muted);max-width:44ch;margin:18px auto 0;font-size:19px}
+.day{text-align:center;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:36px 0 18px}
+
+.thread{display:flex;flex-direction:column;gap:8px;padding-bottom:12px}
+.msg{max-width:min(82%,520px);padding:12px 16px;border-radius:22px;font-size:17px;line-height:1.4;position:relative}
+.them{align-self:flex-start;background:var(--them);border:1px solid var(--line);border-bottom-left-radius:6px}
+.me{align-self:flex-end;background:var(--me);color:var(--me-fg);border-bottom-right-radius:6px}
+.meta{font-size:12px;color:var(--muted);margin:2px 6px 10px}
+.meta.r{align-self:flex-end}
+.typing{align-self:flex-start;background:var(--them);border:1px solid var(--line);border-radius:22px;padding:14px 18px;display:none;gap:5px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bob 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bob{50%{transform:translateY(-4px);opacity:.5}}
+/* Enter animation only when JS and motion are allowed; at rest every message is visible. */
+.play .msg,.play .meta,.play .card{opacity:0;transform:translateY(8px) scale(.98);transition:opacity .35s cubic-bezier(.16,1,.3,1),transform .45s cubic-bezier(.16,1,.3,1)}
+.play .in{opacity:1;transform:none}
+.card{align-self:flex-start;max-width:min(88%,560px);background:var(--them);border:1px solid var(--line);border-radius:22px;border-bottom-left-radius:6px;overflow:hidden}
+.card .bar{height:6px;background:var(--c)}
+.card div{padding:14px 16px}
+.card b{display:block;font-size:19px;font-weight:800;letter-spacing:-.01em}
+.card p{margin:4px 0 10px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips a{font-size:14px;text-decoration:none;padding:6px 11px;border-radius:999px;background:var(--soft);border:1px solid var(--line)}
+.chips a.live{border-color:var(--c)}
+.chips a.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);margin-right:6px}
+.sample{font-size:12px;color:var(--muted);text-align:center;margin:6px 0 0}
+
+/* Reply box: the one way in */
+.composer{padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}
+.composer .wrap{padding-top:24px}
+.quick{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+.quick button{flex:none;font:600 14px var(--f);border:1px solid var(--line);background:var(--them);color:var(--fg);border-radius:999px;padding:9px 14px;cursor:pointer}
+.quick button:hover{border-color:var(--fg)}
+form{display:flex;gap:8px;align-items:flex-end;background:var(--them);border:1px solid var(--line);border-radius:28px;padding:6px 6px 6px 18px;box-shadow:0 10px 30px -18px rgb(0 0 0 / .4)}
+textarea{flex:1;min-width:0;border:0;background:transparent;color:var(--fg);font:400 17px/1.4 var(--f);resize:none;padding:10px 0;outline:0;height:44px}
+form button{flex:none;border:0;background:var(--me);color:var(--me-fg);font:700 16px var(--f);border-radius:22px;padding:12px 18px;cursor:pointer}
+.alt{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--muted);padding-top:10px}
+.alt a{color:var(--fg)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-block:22px;font-size:14px;color:var(--muted)}
+.mock{background:var(--soft);color:var(--muted);font-size:13px;text-align:center;padding-block:7px}
+@media (prefers-reduced-motion:reduce){.typing i{animation:none}}
+</style>
+</head>
+<body>
+<div class="mock"><div class="wrap">Design mock, direction C. Nothing here sends. <a href="index.html">All directions</a></div></div>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<header><div class="wrap">
+  <a href="#work">Builds</a>
+  <div class="who">
+    <svg class="mark" viewBox="92 14 213 36" role="img" aria-label="TEKGUYZ"><path d="M120.17 15.40L92.39 15.40L92.39 22.08L102.21 22.08L102.21 48.60L110.35 48.60L110.35 22.08L120.17 22.08ZM123.49 15.40L123.49 48.60L147.71 48.60L147.71 41.92L131.67 41.92L131.67 35.27L146.78 35.27L146.78 28.63L131.67 28.63L131.67 22.08L147.34 22.08L147.34 15.40ZM151.69 15.40L151.69 48.60L159.87 48.60L159.87 39.25L162.96 35.51L171.85 48.60L180.97 48.60L168.34 30.13L180.22 15.40L170.91 15.40L159.87 29.19L159.87 15.40ZM212.12 48.60L212.12 31.11L197.15 31.11L197.15 36.86L203.79 36.86C203.18 40.37 200.98 42.66 197.24 42.66C191.96 42.66 189.43 38.22 189.43 32.05C189.43 25.83 191.96 21.34 197.24 21.34C200.56 21.34 202.76 23.35 203.56 26.90L212.02 26.53C210.43 19.09 205.10 14.65 197.43 14.65C187.47 14.65 181.06 22.13 181.06 32.05C181.06 41.96 187.52 49.35 196.87 49.35C201.50 49.35 205.24 47.34 206.92 44.02L207.30 48.60ZM243.59 36.49L243.59 15.35L235.41 15.35L235.41 36.49C235.41 40.56 233.26 42.66 229.51 42.66C225.82 42.66 223.62 40.56 223.62 36.49L223.62 15.35L215.44 15.35L215.44 36.49C215.44 44.35 220.86 49.35 229.51 49.35C238.17 49.35 243.59 44.35 243.59 36.49ZM246.12 15.40L257.58 35.93L257.58 48.60L265.76 48.60L265.76 35.93L277.22 15.40L268.33 15.40L261.69 28.31L254.96 15.40ZM304.30 21.34L304.30 15.40L279.65 15.40L279.65 22.08L294.10 22.08L278.62 42.06L278.62 48.60L304.67 48.60L304.67 41.92L288.21 41.92Z"/></svg>
+    <small><i></i>Replies Mon–Fri 9–5</small>
+  </div>
+  <a href="#reply">Write</a>
+</div></header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>A real person who replies.</h1>
+    <p>Most small businesses don't know what AI could fix for them. Tell us what's slowing you down. We find the easy win first.</p>
+  </div>
+
+  <div class="day">Example conversation</div>
+  <div class="thread" id="thread">
+    <div class="msg me">We miss calls all day when the guys are on a job. Can AI help with that?</div>
+    <div class="meta r">You</div>
+    <div class="typing" id="typing" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="msg them">Yes. An AI receptionist can answer, take the details and book the visit. Try ours right now, it's live.</div>
+    <div class="card" style="--c:var(--v)"><span class="bar"></span><div><b>AI Voice Agents</b><p>Your phones don't stop ringing because your doors are closed. We answer them.</p><div class="chips"><a class="live" href="https://ai-voice-receptionist-tekguyz.vercel.app">Call the demo ↗</a><a href="#">After-hours receptionist</a><a href="#">No-show rescue</a></div></div></div>
+    <div class="meta">TEKGUYZ</div>
+    <div class="msg me">And the quotes? They sit for days.</div>
+    <div class="meta r">You</div>
+    <div class="msg them">That's a Business System. One private place, so a quote turns into a paid job without chasing.</div>
+    <div class="card" style="--c:var(--a)"><span class="bar"></span><div><b>Business Systems</b><p>Everything your clients and team need, in one private place instead of five.</p><div class="chips"><a class="live" href="https://field-photo-reports.vercel.app">Field Photo Reports ↗</a><a href="#">Quote to paid</a><a href="#">Field job reports</a></div></div></div>
+    <div class="meta">TEKGUYZ</div>
+    <div class="msg me">What else do you do?</div>
+    <div class="meta r">You</div>
+    <div class="card" id="work" style="--c:var(--b)"><span class="bar"></span><div><b>Smart Operations</b><p>Your business makes data and tasks every hour. We build systems that handle them automatically.</p><div class="chips"><a class="live" href="https://squid-ink.vercel.app">AI Meeting Notes ↗</a><a href="#">Every lead answered</a><a href="#">Win-back</a></div></div></div>
+    <div class="card" style="--c:var(--t)"><span class="bar"></span><div><b>Custom Web Apps</b><p>If you can describe the workflow, we can build the tool that runs it.</p><div class="chips"><a class="live" href="https://meet4weed.vercel.app">Private Meetup App ↗</a><a href="#">A website that catches leads</a></div></div></div>
+    <div class="msg them">We start with the easy win, show it working, and write it all down. Then we find the next one.</div>
+    <div class="meta">TEKGUYZ</div>
+    <p class="sample">Sample conversation to show how it works.</p>
+  </div>
+</main>
+
+<div class="composer" id="reply"><div class="wrap">
+  <div class="quick" aria-label="Quick starts">
+    <button type="button">I miss calls</button><button type="button">Quotes go cold</button><button type="button">Too much paperwork</button><button type="button">I need a website</button><button type="button">Not sure yet</button>
+  </div>
+  <form id="f"><label for="m" class="sr" hidden>Your message</label><textarea id="m" placeholder="Tell us what you want fixed…"></textarea><button type="submit">Send</button></form>
+  <div class="alt"><span>Our AI answers first. A real person replies within one business day.</span></div>
+  <div class="alt"><span>hello@tekguyz.com</span><a href="https://cal.com/tekguyz/free-conversation">Book a free call ↗</a></div>
+</div></div>
+<footer><div class="stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="wrap"><span>We build tech that actually works.</span><span>South Florida</span></div></footer>
+<script>
+(()=>{
+  const m=document.getElementById('m');
+  document.querySelectorAll('.quick button').forEach(b=>b.addEventListener('click',()=>{m.value=b.textContent+'. ';m.focus()}));
+  document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();m.value='';m.placeholder='Mock only. In the real site this goes to our AI and to a person.'});
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const t=document.getElementById('thread'), typing=document.getElementById('typing');
+  const items=[...t.querySelectorAll('.msg,.meta,.card')];
+  t.classList.add('play');
+  let j=0; const run=()=>{ if(j>=items.length) return; const el=items[j++];
+    const go=()=>{el.classList.add('in'); setTimeout(run, el.classList.contains('meta')?90:320)};
+    if(el.classList.contains('them')&&j<6){typing.style.display='flex';setTimeout(()=>{typing.style.display='none';go()},750)} else go() };
+  setTimeout(run,300);
+  setTimeout(()=>items.forEach(el=>el.classList.add('in')),8000);
+})();
+</script>
+</body>
+</html>
