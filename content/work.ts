@@ -354,7 +354,7 @@ export const work: WorkEntry[] = [
     // The app's own `showcase/board-day-summary-desktop-light.png` (webp),
     // taken in the demo: Gumbo Limbo Air, its customers and amounts are made up.
     poster: '/media/quote-to-paid-thumb.webp',
-    alt: 'Quote to Paid demo board: a summary of the follow-ups that went out by themselves, the quotes and invoices waiting, and the two jobs that need the owner',
+    alt: 'Quote to Paid demo board: a summary of the follow-ups that went out by themselves, the quotes and invoices waiting, and the jobs that need the owner',
     embeddable: false,
     updatedAt: '2026-11-10',
     builtFor: 'Roofing and AC companies that send quotes and wait to get paid',
@@ -374,9 +374,9 @@ export const work: WorkEntry[] = [
    * 2026-11-11 (refs tekguyz/tekguyz-one#148, #149): the next two package
    * demos. No-Show Rescue is package C, Win-Back is package G. Words are from
    * each landing page and README; `url` is the landing page, never the demo.
-   * No showcase pictures exist yet, so each poster is a 1440x900 capture of the
-   * landing page (`tools/capture`, 2026-11-11). Swap in a demo capture when
-   * the showcase is made.
+   * Posters are each app's own `showcase/` desktop capture, 1440x900 (retaken
+   * 2026-11-13 after the polish, refs tekguyz/tekguyz-one#162): No-Show Rescue
+   * `slot-filled-desktop-light`, Win-Back `approve-desktop-light`.
    */
   {
     slug: 'no-show-rescue',
@@ -388,7 +388,7 @@ export const work: WorkEntry[] = [
     headline: 'Fewer empty chairs: a reminder before the visit, a new time after a no-show.',
     url: 'https://no-show-rescue.vercel.app',
     poster: '/media/no-show-rescue-thumb.webp',
-    alt: 'No-Show Rescue landing page: a text thread offering a missed patient a new time, and an open chair filled from the waitlist',
+    alt: 'No-Show Rescue demo: the patient’s text thread with the new time, and the front desk’s schedule with the open chair filled from the short-notice waitlist',
     embeddable: false,
     updatedAt: '2026-11-11',
     builtFor: 'Dental and vet practices',
@@ -412,7 +412,7 @@ export const work: WorkEntry[] = [
     headline: 'Bring back the customers who stopped calling.',
     url: 'https://win-back-customers.vercel.app',
     poster: '/media/win-back-thumb.webp',
-    alt: 'Win-Back landing page: a drafted message to a past customer, waiting for the owner to approve or edit it, with 8 past customers found',
+    alt: 'Win-Back demo: drafted messages to past customers, each one approved by the owner, with an edit or skip link, before anything is sent',
     embeddable: false,
     updatedAt: '2026-11-11',
     builtFor: 'AC and heating companies with yearly service, and dental and vet offices with recalls',
@@ -459,6 +459,37 @@ export const work: WorkEntry[] = [
     title: 'TEKGUYZ | Book Your Visit',
     description:
       'An online booking portal where customers pick a service and an open time, and change or cancel without a call. The owner sees the day. Try the one-click demo.',
+  },
+  /*
+   * 2026-11-13 (refs tekguyz/tekguyz-one#161): Cart Reminders, a Custom Web
+   * Apps demo (online ordering, headless e-commerce, cart abandonment). Words
+   * are from tekguyz-one `projects/cart-reminders/about.md`. `url` is the
+   * landing page, never the demo. The poster is the app's own
+   * `showcase/webp/reminder-desktop-light.webp`, 1440x900, made-up roaster.
+   */
+  {
+    slug: 'cart-reminders',
+    kind: 'project',
+    name: 'Cart Reminders',
+    shortName: 'Cart Reminders',
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
+    headline: 'The shopper left. The cart came back.',
+    url: 'https://cart-reminders.vercel.app',
+    poster: '/media/cart-reminders-thumb.webp',
+    alt: 'Cart Reminders demo: the reminder email a shopper gets after leaving checkout at a made-up coffee roaster, marked not sent, next to the store owner’s carts started, left, reminded and won back',
+    embeddable: false,
+    updatedAt: '2026-11-13',
+    builtFor: 'Small shops that sell online or want to: a roaster, a boutique, a food maker',
+    summary:
+      'A shop built to fit the business, with online ordering and payment. Its products and carts come from a real Shopify store, and payment runs through Stripe in test mode. When a shopper leaves at checkout, the cart is marked as left and gets two reminders, one after an hour and one after a day, then it stops. The owner sees carts started, left, reminded and won back.',
+    whatMadeItInteresting:
+      'the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout, and a paid cart becomes a real test order in the store.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. It opens a made-up coffee roaster in Miami. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.',
+    title: 'TEKGUYZ | Cart Reminders',
+    description:
+      'An online store whose left carts come back: ordering and payment built to fit, and a friendly reminder when a shopper leaves at checkout. Try the one-click demo.',
   },
   /* RETIRED 2026-09-04, and the reason is worth keeping so nobody re-adds them.
    *
@@ -530,6 +561,7 @@ export const largeSlugs = [
 ] as const;
 
 export const smallSlugs = [
+  'cart-reminders',
   'no-show-rescue',
   'missed-call-follow-up',
   'field-photo-reports',
