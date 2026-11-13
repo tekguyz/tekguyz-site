@@ -69,9 +69,9 @@ Seam allows one moment per page: the lamp fields rise in on load, 60 ms apart, a
 
 Demo names are fine. Every demo plays a made-up business with sample data (`claude-config/DEMO-STANDARD.md`, "Every demo is a made-up business"), so Seam's "no client name" line does not apply to them. Copy stays as it is.
 
-## Open item: the Joe M. review
+## Decided: the Joe M. review is retired with Team Performance
 
-The site's one testimonial is a real, verified Google review from Joe M., and `docs/COPY.md` points it at `/work/team-performance`. Dropping Team Performance from the list orphans it. Also tied to that page: `content/process.ts` (`contextSlug`), the concierge system prompt in `lib/concierge/system-prompt.ts`, and `lib/validation.test.ts`. The session must not silently delete the review or invent a new home for it. Stop and ask the founder: keep the review on a page of its own choosing, or retire it with the build.
+Founder, 2026-11-12: the review is not wanted on the home page (it was removed from there on purpose) and gets no new home. It only renders on `/work/[slug]` pages, so it goes with Team Performance. Remove `components/testimonial.tsx` and its use if nothing else needs it, the `contextSlug` in `content/process.ts`, the Team Performance mentions in `lib/concierge/system-prompt.ts`, and update `lib/validation.test.ts`. Do not ask again.
 
 ## Done means
 
