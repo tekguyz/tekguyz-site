@@ -28,10 +28,10 @@ import { SequenceRoot, SequenceItem } from '@/components/load-sequence';
  * secondary button, lifted onto `bg` so its edge reads on the surface ground
  * in both themes. Ink stays the only fill — no accent fills a button.
  *
- * The three facts stay: they answer "what does it cost me to ask" right where
- * the ask is. Desktop and tablet stack them under the buttons, the same
- * dot-free stack the facts already took below 767px (M-04: a wrapped dot row
- * ends lines on a separator). Muted, no colour, no bullets.
+ * No trust facts here since 2026-11-12 (owner): the three grey lines ("Free
+ * first conversation" and the rest) repeated on every page and read as filler.
+ * They live once, on /contact, next to the form. The band is the headline and
+ * the two buttons.
  *
  * On scroll into view this replays the hero's load sequence once.
  */
@@ -82,14 +82,6 @@ export function ClosingCta() {
                   Ask our AI
                 </Button>
               </div>
-            </SequenceItem>
-
-            <SequenceItem role="trust">
-              <ul className="mt-6 flex flex-col gap-1.5 text-[0.875rem] leading-[1.55] text-secondary">
-                <li>Free first conversation</li>
-                <li>A flat quote before anything starts</li>
-                <li>We reply within one business day</li>
-              </ul>
             </SequenceItem>
           </div>
         </div>
