@@ -9,6 +9,10 @@ import type { StatusResult } from '@/lib/status';
  * lead their Solution (AI Meeting Notes, the CRM); those show their outcome.
  *
  * Compact: surface fill, 1px hairline, 12px radius, 24px padding.
+ *
+ * Slimmed 2026-11-12 (owner: "bulky" now there are 9): title at `--text-body`
+ * not `--text-title`, the summary clamped to 3 lines (the full text is on the
+ * detail page), tighter steps, and 3 across from 1024px in app/work/page.tsx.
  * Tag (tight variant) -> title -> one description -> status line.
  *
  * NO IMAGE, EVER. The size and weight gap from case-study-row is intentional
@@ -37,14 +41,14 @@ export function ProjectCard({
       <SolutionTag solution={entry.solution} label={entry.tag} variant="card" className="self-start" />
 
       <h3
-        className="mt-[18px] text-[length:var(--text-title)] leading-[1.2] font-semibold tracking-[-0.02em]"
+        className="mt-4 text-[length:var(--text-body)] leading-[1.3] font-semibold tracking-[-0.01em]"
         style={{ textWrap: 'pretty' }}
       >
         {entry.headline}
       </h3>
 
       <p
-        className="mt-[14px] flex-1 text-[0.875rem] leading-[1.55] text-secondary"
+        className="mt-2.5 line-clamp-3 flex-1 text-[length:var(--text-sm)] leading-[1.55] text-secondary"
         style={{ textWrap: 'pretty' }}
       >
         {/* COPY.md's summary verbatim. The export shows a shortened card
@@ -52,7 +56,7 @@ export function ProjectCard({
         {entry.kind === 'project' ? entry.summary : entry.outcome}
       </p>
 
-      <StatusLine result={status} className="mt-[22px]" />
+      <StatusLine result={status} className="mt-5" />
 
       {/* Matches `case-study-row`'s affordance so both tiers say what a click
           does. Not a <Link> — the whole card is already one, and nesting an
@@ -65,7 +69,7 @@ export function ProjectCard({
           compact card is the exact ambiguity this tier is meant to avoid. */}
       <span
         aria-hidden
-        className="link-underline mt-6 self-start text-[14.5px] font-semibold"
+        className="link-underline mt-4 self-start text-[14.5px] font-semibold"
       >
         Read the full story →
       </span>

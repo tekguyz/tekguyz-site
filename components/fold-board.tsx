@@ -224,13 +224,14 @@ export function FoldBoard({ entries }: { entries: WorkEntry[] }) {
                 />
               </span>
 
-              {/* `entry.name`, not `entry.headline`. The board is an index — a
+              {/* `shortName` (else `name`), never `entry.headline`. Short since
+                  2026-11-12: the long name wrapped to two lines on one card. The board is an index — a
                   visitor scanning it needs the product's NAME, and the headline
                   is a full sentence that would turn four cards into four
                   paragraphs. The headline is what the detail page and the ink
                   band lead with. */}
               <span className="mt-4 flex-1 text-[length:var(--text-body)] leading-[1.3] font-semibold tracking-[-0.01em]">
-                {entry.name}
+                {entry.shortName ?? entry.name}
               </span>
 
             </Link>

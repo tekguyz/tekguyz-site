@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SignatureStripe } from '@/components/signature-stripe';
-import { FlourishMark } from '@/components/flourish-mark';
 import { SolutionTag, AccentDot } from '@/components/solution-tag';
 import { ClosingCta } from '@/components/closing-cta';
 import { ExampleScreen } from '@/components/example-screens';
@@ -62,9 +61,7 @@ export default async function ExamplePage({ params }: { params: Promise<{ slug: 
           ← Examples
         </Link>
 
-        <FlourishMark className="mt-10 mb-8" />
-
-        <div className="tg-grid pt-4">
+        <div className="tg-grid pt-10">
           <div className="[grid-column:1/7] max-lg:[grid-column:1/-1]">
             <SolutionTag solution={entry.solution} label={entry.tag} />
             <h1
