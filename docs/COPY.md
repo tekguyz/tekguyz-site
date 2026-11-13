@@ -270,7 +270,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Book Your Visit *(added 2026-11-12)*, Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
+RELATED WORK: Book Your Visit *(added 2026-11-12)*, Cart Reminders *(added 2026-11-13)*, Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -293,7 +293,7 @@ document was the stale half.]*
 **Changed 2026-11-11 (founder):** four large cards, one per Solution, then every other build in small cards. Group heads (**drafted**):
 
 **One for each Solution** *(4, full-width)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Book Your Visit (Custom Web Apps; Field Photo Reports led it until 2026-11-12). A large card shows the case study's approach or the project's summary, its pull quote, the frame, status and Try it.
-**More builds** *(6, compact grid)* — Same standard, every one live. Newest first: No-Show Rescue, Missed Call Follow-Up, Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM, Team Performance. A case study in a small card shows its outcome.
+**More builds** *(6, compact grid)* — Same standard, every one live. Newest first: Cart Reminders, No-Show Rescue, Missed Call Follow-Up, Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM. A case study in a small card shows its outcome.
 
 Before 2026-11-11: **Case Studies** *(full-width)* — the deep-dive builds; **Projects** *(compact grid)* — lighter builds, same standard.
 
@@ -526,7 +526,7 @@ DESCRIPTION: `Follows up on every quote and every unpaid invoice by text, polite
 
 ## `/work/no-show-rescue` — No-Show Rescue
 
-*Added 2026-11-11 (refs tekguyz/tekguyz-one#148), package C. Words from the app's landing page and README. Live demo link: the landing page, https://no-show-rescue.vercel.app. Poster: a capture of the landing page until the showcase pictures exist.*
+*Added 2026-11-11 (refs tekguyz/tekguyz-one#148), package C. Words from the app's landing page and README. Live demo link: the landing page, https://no-show-rescue.vercel.app. Poster: the app's own `showcase/webp/slot-filled-desktop-light.webp` (since 2026-11-13, tekguyz/tekguyz-one#162; a landing page capture before).*
 
 TAG: AI Voice Agents
 BUILT FOR: Dental and vet practices
@@ -543,7 +543,7 @@ DESCRIPTION: `Reminders before a visit, a new time offered after a no-show, the 
 
 ## `/work/win-back` — Win-Back
 
-*Added 2026-11-11 (refs tekguyz/tekguyz-one#149), package G. Words from the app's landing page and README. Live demo link: the landing page, https://win-back-customers.vercel.app. Poster: a capture of the landing page until the showcase pictures exist. It leads Smart Operations on /work, so it has a pull quote (**drafted**).*
+*Added 2026-11-11 (refs tekguyz/tekguyz-one#149), package G. Words from the app's landing page and README. Live demo link: the landing page, https://win-back-customers.vercel.app. Poster: the app's own `showcase/webp/approve-desktop-light.webp` (since 2026-11-13, tekguyz/tekguyz-one#162; a landing page capture before). It leads Smart Operations on /work, so it has a pull quote (**drafted**).*
 
 TAG: Smart Operations
 BUILT FOR: AC and heating companies with yearly service, and dental and vet offices with recalls
@@ -578,6 +578,23 @@ Customers pick a service and an open time, then book, move or cancel without a c
 
 METADATA — TITLE: `TEKGUYZ | Book Your Visit`
 DESCRIPTION: `An online booking portal where customers pick a service and an open time, and change or cancel without a call. The owner sees the day. Try the one-click demo.`
+
+## `/work/cart-reminders` — Cart Reminders
+
+*Added 2026-11-13 (refs tekguyz/tekguyz-one#161), Custom Web Apps (online ordering and cart systems, headless e-commerce, cart abandonment). Words from tekguyz-one `projects/cart-reminders/about.md`. Live demo link: the landing page, https://cart-reminders.vercel.app. Poster: the app's own `showcase/webp/reminder-desktop-light.webp`.*
+
+TAG: Custom Web Apps
+BUILT FOR: Small shops that sell online or want to: a roaster, a boutique, a food maker
+HEADLINE: The shopper left. The cart came back.
+
+A shop built to fit the business, with online ordering and payment. Its products and carts come from a real Shopify store, and payment runs through Stripe in test mode. When a shopper leaves at checkout, the cart is marked as left and gets two reminders, one after an hour and one after a day, then it stops. The owner sees carts started, left, reminded and won back.
+
+**WHAT MADE IT INTERESTING:** the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout, and a paid cart becomes a real test order in the store.
+
+**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up coffee roaster in Miami. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.
+
+METADATA — TITLE: `TEKGUYZ | Cart Reminders`
+DESCRIPTION: `An online store whose left carts come back: ordering and payment built to fit, and a friendly reminder when a shopper leaves at checkout. Try the one-click demo.`
 
 ## `/work/team-performance` — Team Performance & Automated Customer Feedback
 

@@ -56,6 +56,7 @@ const WORK = [
   'no-show-rescue',
   'win-back',
   'book-your-visit',
+  'cart-reminders',
 ];
 const SOLUTIONS = ['smart-operations', 'ai-voice-agents', 'business-systems', 'custom-web-apps'];
 
