@@ -14,7 +14,8 @@ import { useBodyScrollLock, useScrolledPast } from '@/lib/use-scroll';
 import { cn } from '@/lib/utils';
 
 /**
- * Sticky, 76px tall. Transparent with no fill and no border at scroll 0; past
+ * Sticky, 64px tall (76px until 2026-11-12; the owner found it thick). It
+ * stays put on scroll: hiding it would make "Let's Talk" jump in and out. Transparent with no fill and no border at scroll 0; past
  * 24px it fills to 82% opacity with a 14px backdrop blur and the hairline
  * border fades in. Those values live on --tg-nav-* and switch on data-scrolled.
  *
@@ -84,7 +85,7 @@ export function Nav() {
       style={{ viewTransitionName: 'site-nav' }}
       // The <header> itself carries no border. An unqualified Tailwind v4
       // `border-b` resolves to currentColor, which painted an opaque ink (light)
-      // / near-white (dark) hairline below the 76px bar at EVERY scroll
+      // / near-white (dark) hairline below the 64px bar at EVERY scroll
       // position — doubling the real hairline once scrolled, and sitting
       // directly on the signature stripe that starts flush at the nav's bottom
       // edge. The one specified border lives on the fill layer below, colored
@@ -106,11 +107,11 @@ export function Nav() {
         }}
       />
 
-      <div className="tg-container flex h-[76px] items-center gap-10">
+      <div className="tg-container flex h-[64px] items-center gap-10">
         {/* M-12: the lockup is the brand mark and does not get re-wrapped or
             re-sized to reach 44px — `tap-44` grows only the hit area, centred,
             so the 26px mark and the wordmark stay exactly where the export puts
-            them. 44 fits inside the 76px bar with room, and the nearest
+            them. 44 fits inside the 64px bar with room, and the nearest
             neighbour is 40px away (`gap-10`), so nothing overlaps. */}
         <Link href="/" aria-label="TEKGUYZ home" className="tap-44 flex flex-none items-center gap-[11px]">
           <ConnectedNodes size={26} />
@@ -127,7 +128,7 @@ export function Nav() {
               data-on={isActive(l.href) ? 'true' : 'false'}
               // M-13. `tap-44` uses ::before precisely because ::after here is
               // the active-page indicator bar. Vertical growth is 10.4px each
-              // way inside a 76px bar; horizontal is 4.1px each way on the
+              // way inside a 64px bar; horizontal is 4.1px each way on the
               // narrowest link (`Work`, 35.9px) into a 34px gap, so no two
               // targets in this row can touch.
               // `tg-rule` now owns the indicator itself. It used to be a
@@ -181,7 +182,7 @@ export function Nav() {
       {open && (
         <div
           id="mobile-drawer"
-          className="fixed inset-0 top-[76px] z-40 flex flex-col bg-bg md:hidden"
+          className="fixed inset-0 top-[64px] z-40 flex flex-col bg-bg md:hidden"
         >
           <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-[var(--container-pad)] pt-2">
             <div className="border-b border-border py-5">

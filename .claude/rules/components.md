@@ -13,7 +13,7 @@ Moved out of `CLAUDE.md` on 2026-09-21 (Job 4). Text is unchanged.
 
 ## Wayfinding, marks and frames
 
-- **The four wayfinding accents mean *solution line*.** Mapping lives only in `config/solutions.ts` (the home ink band is the one documented exception, via `.ink-band`). No accent ever fills a button — primary CTAs are always ink. No 5th accent. Never decorative bullets: `/contact`'s trust facts and `closing-cta` render the same three facts the same way — one muted line, 3px `muted-soft` mid-dots, no colour.
+- **The four wayfinding accents mean *solution line*.** Mapping lives only in `config/solutions.ts` (the home ink band is the one documented exception, via `.ink-band`). No accent ever fills a button — primary CTAs are always ink. No 5th accent. Never decorative bullets. The trust facts live only on `/contact` (removed from `closing-cta` 2026-11-12): muted, no colour.
 - **The four-dot flourish: Home only, once.** Reversed 2026-11-12 by the owner: on every route it was repetition, not wayfinding. It renders in the home hero load sequence (`components/load-sequence.tsx`); `components/flourish-mark.tsx` is deleted. The closing-CTA echo gets no set of dots.
 - **The favicon set is dark** (`#101010` plate, `#4B5563` connectors), generated on `prebuild` from `icon-master.svg` — which is itself **unchanged**, and nothing else reads it (nav lockup and footer render the mark as JSX, OG images build their own). `app/icon.svg` carries the plate too, or the tab icon differs by browser.
 - The four-color moving treatment appears in exactly one place: the concierge's thinking state.
