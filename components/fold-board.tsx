@@ -74,6 +74,7 @@ export function FoldBoard({
               href={site.gbp}
               target="_blank"
               rel="noopener noreferrer"
+              data-screen-ok="taps: a link inside a sentence, so tap-24 (24x24) is its tier"
               className="tap-24 text-fg font-bold whitespace-nowrap underline decoration-2 underline-offset-[5px]"
             >
               Read it on Google &rarr;
