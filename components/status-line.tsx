@@ -57,13 +57,20 @@ function absoluteTime(from: number): string {
  * verified by computed style, not assumed. See the class-order note below for
  * the one way that quietly stopped being true.
  */
+/**
+ * `variant="pill"` (#80, 2026-11-16): the founder's phone review found the
+ * default line wrapping to 2 or 3 lines in cards ("Live · checked 28 min
+ * ago", 60px tall). The pill is "Live" and the green dot, one line, never
+ * wraps. The check time is not lost: it is the pill's `title` (a tooltip on
+ * hover) and screen-reader text, and the build's own page keeps the full line.
+ */
 export function StatusLine({
   result,
   variant = 'default',
   className,
 }: {
   result: StatusResult;
-  variant?: 'default' | 'compact';
+  variant?: 'default' | 'compact' | 'pill';
   className?: string;
 }) {
   const live = result.status === 'live';
@@ -77,6 +84,28 @@ export function StatusLine({
   const stamp = hydrated ? relativeTime(result.checkedAt) : absoluteTime(result.checkedAt);
 
   const fg = 'var(--tg-fg)';
+
+  if (variant === 'pill') {
+    const full = live ? `Live, checked ${stamp}` : `Temporarily unreachable, checked ${stamp}`;
+    return (
+      <span
+        title={full}
+        className={cn(
+          'inline-flex flex-none items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[length:var(--text-caption)] leading-none font-medium tracking-[0.02em] whitespace-nowrap',
+          className,
+        )}
+        style={{ borderColor: 'var(--tg-border)', color: live ? fg : 'var(--tg-mute)' }}
+      >
+        <span
+          aria-hidden
+          className="h-2 w-2 flex-none rounded-full"
+          style={{ background: live ? 'var(--tg-success)' : 'var(--tg-mute)' }}
+        />
+        <span aria-hidden>{live ? 'Live' : 'Offline'}</span>
+        <span className="sr-only">{full}</span>
+      </span>
+    );
+  }
   const dim = 'var(--tg-mute)';
 
   return (

@@ -71,7 +71,7 @@ const sizes = {
  * correct in the JSX and quietly disables the transitions. So the launcher
  * shares the value that matters (padding) and keeps its own transition.
  */
-export const LAUNCHER_PADDING = 'px-[15px] py-[12px] md:py-[10px]';
+export const LAUNCHER_PADDING = 'px-[12px] py-[12px] md:px-[15px] md:py-[10px]';
 
 type Variant = keyof typeof variants;
 type Size = keyof typeof sizes;

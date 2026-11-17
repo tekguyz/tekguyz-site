@@ -9,9 +9,10 @@ import type { StatusResult } from '@/lib/status';
  * The homepage fold, Seam form: a list of BUILD ROWS on the paper ground,
  * ruled by a 2px line on top and hairlines between.
  *
- * Each row: lamp dot, build name (to its story page), the mono status line from
- * the real hourly check ("Live · checked …"), and Open (the running demo, new
- * tab). The check time is never typed by hand: it is `lib/status.ts`'s result.
+ * Each row, on ONE line at every width since #80 (2026-11-16; it was 3 to 4
+ * lines on a phone): lamp dot, the build's short name (to its story page), the
+ * "Live" pill from the real hourly check (the time is its tooltip), and Open
+ * (the running demo, new tab).
  *
  * Selection lives in `content/work.ts` (`foldSlugs`): four live builds, one
  * per Solution. The caption row below keeps "See all … builds", the Google
@@ -29,29 +30,28 @@ export function FoldBoard({
       <ul className="m-0 list-none border-t-2 border-fg p-0">
         {entries.map((entry) => {
           const status = statuses[entry.slug];
+          const name = entry.shortName ?? entry.name;
           return (
             <li
               key={entry.slug}
-              className="grid grid-cols-[16px_1fr] items-center gap-x-4 gap-y-1 border-b border-border py-4 md:grid-cols-[16px_1fr_auto_auto] md:gap-x-6"
+              className="grid grid-cols-[12px_minmax(0,1fr)_auto_auto] items-center gap-x-3 border-b border-border py-3 md:gap-x-6 md:py-4"
             >
               <AccentDot solution={entry.solution} size={12} />
               <Link
                 href={`/work/${entry.slug}`}
-                className="tap-44 link-underline justify-self-start text-[19px] leading-[1.3] font-bold"
+                className="tap-44 link-underline max-w-full min-w-0 justify-self-start text-[17px] leading-[1.3] font-bold md:text-[19px]"
               >
-                {entry.name}
+                {/* Truncation sits on the inner span: `overflow: hidden` on the
+                    link itself would clip the `.tap-44` ::before tap area. */}
+                <span className="block truncate">{name}</span>
               </Link>
-              {status ? (
-                <StatusLine result={status} className="col-start-2 md:col-start-auto" />
-              ) : (
-                <span className="hidden md:block" />
-              )}
+              {status ? <StatusLine result={status} variant="pill" /> : <span />}
               <a
                 href={entry.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Open ${entry.shortName ?? entry.name} in a new tab`}
-                className="tap-44 link-underline col-start-2 justify-self-start text-[16px] font-bold md:col-start-auto"
+                aria-label={`Open ${name} in a new tab`}
+                className="tap-44 link-underline text-[16px] font-bold"
               >
                 Open
               </a>

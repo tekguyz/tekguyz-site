@@ -2,6 +2,7 @@
 
 import { ButtonLink } from '@/components/button';
 import { openConcierge } from '@/components/concierge/concierge-bus';
+import { SignatureStripe } from '@/components/signature-stripe';
 
 /**
  * The closing band, Seam form: the ink ground, the headline in lettering, one
@@ -13,10 +14,14 @@ import { openConcierge } from '@/components/concierge/concierge-bus';
  * (and from the launcher everywhere).
  *
  * `.tg-closing` is the hook for the "gap counted once" rule in globals.css.
+ *
+ * The brand stripe is its top edge since 2026-11-16 (#80): the line between
+ * the page and the final ask, where it is seen, not the bottom of the footer.
  */
 export function ClosingCta() {
   return (
     <section className="tg-closing on-ink">
+      <SignatureStripe />
       <div className="tg-container grid gap-10 py-20 md:py-28 lg:grid-cols-[7fr_5fr] lg:items-end lg:gap-16">
         <h2 className="text-[clamp(2.5rem,6vw,4.75rem)]">Let&rsquo;s talk about your business.</h2>
         <div>

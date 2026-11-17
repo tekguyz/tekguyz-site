@@ -57,8 +57,20 @@ describe('work lineup', () => {
     ]);
   });
 
-  it('every large card has a pull quote', () => {
-    for (const w of workLarge) expect(w.pullQuote, w.slug).toBeTruthy();
+  // #80: cards carry one line, so every build needs a short name that fits a
+  // one-line row at 375px, and a headline to be that line.
+  it('every build has a short name and a headline for its card', () => {
+    for (const w of work) {
+      expect(w.shortName, w.slug).toBeTruthy();
+      expect(w.shortName!.length, w.slug).toBeLessThanOrEqual(22);
+      expect(w.headline, w.slug).toBeTruthy();
+    }
+  });
+
+  it('Home shows no build twice, and its fold is the /work lead four', () => {
+    const home = [heroSlug, ...featuredSlugs, ...foldSlugs];
+    expect(new Set(home).size).toBe(home.length);
+    expect([...foldSlugs].sort()).toEqual([...largeSlugs].sort());
   });
 
   it('Home never shows the CRM, and the band never repeats the hero', () => {

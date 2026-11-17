@@ -10,15 +10,15 @@ export function PageHero({
   eyebrow,
   headline,
   description,
-  paddingBottom = 96,
 }: {
   eyebrow: string;
   headline: string;
   description?: string;
-  paddingBottom?: number;
 }) {
+  // 48px under the last line on a phone, 96 from 768px. One fixed 96 left a
+  // big empty ink band under a stacked description on phones (#80).
   return (
-    <section className="on-ink pt-16 md:pt-24" style={{ paddingBottom }}>
+    <section className="on-ink pt-12 pb-12 md:pt-24 md:pb-24">
       <div className="tg-container tg-grid items-end">
         <div className="[grid-column:1/9] max-lg:[grid-column:1/-1]">
           {!same(eyebrow, headline) && (

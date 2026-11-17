@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ClosingCta } from '@/components/closing-cta';
 import { AccentDot } from '@/components/solution-tag';
-import { StatusLine } from '@/components/status-line';
+import { ProjectCard } from '@/components/project-card';
+import { SwipeRow } from '@/components/swipe-row';
 import { accentForSolution } from '@/config/solutions';
 import { solutions, getSolution } from '@/content/solutions';
 import { workByName } from '@/content/work';
@@ -61,10 +62,9 @@ export default async function SolutionDetailPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd(
-          breadcrumbs([
-            { name: 'Solutions', path: '/solutions' },
-            { name: solution.name, path: `/solutions/${solution.slug}` },
-          ]),
+          // `/solutions` is gone (#80, a 308 to Home's blocks), so the trail is
+          // Home > this Solution.
+          breadcrumbs([{ name: solution.name, path: `/solutions/${solution.slug}` }]),
           serviceNode(solution.name, solution.serviceDescription),
         )}
       />
@@ -73,11 +73,13 @@ export default async function SolutionDetailPage({
           ground below holds what we build and the proof. */}
       <section className="on-ink pt-10 pb-16 md:pb-24">
         <div className="tg-container">
+          {/* Back to the four Solution blocks on Home (#80): `/solutions` was
+              a page that only repeated them, and now redirects there. */}
           <Link
-            href="/solutions"
+            href="/#solutions"
             className="tap-44 link-underline text-[16px] font-bold text-secondary"
           >
-            ← Solutions
+            ← All Solutions
           </Link>
 
           <div className="tg-grid items-end pt-10">
@@ -128,7 +130,7 @@ export default async function SolutionDetailPage({
                   <span className="tg-eyebrow">
                     Related work
                   </span>{' '}
-                  &nbsp;{related.map((w) => w.name).join(', ')}
+                  &nbsp;{related.map((w) => w.shortName ?? w.name).join(', ')}
                 </p>
               )}
               <Link
@@ -142,58 +144,54 @@ export default async function SolutionDetailPage({
         </div>
 
         {related.length > 0 && (
-          <div className="mt-16 md:mt-24">
-            <p className="mb-8 tg-eyebrow text-secondary">
+          <div className="mt-12 md:mt-24">
+            <p className="mb-5 tg-eyebrow text-secondary">
               The builds
             </p>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* The same small card and swipe row as /work (#80). */}
+            <SwipeRow label="The builds">
               {related.map((entry) => (
-                <Link
+                <ProjectCard
                   key={entry.slug}
-                  href={`/work/${entry.slug}`}
-                  data-card
-                  className="hover-card flex flex-col tg-frame bg-bg p-6"
-                >
-                  <h2
-                    className="text-[length:var(--text-title)]"
-                    style={{ textWrap: 'pretty' }}
-                  >
-                    {entry.name}
-                  </h2>
-                  <StatusLine result={statuses[entry.slug]!} className="mt-5" />
-                </Link>
+                  entry={entry}
+                  status={statuses[entry.slug]!}
+                  showTag={false}
+                />
               ))}
-            </div>
+            </SwipeRow>
           </div>
         )}
 
         {/* Examples sit apart from the builds, under their own label, because
             they are made-up businesses on sample data, not running software. */}
         {solutionExamples.length > 0 && (
-          <div className="mt-16 md:mt-24">
-            <p className="mb-8 tg-eyebrow text-secondary">
+          <div className="mt-12 md:mt-24">
+            <p className="mb-5 tg-eyebrow text-secondary">
               Examples
             </p>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Compact rows, not big cards (#80): an example is a quick look,
+                and the founder's phone review found these as bulky as the
+                build cards. */}
+            <ul className="m-0 list-none border-t-2 border-fg p-0">
               {solutionExamples.map((ex) => (
-                <Link
-                  key={ex.slug}
-                  href={`/examples/${ex.slug}`}
-                  data-card
-                  className="hover-card flex flex-col tg-frame bg-bg p-6"
-                >
-                  <h2
-                    className="text-[length:var(--text-title)]"
-                    style={{ textWrap: 'pretty' }}
+                <li key={ex.slug} className="border-b border-border">
+                  <Link
+                    href={`/examples/${ex.slug}`}
+                    className="hover-row flex items-center justify-between gap-4 py-4"
                   >
-                    {ex.name}
-                  </h2>
-                  <p className="mt-3 text-[15px] text-secondary">
-                    Example on a made-up business: {ex.business}.
-                  </p>
-                </Link>
+                    <span className="min-w-0">
+                      <span className="block text-[17px] leading-[1.3] font-bold">{ex.name}</span>
+                      <span className="mt-1 block text-[15px] leading-[1.4] text-secondary">
+                        Made-up business: {ex.business}
+                      </span>
+                    </span>
+                    <span aria-hidden className="flex-none text-[20px] leading-none font-bold">
+                      &rarr;
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
       </div>

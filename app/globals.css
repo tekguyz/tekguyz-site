@@ -396,6 +396,14 @@
   row-gap: 48px;
 }
 
+/* The /work large card stacks its picture and text below 1024px (#80): one
+   card, so the picture sits close to its own words, not a split's 48px away. */
+@media (max-width: 1023px) {
+  .tg-split.tg-card-row {
+    row-gap: 20px;
+  }
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
@@ -478,9 +486,9 @@
 .tg-lampfield {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: var(--s-5);
-  min-height: 232px;
+  justify-content: flex-start;
+  gap: var(--s-3);
+  min-height: 200px;
   padding: var(--s-5);
   color: var(--ink);
   animation: tg-rise var(--dur-entrance) var(--ease-out) both;
@@ -488,9 +496,14 @@
   transition: transform 220ms var(--ease-out);
 }
 
+/* Phones (#80): the four fields were 181-204px each, a full screen. Now a
+   short band: the name on one line with the arrow beside it, then the hook in
+   two lines. */
 @media (max-width: 519px) {
   .tg-lampfield {
-    min-height: 150px;
+    min-height: 0;
+    gap: var(--s-2);
+    padding: var(--s-4) 20px;
   }
 }
 
@@ -515,11 +528,50 @@
   }
 }
 
-/* The four-lamp stripe: bottom of the footer, nowhere else. */
+/* The four-lamp stripe, once per page (#80, founder 2026-11-16): the top edge
+   of the closing "Let's talk" band. The footer keeps its copy only on a page
+   with no closing band (/contact), so no page shows it twice or not at all. */
 .tg-stripe {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   height: 10px;
+}
+
+body:has(.tg-closing) footer [data-signature-stripe] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Swipe row (#80): below 640px a row of cards that snaps, the next card
+   peeking in from the right. It bleeds to the screen edge so the peek reads as
+   "more this way", and keeps the container's gutter as its scroll padding.
+   From 640px `SwipeRow` is a plain grid and none of this applies.
+--------------------------------------------------------------------------- */
+@media (max-width: 639px) {
+  /* `position: relative` is load-bearing: the cards hold absolutely
+     positioned `sr-only` text, and an absolute box whose containing block is
+     outside a scroll container is NOT clipped by it. Without this the
+     off-screen cards' hidden text widened the whole page to 1,464px. */
+  .tg-swipe {
+    position: relative;
+    display: flex;
+    gap: var(--s-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--container-pad);
+    margin-inline: calc(var(--container-pad) * -1);
+    padding-inline: var(--container-pad);
+    padding-block: 4px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .tg-swipe::-webkit-scrollbar {
+    display: none;
+  }
+  .tg-swipe-item {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
 }
 
 /* Process step list: ruled by a 2px line. */

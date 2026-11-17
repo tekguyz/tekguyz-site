@@ -20,7 +20,6 @@ const OUT = 'C:/Users/alexu/AppData/Local/Temp/claude/C--Projects-tekguyz-site/0
 
 const ROUTES: [string, string][] = [
   ['/', 'home'],
-  ['/solutions', 'solutions'],
   ['/solutions/ai-voice-agents', 'solution-detail'],
   ['/work', 'work'],
   ['/work/ai-voice-receptionist', 'case-detail'],

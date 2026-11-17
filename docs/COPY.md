@@ -118,10 +118,12 @@ EYEBROW: WHAT WE DO
 HEADLINE: What We Do
 DESCRIPTION: Four kinds of problems we fix for small businesses. Find the one that sounds like yours. (changed 2026-10-11, #40; **drafted** from tekguyz-one `brand/playbook.md` v3 § 1–2)
 
-- **Smart Operations** (blue) — Your business makes data and tasks every hour. We build systems that handle them automatically. → /solutions/smart-operations
-- **AI Voice Agents** (violet) — Your phones don't stop ringing because your doors are closed. We answer them. → /solutions/ai-voice-agents
-- **Business Systems** (amber) — Everything your clients and team need, in one private place instead of five. → /solutions/business-systems
-- **Custom Web Apps** (teal) — If you can describe the workflow, we can build the tool that runs it. → /solutions/custom-web-apps
+*Hooks rewritten 2026-11-16 (#80, **drafted**): the founder's phone review asked for the four to run the same length, two lines each on a phone (63-70 characters).*
+
+- **Smart Operations** (blue) — Data and tasks pile up every hour. We build systems that handle them. → /solutions/smart-operations
+- **AI Voice Agents** (violet) — Your phones keep ringing after you close. We answer every call. → /solutions/ai-voice-agents
+- **Business Systems** (amber) — Everything your clients and team need, in one private place, not five. → /solutions/business-systems
+- **Custom Web Apps** (teal) — Describe the workflow out loud, and we build the tool that runs it. → /solutions/custom-web-apps
 
 ## Featured Work
 
@@ -174,25 +176,9 @@ OG: same title/description, `og:type=website`
 
 ---
 
-# SOLUTIONS INDEX `/solutions`
+# SOLUTIONS INDEX `/solutions` — removed 2026-11-16
 
-*Reversed from an anchor-linked single page — see CANONICAL.md. Same index-plus-detail pattern as `/work`: this page is the light overview, each solution below is its own route with its own metadata.*
-
-EYEBROW: WHAT WE DO
-HEADLINE: Four ways we help.
-DESCRIPTION: Most businesses come to us with a bottleneck, not a spec. These are the four shapes that bottleneck usually takes.
-
-Four rows: dot, title, one-line hook, arrow → `/solutions/[slug]`. Feature bullets live only on the detail pages now, not here.
-
-- **Smart Operations** (blue) — Your business makes data and tasks every hour. We build systems that handle them automatically.
-- **AI Voice Agents** (violet) — Your phones don't stop ringing because your doors are closed. We answer them.
-- **Business Systems** (amber) — Everything your clients and team need, in one private place instead of five.
-- **Custom Web Apps** (teal) — If you can describe the workflow, we can build the tool that runs it.
-
-## Metadata
-
-TITLE: `TEKGUYZ | Solutions — Smart Ops, Voice AI, Systems, Web Apps`
-DESCRIPTION: `Custom AI assistants, voice agents, business systems, and web apps — four ways TEKGUYZ helps operational businesses run smarter. See live builds for each.`
+*Removed by the founder's phone review (#80): it repeated Home's four Solution blocks and added nothing. `/solutions` now sends a 308 to `/#solutions`, the blocks on Home, and the nav and each Solution page's back link point there. Its copy (headline "Four ways we help.", the rows, the metadata) is retired; git history has it.*
 
 ---
 
@@ -282,7 +268,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Nine live builds — click into any one and open it yourself.
+DESCRIPTION: Ten live builds. Open any one yourself. (shortened 2026-11-16, #80; the number is derived from the lineup, never typed)
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -292,8 +278,10 @@ document was the stale half.]*
 
 **Changed 2026-11-11 (founder):** four large cards, one per Solution, then every other build in small cards. Group heads (**drafted**):
 
-**One for each Solution** *(4, full-width)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Book Your Visit (Custom Web Apps; Field Photo Reports led it until 2026-11-12). A large card shows the case study's approach or the project's summary, its pull quote, the frame, status and Try it.
-**More builds** *(6, compact grid)* — Same standard, every one live. Newest first: Cart Reminders, No-Show Rescue, Missed Call Follow-Up, Field Photo Reports, AI Meeting Notes, Lead & Pipeline CRM. A case study in a small card shows its outcome.
+**Changed 2026-11-16 (founder's phone review, #80):** Cart Reminders took the Custom Web Apps lead card from Book Your Visit, and every card got shorter: the short name, the build's headline as its one line, a "Live" pill and the links. The summary, pull quote and Try it live on the build's own page. Field Photo Reports' short name is "Field Reports".
+
+**One for each Solution** *(4, stacked)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Cart Reminders (Custom Web Apps).
+**More builds** *(6, a swipe row on phones, a grid from 640px)* — Same standard, every one live. In order: Book Your Visit, No-Show Rescue, Missed Call Follow-Up, Field Reports, AI Meeting Notes, Lead & Pipeline CRM.
 
 Before 2026-11-11: **Case Studies** *(full-width)* — the deep-dive builds; **Projects** *(compact grid)* — lighter builds, same standard.
 

@@ -27,7 +27,6 @@ export default function ProcessPage() {
         eyebrow="How We Work"
         headline="How We Work"
         description="Four steps. No surprises. No disappearing acts."
-        paddingBottom={96}
       />
 
       <ProcessSteps />

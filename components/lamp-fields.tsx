@@ -6,8 +6,13 @@ import { solutions } from '@/content/solutions';
 /**
  * The four Solutions as Seam lamp fields: big flat blocks in the four lamps,
  * sitting on the seam between the ink hero and the paper below. Name in
- * lettering, the Solution's one-line hook, an arrow. Text on a lamp is always
- * ink. Replaces the Solution rows and tag dots that used to sit lower on Home.
+ * lettering with the arrow beside it, then the Solution's hook. Text on a lamp
+ * is always ink. On phones (#80) each field is a short band: the name on one
+ * line, the hook in two (the four hooks are written to the same length).
+ *
+ * `id="solutions"` is where `/solutions` now lands (a 308 in next.config.ts,
+ * #80), and where the nav's Solutions link and each Solution page's back link
+ * point. Replaces the Solution rows and tag dots that used to sit lower on Home.
  *
  * The page's one animated moment: the fields rise in on load, `--lamp-stagger`
  * (60ms) apart, and lift 8px on hover. `--i` feeds the delay. All of it lives
@@ -15,7 +20,7 @@ import { solutions } from '@/content/solutions';
  */
 export function LampFields() {
   return (
-    <section aria-label="What We Do" className="tg-seam-row">
+    <section id="solutions" aria-label="What We Do" className="tg-seam-row scroll-mt-24">
       <div className="tg-container">
         <ul className="tg-lamps m-0 list-none p-0">
           {solutions.map((s, i) => (
@@ -25,16 +30,16 @@ export function LampFields() {
                 className="tg-lampfield w-full"
                 style={{ background: accentForSolution(s.slug).dot, '--i': i } as CSSProperties}
               >
-                <span>
-                  <span className="block font-[family-name:var(--font-lettering)] text-[1.9rem] leading-[0.95] font-extrabold uppercase [font-stretch:75%]">
+                <span className="flex items-center justify-between gap-3">
+                  <span className="block font-[family-name:var(--font-lettering)] text-[1.6rem] leading-[0.95] font-extrabold whitespace-nowrap uppercase [font-stretch:75%] min-[520px]:text-[1.9rem] min-[520px]:whitespace-normal">
                     {s.name}
                   </span>
-                  <span className="mt-3 block max-w-[28ch] text-[16px] leading-[1.45]">
-                    {s.hook}
+                  <span aria-hidden className="text-[22px] leading-none font-bold">
+                    &rarr;
                   </span>
                 </span>
-                <span aria-hidden className="text-[22px] leading-none font-bold">
-                  &rarr;
+                <span className="block max-w-[34ch] text-[15px] leading-[1.45] min-[520px]:text-[16px]">
+                  {s.hook}
                 </span>
               </Link>
             </li>
