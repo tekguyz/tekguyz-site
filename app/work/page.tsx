@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { PageHero } from '@/components/page-hero';
 import { CaseStudyRow } from '@/components/case-study-row';
 import { ProjectCard } from '@/components/project-card';
+import { SwipeRow } from '@/components/swipe-row';
 import { ClosingCta } from '@/components/closing-cta';
 import { workLarge, workSmall, buildCountWordCapitalized } from '@/content/work';
 import { getAllStatuses } from '@/lib/status';
@@ -16,7 +17,8 @@ export const metadata = buildMetadata({
 
 /**
  * Founder, 2026-11-11: four large cards, one per Solution, then every other
- * build in small cards. Which build sits where is in `content/work.ts`
+ * build in small cards. Since 2026-11-16 (#80, option A): the four stay
+ * stacked and short, and the small cards swipe on phones. Which build sits where is in `content/work.ts`
  * (`largeSlugs`, `smallSlugs`), not here.
  *
  * Each group gets the export's section header: a small uppercase label with a
@@ -48,10 +50,10 @@ export default async function WorkPage() {
       <PageHero
         eyebrow="Our Work"
         headline="Everything here is running right now."
-        description={`${buildCountWordCapitalized} live builds — click into any one and open it yourself.`}
+        description={`${buildCountWordCapitalized} live builds. Open any one yourself.`}
       />
 
-      <div>
+      <div className="pt-12 md:pt-20">
         <div className="tg-container">
           <GroupHead title="One for each Solution" note="Our four kinds of work, one build each" />
         </div>
@@ -60,14 +62,16 @@ export default async function WorkPage() {
         ))}
       </div>
 
-      <div className="tg-container mt-16 pb-20 md:pb-32">
+      <div className="tg-container mt-8 pb-20 md:mt-16 md:pb-32">
         <GroupHead title="More builds" note="Same standard, every one live" />
-        <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {workSmall.map((entry, i) => (
-            <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
-          ))}
+        <div className="mt-6 md:mt-10">
+          <SwipeRow label="More builds">
+            {workSmall.map((entry) => (
+              <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} />
+            ))}
+          </SwipeRow>
         </div>
-        <p className="mt-12 text-[length:var(--text-body)] text-secondary">
+        <p className="mt-10 text-[length:var(--text-body)] text-secondary">
           Want a quick look at more of what we build?{' '}
           <Link href="/examples" className="tap-44 font-bold text-fg underline decoration-2 underline-offset-[6px]">
             See the examples →

@@ -16,7 +16,7 @@ export interface Solution {
   name: string;
   /** Uppercase tag label. */
   tag: string;
-  /** One-line hook — used on the home solutions section and the /solutions index. */
+  /** The hook on Home's lamp fields. All four are 63-70 characters (#80), so each runs two lines on a phone. */
   hook: string;
   headline: string;
   /** Body paragraphs for the detail page. */
@@ -36,7 +36,7 @@ export const solutions: Solution[] = [
     slug: 'smart-operations',
     name: 'Smart Operations',
     tag: 'SMART OPERATIONS',
-    hook: 'Your business makes data and tasks every hour. We build systems that handle them automatically.',
+    hook: 'Data and tasks pile up every hour. We build systems that handle them.',
     headline: 'Your business generates new data and tasks every hour.',
     body: [
       "Files that need sorting, questions that need answering, information that needs to move from one place to another. Most of it gets done by a person doing it manually, one at a time, because that's how it's always been done.",
@@ -60,7 +60,7 @@ export const solutions: Solution[] = [
     slug: 'ai-voice-agents',
     name: 'AI Voice Agents',
     tag: 'AI VOICE AGENTS',
-    hook: "Your phones don't stop ringing because your doors are closed. We answer them.",
+    hook: 'Your phones keep ringing after you close. We answer every call.',
     headline: "Your phones don't stop ringing just because your doors are closed.",
     body: [
       "Every call that goes to voicemail after hours is a lead deciding whether to wait for you or call the next name on the list. Most of them don't wait.",
@@ -84,7 +84,7 @@ export const solutions: Solution[] = [
     slug: 'business-systems',
     name: 'Business Systems',
     tag: 'BUSINESS SYSTEMS',
-    hook: 'Everything your clients and team need, in one private place instead of five.',
+    hook: 'Everything your clients and team need, in one private place, not five.',
     headline: 'Spreadsheets, email threads, and five different tools for one job.',
     body: [
       "It works until it doesn't — usually the moment someone needs to find something and nobody's sure which version is current.",
@@ -108,7 +108,7 @@ export const solutions: Solution[] = [
     slug: 'custom-web-apps',
     name: 'Custom Web Apps',
     tag: 'CUSTOM WEB APPS',
-    hook: 'If you can describe the workflow, we can build the tool that runs it.',
+    hook: 'Describe the workflow out loud, and we build the tool that runs it.',
     headline: "Sometimes a website isn't enough — you need something that does something.",
     body: [
       'A tool your team opens every morning, or one your customers use to order, book, or track.',
@@ -123,7 +123,7 @@ export const solutions: Solution[] = [
     // #13 pass 1 removed Bundle Builder; pass 2 added Private Meetup App.
     // 2026-11-11: the meetup app left the site, and Field Photo Reports was
     // retagged here from Business Systems (founder).
-    relatedWork: ['Book Your Visit', 'Cart Reminders', 'Field Photo Reports & Quality Tracking'],
+    relatedWork: ['Cart Reminders', 'Book Your Visit', 'Field Photo Reports & Quality Tracking'],
     cta: { label: 'Describe what you need built', href: '/contact?interest=custom-web-apps' },
     serviceDescription:
       'Ordering and cart systems, headless e-commerce, scheduling and booking portals, and client-facing dashboards.',

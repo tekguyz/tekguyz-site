@@ -176,8 +176,10 @@ export const work: WorkEntry[] = [
     // 2026-10-02: the origin returns 200; `/demo` now just redirects to it.
     // **Check it without `curl -L`** — following a redirect hides where it went.
     url: 'https://tekguyz-crm.vercel.app/',
+    // The app's own `showcase/today-desktop-light.png` (retaken 2026-10-14
+    // after the redesign), 1440x900, webp at quality 85 (#80, 2026-11-16).
     poster: '/media/tekguyz-crm.webp',
-    alt: 'Lead and pipeline CRM Today view, close up: the Tasks Due list with the first two tasks and how many days overdue each one is',
+    alt: 'Lead and pipeline CRM Today view for a demo workspace: Tasks Due, SLA Critical, High-Value and Starred leads, each with its stage, value and how overdue it is',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
     challenge:
@@ -212,7 +214,7 @@ export const work: WorkEntry[] = [
     slug: 'field-photo-reports',
     kind: 'case-study',
     name: 'Field Photo Reports & Quality Tracking',
-    shortName: 'Field Photo Reports',
+    shortName: 'Field Reports',
     // Retagged from Business Systems by the founder, 2026-11-11.
     tag: 'CUSTOM WEB APPS',
     solution: 'custom-web-apps',
@@ -227,28 +229,9 @@ export const work: WorkEntry[] = [
     // The feed picture shows the app in its phone layout, so it fills a 16:10
     // frame; the desktop picture left wide gray sides. Swapped 2026-10-06.
     poster: '/media/field-reports-thumb.webp',
-    // The home hero (#20). `field-reports-hero.webp` is 1040x585, the top of the
-    // same office Visit view, cropped from the first frame of the loop
-    // `tools/capture` made on 2026-10-05 (the loop scrolls that page). On
-    // 2026-10-06 it was cut tight to the app (x=196, 1040 wide) so the app's own
-    // gray side margin is gone and its text reads about 40% larger; the loop
-    // files got the same cut so the poster and the video still match. On
-    // 2026-10-07 the app's showcase was retaken on a wider layout with no gray
-    // sides, so the hero is now the top 1440x810 of the new `visit-desktop`
-    // loop, scaled to 1040 wide, with no side cut. The phone
-    // is `installer-visits-phone-light.png` from the app's `showcase/`, cropped
-    // to 780x1250. Real captures, never restyled.
-    heroPoster: '/media/field-reports-hero.webp',
-    heroMedia: {
-      video: {
-        mp4: '/media/field-reports-hero.mp4',
-        webm: '/media/field-reports-hero.webm',
-      },
-      phone: {
-        src: '/media/field-reports-phone.webp',
-        alt: 'Field Photo Reports Installer app on a phone: today’s Visit, an upcoming Visit, and past Visits with their state',
-      },
-    },
+    // It was the home hero (#20) until 2026-11-11. Its hero picture, loop and
+    // phone files were served by nothing after that and were deleted on
+    // 2026-11-16 (#80, settles #70 item 2); git history has them.
     alt: 'Field Photo Reports office view of one Visit: the job, customer, Installer and address, a Submitted stamp, and a Report flagged No Before photo',
     embeddable: false,
     updatedAt: REFRESH_2026_10_01,
@@ -550,18 +533,19 @@ export const projects = work.filter((w): w is Project => w.kind === 'project');
 /**
  * /work, decided by the founder 2026-11-11 (Book Your Visit took the Custom Web
  * Apps card from Field Photo Reports on 2026-11-12): four large cards, one per
- * Solution, in this order, then every other build in small cards, newest first.
+ * Solution, in this order, then every other build in small cards. Cart Reminders
+ * took the Custom Web Apps card from Book Your Visit on 2026-11-16 (#80).
  * `content/work.test.ts` fails if a build is in neither list, or in both.
  */
 export const largeSlugs = [
   'ai-voice-receptionist',
   'quote-to-paid',
   'win-back',
-  'book-your-visit',
+  'cart-reminders',
 ] as const;
 
 export const smallSlugs = [
-  'cart-reminders',
+  'book-your-visit',
   'no-show-rescue',
   'missed-call-follow-up',
   'field-photo-reports',
@@ -582,10 +566,11 @@ export const workSmall = bySlugs(smallSlugs);
 export const heroSlug = 'missed-call-follow-up';
 
 /**
- * The home ink band, "Two we're proud of" (founder, 2026-11-11). It never
- * repeats the hero, and the Lead & Pipeline CRM never appears on Home.
+ * The home band, "Two we're proud of". No build appears twice on Home (#80):
+ * it never repeats the hero or the fold, so since 2026-11-16 it is the two
+ * case studies not in the fold. The Lead & Pipeline CRM never appears on Home.
  */
-export const featuredSlugs = ['ai-voice-receptionist', 'field-photo-reports'] as const;
+export const featuredSlugs = ['field-photo-reports', 'ai-meeting-notes'] as const;
 export const featured = featuredSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is CaseStudy => w?.kind === 'case-study');
@@ -593,14 +578,14 @@ export const featured = featuredSlugs
 /**
  * The homepage fold's build board: one build per Solution line, in
  * `STRIPE_ORDER` (blue, violet, amber, teal), so the fold is a legend for the
- * four accents. Since 2026-11-11 a slot may hold a project: the two newest
- * demos and Quote to Paid lead their lines, and the CRM stays off Home.
+ * four accents. Since 2026-11-16 (#80) it is the /work lead four, one per
+ * Solution, and the CRM stays off Home.
  */
 export const foldSlugs = [
   'win-back',
-  'no-show-rescue',
+  'ai-voice-receptionist',
   'quote-to-paid',
-  'field-photo-reports',
+  'cart-reminders',
 ] as const;
 
 export const foldBoard = bySlugs(foldSlugs);

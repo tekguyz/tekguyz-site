@@ -533,8 +533,11 @@ export function Concierge() {
         {/* One short label at every width (refs #55). "Ask about your project"
             made the desktop pill 234px wide, 16% of a 1440 viewport, for words
             the panel header already says once it opens. The visible text is
-            the accessible name — no `aria-label` (WCAG 2.5.3). */}
-        <span>Ask us</span>
+            the accessible name — no `aria-label` (WCAG 2.5.3).
+            Below 768px (#80) the words are screen-reader only and the control
+            is a 44px square with the mark: on a phone the wide pill covered
+            card text, borders and rows. The name is still "Ask us". */}
+        <span className="max-md:sr-only">Ask us</span>
       </button>
 
       <AnimatePresence>

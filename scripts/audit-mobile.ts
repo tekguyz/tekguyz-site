@@ -63,7 +63,6 @@ const SOLUTIONS = ['smart-operations', 'ai-voice-agents', 'business-systems', 'c
 /** Every rendered route. */
 const ROUTES: string[] = [
   '/',
-  '/solutions',
   ...SOLUTIONS.map((s) => `/solutions/${s}`),
   '/work',
   ...WORK.map((s) => `/work/${s}`),
@@ -1123,7 +1122,6 @@ const MOTION_ROUTES = [
   '/work',
   '/work/ai-voice-receptionist',
   '/work/quote-to-paid',
-  '/solutions',
   '/solutions/ai-voice-agents',
   '/process',
   '/contact',

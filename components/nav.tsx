@@ -28,7 +28,8 @@ import { cn } from '@/lib/utils';
  */
 
 const LINKS = [
-  { href: '/solutions', label: 'Solutions' },
+  // `/solutions` is gone (#80): the desktop link goes to Home's four blocks.
+  { href: '/#solutions', label: 'Solutions' },
   { href: '/work', label: 'Work' },
   { href: '/process', label: 'Process' },
   { href: '/contact', label: 'Contact' },
@@ -74,8 +75,13 @@ export function Nav() {
      there is now one of it. */
   useBodyScrollLock(open);
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    // The Solutions link points at Home's blocks; it is "you are here" on a
+    // Solution page, never on Home itself.
+    if (href === '/#solutions') return pathname.startsWith('/solutions/');
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
     <header
@@ -197,7 +203,7 @@ export function Nav() {
               )}
             </div>
 
-            {LINKS.filter((l) => l.href !== '/solutions').map((l) => (
+            {LINKS.filter((l) => l.href !== '/#solutions').map((l) => (
               <Link
                 key={l.href}
                 href={l.href}

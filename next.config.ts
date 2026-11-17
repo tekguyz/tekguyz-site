@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
       { source: '/work/private-meetup-app', destination: '/work', permanent: true },
       // Retired 2026-11-12 with the Joe M. review (refs #76).
       { source: '/work/team-performance', destination: '/work', permanent: true },
+      // #80 (2026-11-16): the /solutions index only repeated Home's four
+      // Solution blocks. It goes to them; the four /solutions/<slug> stay.
+      { source: '/solutions', destination: '/#solutions', permanent: true },
     ];
   },
 };

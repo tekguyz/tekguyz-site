@@ -18,7 +18,6 @@ export const CLOSING_CTA_ROUTES = [
   '/',
   '/privacy',
   '/process',
-  '/solutions',
   '/solutions/ai-voice-agents',
   '/work',
   '/work/field-photo-reports',

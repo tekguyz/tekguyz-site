@@ -11,7 +11,7 @@ import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
 import { featured, foldBoard, getWork, heroSlug, type CaseStudy } from '@/content/work';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
-import { buildMetadata, jsonLd, professionalService } from '@/lib/seo';
+import { buildMetadata, jsonLd, professionalService, solutionsItemList } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'TEKGUYZ | AI Help for South Florida Small Businesses',
@@ -44,7 +44,7 @@ export default async function HomePage() {
     <div>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLd(professionalService())}
+        dangerouslySetInnerHTML={jsonLd(professionalService(), solutionsItemList())}
       />
 
       <HomeHero

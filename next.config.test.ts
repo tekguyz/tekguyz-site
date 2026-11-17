@@ -16,6 +16,8 @@ const EXPECTED: Record<string, string> = {
   '/work/bundle-builder': '/work',
   // Retired 2026-11-12 with the Joe M. review (refs #76).
   '/work/team-performance': '/work',
+  // #80: the /solutions index went to Home's four Solution blocks.
+  '/solutions': '/#solutions',
 };
 
 describe('redirects', async () => {
