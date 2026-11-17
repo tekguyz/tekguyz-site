@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${site.url}/examples`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${site.url}/process`, lastModified: now, changeFrequency: 'yearly', priority: 0.7 },
     { url: `${site.url}/contact`, lastModified: now, changeFrequency: 'yearly', priority: 0.8 },
-    { url: `${site.url}/privacy`, lastModified: new Date('2026-07-13'), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${site.url}/privacy`, lastModified: new Date('2026-11-16'), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   const solutionRoutes: MetadataRoute.Sitemap = solutions.map((s) => ({
