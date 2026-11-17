@@ -773,11 +773,11 @@ hello@tekguyz.com · Mon–Fri, 9am–5pm · South Florida
 
 # PAGE: Privacy `/privacy`
 
-*Rewritten 2026-08-12 (Build Phase 3), replacing the text that was live through July. Update the LAST UPDATED date if anything changes. **Still needs real legal review before being treated as final** — that has not changed.*
+*Updated 2026-11-16 (#81, **drafted**): Booking a Call (Cal.com), Spam and Abuse Protection (Upstash, IP rate limit), Our Live Demos (each sentence checked against that demo's live landing page the same day), and Upstash named in Third-Party Services and Data Retention. Rewritten 2026-08-12 (Build Phase 3), replacing the text that was live through July. Update the LAST UPDATED date if anything changes. **Still needs real legal review before being treated as final** — that has not changed.*
 
 EYEBROW: LEGAL
 HEADLINE: Privacy Policy
-LAST UPDATED: August 12, 2026
+LAST UPDATED: November 16, 2026
 
 TEKGUYZ ("we," "us") respects your privacy. This page explains what information we collect through this website, why, and how you can reach us about it.
 
@@ -787,11 +787,17 @@ TEKGUYZ ("we," "us") respects your privacy. This page explains what information 
 
 **Our CRM** — Inquiries submitted through the contact form or the concierge are forwarded to TEKGUYZ's own customer relationship system, not only to an inbox, so our team can track and respond to them properly.
 
+**Booking a Call** — The free first conversation is booked on Cal.com. When you pick a time there, Cal.com collects the name, email and any notes you give it, under its own privacy policy, and sends the booking to us.
+
+**Spam and Abuse Protection** — To stop spam, the contact form and the chat assistant limit how often one IP address can send. The count is kept in Upstash, a data service, for a few minutes at most, and is not tied to your name or email.
+
 **Website Analytics & Performance Monitoring** — This site uses Vercel Web Analytics and Vercel Speed Insights to understand aggregate traffic and page performance. Neither uses cookies or collects personal identifiers — visitors are identified only by a temporary hash that's automatically discarded within 24 hours. We cannot use this data to identify you individually.
 
-**Third-Party Services** — We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, and Vercel to host this site and run the anonymized analytics and performance monitoring described above. None of these services receive more information than described here.
+**Third-Party Services** — We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, Upstash for the spam limit and the backup copy described below, Cal.com for booking calls, and Vercel to host this site and run the anonymized analytics and performance monitoring described above. None of these services receive more information than described here.
 
-**Data Retention** — We keep contact and concierge inquiries only as long as needed to respond to you and for reasonable business record-keeping afterward. If our system briefly fails to deliver your inquiry internally, a secure backup copy is kept for up to 90 days so nothing gets lost, then it's automatically deleted.
+**Our Live Demos** — Our Work page links to live demos. Each one is a separate site on its own address, built on made-up businesses and sample data, and none needs a sign-up. Most keep nothing: in Missed Call Follow-Up, No-Show Rescue and Book Your Visit nothing leaves your browser, and in Quote to Paid, Win-Back and Cart Reminders no message is sent and no card is charged (Cart Reminders runs a real Shopify store and Stripe in test mode). The AI Voice Receptionist asks for your microphone only when you call, keeps only the words, never your voice, and deletes them after 7 days. Field Photo Reports gives you your own copy with sample data and deletes it after 7 days. The Lead & Pipeline CRM gives you your own workspace of sample data, with email, import and invites switched off. AI Meeting Notes opens sample notes; recording a real meeting needs an account, and accounts are by invitation only. Each demo's own landing page says what it does before you start.
+
+**Data Retention** — We keep contact and concierge inquiries only as long as needed to respond to you and for reasonable business record-keeping afterward. If our system briefly fails to deliver your inquiry internally, a secure backup copy is kept in Upstash for up to 90 days so nothing gets lost, then it's automatically deleted.
 
 **Your Rights** — You can ask us to tell you what information we have about you, or to delete it, at any time — email hello@tekguyz.com.
 
