@@ -477,7 +477,7 @@ export const work: WorkEntry[] = [
   /* RETIRED 2026-09-04, and the reason is worth keeping so nobody re-adds them.
    *
    * RETIRED 2026-11-12 (refs #76): `team-performance` (Team Performance &
-   * Automated Customer Feedback, the archived Advantage-Teams app), and the
+   * Automated Customer Feedback, the old demo), and the
    * Joe M. Google review that only rendered on its page went with it. Its URL
    * redirects to /work in next.config.ts.
    *
