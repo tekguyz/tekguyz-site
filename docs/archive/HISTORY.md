@@ -1233,7 +1233,7 @@ passes**:
 | `sarah-project-thumb.webp` | 1080×1059 | 1.02 |
 | `shopify-configurator.webp` | 1080×1140 | 0.95 |
 | `crunch-wrap-dashboard.webp` | 1080×1038 | 1.04 |
-| `advantage-teams` / `meeting-organizer` / `dragonfly-nica` / `executive-detailer` | 600×450 | 1.33 |
+| `meeting-organizer` / `dragonfly-nica` / `executive-detailer` | 600×450 | 1.33 |
 
 `object-fit: cover` on a 1.02 source in a 1.60 frame discards ~36% from the
 bottom, so what survives is the top strip of a zoomed-in sub-view — which is why
@@ -2862,7 +2862,7 @@ carried forward. Verbatim; nothing reworded.
 ### Closed rows removed from STATUS.md Open tables, 2026-09-04
 
 | ~~**`/work/tekguyz-crm`'s "Live demo" link lands on a login screen.**~~ **CLOSED 2026-09-04, same day it opened.** | The CRM shipped a public `/demo` entry point: one GET signs a visitor into a live seeded instance and redirects to `/` — no signup, no password, no email. `content/work.ts` now points at `https://tekguyz-crm.vercel.app/demo`, **not the bare origin**, which is still login-gated. Copy rewritten to promise **browsing, never editing**, because the demo identity is a `demo_readonly` Postgres role holding SELECT and nothing else — a write is refused by the database, not the UI. **Measured before the change, with a cookie jar:** `/demo` 307s to `/`, and the followed request lands on the real app at 200 with the agenda and pipeline rendering. **`curl -L` on the bare origin reports a misleading 200 from the login page** — that trap cost a day, so the check is `curl -s -o /dev/null -w '%{http_code} %{redirect_url}'` with no `-L`. The contact form and `/api/v1/triage/` were deliberately untouched and still post into the real org. |
-| ~~**Recapture 4 posters at 16:10**~~ **CLOSED 2026-09-04.** `bun run check:media` now reports **6 entries, all posters present, ZERO off-ratio** — the first time the whole set has been on-ratio. It closed by subtraction as much as by capture: `meeting-organizer-thumb`, `dragonfly-nica-thumb` and `executive-detailer-thumb` left with their retired entries and their files are deleted, `crunch-wrap-dashboard` was replaced by `squid-ink.webp` (1440x900), `tekguyz-crm.webp` (1440x900) is new, and `advantage-teams-thumb` was replaced by the user in the same batch. **A future off-ratio warning is now a real regression rather than the standing state.** |
+| ~~**Recapture 4 posters at 16:10**~~ **CLOSED 2026-09-04.** `bun run check:media` now reports **6 entries, all posters present, ZERO off-ratio** — the first time the whole set has been on-ratio. It closed by subtraction as much as by capture: `meeting-organizer-thumb`, `dragonfly-nica-thumb` and `executive-detailer-thumb` left with their retired entries and their files are deleted, `crunch-wrap-dashboard` was replaced by `squid-ink.webp` (1440x900), `tekguyz-crm.webp` (1440x900) is new, and one more thumb was replaced by the user in the same batch. **A future off-ratio warning is now a real regression rather than the standing state.** |
 | ~~4 project thumbs are 600x450 (4:3) rendered at 16:10~~ **CLOSED 2026-09-04 — see the poster row above. Zero off-ratio across all 6 entries.** | 4 |
 
 ### The previous session's measured block

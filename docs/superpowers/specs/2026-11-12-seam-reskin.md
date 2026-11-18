@@ -59,7 +59,7 @@ Each page keeps its content and order. It gets a black ground where the problem 
 
 ### 5. Work list: 9, not 10
 
-Decided 2026-11-12 (option a). Team Performance (`Advantage-Teams`, archived) leaves `content/work.ts`, `content/examples.ts` links, the footer and the sitemap. Its old address redirects to `/work` so no link or Google result 404s. `content/work.test.ts` is updated for 9. Tracks issue #76; the PR says `refs #76`, and the issue is closed or retitled only after the rebuild-or-retire call is final.
+Decided 2026-11-12 (option a). The old Team Performance entry leaves `content/work.ts`, `content/examples.ts` links, the footer and the sitemap. Its old address redirects to `/work` so no link or Google result 404s. `content/work.test.ts` is updated for 9. Tracks issue #76; the PR says `refs #76`, and the issue is closed or retitled only after the rebuild-or-retire call is final.
 
 ### 6. Motion
 
