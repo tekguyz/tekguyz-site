@@ -186,7 +186,10 @@ export function ContactForm() {
   async function onSubmit(values: FormValues) {
     setServerError(null);
     const result = await sendContactEmail({ ...values, timestamp: mountedAt });
-    if (result.success) setSent(true);
+    if (result.success) {
+      window.gtag?.('event', 'contact_form_sent');
+      setSent(true);
+    }
     else setServerError(result.error ?? 'Something went wrong.');
   }
 
