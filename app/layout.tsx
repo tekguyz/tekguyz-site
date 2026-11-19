@@ -6,6 +6,7 @@ import './globals.css';
 import { Nav } from '@/components/nav';
 import { FooterDark } from '@/components/footer-dark';
 import { Concierge } from '@/components/concierge/concierge';
+import { AnalyticsEvents } from '@/components/analytics-events';
 import { site } from '@/lib/site';
 
 /**
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <FooterDark />
         <Concierge />
+        <AnalyticsEvents />
         {/* GA4 (tekguyz-one#23). One property for the site and every demo. */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-NH1HKS344J" strategy="afterInteractive" />
         <Script id="ga4-init" strategy="afterInteractive">
