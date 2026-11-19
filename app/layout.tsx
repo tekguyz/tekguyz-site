@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Archivo, Atkinson_Hyperlegible_Next, Red_Hat_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import Script from 'next/script';
 
 import './globals.css';
 import { Nav } from '@/components/nav';
@@ -82,6 +83,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <FooterDark />
         <Concierge />
+        {/* GA4 (tekguyz-one#23). One property for the site and every demo. */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-NH1HKS344J" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-NH1HKS344J');`}
+        </Script>
         <Analytics />
         <SpeedInsights />
       </body>
