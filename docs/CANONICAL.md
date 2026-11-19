@@ -212,7 +212,7 @@ Native CSS now covers the whole scroll-reveal category — the 30–50KB animati
 | CRM | Existing triage webhook |
 | AI | Gemini 3.6 Flash via the existing concierge abstraction |
 | Fonts | `next/font`, self-hosted Geist only |
-| Analytics | `@vercel/analytics` + `@vercel/speed-insights`, both mounted (privacy policy already discloses this — code must match) |
+| Analytics | Google Analytics 4 (`G-NH1HKS344J`, tag in `app/layout.tsx`; privacy policy names it — code must match). Vercel Analytics and Speed Insights removed 2026-11-18 |
 
 **Not adding:** Lenis, GSAP, a CMS, Three.js. **Not using 21st.dev** — it's a registry of community shadcn components, structurally a source of the exact generic patterns this design system names and bans. Fine later for CRM internals where distinctiveness doesn't matter; wrong here.
 

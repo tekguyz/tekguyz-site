@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { Archivo, Atkinson_Hyperlegible_Next, Red_Hat_Mono } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import Script from 'next/script';
 
 import './globals.css';
@@ -88,8 +86,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="ga4-init" strategy="afterInteractive">
           {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-NH1HKS344J');`}
         </Script>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );
