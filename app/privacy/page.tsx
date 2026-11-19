@@ -24,6 +24,10 @@ export const metadata = buildMetadata({
  * written ONLY when internal delivery fails, with a 90-day TTL. If that TTL or
  * that condition changes, this sentence stops being true.
  *
+ * Updated 2026-11-18 (tekguyz-one#23): Vercel Web Analytics and Speed Insights
+ * removed; Google Analytics 4 named instead (it uses cookies, so the old
+ * "no cookies" sentence is gone). No consent banner, per the founder's call.
+ *
  * Updated 2026-11-16 (#81): Cal.com (`site.bookingUrl`), Upstash (the IP rate
  * limit in lib/rate-limit.ts, a 60-second sliding window, and the backup
  * above), and the live demos. Each demo sentence was checked against that
@@ -52,12 +56,12 @@ const SECTIONS: [string, string][] = [
     'To stop spam, the contact form and the chat assistant limit how often one IP address can send. The count is kept in Upstash, a data service, for a few minutes at most, and is not tied to your name or email.',
   ],
   [
-    'Website Analytics & Performance Monitoring',
-    'This site uses Vercel Web Analytics and Vercel Speed Insights to understand aggregate traffic and page performance. Neither uses cookies or collects personal identifiers — visitors are identified only by a temporary hash that’s automatically discarded within 24 hours. We cannot use this data to identify you individually.',
+    'Website Analytics',
+    'This site and our live demos use Google Analytics to understand aggregate traffic: which pages are viewed, roughly where visitors are located, what device they use, and which link or site brought them here. Google Analytics sets cookies in your browser to tell visits apart. We do not use it to identify you personally, and we do not use it for advertising.',
   ],
   [
     'Third-Party Services',
-    'We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, Upstash for the spam limit and the backup copy described below, Cal.com for booking calls, and Vercel to host this site and run the anonymized analytics and performance monitoring described above. None of these services receive more information than described here.',
+    'We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, Upstash for the spam limit and the backup copy described below, Cal.com for booking calls, Google Analytics for the traffic counts described above, and Vercel to host this site. None of these services receive more information than described here.',
   ],
   [
     'Our Live Demos',
