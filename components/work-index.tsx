@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useSyncExternalStore, type ReactNode } from 'react';
 import { AccentDot } from '@/components/solution-tag';
 import { SwipeRow } from '@/components/swipe-row';
 import type { SolutionSlug } from '@/config/solutions';
@@ -39,17 +39,32 @@ export function WorkIndex({
   featured: IndexItem[];
   more: IndexItem[];
 }) {
-  const [on, setOn] = useState<SolutionSlug | 'all'>('all');
+  // The filter lives in the address (`?solution=ai-voice-agents`), so a
+  // filtered view can be shared. Read through `useSyncExternalStore`: the
+  // server and the first client render both see "all", then the address wins,
+  // so there is no hydration mismatch and no setState in an effect.
+  const param = useSyncExternalStore(subscribe, readParam, () => null);
+  const on: SolutionSlug | 'all' = options.some((o) => o.solution === param)
+    ? (param as SolutionSlug)
+    : 'all';
+  const setOn = (next: SolutionSlug | 'all') => {
+    const url = new URL(window.location.href);
+    if (next === 'all') url.searchParams.delete('solution');
+    else url.searchParams.set('solution', next);
+    window.history.replaceState(window.history.state, '', url);
+    window.dispatchEvent(new Event(FILTER_EVENT));
+  };
   const keep = (i: IndexItem) => on === 'all' || i.solution === on;
   const shownFeatured = featured.filter(keep);
   const shownMore = more.filter(keep);
   const total = featured.length + more.length;
   const shown = shownFeatured.length + shownMore.length;
-  const count = (s: SolutionSlug) => [...featured, ...more].filter((i) => i.solution === s).length;
+  const counts = new Map<SolutionSlug, number>();
+  for (const i of [...featured, ...more]) counts.set(i.solution, (counts.get(i.solution) ?? 0) + 1);
 
   const buttons: { key: SolutionSlug | 'all'; label: string; n: number }[] = [
     { key: 'all', label: 'All', n: total },
-    ...options.map((o) => ({ key: o.solution, label: o.label, n: count(o.solution) })),
+    ...options.map((o) => ({ key: o.solution, label: o.label, n: counts.get(o.solution) ?? 0 })),
   ];
 
   return (
@@ -113,6 +128,21 @@ export function WorkIndex({
       </div>
     </div>
   );
+}
+
+const FILTER_EVENT = 'tg-work-filter';
+
+function subscribe(onChange: () => void) {
+  window.addEventListener(FILTER_EVENT, onChange);
+  window.addEventListener('popstate', onChange);
+  return () => {
+    window.removeEventListener(FILTER_EVENT, onChange);
+    window.removeEventListener('popstate', onChange);
+  };
+}
+
+function readParam() {
+  return new URLSearchParams(window.location.search).get('solution');
 }
 
 function GroupHead({ id, title, note }: { id: string; title: string; note: string }) {
