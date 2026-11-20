@@ -862,6 +862,29 @@ body:has(.tg-closing) footer [data-signature-stripe] {
    `cover` with the frame's top anchor trims only the bottom of the capture. */
 @media (max-width: 639px) {
   .tg-feature-pic > .tg-frame {
-    max-height: 168px;
+    max-height: 136px;
+  }
+}
+
+/* The /work filter row scrolls sideways on phones; no scrollbar, like the
+   swipe row. */
+.tg-filter {
+  scrollbar-width: none;
+}
+.tg-filter::-webkit-scrollbar {
+  display: none;
+}
+/* Inside a scroll box the rule's usual -1px offset would add a 1px vertical
+   scroll, so here it sits on the box's own bottom edge, above the hairline. */
+.tg-filter .tg-rule::after {
+  bottom: 0;
+}
+/* On phones the row runs to the screen edges, so a cut-off label reads as
+   "swipe for more", the same as the swipe row. */
+@media (max-width: 639px) {
+  .tg-filter {
+    margin-inline: calc(var(--container-pad) * -1);
+    padding-inline: var(--container-pad);
+    scroll-padding-inline: var(--container-pad);
   }
 }

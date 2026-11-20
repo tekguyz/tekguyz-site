@@ -27,7 +27,8 @@ export interface FilterOption {
  * Without JavaScript nothing is filtered: the server renders "All", which is
  * every card, so the filter only ever narrows a page that already works.
  * The count line under the filter is a polite live region, so a screen reader
- * hears what a press did.
+ * hears what a press did. On phones the row is one line that scrolls sideways,
+ * so the pressed rule always sits on the shared hairline.
  */
 export function WorkIndex({
   options,
@@ -57,7 +58,8 @@ export function WorkIndex({
         <div
           role="group"
           aria-label="Show builds by Solution"
-          className="flex flex-wrap gap-x-5 gap-y-0 border-b border-border md:gap-x-7"
+          data-screen-ok="scroll-inside: the filter row scrolls sideways on phones (#91)"
+          className="tg-filter flex gap-x-6 overflow-x-auto border-b border-border sm:flex-wrap sm:overflow-visible md:gap-x-7"
         >
           {buttons.map((b) => (
             <button
@@ -66,7 +68,7 @@ export function WorkIndex({
               aria-pressed={on === b.key}
               data-on={on === b.key ? 'true' : undefined}
               onClick={() => setOn(b.key)}
-              className="tg-rule flex min-h-11 cursor-pointer items-center gap-2 text-[15px] font-bold text-fg"
+              className="tg-rule flex min-h-11 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap text-[15px] font-bold text-fg"
             >
               {b.key !== 'all' && <AccentDot solution={b.key} size={9} />}
               {b.label}
@@ -74,8 +76,11 @@ export function WorkIndex({
             </button>
           ))}
         </div>
-        <p aria-live="polite" className="mt-4 text-[15px] text-secondary">
-          {on === 'all' ? `All ${total} builds.` : `${shown} of ${total} builds.`}
+        {/* Always in the DOM, so the live region exists before the first
+            press; visible only while a filter narrows the list (the page hero
+            already says the total). */}
+        <p aria-live="polite" className={on === 'all' ? 'sr-only' : 'mt-4 text-[15px] text-secondary'}>
+          {on === 'all' ? `Showing all ${total} builds.` : `${shown} of ${total} builds.`}
         </p>
 
         {shownFeatured.length > 0 && (

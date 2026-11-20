@@ -10,11 +10,12 @@ import type { StatusResult } from '@/lib/status';
  * The /work featured card (#91, founder 2026-11-20): six of them, two across.
  *
  * It replaced the full-width alternating rows, whose pictures ran about 370px
- * tall at 1440 ("far too big on desktop and phones"). Here the picture takes
- * two fifths of the card beside its words, still 16:10, so it lands near 140px
- * tall at 1440: about a third of the old height.
+ * tall at 1440 ("far too big on desktop and phones"). Here the picture sits
+ * beside its words, still 16:10: two fifths of the card in the one-column
+ * band (640-1023), half of it from 1024 in the two-column grid, so it lands
+ * near 175px tall at 1440 and never shrinks as the screen grows past 1024.
  *
- * Phones stack it, picture first, capped at 168px: `cover` with a top anchor
+ * Phones stack it, picture first, capped at 136px: `cover` with a top anchor
  * trims the bottom of the capture, which keeps the app's own header and first
  * rows, the readable part (live-frame.tsx).
  *
@@ -29,9 +30,9 @@ export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: Stat
   const story = `/work/${entry.slug}`;
 
   return (
-    <article className="grid h-full grid-cols-1 content-start gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6">
-      <Link href={story} tabIndex={-1} aria-hidden className="tg-feature-pic block">
-        <Frame poster={entry.poster} alt="" sizes="(max-width: 639px) 100vw, (max-width: 1023px) 40vw, 240px" />
+    <article className="grid h-full grid-cols-1 content-start gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6 lg:grid-cols-2">
+      <Link href={story} tabIndex={-1} aria-hidden className="tg-feature-pic block self-start">
+        <Frame poster={entry.poster} alt="" sizes="(max-width: 639px) 100vw, (max-width: 1023px) 40vw, 300px" />
       </Link>
 
       <div className="min-w-0">
