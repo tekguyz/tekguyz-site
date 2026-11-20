@@ -449,6 +449,8 @@ export const work: WorkEntry[] = [
    * are from tekguyz-one `projects/cart-reminders/about.md`. `url` is the
    * landing page, never the demo. The poster is the app's own
    * `showcase/webp/reminder-desktop-light.webp`, 1440x900, made-up roaster.
+   * Retaken 2026-11-20 after the demo shop became Segovia Coffee
+   * (tekguyz/cart-reminders#15, #16).
    */
   {
     slug: 'cart-reminders',
@@ -469,7 +471,7 @@ export const work: WorkEntry[] = [
     whatMadeItInteresting:
       'the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout, and a paid cart becomes a real test order in the store.',
     tryIt:
-      'Press Try the demo on its landing page. No sign-up. It opens a made-up coffee roaster in Miami. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.',
+      'Press Try the demo on its landing page. No sign-up. It opens Segovia Coffee, a made-up coffee roaster. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.',
     title: 'TEKGUYZ | Cart Reminders',
     description:
       'An online store whose left carts come back: ordering and payment built to fit, and a friendly reminder when a shopper leaves at checkout. Try the one-click demo.',
