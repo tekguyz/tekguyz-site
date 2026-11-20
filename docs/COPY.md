@@ -237,7 +237,7 @@ We move you into one organized, private system where your clients and team log i
 - Automated invoicing
 - Integrations across the tools you already use
 
-RELATED WORK: Lead & Pipeline CRM, Quote to Paid, Team Performance & Automated Customer Feedback *(Quote to Paid added 2026-11-10, #67. Field Photo Reports moved to Custom Web Apps 2026-11-11)*
+RELATED WORK: Lead & Pipeline CRM, Quote to Paid, Team Performance *(Quote to Paid added 2026-11-10, #67. Field Photo Reports moved to Custom Web Apps 2026-11-11. Team Performance back with its rebuilt demo 2026-11-20, #91)*
 CTA: Talk about consolidating this → /contact?interest=business-systems
 
 METADATA — TITLE: `TEKGUYZ | Business Systems — One Private System, Not Five Tools`
@@ -256,7 +256,7 @@ We build those. Ordering systems, headless e-commerce, scheduling portals, clien
 - Appointment and scheduling portals
 - Client-facing dashboards
 
-RELATED WORK: Book Your Visit *(added 2026-11-12)*, Cart Reminders *(added 2026-11-13)*, Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
+RELATED WORK: Cart Reminders *(added 2026-11-13)*, Coffee Brand & Shop *(added 2026-11-20, #91)*, Book Your Visit *(added 2026-11-12)*, Field Photo Reports & Quality Tracking *(retagged here from Business Systems by the founder, 2026-11-11. The Private Meetup App, here from 2026-09-29, left the site the same day. Bundle Builder was removed 2026-09-28.)*
 CTA: Describe what you need built → /contact?interest=custom-web-apps
 
 METADATA — TITLE: `TEKGUYZ | Custom Web Apps — Ordering, Booking, and Dashboards`
@@ -268,7 +268,7 @@ DESCRIPTION: `Ordering systems, headless e-commerce, scheduling portals, and cli
 
 EYEBROW: OUR WORK
 HEADLINE: Everything here is running right now.
-DESCRIPTION: Ten live builds. Open any one yourself. (shortened 2026-11-16, #80; the number is derived from the lineup, never typed)
+DESCRIPTION: 13 live builds. Open any one yourself. (shortened 2026-11-16, #80; the number is derived from the lineup, never typed, and past nine it renders as digits)
 
 **The count word is DERIVED, never typed** — `app/work/page.tsx` builds it from
 `work.length`, so this line is a transcript of what renders, not a value to
@@ -280,15 +280,20 @@ document was the stale half.]*
 
 **Changed 2026-11-16 (founder's phone review, #80):** Cart Reminders took the Custom Web Apps lead card from Book Your Visit, and every card got shorter: the short name, the build's headline as its one line, a "Live" pill and the links. The summary, pull quote and Try it live on the build's own page. Field Photo Reports' short name is "Field Reports".
 
-**One for each Solution** *(4, stacked)* — Our four kinds of work, one build each. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Cart Reminders (Custom Web Apps).
-**More builds** *(6, a swipe row on phones, a grid from 640px)* — Same standard, every one live. In order: Book Your Visit, No-Show Rescue, Missed Call Follow-Up, Field Reports, AI Meeting Notes, Lead & Pipeline CRM.
+**Changed 2026-11-20 (founder, #91):** 13 builds. A Solution filter on top (All, Smart Operations, AI Voice Agents, Business Systems, Custom Web Apps, each with its count; kept in the address as `?solution=`), then six featured cards two across with the picture beside the words, then the other seven small cards. A line under the filter says "N of 13 builds." while a filter is on.
+
+**Featured** *(6, two across from 1024px)* — Open any one and use it yourself. In order: AI Voice Receptionist (AI Voice Agents), Quote to Paid (Business Systems), Win-Back (Smart Operations), Cart Reminders (Custom Web Apps), Coffee Brand & Shop, Field Reports. The first four lead their Solution (fold board, footer).
+**More builds** *(7, a swipe row on phones, a grid from 640px)* — Same standard, every one live. In order: Book Your Visit, No-Show Rescue, Missed Call Follow-Up, Team Performance, AI Meeting Notes, Lead & Pipeline CRM, Everyday Helpers.
+
+Before 2026-11-20: **One for each Solution** *(4, stacked)* and **More builds** *(6)*.
 
 Before 2026-11-11: **Case Studies** *(full-width)* — the deep-dive builds; **Projects** *(compact grid)* — lighter builds, same standard.
 
 *(2026-09-28, #13: Bundle Builder removed — the store behind it was cancelled.
 2026-09-29, pass 2: Private Meetup App added as the fifth case study.
 2026-11-10, #67: Missed Call Follow-Up and Quote to Paid added as projects, ahead of Team Performance.
-2026-11-11: No-Show Rescue and Win-Back added as projects (refs tekguyz/tekguyz-one#148, #149). The Private Meetup App removed from the site; the portfolio keeps it, and `/work/private-meetup-app` redirects to `/work`.)*
+2026-11-11: No-Show Rescue and Win-Back added as projects (refs tekguyz/tekguyz-one#148, #149). The Private Meetup App removed from the site; the portfolio keeps it, and `/work/private-meetup-app` redirects to `/work`.
+2026-11-20, #91: Team Performance (rebuilt demo), Coffee Brand & Shop and Everyday Helpers added, 13 in all. The Private Meetup App stays off.)*
 
 ## Metadata
 
@@ -579,25 +584,61 @@ A shop built to fit the business, with online ordering and payment. Its products
 
 **WHAT MADE IT INTERESTING:** the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout, and a paid cart becomes a real test order in the store.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up coffee roaster in Miami. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.
+**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens Segovia Coffee, a made-up coffee roaster. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.
 
 METADATA — TITLE: `TEKGUYZ | Cart Reminders`
 DESCRIPTION: `An online store whose left carts come back: ordering and payment built to fit, and a friendly reminder when a shopper leaves at checkout. Try the one-click demo.`
 
-## `/work/team-performance` — Team Performance & Automated Customer Feedback
+## `/work/team-performance` — Team Performance
+
+*Back 2026-11-20 (#91) with the rebuilt demo (tekguyz/team-performance, live 2026-11-17), Business Systems. Words from its README and the portfolio's entry. Live demo link: the landing page, https://team-performance-demo.vercel.app. Poster: the portfolio's `overview.webp`. The old page and its client review were retired 2026-11-12 (#76).*
 
 TAG: Business Systems
-BUILT FOR: Service businesses with phone-based teams and customer follow-up surveys
+BUILT FOR: Service teams that work the phones and follow up with customer surveys
 HEADLINE: Phone logs that credit the right person, and surveys that know when to stop.
 
-Connects desk-phone logs directly to the CRM so team members get automatic credit for the jobs they actually handled — no manual entry, no micro-management. Paired with a smart-limit SMS feedback loop that only surveys a customer when it's genuinely useful, instead of every single time.
+Every desk-phone call is credited to the person who really handled it, with no manual entry. Offline work such as case review counts too. Beside it runs a text survey loop with plain rules, so customers are not texted after every call.
 
-**WHAT MADE IT INTERESTING:** the survey limiter. Most feedback tools send on every trigger, which trains customers to ignore them. Capping it protects the response rate and the customer relationship at the same time.
+**WHAT MADE IT INTERESTING:** the rules that stop a text. No survey for a call under 2 minutes, and never a second text to the same number within a day. A low focus rating only raises a question for a supervisor, never a verdict.
 
-**CLIENT REVIEW:** *(the verified Google review — this is the build Joe M. is describing)*
+**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up call center. Run a batch of new calls and watch each one end at the rule that stopped its text, or at Texts sent. Everything runs in your browser and nothing is sent.
 
-METADATA — TITLE: `TEKGUYZ | Team Performance & Automated Feedback`
-DESCRIPTION: `Desk-phone logs connected straight to the CRM, plus a smart-limit SMS feedback loop that only surveys customers when it actually matters.`
+METADATA — TITLE: `TEKGUYZ | Team Performance`
+DESCRIPTION: `Phone logs that credit whoever did the work, and customer survey texts with plain rules that know when to stop. Try the one-click demo.`
+
+## `/work/coffee-brand-shop` — Coffee Brand & Shop
+
+*Added 2026-11-20 (#91), Custom Web Apps. A made-up family coffee brand built as if it were real. Words from tekguyz-one `projects/coquimba-coffee/about.md` via the portfolio's entry. Live link: the shop itself, https://coquimba-coffee.vercel.app (no landing page in front). Poster: the portfolio's `home.webp`.*
+
+TAG: Custom Web Apps
+BUILT FOR: A small brand with something to sell, and a café that posts its specials and events
+HEADLINE: A coffee brand built to sell: buy a bag, subscribe, or build a bundle.
+
+A whole brand for a made-up family coffee business, from a farm in Nicaragua to a café in Miami: the logo, the art, the words and the site. Shoppers buy a bag, subscribe, or build a bundle of three. The café page shows the menu, the specials and the events, with an RSVP. The owner’s side shows the orders and lets the family post specials and events.
+
+**WHAT MADE IT INTERESTING:** it is a brand, not only a shop. A look people remember and a story that makes them care come first, and the shop, the café and the owner’s side are built on top of it.
+
+**TRY IT:** Open the site. No sign-up. Buy a bag with the Stripe test card, then open the owner’s side to see the order. It runs on a real Shopify store in test mode, so nothing is sent and no card is charged.
+
+**PULL QUOTE** *(drafted)*: Buy once, subscribe, or build a bundle, and the owner sees every order.
+
+METADATA — TITLE: `TEKGUYZ | Coffee Brand & Shop`
+DESCRIPTION: `A coffee brand built to sell: a shop with subscriptions and bundles, a café page with specials and events, and the owner’s side. Try it yourself.`
+
+## `/work/everyday-helpers` — Everyday Helpers
+
+*Added 2026-11-20 (#91), Custom Web Apps. Words from the fancyfam repo (README, PRODUCT.md) and the portfolio's entry. Plain words: never "AI" or "agent". Live link: https://fancyfam.com, a "coming soon" page, so there is no Try it line. Poster: the portfolio's `crew-desktop.webp`.*
+
+TAG: Custom Web Apps
+BUILT FOR: Families with people who never touch a settings screen
+HEADLINE: Four friendly helpers for the everyday stuff, in plain words.
+
+Four felt characters, each good at one kind of chore: one checks a text that looks fishy or a price that seems high, one writes an email, one keeps reminders, and one is up for a chat. You ask the way you would text a friend. For now it is a phone-first “coming soon” page, with no sign-up.
+
+**WHAT MADE IT INTERESTING:** the house rules come first. A helper never spends your money, never sends anything without asking, and never shares what you tell it.
+
+METADATA — TITLE: `TEKGUYZ | Everyday Helpers`
+DESCRIPTION: `Four friendly helpers for emails, fair prices and reminders, in plain words. A phone-first “coming soon” page with no sign-up.`
 
 ---
 
@@ -783,7 +824,7 @@ TEKGUYZ ("we," "us") respects your privacy. This page explains what information 
 
 **Third-Party Services** — We use Resend to deliver contact form and concierge submissions to our inbox, Google (Gemini) to power the AI concierge, Upstash for the spam limit and the backup copy described below, Cal.com for booking calls, Google Analytics for the traffic counts described above, and Vercel to host this site. None of these services receive more information than described here.
 
-**Our Live Demos** — Our Work page links to live demos. Each one is a separate site on its own address, built on made-up businesses and sample data, and none needs a sign-up. Most keep nothing: in Missed Call Follow-Up, No-Show Rescue and Book Your Visit nothing leaves your browser, and in Quote to Paid, Win-Back and Cart Reminders no message is sent and no card is charged (Cart Reminders runs a real Shopify store and Stripe in test mode). The AI Voice Receptionist asks for your microphone only when you call, keeps only the words, never your voice, and deletes them after 7 days. Field Photo Reports gives you your own copy with sample data and deletes it after 7 days. The Lead & Pipeline CRM gives you your own workspace of sample data, with email, import and invites switched off. AI Meeting Notes opens sample notes; recording a real meeting needs an account, and accounts are by invitation only. Each demo's own landing page says what it does before you start.
+**Our Live Demos** — Our Work page links to live demos. Each one is a separate site on its own address, built on made-up businesses and sample data, and none needs a sign-up. Most keep nothing: in Missed Call Follow-Up, No-Show Rescue, Book Your Visit and Team Performance nothing leaves your browser, and in Quote to Paid, Win-Back, Cart Reminders and Coffee Brand & Shop no message is sent and no card is charged (Cart Reminders and Coffee Brand & Shop run a real Shopify store and Stripe in test mode). The AI Voice Receptionist asks for your microphone only when you call, keeps only the words, never your voice, and deletes them after 7 days. Field Photo Reports gives you your own copy with sample data and deletes it after 7 days. The Lead & Pipeline CRM gives you your own workspace of sample data, with email, import and invites switched off. AI Meeting Notes opens sample notes; recording a real meeting needs an account, and accounts are by invitation only. Each demo's own landing page says what it does before you start.
 
 **Data Retention** — We keep contact and concierge inquiries only as long as needed to respond to you and for reasonable business record-keeping afterward. If our system briefly fails to deliver your inquiry internally, a secure backup copy is kept in Upstash for up to 90 days so nothing gets lost, then it's automatically deleted.
 
