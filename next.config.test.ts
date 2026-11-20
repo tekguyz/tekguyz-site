@@ -14,8 +14,9 @@ const EXPECTED: Record<string, string> = {
   '/work/restaurant-menu': '/work',
   '/work/auto-detailer': '/work',
   '/work/bundle-builder': '/work',
-  // Retired 2026-11-12 with the Joe M. review (refs #76).
-  '/work/team-performance': '/work',
+  // `/work/team-performance` redirected from 2026-11-12 (#76) until the
+  // rebuilt demo took the slug back on 2026-11-20 (#91): never redirect a live
+  // build's page.
   // #80: the /solutions index went to Home's four Solution blocks.
   '/solutions': '/#solutions',
 };

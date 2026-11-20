@@ -428,6 +428,15 @@
   }
 }
 
+/* Phones (#91, founder 2026-11-20: "Shorter hero"): with the grid's 24px gap
+   this is 40px between the buttons and the picture, so the picture lands on
+   the first screen at 375x812 instead of below it. */
+@media (max-width: 767px) {
+  .tg-hero-frame {
+    margin-top: 16px;
+  }
+}
+
 /* The phone capture overlapping the hero poster: a flat ring in the ground
    colour cuts it out of the picture, no shadow. */
 .tg-hero-phone {
@@ -845,5 +854,14 @@ body:has(.tg-closing) footer [data-signature-stripe] {
 
   .tg-pin {
     position: static !important;
+  }
+}
+
+/* The /work featured card's picture on phones (#91): stacked above its words
+   and capped, so six of them do not make a 1,200px column of screenshots.
+   `cover` with the frame's top anchor trims only the bottom of the capture. */
+@media (max-width: 639px) {
+  .tg-feature-pic > .tg-frame {
+    max-height: 168px;
   }
 }

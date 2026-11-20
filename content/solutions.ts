@@ -96,7 +96,7 @@ export const solutions: Solution[] = [
       'Automated invoicing',
       'Integrations across the tools you already use',
     ],
-    relatedWork: ['Lead & Pipeline CRM', 'Quote to Paid'],
+    relatedWork: ['Lead & Pipeline CRM', 'Quote to Paid', 'Team Performance'],
     cta: { label: 'Talk about consolidating this', href: '/contact?interest=business-systems' },
     serviceDescription:
       'Secure client and team logins, private document portals, automated invoicing, and integrations across the tools you already use.',
@@ -123,7 +123,7 @@ export const solutions: Solution[] = [
     // #13 pass 1 removed Bundle Builder; pass 2 added Private Meetup App.
     // 2026-11-11: the meetup app left the site, and Field Photo Reports was
     // retagged here from Business Systems (founder).
-    relatedWork: ['Cart Reminders', 'Book Your Visit', 'Field Photo Reports & Quality Tracking'],
+    relatedWork: ['Cart Reminders', 'Coffee Brand & Shop', 'Book Your Visit', 'Field Photo Reports & Quality Tracking'],
     cta: { label: 'Describe what you need built', href: '/contact?interest=custom-web-apps' },
     serviceDescription:
       'Ordering and cart systems, headless e-commerce, scheduling and booking portals, and client-facing dashboards.',

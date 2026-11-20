@@ -35,14 +35,14 @@ export function HomeHero({
   status: StatusResult;
 }) {
   return (
-    <section className="on-ink tg-seam-above overflow-x-clip pt-14 md:pt-20">
+    <section className="on-ink tg-seam-above overflow-x-clip pt-10 md:pt-20">
       <div data-hero-grid className="tg-container tg-grid items-center">
         <div style={{ gridColumn: '1 / 7' }}>
           <h1 className="lettering text-[clamp(2.75rem,7.4vw,5.75rem)] min-[1024px]:text-[clamp(3rem,6.2vw,5.75rem)]">
             We build the systems your business runs on.
           </h1>
 
-          <p className="text-secondary mt-8 max-w-[46ch] text-[20px] leading-[1.5]">
+          <p className="text-secondary mt-6 max-w-[46ch] md:mt-8 text-[20px] leading-[1.5]">
             Most businesses don&rsquo;t need more software. They need the right system, built
             correctly.
           </p>
@@ -50,7 +50,7 @@ export function HomeHero({
           {/* The concierge launcher yields while this row is on screen (M-15).
               Tagged on the row so the pair yields as one conversion moment.
               Contact leads (#40); the browse link is the outline. */}
-          <div data-primary-cta className="mt-10 flex flex-wrap gap-3 md:mt-12">
+          <div data-primary-cta className="mt-8 flex flex-wrap gap-3 md:mt-12">
             <ButtonLink href="/contact">Start a Free Conversation</ButtonLink>
             <ButtonLink href="/work" variant="secondary">
               See Our Work
