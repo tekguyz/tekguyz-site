@@ -63,6 +63,8 @@ function absoluteTime(from: number): string {
  * ago", 60px tall). The pill is "Live" and the green dot, one line, never
  * wraps. The check time is not lost: it is the pill's `title` (a tooltip on
  * hover) and screen-reader text, and the build's own page keeps the full line.
+ * Since 2026-11-21 it has no outline: the founder found a boxed "Live" on
+ * every card bulky. The dot and the word carry it.
  */
 export function StatusLine({
   result,
@@ -91,10 +93,10 @@ export function StatusLine({
       <span
         title={full}
         className={cn(
-          'inline-flex flex-none items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[length:var(--text-caption)] leading-none font-medium tracking-[0.02em] whitespace-nowrap',
+          'inline-flex flex-none items-center gap-1.5 font-mono text-[length:var(--text-caption)] leading-none font-medium tracking-[0.02em] whitespace-nowrap',
           className,
         )}
-        style={{ borderColor: 'var(--tg-border)', color: live ? fg : 'var(--tg-mute)' }}
+        style={{ color: live ? fg : 'var(--tg-mute)' }}
       >
         <span
           aria-hidden

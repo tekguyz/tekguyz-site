@@ -8,7 +8,7 @@ import {
   footerSlugs,
   footerWork,
   getWork,
-  heroSlug,
+  heroSlugs,
   largeSlugs,
   smallSlugs,
   work,
@@ -69,15 +69,15 @@ describe('work lineup', () => {
   });
 
   it('Home shows no build twice', () => {
-    const home = [heroSlug, ...featuredSlugs];
+    const home = [...heroSlugs, ...featuredSlugs];
     expect(new Set(home).size).toBe(home.length);
   });
 
-  it('Home never shows the CRM, and the band never repeats the hero', () => {
-    const home = [heroSlug, ...featuredSlugs, ...footerSlugs];
+  it('Home never shows the CRM, and every hero build has a 16:9 hero picture', () => {
+    const home = [...heroSlugs, ...featuredSlugs, ...footerSlugs];
     expect(home).not.toContain('tekguyz-crm');
-    expect(featuredSlugs).not.toContain(heroSlug);
-    expect(getWork(heroSlug)?.heroPoster).toBeTruthy();
+    expect(heroSlugs).toHaveLength(4);
+    for (const slug of heroSlugs) expect(getWork(slug)?.heroPoster, slug).toBeTruthy();
   });
 
   it('the footer Work column resolves every slug and gives each a short label', () => {

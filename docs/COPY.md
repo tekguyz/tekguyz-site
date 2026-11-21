@@ -85,7 +85,7 @@ Copyright: © [Year] TEKGUYZ. Built by TEKGUYZ.
 
 HEADLINE: We build tech that actually works for your business.
 SUBHEAD: Most businesses don't need more software. They need the right system, built correctly, by people who actually understand how they work. That's what we do.
-CTA PRIMARY: Start a Free Conversation → /contact (changed 2026-10-11, #40: contact leads; **drafted**, from the trust line "Free first conversation")
+CTA PRIMARY: Let’s Talk → /contact (shortened 2026-11-21 by the founder: the old "Start a Free Conversation" was too long for a button; matches the nav CTA)
 CTA SECONDARY: See Our Work → /work
 MEDIA: `missed-call-hero.webp` (1440×810, 16:9), the top of Missed Call Follow-Up's own showcase capture: the follow-up texts on a phone, the owner's alerts and the lead pipeline. Below 1024px, `missed-call-hero-mobile.webp` (960×540): the phone and the alerts only. No loop and no phone layer. Live-status chip attached, for Missed Call Follow-Up. **Changed 2026-11-11** (founder's pick of two). Before that: `field-reports-hero.webp` with a phone capture and a 4.5 s loop, from 2026-10-02 (#20); see CANONICAL §1. The old `sarah-demo.mp4` showed the withdrawn phone simulator and was deleted 2026-08-28.
 

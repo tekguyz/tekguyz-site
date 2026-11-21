@@ -153,6 +153,7 @@ export const work: WorkEntry[] = [
     // crop. No heroPoster: this entry is not the home hero.
     poster: '/media/voice-receptionist-thumb.webp',
     cardPoster: '/media/ai-voice-receptionist-card.webp',
+    heroPoster: '/media/ai-voice-receptionist-hero.webp',
     alt: 'AI Voice Receptionist Sample Call for the made-up Mangrove Air: what Luna and the caller said on the left, and the job details on the right: name, job, urgency, address and booked time',
     embeddable: false,
     updatedAt: '2026-10-15',
@@ -347,6 +348,7 @@ export const work: WorkEntry[] = [
     // taken in the demo: Gumbo Limbo Air, its customers and amounts are made up.
     poster: '/media/quote-to-paid-thumb.webp',
     cardPoster: '/media/quote-to-paid-card.webp',
+    heroPoster: '/media/quote-to-paid-hero.webp',
     alt: 'Quote to Paid demo board: a summary of the follow-ups that went out by themselves, the quotes and invoices waiting, and the jobs that need the owner',
     embeddable: false,
     updatedAt: '2026-11-10',
@@ -406,6 +408,7 @@ export const work: WorkEntry[] = [
     url: 'https://win-back-customers.vercel.app',
     poster: '/media/win-back-thumb.webp',
     cardPoster: '/media/win-back-card.webp',
+    heroPoster: '/media/win-back-hero.webp',
     alt: 'Win-Back demo: drafted messages to past customers, each one approved by the owner, with an edit or skip link, before anything is sent',
     embeddable: false,
     updatedAt: '2026-11-11',
@@ -474,6 +477,7 @@ export const work: WorkEntry[] = [
     url: 'https://cart-reminders.vercel.app',
     poster: '/media/cart-reminders-thumb.webp',
     cardPoster: '/media/cart-reminders-card.webp',
+    heroPoster: '/media/cart-reminders-hero.webp',
     alt: 'Cart Reminders demo: the reminder email a shopper gets after leaving checkout at a made-up coffee roaster, marked not sent, next to the store owner’s carts started, left, reminded and won back',
     embeddable: false,
     updatedAt: '2026-11-13',
@@ -533,7 +537,7 @@ export const work: WorkEntry[] = [
     headline: 'A coffee brand built to sell: buy a bag, subscribe, or build a bundle.',
     url: 'https://coquimba-coffee.vercel.app',
     poster: '/media/coffee-brand-shop-thumb.webp',
-    cardPoster: '/media/coffee-brand-shop-card.webp',
+    cardPoster: '/media/coffee-brand-shop-volcano.webp',
     alt: 'The home page of a made-up coffee brand: a screen-print volcano over the coffee rows, with Shop coffee and Visit the café',
     embeddable: false,
     updatedAt: '2026-11-20',
@@ -670,10 +674,15 @@ export const workLarge = bySlugs(largeSlugs);
 export const workSmall = bySlugs(smallSlugs);
 
 /**
- * The home hero (founder, 2026-11-11): Missed Call Follow-Up, replacing Field
- * Photo Reports.
+ * The home hero (founder, 2026-11-21): the four builds that lead their
+ * Solution, one button each, and the visitor picks which picture shows. The
+ * first is shown on load. Nothing switches on its own (Seam: nothing moves on
+ * its own). Each needs a 16:9 `heroPoster`: the top of the app's own feed
+ * picture, so its words still read at hero size. Missed Call Follow-Up was the
+ * hero 2026-11-11 to 2026-11-21; its desktop capture read too small.
  */
-export const heroSlug = 'missed-call-follow-up';
+export const heroSlugs = leadSlugs;
+export const heroBuilds = bySlugs(heroSlugs);
 
 /**
  * The home band, "Two we're proud of". No build appears twice on Home (#80):

@@ -3,9 +3,7 @@ import Link from 'next/link';
 import { ButtonLink } from '@/components/button';
 import { Frame } from '@/components/live-frame';
 import { SolutionTag } from '@/components/solution-tag';
-import { StatusLine } from '@/components/status-line';
 import type { WorkEntry } from '@/content/work';
-import type { StatusResult } from '@/lib/status';
 
 /**
  * The /work featured card (#91, founder 2026-11-20): six of them, two across.
@@ -34,7 +32,7 @@ import type { StatusResult } from '@/lib/status';
  * frame: a 2px ink line, no shadow. A build with no close-up shows its desktop
  * capture already, so it gets no enlarge.
  */
-export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: StatusResult }) {
+export function FeaturedCard({ entry }: { entry: WorkEntry }) {
   const name = entry.shortName ?? entry.name;
   const story = `/work/${entry.slug}`;
 
@@ -49,25 +47,25 @@ export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: Stat
       </Link>
 
       <div className="min-w-0">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <SolutionTag solution={entry.solution} label={entry.tag} />
-          <StatusLine result={status} variant="pill" />
-        </div>
-        <h3 className="mt-3 text-[length:var(--text-title)]">
+        {/* No Live mark here since 2026-11-21: the founder found one on each
+            of six cards bulky. The build's own page and the home hero keep it. */}
+        <SolutionTag solution={entry.solution} label={entry.tag} />
+        <h3 className="mt-2 text-[20px] leading-[1.15]">
           <Link href={story} className="tap-44 link-underline">
             {name}
           </Link>
         </h3>
         <p
-          className="mt-2 text-[15px] leading-[1.5] text-secondary"
+          className="mt-1.5 text-[15px] leading-[1.45] text-secondary"
           style={{ textWrap: 'pretty' }}
         >
           {entry.headline}
         </p>
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-3">
           <ButtonLink
             href={entry.url}
-            size="nav"
+            size="card"
+            className="tap-44"
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Open the ${name} demo in a new tab`}
@@ -77,7 +75,7 @@ export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: Stat
           <Link
             href={story}
             aria-label={`${name}: the full story`}
-            className="tap-44 text-[16px] font-bold underline decoration-2 underline-offset-[6px]"
+            className="tap-44 text-[14px] font-bold underline decoration-2 underline-offset-[5px]"
           >
             Full story
           </Link>

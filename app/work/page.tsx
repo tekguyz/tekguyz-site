@@ -58,7 +58,7 @@ export default async function WorkPage() {
         featured={workLarge.map((entry) => ({
           slug: entry.slug,
           solution: entry.solution,
-          node: <FeaturedCard entry={entry} status={statuses[entry.slug]!} />,
+          node: <FeaturedCard entry={entry} />,
         }))}
         more={workSmall.map((entry) => ({
           slug: entry.slug,
