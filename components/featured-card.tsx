@@ -1,3 +1,4 @@
+import { getImageProps } from 'next/image';
 import Link from 'next/link';
 import { ButtonLink } from '@/components/button';
 import { Frame } from '@/components/live-frame';
@@ -24,6 +25,14 @@ import type { StatusResult } from '@/lib/status';
  *
  * The picture links to the full story too, but out of the tab order and hidden
  * from screen readers, so the name stays the one link a keyboard meets for it.
+ *
+ * Hover to enlarge (founder, 2026-11-21): the card shows a close-up crop
+ * (`cardPoster`), so on a mouse screen hovering it opens the full desktop
+ * capture at twice the picture's width, anchored top-left. Twice the picture
+ * is never wider than the card at any band (2/5 → 4/5 below 1024, 1/2 → 1/1
+ * from 1024), so it never leaves the card or the screen. Flat like every
+ * frame: a 2px ink line, no shadow. A build with no close-up shows its desktop
+ * capture already, so it gets no enlarge.
  */
 export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: StatusResult }) {
   const name = entry.shortName ?? entry.name;
@@ -31,8 +40,12 @@ export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: Stat
 
   return (
     <article className="grid h-full grid-cols-1 content-start gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6 lg:grid-cols-2">
-      <Link href={story} tabIndex={-1} aria-hidden className="tg-feature-pic block self-start">
+      <Link href={story} tabIndex={-1} aria-hidden className="tg-feature-pic relative block self-start">
         <Frame poster={entry.cardPoster ?? entry.poster} alt="" sizes="(max-width: 639px) 100vw, (max-width: 1023px) 40vw, 300px" />
+        {/* Hover to enlarge (2026-11-21): the full desktop screen at twice the
+            picture's width, over the card. Mouse screens only; phones never
+            download it. CSS only: `.tg-feature-pop` in globals.css. */}
+        {entry.cardPoster ? <EnlargedPicture poster={entry.poster} /> : null}
       </Link>
 
       <div className="min-w-0">
@@ -71,5 +84,35 @@ export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: Stat
         </div>
       </div>
     </article>
+  );
+}
+
+/** An empty 1x1 GIF: what every screen without a mouse gets instead. */
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+const MOUSE = '(hover: hover) and (pointer: fine)';
+
+/**
+ * The hover-to-enlarge picture. A `<picture>` whose only real source carries
+ * the mouse media query, so the browser fetches the big capture on mouse
+ * screens only. `display: none` alone did not stop it: a phone downloaded all
+ * five at 1920px wide (measured 2026-11-21). Lazy, so a laptop fetches each one
+ * as its card nears the screen, not on page load.
+ */
+function EnlargedPicture({ poster }: { poster: string }) {
+  const { props } = getImageProps({ src: poster, alt: '', fill: true, sizes: '640px' });
+  return (
+    <span className="tg-feature-pop">
+      <picture>
+        <source media={MOUSE} srcSet={props.srcSet} sizes={props.sizes} />
+        <img
+          src={BLANK}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          style={props.style}
+          className="object-cover object-top"
+        />
+      </picture>
+    </span>
   );
 }
