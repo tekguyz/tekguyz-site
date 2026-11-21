@@ -2,14 +2,14 @@ import Link from 'next/link';
 import { HomeHero } from '@/components/home-hero';
 import { LampFields } from '@/components/lamp-fields';
 import { SectionHead } from '@/components/page-hero';
-import { FoldBoard } from '@/components/fold-board';
+import { FoldLinks } from '@/components/fold-board';
 import { Frame } from '@/components/live-frame';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
 import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
-import { featured, foldBoard, getWork, heroSlug, type CaseStudy } from '@/content/work';
+import { featured, getWork, heroSlug, type CaseStudy } from '@/content/work';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, solutionsItemList } from '@/lib/seo';
 
@@ -25,7 +25,7 @@ export const metadata = buildMetadata({
  *
  *   ink    hero: the problem and the promise
  *   seam   the four Solutions as lamp fields, straddling the edge
- *   paper  the fold's build rows, the two featured builds, the four steps
+ *   paper  the fold's caption row, the two featured builds, the four steps
  *   ink    the closing band, then the footer
  *
  * The four Solutions moved up from below the build board to sit on the seam:
@@ -58,11 +58,12 @@ export default async function HomePage() {
 
       <LampFields />
 
-      {/* The fold's proof: four live builds as build rows. Its bottom and the
-          band's top are one gap with the band's 2px rule in it, not two
-          stacked section paddings (#91: they summed to 288px at 1440). */}
-      <section className="pt-16 pb-16 md:pt-20 md:pb-20">
-        <FoldBoard entries={foldBoard} statuses={statuses} />
+      {/* The fold's caption row: all builds, the Google review, the location.
+          The four build rows above it were removed 2026-11-21 (founder): they
+          repeated the four Solution blocks. Its bottom and the band's top are
+          one gap with the band's 2px rule in it, not two stacked paddings. */}
+      <section className="pt-10 pb-16 md:pt-14 md:pb-20">
+        <FoldLinks />
       </section>
 
       {/* Featured Work — the two deep builds, on paper with the rest of the

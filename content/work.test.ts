@@ -1,19 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import { SOLUTION_ACCENT, STRIPE_ORDER } from '@/config/solutions';
 import { solutions } from './solutions';
 import {
   buildCountWord,
   featured,
   featuredSlugs,
-  foldBoard,
-  foldSlugs,
   footerSlugs,
   footerWork,
   getWork,
   heroSlug,
   largeSlugs,
-  leadSlugs,
   smallSlugs,
   work,
   workLarge,
@@ -35,11 +31,6 @@ describe('work lineup', () => {
   it('every featured slug resolves to a case study', () => {
     for (const slug of featuredSlugs) expect(getWork(slug)?.kind, slug).toBe('case-study');
     expect(featured).toHaveLength(featuredSlugs.length);
-  });
-
-  it('every fold slug resolves to an entry', () => {
-    for (const slug of foldSlugs) expect(getWork(slug), slug).toBeDefined();
-    expect(foldBoard).toHaveLength(foldSlugs.length);
   });
 
   // Founder, 2026-11-11: four large cards, one per Solution, then the rest.
@@ -77,14 +68,13 @@ describe('work lineup', () => {
     }
   });
 
-  it('Home shows no build twice, and its fold is the /work lead four', () => {
-    const home = [heroSlug, ...featuredSlugs, ...foldSlugs];
+  it('Home shows no build twice', () => {
+    const home = [heroSlug, ...featuredSlugs];
     expect(new Set(home).size).toBe(home.length);
-    expect([...foldSlugs].sort()).toEqual([...leadSlugs].sort());
   });
 
   it('Home never shows the CRM, and the band never repeats the hero', () => {
-    const home = [heroSlug, ...featuredSlugs, ...foldSlugs, ...footerSlugs];
+    const home = [heroSlug, ...featuredSlugs, ...footerSlugs];
     expect(home).not.toContain('tekguyz-crm');
     expect(featuredSlugs).not.toContain(heroSlug);
     expect(getWork(heroSlug)?.heroPoster).toBeTruthy();
@@ -94,17 +84,6 @@ describe('work lineup', () => {
     for (const slug of footerSlugs) expect(getWork(slug), slug).toBeDefined();
     expect(footerWork).toHaveLength(footerSlugs.length);
     for (const w of footerWork) expect(w.shortName, w.slug).toBeTruthy();
-  });
-
-  it('the fold board has at most one card per solution line, in stripe order', () => {
-    const accents = foldBoard.map((w) => SOLUTION_ACCENT[w.solution]);
-    expect(new Set(accents).size).toBe(accents.length);
-    const order = accents.map((a) => STRIPE_ORDER.indexOf(a));
-    expect(order).toEqual([...order].sort((a, b) => a - b));
-  });
-
-  it('the fold board shows four cards, one per line', () => {
-    expect(foldBoard).toHaveLength(4);
   });
 
   it('every solution’s Related work name resolves to an entry', () => {

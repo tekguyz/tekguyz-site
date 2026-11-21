@@ -606,7 +606,7 @@ export const work: WorkEntry[] = [
 
 /**
  * The number of live builds, SPELLED, for the two places copy says it out loud:
- * `/work`'s page hero and the home fold board's "See all N builds" link.
+ * `/work`'s page hero and the home fold's "See all N builds" link.
  *
  * Both of those read "eight" as a hand-typed word from 2026-08-29 until
  * 2026-09-04, when the lineup dropped to six and both sentences became false at
@@ -638,7 +638,7 @@ export const projects = work.filter((w): w is Project => w.kind === 'project');
  * took the Custom Web Apps card from Book Your Visit on 2026-11-16 (#80).
  * Since 2026-11-20 (#91): six featured cards, the four that lead their
  * Solution, then Coffee Brand & Shop and Field Photo Reports. The first four
- * stay the lead four (fold board, footer), so their order is fixed.
+ * stay the lead four (the footer), so their order is fixed.
  * `content/work.test.ts` fails if a build is in neither list, or in both.
  */
 export const largeSlugs = [
@@ -660,7 +660,7 @@ export const smallSlugs = [
   'everyday-helpers',
 ] as const;
 
-/** The four builds that lead their Solution: the fold board and the footer. */
+/** The four builds that lead their Solution: the footer's Work column. */
 export const leadSlugs = largeSlugs.slice(0, 4);
 
 const bySlugs = (slugs: readonly string[]) =>
@@ -677,28 +677,14 @@ export const heroSlug = 'missed-call-follow-up';
 
 /**
  * The home band, "Two we're proud of". No build appears twice on Home (#80):
- * it never repeats the hero or the fold, so since 2026-11-16 it is the two
- * case studies not in the fold. The Lead & Pipeline CRM never appears on Home.
+ * it never repeats the hero. Since 2026-11-21 the fold's four build rows are
+ * gone, so this band is Home's one look at the work (/work has the rest). The
+ * Lead & Pipeline CRM never appears on Home.
  */
 export const featuredSlugs = ['field-photo-reports', 'ai-meeting-notes'] as const;
 export const featured = featuredSlugs
   .map((slug) => work.find((w) => w.slug === slug))
   .filter((w): w is CaseStudy => w?.kind === 'case-study');
-
-/**
- * The homepage fold's build board: one build per Solution line, in
- * `STRIPE_ORDER` (blue, violet, amber, teal), so the fold is a legend for the
- * four accents. Since 2026-11-16 (#80) it is the /work lead four, one per
- * Solution, and the CRM stays off Home.
- */
-export const foldSlugs = [
-  'win-back',
-  'ai-voice-receptionist',
-  'quote-to-paid',
-  'cart-reminders',
-] as const;
-
-export const foldBoard = bySlugs(foldSlugs);
 
 /**
  * The footer's Work column, shown on every page including Home: the four

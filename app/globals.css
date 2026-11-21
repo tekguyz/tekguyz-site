@@ -866,6 +866,47 @@ body:has(.tg-closing) footer [data-signature-stripe] {
   }
 }
 
+/* Hover to enlarge on the /work featured card (2026-11-21, featured-card.tsx).
+   `display: none` everywhere a mouse is not, so a phone never fetches the big
+   picture (a lazy image under `display: none` is not loaded). It never takes
+   the pointer, so leaving the small picture closes it. Opacity and a small
+   scale from the top-left corner; the reduced-motion block's universal reset
+   makes it appear at once, and it still appears: nothing is hidden. */
+.tg-feature-pop {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tg-feature-pop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    display: block;
+    width: 200%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border: 2px solid var(--color-fg);
+    background: var(--tg-surface);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.96);
+    transform-origin: top left;
+    pointer-events: none;
+    transition:
+      opacity var(--dur-fast) var(--ease-hover),
+      transform var(--dur-base) var(--ease-out),
+      visibility 0s linear var(--dur-base);
+  }
+  .tg-feature-pic:hover .tg-feature-pop {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity var(--dur-fast) var(--ease-hover),
+      transform var(--dur-base) var(--ease-out);
+  }
+}
+
 /* The /work filter row scrolls sideways on phones; no scrollbar, like the
    swipe row. */
 .tg-filter {
