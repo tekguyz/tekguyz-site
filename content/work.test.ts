@@ -13,6 +13,7 @@ import {
   getWork,
   heroSlug,
   largeSlugs,
+  leadSlugs,
   smallSlugs,
   work,
   workLarge,
@@ -48,13 +49,22 @@ describe('work lineup', () => {
     expect([...shown].sort()).toEqual(work.map((w) => w.slug).sort());
   });
 
-  it('the large cards are one per Solution, in the founder’s order', () => {
-    expect(workLarge.map((w) => w.solution)).toEqual([
+  // #91 (2026-11-20): six featured cards. The first four lead their Solution,
+  // one each, in the founder's order; then Coffee Brand & Shop and Field
+  // Photo Reports.
+  it('the featured cards lead with one per Solution, in the founder’s order', () => {
+    expect(workLarge).toHaveLength(6);
+    expect(workLarge.slice(0, 4).map((w) => w.solution)).toEqual([
       'ai-voice-agents',
       'business-systems',
       'smart-operations',
       'custom-web-apps',
     ]);
+    expect(workLarge.slice(4).map((w) => w.slug)).toEqual(['coffee-brand-shop', 'field-photo-reports']);
+  });
+
+  it('the Private Meetup App stays off this site', () => {
+    expect(getWork('private-meetup-app')).toBeUndefined();
   });
 
   // #80: cards carry one line, so every build needs a short name that fits a
@@ -70,7 +80,7 @@ describe('work lineup', () => {
   it('Home shows no build twice, and its fold is the /work lead four', () => {
     const home = [heroSlug, ...featuredSlugs, ...foldSlugs];
     expect(new Set(home).size).toBe(home.length);
-    expect([...foldSlugs].sort()).toEqual([...largeSlugs].sort());
+    expect([...foldSlugs].sort()).toEqual([...leadSlugs].sort());
   });
 
   it('Home never shows the CRM, and the band never repeats the hero', () => {
@@ -116,7 +126,7 @@ describe('work lineup', () => {
   });
 
   it('the build count word matches the entry count', () => {
-    expect(buildCountWord).toBe('10');
-    expect(work).toHaveLength(10);
+    expect(buildCountWord).toBe('13');
+    expect(work).toHaveLength(13);
   });
 });

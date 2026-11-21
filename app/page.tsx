@@ -58,14 +58,18 @@ export default async function HomePage() {
 
       <LampFields />
 
-      {/* The fold's proof: four live builds as build rows. */}
-      <section className="pt-16 pb-20 md:pt-20 md:pb-28">
+      {/* The fold's proof: four live builds as build rows. Its bottom and the
+          band's top are one gap with the band's 2px rule in it, not two
+          stacked section paddings (#91: they summed to 288px at 1440). */}
+      <section className="pt-16 pb-16 md:pt-20 md:pb-20">
         <FoldBoard entries={foldBoard} statuses={statuses} />
       </section>
 
       {/* Featured Work — the two deep builds, on paper with the rest of the
-          proof. Ruled off from the board above by a 2px line. */}
-      <section className="py-20 md:py-28">
+          proof. Ruled off from the board above by a 2px line. No bottom
+          padding: the process teaser's own top padding is the one gap below
+          it (#91). */}
+      <section>
         <div className="tg-container">
           <div className="border-t-2 border-fg" />
         </div>
@@ -105,8 +109,8 @@ function BandRow({
     <div
       className={
         mediaFirst
-          ? '[grid-row:1] [grid-column:8/13] max-lg:[grid-column:6/9]'
-          : '[grid-row:1] [grid-column:1/6] max-lg:[grid-column:1/4]'
+          ? '[grid-row:1] [grid-column:9/13] max-lg:[grid-column:1/-1] lg:pl-6'
+          : '[grid-row:1] [grid-column:1/5] max-lg:[grid-column:1/-1] lg:pr-6'
       }
     >
       <SolutionTag solution={entry.solution} label={entry.tag} />
@@ -128,19 +132,21 @@ function BandRow({
     <div
       className={
         mediaFirst
-          ? '[grid-row:1] [grid-column:1/7] max-lg:[grid-column:1/5]'
-          : '[grid-row:1] [grid-column:7/13] max-lg:[grid-column:5/9]'
+          ? '[grid-row:1] [grid-column:1/9] max-lg:[grid-column:1/-1]'
+          : '[grid-row:1] [grid-column:5/13] max-lg:[grid-column:1/-1]'
       }
     >
-      <Frame poster={entry.poster} alt={entry.alt} />
+      <Frame poster={entry.poster} alt={entry.alt} sizes="(max-width: 1023px) 100vw, 800px" />
     </div>
   );
 
   return (
     // DOM order is READING order — text, then media — on every row. The
     // alternation rides on `grid-column`, both halves pinned to `grid-row: 1`.
+    // Since #91 the picture takes 8 of 12 columns (it read tiny next to /work
+    // at 6), and below 1024 the row stacks (`tg-stack-md`), picture full width.
     <article
-      className={`tg-container tg-grid tg-split items-center ${index === 0 ? 'mt-12 md:mt-16 border-b border-border pb-16 md:pb-20' : 'pt-16 md:pt-20'}`}
+      className={`tg-container tg-grid tg-split tg-stack-md items-center ${index === 0 ? 'mt-12 md:mt-16 border-b border-border pb-16 md:pb-20' : 'pt-16 md:pt-20'}`}
     >
       {text}
       {media}

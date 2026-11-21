@@ -57,6 +57,7 @@ export function Frame({
   ratio = '16/10',
   priority = false,
   className,
+  sizes = SIZES,
 }: {
   poster: string;
   /** Optional <1024px crop of the same capture. See the note above. */
@@ -65,8 +66,10 @@ export function Frame({
   ratio?: '16/10' | '16/9';
   priority?: boolean;
   className?: string;
+  /** The `sizes` hint, for a frame smaller than the default half-page one. */
+  sizes?: string;
 }) {
-  const common = { alt, fill: true, sizes: SIZES, priority } as const;
+  const common = { alt, fill: true, sizes, priority } as const;
   // One alt, one crop of one capture: the two variants are the same picture, so
   // a second alt string would describe the same thing twice and read out twice.
   const { srcSet: wide } = getImageProps({ ...common, src: poster }).props;
@@ -85,8 +88,8 @@ export function Frame({
     >
       {posterMobile ? (
         <picture>
-          <source media="(min-width: 1024px)" srcSet={wide} sizes={SIZES} />
-          <source srcSet={narrow} sizes={SIZES} />
+          <source media="(min-width: 1024px)" srcSet={wide} sizes={sizes} />
+          <source srcSet={narrow} sizes={sizes} />
           {/* Not an unoptimized <img>: every attribute here comes from
               getImageProps, so this is next/image's own output with a
               <picture> wrapped around it to carry the media query. */}
@@ -98,7 +101,7 @@ export function Frame({
           alt={alt}
           fill
           priority={priority}
-          sizes={SIZES}
+          sizes={sizes}
           className="object-cover object-top"
         />
       )}

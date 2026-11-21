@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { PageHero } from '@/components/page-hero';
-import { CaseStudyRow } from '@/components/case-study-row';
+import { FeaturedCard } from '@/components/featured-card';
 import { ProjectCard } from '@/components/project-card';
-import { SwipeRow } from '@/components/swipe-row';
+import { WorkIndex } from '@/components/work-index';
 import { ClosingCta } from '@/components/closing-cta';
 import { workLarge, workSmall, buildCountWordCapitalized } from '@/content/work';
+import { solutions } from '@/content/solutions';
 import { getAllStatuses } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, workItemList } from '@/lib/seo';
 
@@ -16,13 +17,12 @@ export const metadata = buildMetadata({
 });
 
 /**
- * Founder, 2026-11-11: four large cards, one per Solution, then every other
- * build in small cards. Since 2026-11-16 (#80, option A): the four stay
- * stacked and short, and the small cards swipe on phones. Which build sits where is in `content/work.ts`
- * (`largeSlugs`, `smallSlugs`), not here.
- *
- * Each group gets the export's section header: a small uppercase label with a
- * muted descriptor beside it, over a 28px-padded hairline.
+ * Since 2026-11-20 (#91, founder): a Solution filter, then six featured cards
+ * two across (picture beside the words, about a third of the old row's
+ * height), then the other seven as small cards, three across, swiping on
+ * phones. Which build sits where is in `content/work.ts` (`largeSlugs`,
+ * `smallSlugs`), not here. The cards render here on the server, with their
+ * status checks; `WorkIndex` only shows and hides them.
  */
 export default async function WorkPage() {
   const statuses = await getAllStatuses();
@@ -53,25 +53,21 @@ export default async function WorkPage() {
         description={`${buildCountWordCapitalized} live builds. Open any one yourself.`}
       />
 
-      <div className="pt-12 md:pt-20">
-        <div className="tg-container">
-          <GroupHead title="One for each Solution" note="Our four kinds of work, one build each" />
-        </div>
-        {workLarge.map((entry, i) => (
-          <CaseStudyRow key={entry.slug} entry={entry} status={statuses[entry.slug]!} index={i} />
-        ))}
-      </div>
-
-      <div className="tg-container mt-8 pb-20 md:mt-16 md:pb-32">
-        <GroupHead title="More builds" note="Same standard, every one live" />
-        <div className="mt-6 md:mt-10">
-          <SwipeRow label="More builds">
-            {workSmall.map((entry) => (
-              <ProjectCard key={entry.slug} entry={entry} status={statuses[entry.slug]!} />
-            ))}
-          </SwipeRow>
-        </div>
-        <p className="mt-10 text-[length:var(--text-body)] text-secondary">
+      <WorkIndex
+        options={solutions.map((s) => ({ solution: s.slug, label: s.name }))}
+        featured={workLarge.map((entry) => ({
+          slug: entry.slug,
+          solution: entry.solution,
+          node: <FeaturedCard entry={entry} status={statuses[entry.slug]!} />,
+        }))}
+        more={workSmall.map((entry) => ({
+          slug: entry.slug,
+          solution: entry.solution,
+          node: <ProjectCard entry={entry} status={statuses[entry.slug]!} />,
+        }))}
+      />
+      <div className="tg-container mt-12 pb-20 md:mt-16 md:pb-32">
+        <p className="text-[length:var(--text-body)] text-secondary">
           Want a quick look at more of what we build?{' '}
           <Link href="/examples" className="tap-44 font-bold text-fg underline decoration-2 underline-offset-[6px]">
             See the examples →
@@ -80,15 +76,6 @@ export default async function WorkPage() {
       </div>
 
       <ClosingCta />
-    </div>
-  );
-}
-
-function GroupHead({ title, note }: { title: string; note: string }) {
-  return (
-    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b-2 border-fg pb-5">
-      <h2 className="tg-plain tg-eyebrow">{title}</h2>
-      <span className="text-[15px] text-secondary">{note}</span>
     </div>
   );
 }

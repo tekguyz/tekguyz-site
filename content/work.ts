@@ -449,6 +449,8 @@ export const work: WorkEntry[] = [
    * are from tekguyz-one `projects/cart-reminders/about.md`. `url` is the
    * landing page, never the demo. The poster is the app's own
    * `showcase/webp/reminder-desktop-light.webp`, 1440x900, made-up roaster.
+   * Retaken 2026-11-20 after the demo shop became Segovia Coffee
+   * (tekguyz/cart-reminders#15, #16).
    */
   {
     slug: 'cart-reminders',
@@ -469,17 +471,103 @@ export const work: WorkEntry[] = [
     whatMadeItInteresting:
       'the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout, and a paid cart becomes a real test order in the store.',
     tryIt:
-      'Press Try the demo on its landing page. No sign-up. It opens a made-up coffee roaster in Miami. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.',
+      'Press Try the demo on its landing page. No sign-up. It opens Segovia Coffee, a made-up coffee roaster. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.',
     title: 'TEKGUYZ | Cart Reminders',
     description:
       'An online store whose left carts come back: ordering and payment built to fit, and a friendly reminder when a shopper leaves at checkout. Try the one-click demo.',
+  },
+  /*
+   * 2026-11-20 (#91, founder): three builds join, so the site lists 13. The
+   * Private Meetup App stays off this site (portfolio only). Words come from
+   * each app's README and PRODUCT.md and the portfolio's `lib/projects.ts`
+   * entry, written in "we" here. No metric is stated: none is measured.
+   * Posters are the portfolio's own 1440x900 captures of each app.
+   */
+  {
+    // The rebuilt demo (tekguyz/team-performance, live 2026-11-17). It plays
+    // a made-up call center. Replaces the old demo retired 2026-11-12 (#76).
+    slug: 'team-performance',
+    kind: 'project',
+    name: 'Team Performance',
+    shortName: 'Team Performance',
+    tag: 'BUSINESS SYSTEMS',
+    solution: 'business-systems',
+    headline: 'Phone logs that credit the right person, and surveys that know when to stop.',
+    url: 'https://team-performance-demo.vercel.app',
+    poster: '/media/team-performance-thumb.webp',
+    alt: 'Team Performance demo for a made-up call center: the overview of calls credited, focus ratings and surveys',
+    embeddable: false,
+    updatedAt: '2026-11-20',
+    builtFor: 'Service teams that work the phones and follow up with customer surveys',
+    summary:
+      'Every desk-phone call is credited to the person who really handled it, with no manual entry. Offline work such as case review counts too. Beside it runs a text survey loop with plain rules, so customers are not texted after every call.',
+    whatMadeItInteresting:
+      'the rules that stop a text. No survey for a call under 2 minutes, and never a second text to the same number within a day. A low focus rating only raises a question for a supervisor, never a verdict.',
+    tryIt:
+      'Press Try the demo on its landing page. No sign-up. It opens a made-up call center. Run a batch of new calls and watch each one end at the rule that stopped its text, or at Texts sent. Everything runs in your browser and nothing is sent.',
+    title: 'TEKGUYZ | Team Performance',
+    description:
+      'Phone logs that credit whoever did the work, and customer survey texts with plain rules that know when to stop. Try the one-click demo.',
+  },
+  {
+    // A made-up family coffee brand, built as if it were real. No landing page
+    // in front: the link opens the shop itself.
+    slug: 'coffee-brand-shop',
+    kind: 'project',
+    name: 'Coffee Brand & Shop',
+    shortName: 'Coffee Brand & Shop',
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
+    headline: 'A coffee brand built to sell: buy a bag, subscribe, or build a bundle.',
+    url: 'https://coquimba-coffee.vercel.app',
+    poster: '/media/coffee-brand-shop-thumb.webp',
+    alt: 'The home page of a made-up coffee brand: a screen-print volcano over the coffee rows, with Shop coffee and Visit the café',
+    embeddable: false,
+    updatedAt: '2026-11-20',
+    builtFor: 'A small brand with something to sell, and a café that posts its specials and events',
+    summary:
+      'A whole brand for a made-up family coffee business, from a farm in Nicaragua to a café in Miami: the logo, the art, the words and the site. Shoppers buy a bag, subscribe, or build a bundle of three. The café page shows the menu, the specials and the events, with an RSVP. The owner’s side shows the orders and lets the family post specials and events.',
+    whatMadeItInteresting:
+      'it is a brand, not only a shop. A look people remember and a story that makes them care come first, and the shop, the café and the owner’s side are built on top of it.',
+    tryIt:
+      'Open the site. No sign-up. Buy a bag with the Stripe test card, then open the owner’s side to see the order. It runs on a real Shopify store in test mode, so nothing is sent and no card is charged.',
+    pullQuote: 'Buy once, subscribe, or build a bundle, and the owner sees every order.',
+    title: 'TEKGUYZ | Coffee Brand & Shop',
+    description:
+      'A coffee brand built to sell: a shop with subscriptions and bundles, a café page with specials and events, and the owner’s side. Try it yourself.',
+  },
+  {
+    // fancyfam.com. The address keeps the app's own name; the title says what
+    // it is (founder, 2026-10-24). A "coming soon" page for now, so no Try it
+    // line: there is no demo to try yet. Plain words: never "AI" or "agent".
+    slug: 'everyday-helpers',
+    kind: 'project',
+    name: 'Everyday Helpers',
+    shortName: 'Everyday Helpers',
+    tag: 'CUSTOM WEB APPS',
+    solution: 'custom-web-apps',
+    headline: 'Four friendly helpers for the everyday stuff, in plain words.',
+    url: 'https://fancyfam.com',
+    poster: '/media/everyday-helpers-thumb.webp',
+    alt: 'Meet the crew: four felt helpers, each on a card with a sample text and their answer',
+    embeddable: false,
+    updatedAt: '2026-11-20',
+    builtFor: 'Families with people who never touch a settings screen',
+    summary:
+      'Four felt characters, each good at one kind of chore: one checks a text that looks fishy or a price that seems high, one writes an email, one keeps reminders, and one is up for a chat. You ask the way you would text a friend. For now it is a phone-first “coming soon” page, with no sign-up.',
+    whatMadeItInteresting:
+      'the house rules come first. A helper never spends your money, never sends anything without asking, and never shares what you tell it.',
+    title: 'TEKGUYZ | Everyday Helpers',
+    description:
+      'Four friendly helpers for emails, fair prices and reminders, in plain words. A phone-first “coming soon” page with no sign-up.',
   },
   /* RETIRED 2026-09-04, and the reason is worth keeping so nobody re-adds them.
    *
    * RETIRED 2026-11-12 (refs #76): `team-performance` (Team Performance &
    * Automated Customer Feedback, the old demo), and the
    * Joe M. Google review that only rendered on its page went with it. Its URL
-   * redirects to /work in next.config.ts.
+   * redirected to /work in next.config.ts until 2026-11-20 (#91), when the
+   * rebuilt demo came back under the same slug.
    *
    * `meeting-organizer` (crispy-bacon.netlify.app) was the SAME PRODUCT as
    * `ai-meeting-notes` one full rewrite earlier. Listing both showed a visitor
@@ -535,6 +623,9 @@ export const projects = work.filter((w): w is Project => w.kind === 'project');
  * Apps card from Field Photo Reports on 2026-11-12): four large cards, one per
  * Solution, in this order, then every other build in small cards. Cart Reminders
  * took the Custom Web Apps card from Book Your Visit on 2026-11-16 (#80).
+ * Since 2026-11-20 (#91): six featured cards, the four that lead their
+ * Solution, then Coffee Brand & Shop and Field Photo Reports. The first four
+ * stay the lead four (fold board, footer), so their order is fixed.
  * `content/work.test.ts` fails if a build is in neither list, or in both.
  */
 export const largeSlugs = [
@@ -542,16 +633,22 @@ export const largeSlugs = [
   'quote-to-paid',
   'win-back',
   'cart-reminders',
+  'coffee-brand-shop',
+  'field-photo-reports',
 ] as const;
 
 export const smallSlugs = [
   'book-your-visit',
   'no-show-rescue',
   'missed-call-follow-up',
-  'field-photo-reports',
+  'team-performance',
   'ai-meeting-notes',
   'tekguyz-crm',
+  'everyday-helpers',
 ] as const;
+
+/** The four builds that lead their Solution: the fold board and the footer. */
+export const leadSlugs = largeSlugs.slice(0, 4);
 
 const bySlugs = (slugs: readonly string[]) =>
   slugs.map((slug) => work.find((w) => w.slug === slug)).filter((w): w is WorkEntry => Boolean(w));
@@ -594,9 +691,9 @@ export const foldBoard = bySlugs(foldSlugs);
  * The footer's Work column, shown on every page including Home: the four
  * builds that lead their Solution on /work. Never the CRM (it is off Home).
  */
-export const footerSlugs = largeSlugs;
+export const footerSlugs = leadSlugs;
 
-export const footerWork = workLarge;
+export const footerWork = bySlugs(leadSlugs);
 
 export function getWork(slug: string): WorkEntry | undefined {
   return work.find((w) => w.slug === slug);
