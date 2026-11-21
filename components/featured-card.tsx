@@ -32,7 +32,7 @@ export function FeaturedCard({ entry, status }: { entry: WorkEntry; status: Stat
   return (
     <article className="grid h-full grid-cols-1 content-start gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6 lg:grid-cols-2">
       <Link href={story} tabIndex={-1} aria-hidden className="tg-feature-pic block self-start">
-        <Frame poster={entry.poster} alt="" sizes="(max-width: 639px) 100vw, (max-width: 1023px) 40vw, 300px" />
+        <Frame poster={entry.cardPoster ?? entry.poster} alt="" sizes="(max-width: 639px) 100vw, (max-width: 1023px) 40vw, 300px" />
       </Link>
 
       <div className="min-w-0">

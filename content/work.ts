@@ -36,6 +36,14 @@ interface WorkBase {
   url: string;
   /** 16:10 poster for compact contexts (case-study rows, detail pages). */
   poster: string;
+  /**
+   * Optional 16:10 close-up for the small /work featured card. A full desktop
+   * capture shrunk to card width (about 276px) leaves its text about 3px tall,
+   * so the card uses the top of the app's own feed picture (Drive
+   * `social/<app>/feed/`, a real capture at phone width). The detail page keeps
+   * `poster`. Falls back to `poster`.
+   */
+  cardPoster?: string;
   /** Optional distinct 16:9 asset for the home hero. */
   heroPoster?: string;
   /**
@@ -144,6 +152,7 @@ export const work: WorkEntry[] = [
     // with `tools/capture` on 2026-10-14, converted to webp at quality 85. No
     // crop. No heroPoster: this entry is not the home hero.
     poster: '/media/voice-receptionist-thumb.webp',
+    cardPoster: '/media/ai-voice-receptionist-card.webp',
     alt: 'AI Voice Receptionist Sample Call for the made-up Mangrove Air: what Luna and the caller said on the left, and the job details on the right: name, job, urgency, address and booked time',
     embeddable: false,
     updatedAt: '2026-10-15',
@@ -337,6 +346,7 @@ export const work: WorkEntry[] = [
     // The app's own `showcase/board-day-summary-desktop-light.png` (webp),
     // taken in the demo: Gumbo Limbo Air, its customers and amounts are made up.
     poster: '/media/quote-to-paid-thumb.webp',
+    cardPoster: '/media/quote-to-paid-card.webp',
     alt: 'Quote to Paid demo board: a summary of the follow-ups that went out by themselves, the quotes and invoices waiting, and the jobs that need the owner',
     embeddable: false,
     updatedAt: '2026-11-10',
@@ -395,6 +405,7 @@ export const work: WorkEntry[] = [
     headline: 'Bring back the customers who stopped calling.',
     url: 'https://win-back-customers.vercel.app',
     poster: '/media/win-back-thumb.webp',
+    cardPoster: '/media/win-back-card.webp',
     alt: 'Win-Back demo: drafted messages to past customers, each one approved by the owner, with an edit or skip link, before anything is sent',
     embeddable: false,
     updatedAt: '2026-11-11',
@@ -462,6 +473,7 @@ export const work: WorkEntry[] = [
     headline: 'The shopper left. The cart came back.',
     url: 'https://cart-reminders.vercel.app',
     poster: '/media/cart-reminders-thumb.webp',
+    cardPoster: '/media/cart-reminders-card.webp',
     alt: 'Cart Reminders demo: the reminder email a shopper gets after leaving checkout at a made-up coffee roaster, marked not sent, next to the store owner’s carts started, left, reminded and won back',
     embeddable: false,
     updatedAt: '2026-11-13',
@@ -521,6 +533,7 @@ export const work: WorkEntry[] = [
     headline: 'A coffee brand built to sell: buy a bag, subscribe, or build a bundle.',
     url: 'https://coquimba-coffee.vercel.app',
     poster: '/media/coffee-brand-shop-thumb.webp',
+    cardPoster: '/media/coffee-brand-shop-card.webp',
     alt: 'The home page of a made-up coffee brand: a screen-print volcano over the coffee rows, with Shop coffee and Visit the café',
     embeddable: false,
     updatedAt: '2026-11-20',
