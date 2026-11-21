@@ -9,7 +9,7 @@ import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag } from '@/components/solution-tag';
 import { ClosingCta } from '@/components/closing-cta';
 import { ProcessTeaser } from '@/components/process-teaser';
-import { featured, getWork, heroSlug, type CaseStudy } from '@/content/work';
+import { featured, heroBuilds, type CaseStudy } from '@/content/work';
 import { getAllStatuses, type StatusResult } from '@/lib/status';
 import { buildMetadata, jsonLd, professionalService, solutionsItemList } from '@/lib/seo';
 
@@ -33,8 +33,15 @@ export const metadata = buildMetadata({
  */
 export default async function HomePage() {
   const statuses = await getAllStatuses();
-  // Missed Call Follow-Up since 2026-11-11 (founder). `heroSlug` in content/work.ts.
-  const hero = getWork(heroSlug)!;
+  // Four builds, picked by button (founder, 2026-11-21). `heroSlugs` in content/work.ts.
+  const builds = heroBuilds.map((w) => ({
+    slug: w.slug,
+    name: w.shortName ?? w.name,
+    solution: w.solution,
+    url: w.url,
+    poster: w.heroPoster ?? w.poster,
+    status: statuses[w.slug]!,
+  }));
 
   return (
     // One root element, never a multi-child fragment: Next scrolls the new
@@ -47,14 +54,7 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={jsonLd(professionalService(), solutionsItemList())}
       />
 
-      <HomeHero
-        poster={hero.heroPoster ?? hero.poster}
-        posterMobile={hero.heroPosterMobile}
-        url={hero.url}
-        alt={hero.alt}
-        media={hero.heroMedia}
-        status={statuses[hero.slug]!}
-      />
+      <HomeHero builds={builds} />
 
       <LampFields />
 

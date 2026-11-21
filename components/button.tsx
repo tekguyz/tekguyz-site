@@ -48,6 +48,8 @@ const variants = {
 
 const sizes = {
   nav: 'min-h-11 px-5 text-[16px]/[1]',
+  /** Card buttons (2026-11-21). 36px drawn; pair it with `tap-44` for touch. */
+  card: 'min-h-9 px-4 text-[14px]/[1]',
   default: 'min-h-[52px] px-8',
   form: 'min-h-[52px] px-8',
   large: 'min-h-14 px-8',
