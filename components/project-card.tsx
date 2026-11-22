@@ -12,7 +12,7 @@ import type { StatusResult } from '@/lib/status';
  * pill. The summary and the Try it paragraph live on the build's own page.
  * On phones these cards sit in a `SwipeRow`; from 640px they are a grid.
  *
- * NO IMAGE, EVER. The size and weight gap from case-study-row is intentional
+ * NO IMAGE, EVER. The size and weight gap from featured-card is intentional
  * signal about the depth of the build, and an image would erase it.
  *
  * Hover lifts 3px and darkens the hairline — position, never shadow.

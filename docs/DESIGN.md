@@ -268,7 +268,7 @@ build cards. Reason in §4.18. The values sit in `globals.css` beside the rule a
 deliberately **not** in `TOKENS.md`: a shadow is a four-part composite whose light
 and dark forms differ structurally, and `check:design` compares single
 declarations. **Do not widen it** — `LiveFrame`'s plate, `project-card` and
-`case-study-row` stay flat, and that weight gap between card tiers is the signal
+`featured-card` stay flat, and that weight gap between card tiers is the signal
 the exception exists to protect.
 
 **The boundary above `closing-cta` — one gap, counted once.** Every route ends the
@@ -684,37 +684,27 @@ at `subhead` the page reads head → list instead of head → four more heads. T
 hook's measure widens 46ch → 52ch because 14px text needs more characters to
 hold the same optical line length.
 
-### 4.7 `case-study-row` and `build-narrative`
+### 4.7 `featured-card` and `build-narrative`
 
-**[measured 2026-08-12 `components/case-study-row.tsx`]** The `/work` index row
-carries: solution tag → title (`--text-title`) → **one paragraph, `entry.approach`**
-→ pull-quote → "Read the full story" link, against a media column of `Frame` →
-`FrameMeta` → the "Try it" note → `BuildNarrative`. 80px vertical padding,
-hairline between rows.
+**[measured 2026-11-21 `components/featured-card.tsx`]** The `/work` index card
+(#91): a picture beside its words, two fifths of the card in the one-column band
+(640–1023), half from 1024 in the two-column grid, 16:10 frame, so it lands near
+175px tall at 1440. Words: solution tag → title (20px) → one paragraph,
+`entry.headline` → "Open the demo" button and "Full story" link. Phones stack it,
+picture first, capped at 136px. The picture links to the story out of the tab
+order and is hidden from screen readers, so the name stays the one link a keyboard
+meets for it. No outer box: the frame's 2px line is the edge, and the grid gap
+separates the cards.
 
-> **This document was wrong, and it is the largest error found in this pass.**
-> The entry claimed "Challenge/Approach/Outcome as three labeled beats" for this
-> component. **Those three beats exist only on `/work/[slug]`**
-> (`app/work/[slug]/page.tsx:172–192`, `180px 1fr` label-and-body rows separated
-> by hairlines). The index row renders the `approach` field alone and has never
-> rendered the other two. Anyone placing content by this entry would have
-> written a `challenge` and an `outcome` that the index silently drops.
+**Hover to enlarge (2026-11-21).** On a mouse screen the picture opens the full
+desktop capture at twice the picture's width, anchored top-left, over the card
+(`.tg-feature-pop` in `globals.css`). Mouse-only media query; phones never
+download it. Flat like every frame, no shadow. A build with no close-up gets no
+enlarge.
 
-**[decided v2.5] The alternation is `grid-column` only, both halves pinned to
-`grid-row: 1`; DOM order is reading order — text, then media — on every row.**
-Below 768px the grid is one column and source order is the entire layout, so
-alternating the DOM put two posters back to back, and on `/work` it opened odd
-rows with a poster, a status line and "How it's built" for a project the visitor
-had not been introduced to yet. The pin is what makes the column-only alternation
-possible: with sparse auto-flow, an item whose column-start sits behind the
-placement cursor drops to the next row.
-
-**[measured 2026-08-12 `case-study-row.tsx:121`]** The row also carries
-`.tg-stack-md`, which stacks it to one full-width column in the 768–1023 band —
-the 8-track split starved both halves at once. The `max-lg:` placements beneath
-it are inert at every current width and **kept deliberately** as safe
-degradation; a fallback that is currently inert is not the same as a value that
-never applied.
+The alternating full-width row this section used to describe
+(`components/case-study-row.tsx`, removed in #91) and its grid pinning and
+`.tg-stack-md` rules went with it. Do not restore them.
 
 **`build-narrative`** — **[measured 2026-08-12 `live-frame.tsx:125–155`]** the
 "How it's built" block: hairline top border, uppercase caption label,
@@ -726,10 +716,8 @@ should read as intentionally composed, not trail off into empty space beside a
 taller text column. If it is still visibly shorter with this included, the text
 column needs tightening, not the media column padding.
 
-**[measured 2026-08-12]** It renders on both `/work/[slug]` and the `/work`
-index. **Note the qualifier the old entry did not carry:** the index is *not* the
-"full-length" version — it is missing Challenge and Outcome, per the correction
-above.
+**[measured 2026-11-21]** It renders on `/work/[slug]` only. The `/work` index
+featured card does not use it.
 
 ### 4.8 `project-card`
 
@@ -746,7 +734,7 @@ further in, and two competing actions on a compact card is the exact ambiguity
 this tier avoids.
 
 **[decided v2.1, standing] No image, ever.** The size and weight gap from
-`case-study-row` is intentional signal about the depth of the build. **This
+`featured-card` is intentional signal about the depth of the build. **This
 governs the card only** — a project's own detail page does carry its frame.
 
 ### 4.9 `LiveFrame`
@@ -763,7 +751,7 @@ alt, ratio, priority, onInk, viewTransitionName, className), `FrameMeta`
 > marked as a target rather than a prop.
 
 **[decided v2.4] Two locked ratios, context-dependent.** Compact contexts
-(`case-study-row`, detail pages) stay **16:10**, no exceptions. **The hero uses
+(`featured-card`, detail pages) stay **16:10**, no exceptions. **The hero uses
 16:9**, its own ratio — it matches standard screen-capture dimensions and
 eliminates the crop-vs-letterbox tension of forcing a 16:9-native capture into a
 16:10 container. **[measured 2026-08-12]** `Frame` defaults to `16/10`;
@@ -1468,7 +1456,7 @@ on the site. The argument for the exception is content, not taste: these are the
 only two elements on the page whose job is to assert *this is a separate, real
 object you can pick up*, and flat-on-flat is a large part of why the fold read as
 a template. `LiveFrame`'s plate (`padding: 0`, no shadow), `project-card`,
-`case-study-row` and every other tier stay flat — the weight gap between card
+`featured-card` and every other tier stay flat — the weight gap between card
 tiers is real signal, and a shadow everywhere communicates nothing.
 
 > **The hover lift is `translate`, not `transform`, inverted from `.hover-card`.**
@@ -1704,7 +1692,7 @@ specificity, so hover still completes the draw.
 `faq-accordion.tsx` rows, the `proof-line` link. **[decided]** Not applied to
 `project-card` (it lifts;
 two signals for one hover is noise), the footer link columns (a drawn bar on 14
-links is wallpaper), or `case-study-row` (not an interactive row).
+links is wallpaper), or `featured-card` (its hover is the enlarge, not a lift).
 
 ### 6.3 State — what each interaction does
 
@@ -2019,13 +2007,13 @@ measured until this pass. That leaves `--pad-container` with one consumer,
 
 **[decided 2026-08-28] Gaps were explicitly left out of this pass, by decision
 and not by omission.** `--gap-group`'s 56px ≥1024 step was measured against both
-remaining candidates and makes each *worse*: `case-study-row`'s text column is
+remaining candidates and makes each *worse*: the removed `case-study-row`'s text column was
 already 205px taller than its media column at 1024px, its worst width, and 56px
 takes that to 237px; `project-card` grows 19% at 1440px for no content gained.
-Both files' gaps stay hand-picked, outside the token system. The `18/14` vs
+project-card's gaps stay hand-picked, outside the token system. The `18/14` vs
 `24/24` disagreement between the two files is also deliberate — the two card
 tiers are different weights by design, and forcing their internal rhythm to match
-would erase that. `case-study-row:88` (`mt-5`, FrameMeta → "Try it") is
+would erase that. The removed `case-study-row:88` (`mt-5`, FrameMeta → "Try it") was
 **within-group**: one caption cluster describing the frame above it, and
 `BuildNarrative`'s own hairline top border already marks the real boundary
 further down, so a second separator would be redundant.
@@ -2099,7 +2087,7 @@ two genuine columns here, so it gets one.** Stacked, the text runs the full 672p
 and the poster does too.
 
 **This is `/work` only.** The home Featured Work band is its own row component
-(`app/page.tsx`), not `components/case-study-row.tsx`, and was **not** changed —
+(`app/page.tsx`), not the removed `components/case-study-row.tsx` (#91), and was **not** changed —
 it carries a different copy length and its own band treatment. If it is ever
 revised, it is revised on its own measurement, not by inheriting this one.
 
