@@ -99,8 +99,9 @@ function MetaRail({
  * Challenge / Approach / Outcome render as `180px 1fr` label-and-body rows
  * separated by hairlines, not as stacked headings.
  *
- * These eight pages are the site's strongest long-tail SEO surface, so their
- * content is deliberately NOT compressed back to card length.
+ * Each section is a few short sentences, cut to about half on 2026-11-21
+ * (#82, founder: "so much copy everywhere") so a page scans on a phone. Keep
+ * only facts the code and the demo back.
  *
  * The case-study poster carries a view-transition-name matching the card that
  * linked here, so the visitor watches what they clicked become the page. A
