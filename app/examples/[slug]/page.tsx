@@ -120,7 +120,7 @@ export default async function ExamplePage({ params }: { params: Promise<{ slug: 
 
         <div className="mt-12 flex flex-wrap items-baseline justify-between gap-8 border-t border-border pt-8">
           <p className="flex items-center gap-3 text-[15px] text-secondary">
-            <AccentDot solution={entry.solution} size={8} />
+            <AccentDot solution={entry.solution} />
             Part of{' '}
             <Link href={`/solutions/${solution.slug}`} className="tap-44 font-bold text-fg underline decoration-2 underline-offset-[5px]">
               {solution.name}

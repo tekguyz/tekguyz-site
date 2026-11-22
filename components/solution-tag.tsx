@@ -1,4 +1,5 @@
 import { accentForSolution, type SolutionSlug } from '@/config/solutions';
+import { getSolution } from '@/content/solutions';
 import { cn } from '@/lib/utils';
 
 /**
@@ -18,18 +19,27 @@ export function SolutionTag({
   onInk?: boolean;
   className?: string;
 }) {
+  // The Solution's own name, in normal case ("AI Voice Agents"). The `tag`
+  // fields in content are capitals for the OG cards; on the page they read as
+  // a shouted kicker, and over "AI Voice Receptionist" they said "AI voice"
+  // twice in caps (#98). `label` stays the fallback for an unknown slug.
+  const name = getSolution(solution)?.name ?? label;
   return (
     <span className={cn('inline-flex items-center gap-2 tg-eyebrow text-fg', className)}>
-      <AccentDot solution={solution} size={10} />
-      {label}
+      <AccentDot solution={solution} />
+      {name}
     </span>
   );
 }
 
-/** The lamp dot. Same lamp on either ground. */
+/**
+ * The lamp dot. Same lamp on either ground. 7px beside 14-16px text (#98:
+ * at 10px it read as a capital O; sizes had drifted to 6, 8, 9 and 10). The
+ * footer keeps its own 6px.
+ */
 export function AccentDot({
   solution,
-  size = 10,
+  size = 7,
   className,
   style,
 }: {

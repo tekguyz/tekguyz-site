@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore, type ReactNode } from 'react';
+import { useState, useSyncExternalStore, type ReactNode } from 'react';
 import { AccentDot } from '@/components/solution-tag';
 import { SwipeRow } from '@/components/swipe-row';
 import type { SolutionSlug } from '@/config/solutions';
@@ -44,6 +44,9 @@ export function WorkIndex({
   // server and the first client render both see "all", then the address wins,
   // so there is no hydration mismatch and no setState in an effect.
   const param = useSyncExternalStore(subscribe, readParam, () => null);
+  // Phones: the row scrolls sideways and its right edge fades until the last
+  // label is in view, so the hidden filters read as "swipe for more" (#98).
+  const [atEnd, setAtEnd] = useState(false);
   const on: SolutionSlug | 'all' = options.some((o) => o.solution === param)
     ? (param as SolutionSlug)
     : 'all';
@@ -74,6 +77,11 @@ export function WorkIndex({
           role="group"
           aria-label="Show builds by Solution"
           data-screen-ok="scroll-inside: the filter row scrolls sideways on phones (#91)"
+          data-end={atEnd ? 'true' : undefined}
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 2);
+          }}
           className="tg-filter flex gap-x-6 overflow-x-auto border-b border-border sm:flex-wrap sm:overflow-visible md:gap-x-7"
         >
           {buttons.map((b) => (
@@ -85,7 +93,7 @@ export function WorkIndex({
               onClick={() => setOn(b.key)}
               className="tg-rule flex min-h-11 shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap text-[15px] font-bold text-fg"
             >
-              {b.key !== 'all' && <AccentDot solution={b.key} size={9} />}
+              {b.key !== 'all' && <AccentDot solution={b.key} />}
               {b.label}
               <span className="tabular-nums font-normal text-secondary">{b.n}</span>
             </button>

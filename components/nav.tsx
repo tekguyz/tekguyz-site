@@ -195,7 +195,7 @@ export function Nav() {
                       href={`/solutions/${s.slug}`}
                       className="flex h-12 items-center gap-[14px] text-[1.0625rem] text-secondary"
                     >
-                      <AccentDot solution={s.slug} size={8} />
+                      <AccentDot solution={s.slug} />
                       {s.name}
                     </Link>
                   ))}

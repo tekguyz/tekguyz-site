@@ -43,14 +43,11 @@ describe('work lineup', () => {
   // #91 (2026-11-20): six featured cards. The first four lead their Solution,
   // one each, in the founder's order; then Coffee Brand & Shop and Field
   // Photo Reports.
-  it('the featured cards lead with one per Solution, in the founder’s order', () => {
+  // Since #98 (founder, 2026-11-22) the lead four follow the site's Solution
+  // order, the same as the menu, the stripe and the /work filter.
+  it('the featured cards lead with one per Solution, in the Solution order', () => {
     expect(workLarge).toHaveLength(6);
-    expect(workLarge.slice(0, 4).map((w) => w.solution)).toEqual([
-      'ai-voice-agents',
-      'business-systems',
-      'smart-operations',
-      'custom-web-apps',
-    ]);
+    expect(workLarge.slice(0, 4).map((w) => w.solution)).toEqual(solutions.map((s) => s.slug));
     expect(workLarge.slice(4).map((w) => w.slug)).toEqual(['coffee-brand-shop', 'field-photo-reports']);
   });
 

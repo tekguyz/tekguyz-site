@@ -928,4 +928,9 @@ body:has(.tg-closing) footer [data-signature-stripe] {
     padding-inline: var(--container-pad);
     scroll-padding-inline: var(--container-pad);
   }
+  /* A row of whole labels gave no cue that two more sat off screen (#98), so
+     the right edge fades until the row is scrolled to its end. */
+  .tg-filter:not([data-end]) {
+    mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent);
+  }
 }
