@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Frame, FrameMeta, BuildNarrative } from '@/components/live-frame';
+import { Frame, BuildNarrative } from '@/components/live-frame';
+import { ButtonLink } from '@/components/button';
 import { StatusLine } from '@/components/status-line';
 import { PullQuote } from '@/components/pull-quote';
 import { SolutionTag, AccentDot } from '@/components/solution-tag';
 import { ClosingCta } from '@/components/closing-cta';
 import { work, getWork, adjacentWork, type WorkEntry } from '@/content/work';
 import { getSolution, type Solution } from '@/content/solutions';
-import { getStatus, type StatusResult } from '@/lib/status';
+import { getStatus } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, softwareApplicationNode } from '@/lib/seo';
 
 export function generateStaticParams() {
@@ -27,58 +28,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 /**
- * The sticky meta rail, cols 10-13 (DESIGN.md §3). BOTH tiers get it.
+ * The sticky rail, cols 10-13 (DESIGN.md §3), from 1024px only. BOTH tiers.
  *
- * Its job is Solution line / Status / Live demo — nothing else. It used to end
- * with its own `Let's Talk` button, which put two asks on one page: the rail's
- * and the `closing-cta` band's. The band is the documented size exception
- * *because* it is meant to be the page's single strongest ask, so a second
- * button above it was competing with the thing it was supposed to lead into.
- * Don't reintroduce it.
+ * Since #98 (2026-11-22) it carries the Solution and nothing else. The hero
+ * owns the Live line and the one "Open the demo" button; the rail repeating
+ * them put the same two things on screen twice, and on phones the whole rail
+ * stacked again at the bottom of the page. Below 1024px the hero's tag already
+ * names the Solution, so the rail is hidden there. Never a button here: the
+ * `closing-cta` band is the page's single strongest ask.
  */
-function MetaRail({
-  entry,
-  solution,
-  status,
-}: {
-  entry: WorkEntry;
-  solution: Solution;
-  status: StatusResult;
-}) {
+function MetaRail({ entry, solution }: { entry: WorkEntry; solution: Solution }) {
   return (
-    // The rail is not `hidden lg:block` — it renders in the 768–1023 band, so the
-    // band gets two real columns: content 6 tracks, rail 2. Only the pinning is
-    // `lg:`-gated.
-    <aside className="lg:sticky lg:top-[116px] [grid-column:10/13] max-lg:[grid-column:7/9]">
+    <aside className="lg:sticky lg:top-[116px] [grid-column:10/13] max-lg:hidden">
       <div className="border-t border-border pt-5">
-        <p className="mb-3 tg-eyebrow text-secondary">
-          Solution line
-        </p>
+        <p className="mb-3 tg-eyebrow text-secondary">Solution</p>
         <Link href={`/solutions/${solution.slug}`} className="tap-44 flex items-center gap-3">
           <AccentDot solution={entry.solution} />
           <span className="link-underline text-[16px] font-semibold">{solution.name}</span>
         </Link>
-      </div>
-
-      <div className="mt-7 border-t border-border pt-5">
-        <p className="mb-3 tg-eyebrow text-secondary">
-          Status
-        </p>
-        <StatusLine result={status} />
-      </div>
-
-      <div className="mt-7 border-t border-border pt-5">
-        <p className="mb-3 tg-eyebrow text-secondary">
-          Live demo
-        </p>
-        <a
-          href={entry.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="tap-44 link-underline text-[16px] font-semibold"
-        >
-          Open it in a new tab
-        </a>
       </div>
     </aside>
   );
@@ -117,6 +84,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
   const solution = getSolution(entry.solution)!;
   const { prev, next } = adjacentWork(entry.slug);
   const isCase = entry.kind === 'case-study';
+  const name = entry.shortName ?? entry.name;
 
   // One root element, never a multi-child fragment — see app/contact/page.tsx
   // for the full mechanism. Keep the JSON-LD script inside the wrapper.
@@ -139,21 +107,46 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
 
       {/* Seam: the ink ground holds the promise (tag and headline); the paper
           ground below holds the story, the frame and the rail. */}
-      <section className="on-ink pt-10 pb-16 md:pb-20">
+      {/* #98 (founder, 2026-11-22): the build's name is the h1, and the
+          headline, the Live line and the one demo button sit beside it, the
+          same split as PageHero. The old hero set the headline alone, hard
+          left, with half the ink empty, and the name appeared nowhere. */}
+      <section className="on-ink pt-10 pb-12 md:pb-20">
         <div className="tg-container">
           <Link href="/work" className="tap-44 link-underline text-[16px] font-bold text-secondary">
             ← Work
           </Link>
-          <SolutionTag solution={entry.solution} label={entry.tag} className="mt-10 flex w-fit" />
-          <h1 className="lettering mt-6 max-w-[20ch] text-[length:var(--text-display)] md:text-[clamp(2.75rem,5.4vw,4.75rem)]">
-            {entry.headline}
-          </h1>
+        </div>
+        <div className="tg-container tg-grid mt-10 items-end gap-y-6">
+          <div className="[grid-column:1/9] max-lg:[grid-column:1/-1]">
+            <SolutionTag solution={entry.solution} label={entry.tag} className="flex w-fit" />
+            <h1 className="lettering mt-5 text-balance text-[length:var(--text-hero)]">{name}</h1>
+          </div>
+          <div className="[grid-column:9/13] max-lg:[grid-column:1/-1]">
+            <p
+              className="text-secondary text-[length:var(--text-body)] leading-[1.55]"
+              style={{ textWrap: 'pretty' }}
+            >
+              {entry.headline}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <ButtonLink
+                href={entry.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open the ${name} demo in a new tab`}
+              >
+                Open the demo
+              </ButtonLink>
+              <StatusLine result={status} />
+            </div>
+          </div>
         </div>
       </section>
 
       <div className="tg-container tg-grid items-start pt-14 pb-20 md:pt-20 md:pb-28">
         <div
-          className={`max-lg:[grid-column:1/7] ${isCase ? '[grid-column:1/9]' : '[grid-column:1/8]'}`}
+          className={`max-lg:[grid-column:1/-1] ${isCase ? '[grid-column:1/9]' : '[grid-column:1/8]'}`}
         >
           {isCase ? (
             <>
@@ -187,10 +180,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
               {/* Frame, status, "Try it" and the narrative enter as one unit —
                   same rule as the Featured Work rows. */}
               <div className="mt-20">
-                  <div>
-                    <Frame poster={entry.poster} alt={entry.alt} priority />
-                  </div>
-                <FrameMeta status={status} url={entry.url} />
+                <Frame poster={entry.poster} alt={entry.alt} />
                 <p className="mt-6 max-w-[62ch] text-[length:var(--text-sm)] leading-[1.55] text-secondary">
                   <span className="tg-eyebrow">Try it</span>{' '}
                   &nbsp;{entry.tryIt}
@@ -233,8 +223,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
                   had no image and `project-card` deliberately never has one, so
                   four captured assets were wired to nothing. */}
               <div className="mt-14">
-                <Frame poster={entry.poster} alt={entry.alt} priority />
-                <FrameMeta status={status} url={entry.url} />
+                <Frame poster={entry.poster} alt={entry.alt} />
               </div>
 
               {entry.tryIt && (
@@ -271,7 +260,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
           )}
         </div>
 
-        <MetaRail entry={entry} solution={solution} status={status} />
+        <MetaRail entry={entry} solution={solution} />
       </div>
 
       <ClosingCta />

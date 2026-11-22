@@ -448,7 +448,7 @@ copy are retired; they are in git history. Facts come from the app's README,
 PRODUCT.md and CONTEXT.md. No result is stated, because none is measured.*
 
 TAG: AI Voice Agents
-HEADLINE: An AI Receptionist that answers the phone, writes down the job, and books the visit.
+HEADLINE: Answers the phone, writes down the job, and books the visit.
 
 **THE CHALLENGE**
 Calls come in while the crew is on a job or after closing. A caller with a broken AC does not wait. They call the next shop.

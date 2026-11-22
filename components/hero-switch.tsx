@@ -49,7 +49,7 @@ export function HeroSwitch({ builds }: { builds: HeroBuild[] }) {
           >
             <span
               aria-hidden
-              className="h-2 w-2 flex-none rounded-full"
+              className="size-[7px] flex-none rounded-full"
               style={{ background: accentForSolution(b.solution).dot }}
             />
             {b.name}

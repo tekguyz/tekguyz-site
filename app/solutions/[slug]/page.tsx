@@ -8,7 +8,6 @@ import { accentForSolution } from '@/config/solutions';
 import { solutions, getSolution } from '@/content/solutions';
 import { workByName } from '@/content/work';
 import { examplesForSolution } from '@/content/examples';
-import { getAllStatuses } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, serviceNode } from '@/lib/seo';
 
 export function generateStaticParams() {
@@ -46,7 +45,6 @@ export default async function SolutionDetailPage({
   if (!solution) notFound();
 
   const a = accentForSolution(solution.slug);
-  const statuses = await getAllStatuses();
   const related = solution.relatedWork
     .map((name) => workByName(name))
     .filter((w): w is NonNullable<typeof w> => Boolean(w));
@@ -154,7 +152,6 @@ export default async function SolutionDetailPage({
                 <ProjectCard
                   key={entry.slug}
                   entry={entry}
-                  status={statuses[entry.slug]!}
                   showTag={false}
                 />
               ))}

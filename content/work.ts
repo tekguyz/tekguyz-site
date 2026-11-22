@@ -138,10 +138,12 @@ export const work: WorkEntry[] = [
     slug: 'ai-voice-receptionist',
     kind: 'case-study',
     name: 'AI Voice Receptionist & Call Booking',
-    shortName: 'AI Voice Receptionist',
+    // Card and page title since #98 (2026-11-22): "AI Voice Agents" over "AI Voice
+    // Receptionist" said "AI voice" twice. The full name stays for SEO.
+    shortName: 'Phone Receptionist',
     tag: 'AI VOICE AGENTS',
     solution: 'ai-voice-agents',
-    headline: 'An AI Receptionist that answers the phone, writes down the job, and books the visit.',
+    headline: 'Answers the phone, writes down the job, and books the visit.',
     // The rebuilt demo (tekguyz/ai-voice-receptionist, live 2026-10-13). It
     // plays the made-up Mangrove Air, an AC repair shop in South Florida, and
     // its Receptionist is Luna. The old "Sarah" demo (tekguyz-sarah.vercel.app)
@@ -643,12 +645,15 @@ export const projects = work.filter((w): w is Project => w.kind === 'project');
  * Since 2026-11-20 (#91): six featured cards, the four that lead their
  * Solution, then Coffee Brand & Shop and Field Photo Reports. The first four
  * stay the lead four (the footer), so their order is fixed.
+ * Since 2026-11-22 (#98, founder): the lead four follow the Solution order
+ * (Smart Operations, AI Voice Agents, Business Systems, Custom Web Apps), the
+ * same as the menu, the stripe, the Home lamp fields and the /work filter.
  * `content/work.test.ts` fails if a build is in neither list, or in both.
  */
 export const largeSlugs = [
+  'win-back',
   'ai-voice-receptionist',
   'quote-to-paid',
-  'win-back',
   'cart-reminders',
   'coffee-brand-shop',
   'field-photo-reports',

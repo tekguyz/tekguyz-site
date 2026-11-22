@@ -6,7 +6,6 @@ import { WorkIndex } from '@/components/work-index';
 import { ClosingCta } from '@/components/closing-cta';
 import { workLarge, workSmall, buildCountWordCapitalized } from '@/content/work';
 import { solutions } from '@/content/solutions';
-import { getAllStatuses } from '@/lib/status';
 import { buildMetadata, breadcrumbs, jsonLd, workItemList } from '@/lib/seo';
 
 export const metadata = buildMetadata({
@@ -21,12 +20,10 @@ export const metadata = buildMetadata({
  * two across (picture beside the words, about a third of the old row's
  * height), then the other seven as small cards, three across, swiping on
  * phones. Which build sits where is in `content/work.ts` (`largeSlugs`,
- * `smallSlugs`), not here. The cards render here on the server, with their
- * status checks; `WorkIndex` only shows and hides them.
+ * `smallSlugs`), not here. The cards render here on the server; `WorkIndex`
+ * only shows and hides them.
  */
-export default async function WorkPage() {
-  const statuses = await getAllStatuses();
-
+export default function WorkPage() {
   return (
     <div>
     {/* One root element, never a multi-child fragment — Next scrolls the new
@@ -63,7 +60,7 @@ export default async function WorkPage() {
         more={workSmall.map((entry) => ({
           slug: entry.slug,
           solution: entry.solution,
-          node: <ProjectCard entry={entry} status={statuses[entry.slug]!} />,
+          node: <ProjectCard entry={entry} />,
         }))}
       />
       <div className="tg-container mt-12 pb-20 md:mt-16 md:pb-32">
