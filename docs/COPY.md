@@ -350,22 +350,22 @@ TAG: Custom Web Apps *(retagged from Business Systems by the founder, 2026-11-11
 HEADLINE: One Report from the job site, with the proof printed on every photo.
 
 **THE CHALLENGE**
-A stone fabrication shop sent its installers out with paper. Photos went through one app, messages to the office through another, and the owners got an email somewhere else. The office pieced the job together afterward, and sales often waited 3 to 5 days before they could bill for work that was already done.
+A stone shop’s installers worked on paper. Photos, messages and emails went three different ways, the office pieced each job together afterward, and billing often waited 3 to 5 days.
 
 **THE APPROACH**
-We built one place for the whole Visit. At the end of a job, the Installer sends one Report from their phone: photos, a note, any Issues, and a sign-off from whoever is on site. The crews are Spanish-first and often work with dirty hands, so every screen reads in English or Spanish and the key actions fit without long scrolling. In the office, each Report arrives live, with nothing to refresh.
+At the end of a job, the Installer sends one Report from their phone: photos, a note, any Issues and a sign-off. Every screen reads in English or Spanish and works with dirty hands. The office sees each Report arrive live.
 
 **THE OUTCOME**
-Marking a Report Reviewed is the signal to bill: the Salesperson knows the job is done and proven, without waiting on paper from the field. The photos, the note, the Issues and the sign-off stay together on one record instead of across paper, two apps and an email.
+Marking a Report Reviewed is the signal to bill. The photos, note, Issues and sign-off stay on one record.
 
 **PULL QUOTE**
 Every Live photo carries its own proof: job, time, place and Installer, printed into the picture.
 
 **TRY IT**
-Pick a side on the landing page: As Office staff, or As an Installer. Either button opens your own workspace with sample Visits — no sign-up, and it is deleted after 7 days. Try both to see each end of the job.
+Pick a side: Office staff or Installer. Either opens your own workspace with sample Visits, no sign-up, deleted after 7 days.
 
 **HOW IT'S BUILT**
-A phone-first Installer app and a dense desktop Office view on one live database. Every photo carries its time, place and source, and says so honestly when it has none. English and Spanish throughout, light and dark mode, installable to the home screen, and built to sit beside the shop's existing business system rather than replace it.
+A phone app for Installers and a desktop view for the office, on one live database. Every photo carries its time, place and source. English and Spanish, installable to the home screen, and built to sit beside the shop's existing system.
 
 METADATA — TITLE: `TEKGUYZ | Field Photo Reports & Quality Tracking`
 DESCRIPTION: `Installers send one Report with stamped photos from the job site, and the office sees it live. Try it yourself as Office staff or as an Installer.`
@@ -380,22 +380,22 @@ TAG: Smart Operations
 HEADLINE: Get the notes, the takeaways, and the action items without sending a bot to the call.
 
 **THE CHALLENGE**
-Meeting notes either don't get written or don't get read. The tools that promise to fix it send a bot to sit in the call — which is awkward in front of a client, blocked outright by plenty of IT policies, and still leaves you with a wall of transcript nobody goes back to.
+Meeting notes don’t get written, or don’t get read. The tools that fix it send a bot into the call, which is awkward with clients and blocked by many IT policies.
 
 **THE APPROACH**
-We built a notepad that records the call straight from the browser, so nothing joins the meeting and nobody has to be invited. It transcribes with the speakers separated, then writes the summary, the takeaways, and the action items — and every line it writes carries a link back to the exact moment in the transcript that supports it.
+A notepad that records the call from the browser, so nothing joins the meeting. It separates the speakers, then writes the summary, takeaways and action items. Every line links back to the moment in the transcript that supports it.
 
 **THE OUTCOME**
-A written record of the meeting exists whether or not anyone took notes, and every claim in it can be checked against what was actually said instead of taken on trust.
+There is a written record of every meeting, and every claim in it can be checked against what was said.
 
 **PULL QUOTE**
 No bot joins the call — and every takeaway links back to the second of the transcript it came from.
 
 **TRY IT**
-Press Try the demo on its landing page. One click opens the sample notes — no email, no password. Follow any takeaway back to the line it came from, or ask the notes a question.
+Open the demo. One click opens the sample notes, no sign-up. Follow any takeaway back to its line, or ask the notes a question.
 
 **HOW IT'S BUILT**
-In-browser system and microphone capture, batch transcription with speaker separation, and a second pass that turns the transcript into a summary, takeaways, and traceable action items. Reading lenses change how the same recording is analyzed without re-recording it.
+Records system audio and the microphone in the browser, transcribes with the speakers separated, then a second pass writes the summary and traceable action items. Reading lenses change the analysis without re-recording.
 
 METADATA — TITLE: `TEKGUYZ | AI Meeting Notes & Transcription`
 DESCRIPTION: `An AI meeting notepad that records without sending a bot to the call, then writes summaries, takeaways, and action items you can trace back to the transcript.`
@@ -410,26 +410,26 @@ TAG: Business Systems
 HEADLINE: Track every lead from first enquiry to closed deal, in one pipeline.
 
 **THE CHALLENGE**
-Enquiries arrive in an inbox, a phone log, and a form notification, while the businesses you went out and found sit in a spreadsheet nobody opens twice. The follow-up lives in somebody's head, nothing tells you which leads have gone quiet, and nothing records what the pipeline was actually worth once the dust settled.
+Enquiries arrive by email, phone and form, and the businesses we found ourselves sit in a spreadsheet. The follow-up lives in someone's head, and nobody sees which leads went quiet.
 
 **THE APPROACH**
-We built the CRM we run TEKGUYZ on, and work reaches it from both directions. Inbound, the contact form on this site posts straight in over a signed webhook, so an enquiry becomes a tracked lead with nobody re-typing anything. Outbound, we research local businesses worth a call and import them into the CRM as a file, so the ones we went out and found sit in the same pipeline as the enquiries.
+We built the CRM we run TEKGUYZ on. The contact form on this site posts straight into it, so an enquiry becomes a lead with no re-typing. Businesses we research are imported as a file, into the same pipeline.
 
 *(Rewritten 2026-09-30. Outbound leads arrive as a researched file that is imported into the CRM by hand. **Never write "automatic" here, and never name the research tool** — the site names no tools or apps. The poster is the Reports view, which counts prospects; check it still matches these words before changing either.)*
 
 **THE OUTCOME**
-Everything worth chasing lives in one pipeline instead of an inbox and a spreadsheet. A lead cannot quietly go cold without showing it, and closed work carries a recorded outcome and revenue figure rather than an inference from an archived row.
+Every lead worth chasing is in one pipeline. A lead cannot go cold without showing it, and closed work records what it was worth.
 
 **PULL QUOTE**
 The contact form on this page posts into it. This is the system we run our own business on.
 
 **TRY IT**
-One click opens your own workspace with sample data — no signup, no password, no email. Add and change things as well as browse: the day's agenda, the pipeline board, a lead's full timeline, the revenue report. Email, import and invites are switched off in the demo.
+Open the demo. One click opens your own workspace with sample data, no sign-up. Add and change things: the agenda, the pipeline, a lead's timeline, the revenue report. Email, import and invites are off.
 
 *(Rewritten 2026-10-02, replacing the read-only promise. Since 2026-10-01 each visitor gets their own workspace and can write in it (tekguyz-crm#29); the read-only demo role is gone. Email, import and invites are off, so never invite a visitor to try them. Link is the bare origin `https://tekguyz-crm.vercel.app/`, the CRM's landing page. Its "Try the demo" button is the only thing that signs a visitor in. `/demo` only redirects there.)*
 
 **HOW IT'S BUILT**
-Multi-tenant Postgres with row-level security, signed webhook lead capture, a lead-import path for researched lead lists, role-checked writes, AI spam triage and voice-memo transcription, and a weekly revenue report that emails itself. Each demo visitor gets a private workspace of sample data, so the tour cannot reach anything real.
+Multi-tenant Postgres with row-level security, signed lead capture, a lead-import path, AI spam triage, voice-memo transcription and a weekly revenue email. Each demo visitor gets a private sample workspace.
 
 > **Screenshot caveat, do not lose this.** `public/media/tekguyz-crm.webp` is the real product's real Today view, but the workspace shown is **Demo Workspace** and every figure on it — each lead's dollar value, the overdue counts — is **seeded verification data, not a client result.** No copy on this page may quote, echo, or round any of those numbers. If the page ever needs a figure, it does not get one.
 
@@ -451,22 +451,22 @@ TAG: AI Voice Agents
 HEADLINE: An AI Receptionist that answers the phone, writes down the job, and books the visit.
 
 **THE CHALLENGE**
-A small shop or trade misses calls while the crew is out on a job or after the doors close. A caller with a broken AC often does not wait for a call back. They call the next name on the list.
+Calls come in while the crew is on a job or after closing. A caller with a broken AC does not wait. They call the next shop.
 
 **THE APPROACH**
-We built Luna, an AI Receptionist for Mangrove Air, a made-up AC repair shop in South Florida. She answers, asks for the name, the job, how urgent it is and the address with its zip code, then books one of two open times. While she talks, the work order fills in live. She answers in Spanish when the caller speaks Spanish.
+Luna answers for Mangrove Air, a made-up AC repair shop. She takes the name, the job, how urgent it is and the address, then books a time. The work order fills in as she talks. She speaks Spanish too.
 
 **THE OUTCOME**
-The owner gets Call Notes for every call: a summary, the caller’s details, the job, the urgency and the booked time, plus a preview of the confirmation text. The Dashboard shows every call in one place. It is a demo, so no calendar is connected and nothing is sent.
+The owner gets Call Notes for every call: the caller, the job, the urgency and the booked time. It is a demo, so nothing is sent.
 
 **PULL QUOTE**
 You do not watch a video of an AI receptionist. You call one, in one press.
 
 **TRY IT**
-Press Try the demo on its landing page, then Call now, and talk to Luna through your browser’s microphone. No sign-up, and no phone number is dialled. No microphone? Play the Sample Call: a real call to Luna, with an AI actor as the caller. Your Call Notes are deleted after 7 days.
+Open the demo, press Call now and talk to Luna in your browser. No sign-up. No microphone? Play the Sample Call.
 
 **HOW IT'S BUILT**
-A phone-first web app. The call runs in the browser, and the server gives each call a short-lived token that only works for Luna, so the browser never holds a key. Calls stop at 3 minutes and have daily limits. Only the words are kept, for 7 days, never the caller’s voice.
+The call runs in the browser. Each call gets a short-lived key, so the browser never holds the real one. Calls stop at 3 minutes. Only the words are kept, for 7 days, never the voice.
 
 METADATA — TITLE: `TEKGUYZ | AI Voice Receptionist — Live Demo`
 DESCRIPTION: `Talk to Luna, an AI Receptionist for a made-up AC repair shop, right in your browser. Watch her write down the job and book a time, then see the owner’s Call Notes.`
@@ -489,11 +489,11 @@ TAG: AI Voice Agents
 BUILT FOR: Trade businesses that live on the phone: HVAC and AC repair, roofing, and boat and marine repair
 HEADLINE: Every missed call gets an answer, and every lead lands in the pipeline.
 
-When a call goes unanswered, the caller hears back by text, email or an automated voice callback, whichever the business picks. The follow-up asks what is wrong, where, and how soon. The lead lands on a pipeline board, and the owner gets an alert when the call is missed and again when the lead lands.
+A missed call gets a text, an email or a voice callback. It asks what is wrong, where and how soon. The lead lands on a board, and the owner gets an alert.
 
-**WHAT MADE IT INTERESTING:** the business picks the channel. Some callers answer a text, some read email, some want to hear a voice. The same three questions go out on whichever one fits, and every answer lands on the same board.
+**WHAT MADE IT INTERESTING:** the business picks the channel. The same three questions go out by text, email or voice, and every answer lands on one board.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. You play a caller to a made-up roofer: pick the channel, call, and nobody answers. The follow-up arrives on a phone on screen, and the lead lands on the owner’s board. Nothing is sent.
+**TRY IT:** Open the demo. No sign-up. Call a made-up roofer, nobody answers, and watch the follow-up arrive and the lead land on the board. Nothing is sent.
 
 METADATA — TITLE: `TEKGUYZ | Missed Call Follow-Up`
 DESCRIPTION: `When a call is missed, the caller hears back by text, email or a voice callback. The lead lands in a pipeline and the owner gets an alert. Try the one-click demo.`
@@ -506,13 +506,13 @@ TAG: Business Systems
 BUILT FOR: Roofing and AC companies that send quotes and wait to get paid
 HEADLINE: No quote or invoice goes quiet. Persistent, never pushy.
 
-Follows up on every quote that got no answer and every unpaid invoice, by text, politely. The invoice goes out by itself when the crew marks the job done. The follow-ups stop the moment the customer answers or pays, and after the last one the owner is asked to call. One board shows what is waiting, who answered, who to call and what got paid.
+Follows up by text on every unanswered quote and unpaid invoice. The invoice goes out when the crew marks the job done. The follow-ups stop when the customer answers or pays. One board shows what is waiting and who to call.
 
-**WHAT MADE IT INTERESTING:** the stop rule. A follow-up that keeps going after the customer answers is the pushy kind. Here any answer or payment ends it, nothing goes out on Sundays, and it never passes three. The rules are simple enough to say out loud.
+**WHAT MADE IT INTERESTING:** the stop rule. Any answer or payment ends the follow-ups, nothing goes out on Sundays, and there are never more than three.
 
 **PULL QUOTE (large card on /work, drafted 2026-11-11):** Any answer or payment stops the follow-ups. The rules are simple enough to say out loud.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up AC company. Press Skip ahead a day and watch follow-ups go out, customers answer and invoices get paid. Open any job to play the customer. Nothing is sent or charged.
+**TRY IT:** Open the demo. No sign-up. Press Skip ahead a day and watch follow-ups go out and invoices get paid. Open any job to play the customer. Nothing is sent or charged.
 
 METADATA — TITLE: `TEKGUYZ | Quote to Paid`
 DESCRIPTION: `Follows up on every quote and every unpaid invoice by text, politely, until the customer answers or pays. Then it stops. Try the one-click demo.`
@@ -525,11 +525,11 @@ TAG: AI Voice Agents
 BUILT FOR: Dental and vet practices
 HEADLINE: Fewer empty chairs: a reminder before the visit, a new time after a no-show.
 
-Patients get a reminder text the day before a visit. When someone does not come, they are offered a new time, and the open slot goes to a short-notice waitlist: the first to reply takes it. After the visit, one message asks how it went. Happy patients get the review link, and the others reach the front desk, privately.
+A reminder text goes out the day before a visit. After a no-show, the patient is offered a new time, and the open slot goes to a short-notice waitlist. After the visit, happy patients get the review link, and the others reach the front desk privately.
 
-**WHAT MADE IT INTERESTING:** the empty chair. Rebooking the patient who missed is half the job. The other half is filling the slot today, so the waitlist hears about it at once and is told when it is taken.
+**WHAT MADE IT INTERESTING:** the empty chair. Rebooking the patient is half the job. The other half is filling the slot today, from the waitlist.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. You play a patient at a made-up dental practice: get the reminder, miss the visit, pick a new time, and watch the front desk fill the open chair. Nothing is sent.
+**TRY IT:** Open the demo. No sign-up. Play a patient at a made-up dental practice: miss the visit, pick a new time, and watch the front desk fill the chair. Nothing is sent.
 
 METADATA — TITLE: `TEKGUYZ | No-Show Rescue`
 DESCRIPTION: `Reminders before a visit, a new time offered after a no-show, the open slot filled from a waitlist, and a review request after. Try the one-click demo.`
@@ -542,13 +542,13 @@ TAG: Smart Operations
 BUILT FOR: AC and heating companies with yearly service, and dental and vet offices with recalls
 HEADLINE: Bring back the customers who stopped calling.
 
-Reads the customer records the business already keeps and finds who stopped coming back: a missed tune-up, a plan that ran out, one visit and never again. A short report says who and why, and each customer gets a drafted message signed by the owner. The owner approves, changes or skips every one, and a reply can book a visit.
+Reads the customer records the business already keeps and finds who stopped coming back. A short report says who and why, and each one gets a drafted message. The owner approves, changes or skips every one, and a reply can book a visit.
 
-**WHAT MADE IT INTERESTING:** there is no approve-all button. Every message waits for the owner, it starts from the business’s own customers only, and anyone who asked not to get texts stays off the list.
+**WHAT MADE IT INTERESTING:** there is no approve-all button. Every message waits for the owner, and anyone who asked not to get texts stays off the list.
 
 **PULL QUOTE (large card on /work):** Nothing goes out until the owner approves it, one customer at a time.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up AC company with its past-customer records. Read the report, approve the messages you like, and watch a reply book a visit. Nothing is sent.
+**TRY IT:** Open the demo. No sign-up. Read the report for a made-up AC company, approve the messages you like, and watch a reply book a visit. Nothing is sent.
 
 METADATA — TITLE: `TEKGUYZ | Win-Back`
 DESCRIPTION: `Finds past customers who stopped coming back in your own records, says who and why, and drafts a message to each for you to approve. Try the one-click demo.`
@@ -561,13 +561,13 @@ TAG: Custom Web Apps
 BUILT FOR: Small home-service businesses, such as a cleaning company, that run on a calendar and a phone
 HEADLINE: Customers pick a time themselves.
 
-Customers pick a service and an open time, then book, move or cancel without a call. Each service has a length, so the page never offers a time that cannot fit. The owner sees the day: every visit, the free gaps and the blocked time. A visit booked online lands there marked “New”.
+Customers pick a service and an open time, then book, move or cancel without a call. The owner sees the day: every visit, the free gaps and the blocked time. A visit booked online is marked “New”.
 
-**WHAT MADE IT INTERESTING:** the page only shows open times: inside opening hours, never on a Sunday, never over blocked time, and with 30 minutes kept free to drive between homes. When the owner blocks off time, it leaves the booking page at once.
+**WHAT MADE IT INTERESTING:** the page only shows times that fit: inside opening hours, never on a Sunday, never over blocked time, and with 30 minutes to drive between homes.
 
 **PULL QUOTE (large card on /work):** Customers see only the times you are free. Change or cancel without a call.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. You play a customer and the owner of a made-up cleaning company: book a cleaning, watch it land on the owner’s day, block off time, then move or cancel the visit. Nothing is sent.
+**TRY IT:** Open the demo. No sign-up. Book a cleaning at a made-up company, watch it land on the owner’s day, then move or cancel it. Nothing is sent.
 
 METADATA — TITLE: `TEKGUYZ | Book Your Visit`
 DESCRIPTION: `An online booking portal where customers pick a service and an open time, and change or cancel without a call. The owner sees the day. Try the one-click demo.`
@@ -580,11 +580,11 @@ TAG: Custom Web Apps
 BUILT FOR: Small shops that sell online or want to: a roaster, a boutique, a food maker
 HEADLINE: The shopper left. The cart came back.
 
-A shop built to fit the business, with online ordering and payment. Its products and carts come from a real Shopify store, and payment runs through Stripe in test mode. When a shopper leaves at checkout, the cart is marked as left and gets two reminders, one after an hour and one after a day, then it stops. The owner sees carts started, left, reminded and won back.
+An online shop built to fit the business, with ordering and payment. When a shopper leaves at checkout, the cart gets two reminders, after an hour and after a day, then it stops. The owner sees carts started, left, reminded and won back.
 
-**WHAT MADE IT INTERESTING:** the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout, and a paid cart becomes a real test order in the store.
+**WHAT MADE IT INTERESTING:** the cart outlives the visit. It lives in Shopify, so the reminder’s link reopens the same cart at checkout.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens Segovia Coffee, a made-up coffee roaster. Add coffee to the cart, start paying with a Stripe test card, leave, skip ahead on the demo clock and read the reminder. Nothing is sent and no card is charged.
+**TRY IT:** Open the demo. No sign-up. At Segovia Coffee, a made-up roaster, add coffee, start paying with a Stripe test card, leave, skip ahead and read the reminder. No card is charged.
 
 METADATA — TITLE: `TEKGUYZ | Cart Reminders`
 DESCRIPTION: `An online store whose left carts come back: ordering and payment built to fit, and a friendly reminder when a shopper leaves at checkout. Try the one-click demo.`
@@ -597,11 +597,11 @@ TAG: Business Systems
 BUILT FOR: Service teams that work the phones and follow up with customer surveys
 HEADLINE: Phone logs that credit the right person, and surveys that know when to stop.
 
-Every desk-phone call is credited to the person who really handled it, with no manual entry. Offline work such as case review counts too. Beside it runs a text survey loop with plain rules, so customers are not texted after every call.
+Every desk-phone call is credited to the person who handled it, with no manual entry. A text survey runs beside it with plain rules, so customers are not texted after every call.
 
-**WHAT MADE IT INTERESTING:** the rules that stop a text. No survey for a call under 2 minutes, and never a second text to the same number within a day. A low focus rating only raises a question for a supervisor, never a verdict.
+**WHAT MADE IT INTERESTING:** the rules that stop a text: no survey for a call under 2 minutes, and never two texts to one number in a day.
 
-**TRY IT:** Press Try the demo on its landing page. No sign-up. It opens a made-up call center. Run a batch of new calls and watch each one end at the rule that stopped its text, or at Texts sent. Everything runs in your browser and nothing is sent.
+**TRY IT:** Open the demo. No sign-up. Run a batch of calls at a made-up call center and watch which rule stops each text. Nothing is sent.
 
 METADATA — TITLE: `TEKGUYZ | Team Performance`
 DESCRIPTION: `Phone logs that credit whoever did the work, and customer survey texts with plain rules that know when to stop. Try the one-click demo.`
@@ -614,11 +614,11 @@ TAG: Custom Web Apps
 BUILT FOR: A small brand with something to sell, and a café that posts its specials and events
 HEADLINE: A coffee brand built to sell: buy a bag, subscribe, or build a bundle.
 
-A whole brand for a made-up family coffee business, from a farm in Nicaragua to a café in Miami: the logo, the art, the words and the site. Shoppers buy a bag, subscribe, or build a bundle of three. The café page shows the menu, the specials and the events, with an RSVP. The owner’s side shows the orders and lets the family post specials and events.
+A whole brand for a made-up family coffee business: the logo, the art, the words and the site. Shoppers buy a bag, subscribe or build a bundle. The café page has the menu, specials and events. The owner sees the orders and posts specials.
 
-**WHAT MADE IT INTERESTING:** it is a brand, not only a shop. A look people remember and a story that makes them care come first, and the shop, the café and the owner’s side are built on top of it.
+**WHAT MADE IT INTERESTING:** it is a brand, not only a shop. The look and the story come first, and the shop is built on top.
 
-**TRY IT:** Open the site. No sign-up. Buy a bag with the Stripe test card, then open the owner’s side to see the order. It runs on a real Shopify store in test mode, so nothing is sent and no card is charged.
+**TRY IT:** Open the site. No sign-up. Buy a bag with the Stripe test card, then open the owner’s side to see the order. No card is charged.
 
 **PULL QUOTE** *(drafted)*: Buy once, subscribe, or build a bundle, and the owner sees every order.
 
@@ -633,9 +633,9 @@ TAG: Custom Web Apps
 BUILT FOR: Families with people who never touch a settings screen
 HEADLINE: Four friendly helpers for the everyday stuff, in plain words.
 
-Four felt characters, each good at one kind of chore: one checks a text that looks fishy or a price that seems high, one writes an email, one keeps reminders, and one is up for a chat. You ask the way you would text a friend. For now it is a phone-first “coming soon” page, with no sign-up.
+Four felt characters, each good at one chore: checking a fishy text or a high price, writing an email, keeping reminders, or a chat. You ask the way you text a friend. For now it is a “coming soon” page.
 
-**WHAT MADE IT INTERESTING:** the house rules come first. A helper never spends your money, never sends anything without asking, and never shares what you tell it.
+**WHAT MADE IT INTERESTING:** the house rules come first. A helper never spends your money, never sends without asking, and never shares what you tell it.
 
 METADATA — TITLE: `TEKGUYZ | Everyday Helpers`
 DESCRIPTION: `Four friendly helpers for emails, fair prices and reminders, in plain words. A phone-first “coming soon” page with no sign-up.`
