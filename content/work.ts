@@ -236,11 +236,16 @@ export const work: WorkEntry[] = [
     // landing page, and only its two buttons sign a visitor in —
     // DEMO-STANDARD's "a link opens the landing page" rule.
     url: 'https://field-photo-reports.vercel.app',
+    // 1440x900, the office Visit screen from the Seagrape demo, taken with
+    // `tools/capture` on 2026-11-25, webp at quality 85. No crop. It is the
+    // detail-page picture and the hover-to-enlarge picture, like every other
+    // build. It had been the phone-layout close-up below, so the hover showed
+    // nothing new and the detail page repeated the card's crop.
+    poster: '/media/field-reports-desktop.webp',
     // 1080x675, the top of the app's own `showcase/visit-feed-light.png` (cut at
-    // y=108), taken from the Seagrape demo with `tools/capture` on 2026-10-05.
-    // The feed picture shows the app in its phone layout, so it fills a 16:10
-    // frame; the desktop picture left wide gray sides. Swapped 2026-10-06.
-    poster: '/media/field-reports-thumb.webp',
+    // y=108), taken with `tools/capture` on 2026-10-05. The feed picture shows
+    // the app in its phone layout, so the small card reads at 276px wide.
+    cardPoster: '/media/field-reports-thumb.webp',
     // It was the home hero (#20) until 2026-11-11. Its hero picture, loop and
     // phone files were served by nothing after that and were deleted on
     // 2026-11-16 (#80, settles #70 item 2); git history has them.
